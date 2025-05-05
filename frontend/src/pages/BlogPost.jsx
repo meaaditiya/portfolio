@@ -15,7 +15,7 @@ const BlogPost = () => {
     const fetchBlogDetails = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:5000/api/blogs/${slug}`);
+        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
         const data = await response.json();
         setBlogPost(data);
       } catch (err) {
