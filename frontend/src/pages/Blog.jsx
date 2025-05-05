@@ -13,7 +13,7 @@ const Blog = () => {
     const fetchBlogs = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:5000/api/blogs?status=published&limit=6');
+        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=6');
         const data = await response.json();
         setBlogs(data.blogs);
       } catch (err) {
