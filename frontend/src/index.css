@@ -826,3 +826,333 @@ body {
     transform: rotate(360deg);
   }
 }
+/* Instagram-style Comments, Reactions & Forms CSS */
+
+/* ===== Reactions Section ===== */
+.blog-reactions {
+  padding: 1.5rem 0;
+  border-top: 1px solid #dbdbdb;
+  border-bottom: 1px solid #dbdbdb;
+  margin: 2rem 0;
+}
+
+.blog-reactions h3 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #8e8e8e;
+  margin-bottom: 0.75rem;
+}
+
+.reaction-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #262626;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.reaction-btn:hover {
+  background-color: #f8f8f8;
+}
+
+.reaction-btn.active {
+  color: #0095f6;
+}
+
+.reaction-btn svg {
+  font-size: 1.2rem;
+}
+
+/* ===== Comments Section ===== */
+.blog-comments {
+  margin-top: 2rem;
+}
+
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.comments-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #262626;
+}
+
+.comment-btn {
+  background: transparent;
+  border: none;
+  color: #0095f6;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+/* Comment Card - Instagram Style */
+.comments-list {
+  margin-bottom: 1.5rem;
+}
+
+.comment-card {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #efefef;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #262626;
+}
+
+.comment-date {
+  font-size: 0.75rem;
+  color: #8e8e8e;
+}
+
+.comment-content {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #262626;
+  padding-left: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.no-comments {
+  text-align: center;
+  color: #8e8e8e;
+  padding: 2rem 0;
+}
+
+/* ===== Comment Form - Instagram Style ===== */
+.comment-form {
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.error-message {
+  background-color: #ffebe9;
+  color: #ff3040;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.success-message {
+  background-color: #edfbf6;
+  color: #00be74;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8e8e8e;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #0095f6;
+  outline: none;
+}
+
+.character-count {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  color: #8e8e8e;
+}
+
+.btn {
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: #0095f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1877f2;
+}
+
+.btn-secondary {
+  background-color: #efefef;
+  color: #262626;
+}
+
+.btn-secondary:hover {
+  background-color: #dbdbdb;
+}
+
+/* ===== Modal Styles ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.modal-content p {
+  font-size: 0.85rem;
+  color: #8e8e8e;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* ===== Pagination Styles ===== */
+.comments-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.pagination-btn {
+  border: none;
+  background-color: transparent;
+  color: #8e8e8e;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background-color: #0095f6;
+  color: white;
+}
+
+/* ===== Loading Spinner ===== */
+.comments-loading {
+  padding: 2rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 149, 246, 0.2);
+  border-radius: 50%;
+  border-top-color: #0095f6;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+  }
+  
+  .comments-pagination {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+}
