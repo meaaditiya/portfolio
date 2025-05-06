@@ -81,7 +81,7 @@ const BlogPost = () => {
   const checkUserReaction = async (blogId, email) => {
     try {
       const response = await axios.get(
-        'https://connectwithaaditiyamg.onrender.com/api/blogs/${blogId}/reactions/user`,
+        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogId}/reactions/user`,
         { params: { email } }
       );
       
