@@ -1118,26 +1118,7 @@ body {
 }
 
 /* ===== Loading Spinner ===== */
-.comments-loading {
-  padding: 2rem 0;
-  display: flex;
-  justify-content: center;
-}
 
-.spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid rgba(0, 149, 246, 0.2);
-  border-radius: 50%;
-  border-top-color: #0095f6;
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
