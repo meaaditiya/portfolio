@@ -1,7 +1,7 @@
 // src/pages/Blog.js
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import './blog.css';
 const Blog = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);

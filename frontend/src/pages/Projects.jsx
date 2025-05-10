@@ -2,12 +2,14 @@ import { useState } from 'react';
 import './Projects.css';
 import aadiImage10 from '../images/aadiimage10.jpg';
 import aadiImage1 from '../images/aadiimage1.png';
+import weatherImage from '../images/weather.png';
+
 const Projects = () => {
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [activeProject, setActiveProject] = useState(null);
 
   const projects = [
-    
     {
+      id: 1, // Added unique ID
       title: 'E-Portal for Case Management',
       period: '08 Mar, 2023 - 15 May, 2024',
       mentor: 'Anmol Jain',
@@ -32,6 +34,7 @@ const Projects = () => {
       image: aadiImage10
     },
     {
+      id: 2, // Added unique ID
       title: 'Personal Attendance Manager',
       period: '01 Jan, 2025 - 10 Mar, 2025',
       teamSize: 1,
@@ -54,6 +57,7 @@ const Projects = () => {
       image: aadiImage1
     },
     {
+      id: 3, // Added unique ID
       title: 'Weather Tracking for Farmers',
       period: '01 May, 2023 - 23 Jul, 2024',
       teamSize: 4,
@@ -74,147 +78,116 @@ const Projects = () => {
         'Mitigated weather-related risks through timely alerts.'
       ],
       color: 'orange',
-      image: '/images/weather-tracking.jpg'
+      image: weatherImage
     },
   ];
 
-  const openDetails = (project) => {
-    setSelectedProject(project);
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closeDetails = () => {
-    setSelectedProject(null);
-    document.body.style.overflow = 'auto';
+  const toggleProjectDetails = (projectId) => {
+    setActiveProject(activeProject === projectId ? null : projectId);
   };
 
   return (
-    <section className="portfolio-projects-section" id="projects">
+    <section className="projects-section" id="projects">
       <div className="container">
-        <h2 className="section-title">My Projects</h2>
+        <h2 className="section-heading">Featured Projects</h2>
         
-        <div className="projects-grid">
-          {projects.map((project, index) => (
-            <div key={index} className={`project-card project-card-${project.color}`}>
-              <div className="project-image-container">
-                <img 
-                  src={project.image || `/api/placeholder/600/400`} 
-                  alt={project.title} 
-                  className="project-image" 
-                />
-              </div>
-              <div className="project-content">
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-period">{project.period}</p>
-                <p className="project-team">
-                  Team Size: {project.teamSize}
-                  {project.mentor && ` | Mentor: ${project.mentor}`}
-                </p>
-                <p className="project-description">{project.description}</p>
-                <div className="project-tech-tags">
-                  {project.tech.slice(0, 3).map((tech, idx) => (
-                    <span key={idx} className="tech-tag">{tech}</span>
-                  ))}
-                  {project.tech.length > 3 && (
-                    <span className="tech-tag more-tag">+{project.tech.length - 3}</span>
-                  )}
-                </div>
-                <div className="project-actions">
-                  <button
-                    className="btn btn-details"
-                    onClick={() => openDetails(project)}
-                  >
-                    View Details
-                  </button>
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-link"
-                    >
-                      Visit Project
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {selectedProject && (
-        <div className="project-modal-overlay" onClick={closeDetails}>
-          <div className="project-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={closeDetails}>
-              &times;
-            </button>
+        <div className="projects-layout">
+          {projects.map((project) => {
+            const isActive = activeProject === project.id;
             
-            <div className="modal-content">
-              <div className="modal-image-container">
-                <img 
-                  src={selectedProject.image || `/api/placeholder/800/500`} 
-                  alt={selectedProject.title} 
-                  className="modal-image" 
-                />
-              </div>
-              
-              <div className="modal-info">
-                <h3 className="modal-title">{selectedProject.title}</h3>
-                <p className="modal-period">{selectedProject.period}</p>
-                <p className="modal-team">
-                  Team Size: {selectedProject.teamSize}
-                  {selectedProject.mentor && ` | Mentor: ${selectedProject.mentor}`}
-                </p>
-                
-                <div className="modal-description">
-                  <p>{selectedProject.description}</p>
-                </div>
-                
-                <div className="modal-section">
-                  <h4 className="modal-subtitle">Key Features</h4>
-                  <ul className="modal-list">
-                    {selectedProject.detailedDescription.map((detail, idx) => (
-                      <li key={idx}>{detail}</li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="modal-section">
-                  <h4 className="modal-subtitle">Outcomes</h4>
-                  <ul className="modal-list">
-                    {selectedProject.outcomes.map((outcome, idx) => (
-                      <li key={idx}>{outcome}</li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="modal-section">
-                  <h4 className="modal-subtitle">Technologies Used</h4>
-                  <div className="modal-tech-tags">
-                    {selectedProject.tech.map((tech, idx) => (
-                      <span key={idx} className="tech-tag">{tech}</span>
-                    ))}
+            return (
+              <div 
+                key={project.id} 
+                className={`project-card ${project.color}-accent ${isActive ? 'expanded' : ''}`}
+              >
+                <div className="project-header" onClick={() => toggleProjectDetails(project.id)}>
+                  <div className="project-image-container">
+                    <img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="project-image" 
+                    />
+                    <div className="project-tech-badges">
+                      {project.tech.slice(0, 3).map((tech, idx) => (
+                        <span key={idx} className="tech-badge">{tech}</span>
+                      ))}
+                      {project.tech.length > 3 && (
+                        <span className="tech-badge more-badge">+{project.tech.length - 3}</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="project-summary">
+                    <h3 className="project-title">{project.title}</h3>
+                    <p className="project-period">{project.period}</p>
+                    <p className="project-team">
+                      <span className="detail-label">Team:</span> {project.teamSize}
+                      {project.mentor && <> | <span className="detail-label">Mentor:</span> {project.mentor}</>}
+                    </p>
+                    <p className="project-brief">{project.description}</p>
+                    <div className="project-toggle">
+                      <button className="toggle-button">
+                        {isActive ? 'Hide Details' : 'Show Details'}
+                        <span className={`arrow-icon ${isActive ? 'up' : 'down'}`}></span>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 
-                {selectedProject.link && (
-                  <div className="modal-actions">
-                    <a
-                      href={selectedProject.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-primary"
-                    >
-                      Visit Project
-                    </a>
+                {isActive && (
+                  <div className="project-details">
+                    <div className="details-content">
+                      {/* Features Section */}
+                      <div className="details-section">
+                        <h4 className="details-heading">Key Features</h4>
+                        <ul className="details-list">
+                          {project.detailedDescription.map((detail, idx) => (
+                            <li key={idx}>{detail}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {/* Technologies Section */}
+                      <div className="details-section">
+                        <h4 className="details-heading">Technologies Used</h4>
+                        <div className="tech-tags">
+                          {project.tech.map((tech, idx) => (
+                            <span key={idx} className="tech-tag">{tech}</span>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Outcomes Section */}
+                      <div className="details-section">
+                        <h4 className="details-heading">Outcomes</h4>
+                        <ul className="details-list">
+                          {project.outcomes.map((outcome, idx) => (
+                            <li key={idx}>{outcome}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {/* Action Button Section */}
+                      {project.link && (
+                        <div className="details-actions">
+                          <a 
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="action-button"
+                          >
+                            Visit Project
+                          </a>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
-      )}
+      </div>
     </section>
   );
 };

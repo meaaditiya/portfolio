@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown } from 'react-icons/fa';
 import axios from 'axios';
-
+// Make sure to import the CSS file
+import './blogPost.css';
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -33,8 +34,19 @@ const BlogPost = () => {
     const fetchBlogDetails = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:5000/api/blogs/${slug}`);
+        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
         const data = await response.json();
+        
+        // Process the content to ensure proper formatting
+        if (data && data.content) {
+          // Make sure content has proper HTML tags if it doesn't already
+          if (!data.content.includes('<p>') && !data.content.includes('<div>')) {
+            // Split content by double newlines to create paragraphs
+            const paragraphs = data.content.split(/\n\s*\n/);
+            data.content = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+          }
+        }
+        
         setBlogPost(data);
         
         // Also fetch reactions if blog post is found
@@ -67,10 +79,11 @@ const BlogPost = () => {
     fetchBlogDetails();
   }, [slug]);
   
+  // Rest of your component stays the same...
   // Fetch reaction counts
   const fetchReactions = async (blogId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/blogs/${blogId}/reactions/count`);
+      const response = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/blogs/${blogId}/reactions/count`);
       setReactions(response.data);
     } catch (err) {
       console.error('Error fetching reactions:', err);
@@ -81,7 +94,7 @@ const BlogPost = () => {
   const checkUserReaction = async (blogId, email) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/blogs/${blogId}/reactions/user`,
+        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogId}/reactions/user`,
         { params: { email } }
       );
       
@@ -98,7 +111,7 @@ const BlogPost = () => {
     setCommentsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/blogs/${blogId}/comments`,
+        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogId}/comments`,
         { params: { page, limit: 5 } }
       );
       
@@ -141,7 +154,7 @@ const BlogPost = () => {
     
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/blogs/${blogPost._id}/reactions`,
+        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/reactions`,
         {
           name: userInfo.name,
           email: userInfo.email,
@@ -208,7 +221,7 @@ const BlogPost = () => {
     
     try {
       await axios.post(
-        `http://localhost:5000/api/blogs/${blogPost._id}/comments`,
+        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/comments`,
         commentForm
       );
       
