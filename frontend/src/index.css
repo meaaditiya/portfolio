@@ -1118,18 +1118,16 @@ body {
 }
 
 /* ===== Loading Spinner ===== */
-.comments-loading {
-  padding: 2rem 0;
-  display: flex;
-  justify-content: center;
-}
 
+<<<<<<< HEAD
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
+=======
+>>>>>>> 8cf211b5814c2bcf7f6ae05c73707957ab61248e
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
