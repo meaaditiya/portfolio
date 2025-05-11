@@ -1,155 +1,977 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* App Container */
+.app-container {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  min-height: 100vh;
+  color: #2d3748;
+}
+
+/* Header (Tyagi Header Integration) */
 .tyagi-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-    padding: 0.8rem 0;
-    transition: all 0.3s ease;
-  }
-  
-  .tyagi-header-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  padding: 0.8rem 0;
+  transition: all 0.3s ease;
+}
+
+.tyagi-header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tyagi-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.tyagi-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.tyagi-logo-link:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+.tyagi-logo-text {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #c9a96b, #e6c07b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-right: 0.8rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.tyagi-logo-name {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #2d3748;
+  letter-spacing: 1.2px;
+  font-family: 'Lora', serif;
+}
+
+.tyagi-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.tyagi-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4a4a4a;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+  position: relative;
+}
+
+.tyagi-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #c9a96b;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.tyagi-nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.tyagi-nav-link:hover {
+  color: #c9a96b;
+  background: rgba(201, 169, 107, 0.1);
+}
+
+.tyagi-nav-link-active {
+  color: #c9a96b;
+  font-weight: 500;
+  background: rgba(201, 169, 107, 0.15);
+}
+
+.tyagi-nav-link-active::after {
+  transform: scaleX(1);
+}
+
+/* Main */
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 5rem 1rem 2rem;
+}
+
+/* Section */
+.section {
+  padding: 3rem 0;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 2rem;
+  background: linear-gradient(to right, #3b82f6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Home Section */
+.section-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 1rem;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .section-home {
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 2rem;
+    gap: 3rem;
   }
-  
-  .tyagi-logo-container {
-    display: flex;
-    align-items: center;
+}
+
+/* Home Content */
+.home-content {
+  flex: 1;
+  max-width: 600px;
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.home-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: 600;
+  color: #3b82f6;
+  margin-bottom: 0.5rem;
+}
+
+.home-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  margin: 0.5rem 0 1rem;
+  background: linear-gradient(to right, #3b82f6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .home-title {
+    font-size: clamp(3rem, 6vw, 4rem);
   }
-  
-  .tyagi-logo-link {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.home-role {
+  font-size: clamp(1.25rem, 3Vice versa, clamp(1.25rem, 3vw, 1.5rem));
+  color: #4a5568;
+  margin-bottom: 0.75rem;
+}
+
+.home-description {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  color: #718096;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+/* Buttons */
+.home-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #3b82f6, #ec4899);
+  color: #ffffff;
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.button-secondary {
+  border: 2px solid #3b82f6;
+  color: #3b82f6;
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.button-secondary:hover {
+  background: #3b82f6;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Home Image */
+.home-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+}
+
+/* Avatar */
+.avatar {
+  width: clamp(12rem, 40vw, 16rem);
+  height: clamp(12rem, 40vw, 16rem);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(3rem, 8vw, 4rem);
+  font-weight: 900;
+  color: #ffffff;
+  transition: transform 0.4s ease;
+  animation: float 6s ease-in-out infinite;
+}
+
+@media (min-width: 768px) {
+  .avatar {
+    width: 18rem;
+    height: 18rem;
+    font-size: 5rem;
   }
-  
-  .tyagi-logo-link:hover {
-    transform: scale(1.02);
-    opacity: 0.9;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+.avatar-glow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+  filter: blur(12px);
+  z-index: -1;
+  animation: glow 5s ease-in-out infinite;
+}
+
+/* Card */
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 1rem;
+}
+
+.card-text {
+  font-size: 0.875rem;
+  color: #4a5568;
+  line-height: 1.7;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .tyagi-logo-text {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #c9a96b;
-    background: linear-gradient(45deg, #c9a96b, #e6c07b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-right: 0.8rem;
-    font-family: 'Playfair Display', serif;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
   }
-  
-  .tyagi-logo-name {
-    font-size: 1.4rem;
-    font-weight: 500;
-    color: #2d2d2d;
-    letter-spacing: 1.2px;
-    font-family: 'Lora', serif;
+}
+
+/* About Section */
+.education-item {
+  margin-bottom: 1.25rem;
+}
+
+.education-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.education-details {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.skill:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+/* Blog Section */
+.blog-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+}
+
+.blog-image {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.blog-placeholder {
+  width: 100%;
+  height: 12rem;
+  background: linear-gradient(to right, #3b82f6, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blog-placeholder span {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.blog-content {
+  padding: 1.25rem;
+}
+
+.blog-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.blog-date {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-bottom: 0.75rem;
+}
+
+.blog-summary {
+  font-size: 0.875rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+}
+
+.blog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+
+/* Blog Post */
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #3b82f6;
+  background: none;
+  border: none;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  color: #2563eb;
+}
+
+.blog-post {
+  padding: 2rem 1rem;
+}
+
+.blog-post-image {
+  width: 100%;
+  height: 16rem;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-post-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.blog-post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #718096;
+  font-size: 0.75rem;
+}
+
+.blog-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-post-content {
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Contact Section */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 1fr 1fr;
   }
-  
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.contact-icon-container {
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+.contact-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #3b82f6;
+}
+
+.contact-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.contact-link {
+  font-size: 0.875rem;
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.contact-link:hover {
+  color: #2563eb;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.form-input, .form-textarea {
+  background: rgba(237, 242, 247, 0.5);
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Footer */
+.footer {
+  background: #ffffff;
+  padding: 3rem 1rem;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.footer-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.footer-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #3b82f6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.footer-role {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.social-link {
+  color: #718096;
+}
+
+.social-link:hover {
+  color: #3b82f6;
+}
+
+.social-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.footer-copyright {
+  text-align: center;
+  color: #718096;
+  font-size: 0.75rem;
+}
+
+/* Blog Reactions and Comments */
+.blog-reactions {
+  padding: 1rem 0;
+  border-top: 1px solid #dbdbdb;
+  border-bottom: 1px solid #dbdbdb;
+  margin: 1.5rem 0;
+}
+
+.reaction-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #262626;
+  padding: 0.375rem;
+}
+
+.reaction-btn:hover {
+  background-color: #f8f8f8;
+}
+
+.reaction-btn.active {
+  color: #0095f6;
+}
+
+.blog-comments {
+  margin-top: 1.5rem;
+}
+
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.comments-header h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #262626;
+}
+
+.comment-btn {
+  background: transparent;
+  border: none;
+  color: #0095f6;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.comment-card {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #efefef;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.375rem;
+}
+
+.comment-author {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #262626;
+}
+
+.comment-date {
+  font-size: 0.625rem;
+  color: #8e8e8e;
+}
+
+.comment-content {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #262626;
+}
+
+.no-comments {
+  text-align: center;
+  color: #8e8e8e;
+  padding: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+.comment-form {
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .form-row {
+    flex-direction: row;
+  }
+}
+
+.form-group {
+  flex: 1;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8e8e8e;
+  margin-bottom: 0.375rem;
+}
+
+.form-group input,
+.form-group textarea {
+  border: 1px solid #dbdbdb;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #0095f6;
+}
+
+.btn-primary {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.btn-primary:hover {
+  background-color: #1877f2;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  width: 90%;
+  max-width: 360px;
+}
+
+.modal-content h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .tyagi-header {
+    padding: 0.6rem 0;
+  }
+
+  .tyagi-header-content {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
   .tyagi-nav {
-    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+
+  .tyagi-nav-link {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .tyagi-logo-text {
+    font-size: 1.8rem;
+  }
+
+  .tyagi-logo-name {
+    font-size: 1.2rem;
+  }
+
+  .section-home {
+    padding: 1rem;
     gap: 1.5rem;
   }
-  
-  .tyagi-nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #4a4a4a;
-    text-decoration: none;
+
+  .home-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+  }
+
+  .avatar {
+    width: clamp(10rem, 35vw, 14rem);
+    height: clamp(10rem, 35vw, 14rem);
+    font-size: clamp(2.5rem, 7vw, 3.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .tyagi-logo-text {
+    font-size: 1.6rem;
+    margin-right: 0.5rem;
+  }
+
+  .tyagi-logo-name {
     font-size: 1rem;
-    font-weight: 400;
-    padding: 0.4rem 0.8rem;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    font-family: 'Roboto', sans-serif;
-    position: relative;
   }
-  
-  .tyagi-nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: #c9a96b;
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.3s ease;
+
+  .tyagi-nav-link {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
   }
-  
-  .tyagi-nav-link:hover::after {
-    transform: scaleX(1);
-    transform-origin: left;
+
+  .main {
+    padding: 4rem 0.5rem 1rem;
   }
-  
-  .tyagi-nav-link:hover {
-    color: #c9a96b;
-    background: rgba(201, 169, 107, 0.1);
+
+  .section-title {
+    font-size: 1.75rem;
   }
-  
-  .tyagi-nav-link-active {
-    color: #c9a96b;
-    font-weight: 500;
-    background: rgba(201, 169, 107, 0.15);
+
+  .home-content {
+    max-width: 100%;
   }
-  
-  .tyagi-nav-link-active::after {
-    transform: scaleX(1);
+
+  .home-description {
+    font-size: 0.875rem;
   }
-  
-  @media (max-width: 768px) {
-    .tyagi-header {
-      padding: 0.6rem 0;
-    }
-  
-    .tyagi-header-content {
-      flex-direction: column;
-      gap: 1rem;
-      padding: 0 1rem;
-    }
-  
-    .tyagi-nav {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.8rem;
-    }
-  
-    .tyagi-nav-link {
-      font-size: 0.9rem;
-      padding: 0.3rem 0.6rem;
-    }
-  
-    .tyagi-logo-text {
-      font-size: 1.8rem;
-    }
-  
-    .tyagi-logo-name {
-      font-size: 1.2rem;
-    }
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  @media (max-width: 480px) {
-    .tyagi-logo-text {
-      font-size: 1.6rem;
-      margin-right: 0.5rem;
-    }
-  
-    .tyagi-logo-name {
-      font-size: 1rem;
-    }
-  
-    .tyagi-nav-link {
-      font-size: 0.85rem;
-      padding: 0.3rem 0.5rem;
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.03);
+  }
+}

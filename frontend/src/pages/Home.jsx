@@ -1,6 +1,6 @@
 // src/pages/Home.js
 import { useNavigate } from 'react-router-dom';
-
+import './Home.css';
 const Home = () => {
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ const Home = () => {
             className="button-secondary"
             onClick={() => navigate('/projects')}
           >
-            View Projects
+             Projects
           </button>
         </div>
       </div>

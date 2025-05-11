@@ -10,10 +10,7 @@ const Header = () => {
     <header className="tyagi-header">
       <div className="tyagi-header-content">
         <div className="tyagi-logo-container">
-          <Link to="/" className="tyagi-logo-link">
-            <div className="tyagi-logo-text">AT</div>
-            <h1 className="tyagi-logo-name">Aaditiya Tyagi</h1>
-          </Link>
+          
         </div>
         <nav className="tyagi-nav">
           {[
