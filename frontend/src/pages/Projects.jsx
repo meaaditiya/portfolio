@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './Projects.css';
 import aadiImage10 from '../images/aadiimage10.jpg';
-import aadiImage1 from '../images/aadiimage1.png';
-import weatherImage from '../images/weather.png';
+import aadiImage1 from '../images/aadiimage01.jpeg';
+import weatherImage from '../images/weather.jpg';
 
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
