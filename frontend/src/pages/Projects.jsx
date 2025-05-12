@@ -30,6 +30,7 @@ const Projects = () => {
         'Reduced administrative overhead.',
         'Enabled seamless communication between judges, lawyers, and clients.'
       ],
+        link: 'https://ecourtfiling.onrender.com/',
       color: 'purple',
       image: aadiImage10
     },
