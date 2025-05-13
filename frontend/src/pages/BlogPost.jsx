@@ -1,10 +1,13 @@
-// src/pages/BlogPost.js
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown } from 'react-icons/fa';
 import axios from 'axios';
 // Make sure to import the CSS file
 import './blogPost.css';
+
+// Import a markdown parser library (you'll need to install this)
+import ReactMarkdown from 'react-markdown';
+
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -37,16 +40,7 @@ const BlogPost = () => {
         const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
         const data = await response.json();
         
-        // Process the content to ensure proper formatting
-        if (data && data.content) {
-          // Make sure content has proper HTML tags if it doesn't already
-          if (!data.content.includes('<p>') && !data.content.includes('<div>')) {
-            // Split content by double newlines to create paragraphs
-            const paragraphs = data.content.split(/\n\s*\n/);
-            data.content = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
-          }
-        }
-        
+        // Don't modify the content format - keep it as is
         setBlogPost(data);
         
         // Also fetch reactions if blog post is found
@@ -79,7 +73,6 @@ const BlogPost = () => {
     fetchBlogDetails();
   }, [slug]);
   
-  // Rest of your component stays the same...
   // Fetch reaction counts
   const fetchReactions = async (blogId) => {
     try {
@@ -264,6 +257,53 @@ const BlogPost = () => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
+  // This function renders markdown content with proper formatting
+  const renderContent = (content) => {
+    if (!content) return null;
+    
+    // You can use the actual ReactMarkdown component if installed
+    // return <ReactMarkdown>{content}</ReactMarkdown>;
+    
+    // Or use this simpler approach that preserves markdown format
+    // but renders it as HTML with basic formatting support
+    return (
+      <div className="markdown-content">
+        {content.split('\n').map((line, index) => {
+          // Handle headers
+          if (line.startsWith('# ')) {
+            return <h1 key={index}>{line.substring(2)}</h1>;
+          } else if (line.startsWith('## ')) {
+            return <h2 key={index}>{line.substring(3)}</h2>;
+          } else if (line.startsWith('### ')) {
+            return <h3 key={index}>{line.substring(4)}</h3>;
+          }
+          
+          // Handle bold and italic
+          let formattedLine = line;
+          // Bold
+          formattedLine = formattedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          // Italic
+          formattedLine = formattedLine.replace(/\*(.*?)\*/g, '<em>$1</em>');
+          // Links
+          formattedLine = formattedLine.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
+          
+          // If it's an empty line, return line break
+          if (line.trim() === '') {
+            return <br key={index} />;
+          }
+          
+          // For list items
+          if (line.startsWith('- ')) {
+            return <li key={index} dangerouslySetInnerHTML={{ __html: formattedLine.substring(2) }}></li>;
+          }
+          
+          // For normal paragraph text
+          return <p key={index} dangerouslySetInnerHTML={{ __html: formattedLine }}></p>;
+        })}
+      </div>
+    );
+  };
+
   return (
     <section className="section blog-post-section">
       <button
@@ -303,15 +343,18 @@ const BlogPost = () => {
               {blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
             </span>
           </div>
+          
+          {/* Display tags exactly as they are in the blog post */}
           <div className="blog-post-tags">
             {blogPost.tags && blogPost.tags.map((tag, index) => (
               <span key={index} className="tag">{tag}</span>
             ))}
           </div>
-          <div
-            className="blog-post-content"
-            dangerouslySetInnerHTML={{ __html: blogPost.content }}
-          ></div>
+          
+          {/* Render content using our markdown renderer */}
+          <div className="blog-post-content">
+            {renderContent(blogPost.content)}
+          </div>
           
           {/* Reactions section */}
           <div className="blog-reactions">
