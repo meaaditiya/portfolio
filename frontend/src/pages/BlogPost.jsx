@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown } from 'react-icons/fa';
 import axios from 'axios';
-// Make sure to import the CSS file
 import './blogPost.css';
 
-// Import a markdown parser library (you'll need to install this)
+// Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
 
 const BlogPost = () => {
@@ -257,53 +256,6 @@ const BlogPost = () => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
-  // This function renders markdown content with proper formatting
-  const renderContent = (content) => {
-    if (!content) return null;
-    
-    // You can use the actual ReactMarkdown component if installed
-    // return <ReactMarkdown>{content}</ReactMarkdown>;
-    
-    // Or use this simpler approach that preserves markdown format
-    // but renders it as HTML with basic formatting support
-    return (
-      <div className="markdown-content">
-        {content.split('\n').map((line, index) => {
-          // Handle headers
-          if (line.startsWith('# ')) {
-            return <h1 key={index}>{line.substring(2)}</h1>;
-          } else if (line.startsWith('## ')) {
-            return <h2 key={index}>{line.substring(3)}</h2>;
-          } else if (line.startsWith('### ')) {
-            return <h3 key={index}>{line.substring(4)}</h3>;
-          }
-          
-          // Handle bold and italic
-          let formattedLine = line;
-          // Bold
-          formattedLine = formattedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          // Italic
-          formattedLine = formattedLine.replace(/\*(.*?)\*/g, '<em>$1</em>');
-          // Links
-          formattedLine = formattedLine.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
-          
-          // If it's an empty line, return line break
-          if (line.trim() === '') {
-            return <br key={index} />;
-          }
-          
-          // For list items
-          if (line.startsWith('- ')) {
-            return <li key={index} dangerouslySetInnerHTML={{ __html: formattedLine.substring(2) }}></li>;
-          }
-          
-          // For normal paragraph text
-          return <p key={index} dangerouslySetInnerHTML={{ __html: formattedLine }}></p>;
-        })}
-      </div>
-    );
-  };
-
   return (
     <section className="section blog-post-section">
       <button
@@ -351,9 +303,9 @@ const BlogPost = () => {
             ))}
           </div>
           
-          {/* Render content using our markdown renderer */}
+          {/* Use ReactMarkdown for proper markdown rendering */}
           <div className="blog-post-content">
-            {renderContent(blogPost.content)}
+            <ReactMarkdown>{blogPost.content}</ReactMarkdown>
           </div>
           
           {/* Reactions section */}
