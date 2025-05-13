@@ -25,12 +25,12 @@ const Posts = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/image-posts?page=${currentPage}&limit=8`);
+      const response = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts?page=${currentPage}&limit=8`);
       const postsWithDetails = await Promise.all(
         response.data.posts.map(async (post) => {
-          const detailResponse = await axios.get(`http://localhost:5000/api/image-posts/${post._id}`);
+          const detailResponse = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}`);
           const reactionResponse = await axios.get(
-            `http://localhost:5000/api/image-posts/${post._id}/has-reacted`,
+            `https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}/has-reacted`,
             { params: { email: userInfo.email } }
           );
           return {
@@ -81,7 +81,7 @@ const Posts = () => {
     }
     
     try {
-      await axios.post(`http://localhost:5000/api/image-posts/${selectedPost.id}/comments`, {
+      await axios.post(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
         name: userInfo.name,
         email: userInfo.email,
         content: commentInput,
@@ -90,7 +90,7 @@ const Posts = () => {
       setCommentInput('');
       
       // Refresh comments for the selected post
-      const detailResponse = await axios.get(`http://localhost:5000/api/image-posts/${selectedPost.id}`);
+      const detailResponse = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
       
       // Update the posts array
       setPosts((prevPosts) =>
@@ -128,7 +128,7 @@ const Posts = () => {
     }
     
     try {
-      const response = await axios.post(`http://localhost:5000/api/image-posts/${postId}/react`, {
+      const response = await axios.post(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${postId}/react`, {
         name: userInfo.name,
         email: userInfo.email,
       });
@@ -182,12 +182,12 @@ const Posts = () => {
     }
     
     try {
-      await axios.delete(`http://localhost:5000/api/image-posts/comments/${commentId}`, {
+      await axios.delete(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
         data: { email: userInfo.email },
       });
       
       // Refresh comments for the selected post
-      const detailResponse = await axios.get(`http://localhost:5000/api/image-posts/${selectedPost.id}`);
+      const detailResponse = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
       
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
