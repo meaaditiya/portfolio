@@ -1,0 +1,747 @@
+/* Posts.css - Corrected and responsive Instagram-inspired styling for Posts component */
+
+/* Base styling and resets */
+:root {
+  --primary-color: #0095f6;
+  --primary-light: #e6f5ff;
+  --secondary-color: #8e8e8e;
+  --light-gray: #efefef;
+  --border-color: #dbdbdb;
+  --text-dark: #262626;
+  --text-light: #8e8e8e;
+  --danger-color: #ed4956;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --modal-bg: #ffffff;
+  --heart-color: #ed4956;
+  --comment-color: #262626;
+  --instagram-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #fafafa;
+  color: var(--text-dark);
+  overscroll-behavior: none; /* Prevent scroll bounce on mobile */
+}
+
+/* Main container */
+.imageFeed_mainContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Grid layout - Responsive columns */
+.imageFeed_postsGridLayout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1024px) {
+  .imageFeed_postsGridLayout {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .imageFeed_postsGridLayout {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageFeed_postsGridLayout {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* Post card styling */
+.imageFeed_postCardItem {
+  position: relative;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: white;
+}
+
+.imageFeed_postCardItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.imageFeed_postImageContainer {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* Square aspect ratio */
+  overflow: hidden;
+}
+
+.imageFeed_postThumbnailImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.imageFeed_postCardItem:hover .imageFeed_postThumbnailImage {
+  transform: scale(1.05);
+}
+
+/* Improved overlay */
+.imageFeed_postOverlayEffect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.imageFeed_postCardItem:hover .imageFeed_postOverlayEffect {
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 1;
+}
+
+.imageFeed_postStatsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.imageFeed_statItemDisplay {
+  display: flex;
+  align-items: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.imageFeed_statIconDisplay {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.imageFeed_statCountDisplay {
+  font-size: 14px;
+}
+
+.imageFeed_postInfoSection {
+  padding: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.imageFeed_postCaptionPreviewText {
+  font-size: 13px;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Loading and error states */
+.imageFeed_loadingIndicator,
+.imageFeed_errorMessage,
+.imageFeed_emptyStateMessage {
+  text-align: center;
+  padding: 32px;
+  font-size: 15px;
+  color: var(--text-light);
+}
+
+.imageFeed_loadingIndicator:after {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin-left: 8px;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pagination styling */
+.imageFeed_paginationControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+  gap: 12px;
+}
+
+.imageFeed_paginationButton {
+  background-color: white;
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.imageFeed_paginationButton:hover:not(:disabled) {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.imageFeed_paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.imageFeed_pageIndicatorText {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* User Info Modal */
+.imageFeed_userInfoOverlayWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.imageFeed_userInfoModalBox {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  max-width: 380px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.imageFeed_userInfoModalBox h3 {
+  margin-bottom: 8px;
+  color: var(--text-dark);
+  font-size: 18px;
+}
+
+.imageFeed_userInfoModalBox p {
+  margin-bottom: 16px;
+  color: var(--text-light);
+  font-size: 13px;
+}
+
+.imageFeed_formFieldGroup {
+  margin-bottom: 12px;
+}
+
+.imageFeed_formFieldGroup input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.imageFeed_formFieldGroup input:focus {
+  border-color: var(--primary-color);
+}
+
+.imageFeed_submitActionButton {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+}
+
+.imageFeed_submitActionButton:hover {
+  background-color: #0077cc;
+}
+
+/* Post Modal */
+.imageFeed_modalOverlayBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.imageFeed_postModalContainer {
+  position: relative;
+  background-color: white;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row; /* Horizontal layout for larger screens */
+  width: 90%;
+  max-width: 935px;
+  max-height: 90vh;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.imageFeed_postModalContainer.imageFeed_withCommentsSection .imageFeed_modalContentLayout {
+  width: 60%;
+}
+
+.imageFeed_postModalContainer.imageFeed_withCommentsSection .imageFeed_closeModalButton {
+  display: none; /* Hide post modal close button when comments are open */
+}
+
+.imageFeed_modalContentLayout {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.imageFeed_modalImageContainer {
+  flex: 1;
+  background-color: black;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageFeed_modalFullImage {
+  max-width: 200%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+.imageFeed_modalDetailsContainer {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-color);
+  min-width: 300px;
+}
+
+.imageFeed_postHeaderSection {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+
+
+
+
+.imageFeed_postCaptionContainer {
+  margin-top:6;
+  padding: 14px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.imageFeed_postCaptionText {
+  font-size: 13px;
+  
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.imageFeed_postDateDisplay {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 8px;
+}
+
+.imageFeed_modalActionsBar {
+  display: flex;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.imageFeed_actionButtonGeneric {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin-right: 16px;
+  cursor: pointer;
+  color: var(--text-dark);
+  touch-action: manipulation;
+}
+
+.imageFeed_actionIconDisplay {
+  font-size: 22px;
+  margin-right: 4px;
+}
+
+.imageFeed_actionCountDisplay {
+  font-size: 13px;
+}
+
+.imageFeed_likeButtonSpecific.imageFeed_activeState {
+  color: var(--heart-color);
+}
+
+.imageFeed_closeModalButton {
+  position: absolute;
+  top: 12px;
+  
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.imageFeed_closeModalButton:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.imageFeed_closeIconSymbol {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Comments Modal */
+.imageFeed_commentsModalPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  background-color: white;
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 1100; /* Ensure comments modal is above post modal */
+}
+
+.imageFeed_commentsHeaderBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.imageFeed_commentsHeaderBar h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.imageFeed_closeCommentsButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text-dark);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.imageFeed_closeCommentsButton:hover {
+  background-color: var(--light-gray);
+}
+
+.imageFeed_commentsListContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.imageFeed_commentItemBox {
+  display: flex;
+  margin-bottom: 14px;
+}
+
+.imageFeed_commentAvatarPlaceholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--light-gray);
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.imageFeed_commentContentWrapper {
+  flex: 1;
+}
+
+.imageFeed_commentHeaderBar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.imageFeed_commentAuthorName {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.imageFeed_commentTimestamp {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.imageFeed_commentTextContent {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.imageFeed_deleteCommentButton {
+  background: none;
+  border: none;
+  color: var(--danger-color);
+  font-size: 11px;
+  cursor: pointer;
+  margin-top: 4px;
+  padding: 0;
+  touch-action: manipulation;
+}
+
+.imageFeed_noCommentsPlaceholder {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 13px;
+  padding: 16px 0;
+}
+
+.imageFeed_commentFormContainer {
+  padding: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.imageFeed_commentInputField {
+  width: 100%;
+  height: 56px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  resize: none;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.imageFeed_postCommentActionButton {
+  width: 100%;
+  padding: 8px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.imageFeed_postCommentActionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Enhanced responsiveness */
+@media (max-width: 935px) {
+  .imageFeed_postModalContainer {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    flex-direction: column; /* Stack vertically on smaller screens */
+  }
+
+  .imageFeed_modalContentLayout {
+    flex-direction: column;
+  }
+
+  .imageFeed_modalImageContainer,
+  .imageFeed_modalDetailsContainer {
+    width: 100%;
+  }
+
+  .imageFeed_modalDetailsContainer {
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    min-width: auto;
+  }
+
+  .imageFeed_postModalContainer.imageFeed_withCommentsSection .imageFeed_modalContentLayout {
+    width: 100%;
+  }
+
+  .imageFeed_commentsModalPanel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1200;
+    border-left: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageFeed_mainContainer {
+    padding: 8px;
+  }
+
+  .imageFeed_userInfoModalBox {
+    padding: 16px;
+    max-width: 90%;
+  }
+
+  .imageFeed_modalImageContainer {
+    min-height: 200px;
+  }
+
+  .imageFeed_postHeaderSection,
+  .imageFeed_postCaptionContainer,
+  .imageFeed_modalActionsBar {
+    padding: 10px;
+  }
+
+  .imageFeed_actionButtonGeneric {
+    margin-right: 12px;
+  }
+
+  .imageFeed_actionIconDisplay {
+    font-size: 20px;
+  }
+
+  .imageFeed_commentsHeaderBar,
+  .imageFeed_commentsListContainer,
+  .imageFeed_commentFormContainer {
+    padding: 10px;
+  }
+
+  .imageFeed_commentInputField {
+    height: 48px;
+    font-size: 12px;
+  }
+
+  .imageFeed_postCommentActionButton {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .imageFeed_closeModalButton {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+
+  .imageFeed_closeIconSymbol {
+    font-size: 20px;
+  }
+
+  .imageFeed_closeCommentsButton {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.imageFeed_postModalContainer,
+.imageFeed_commentsModalPanel {
+  animation: fadeIn 0.3s ease, slideUp 0.3s ease;
+}
+
+/* Instagram-like heart animation */
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.3);
+  }
+  30% {
+    transform: scale(0.95);
+  }
+  45% {
+    transform: scale(1.2);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.imageFeed_likeButtonSpecific.imageFeed_activeState .imageFeed_actionIconDisplay {
+  animation: heartBeat 0.8s ease;
+}

@@ -16,6 +16,7 @@ const Header = () => {
           {[
             { name: 'Home', icon: <FaUser />, path: '/' },
             { name: 'About', icon: <FaUser />, path: '/about' },
+            { name: 'Posts', icon: <FaUser />, path: '/posts' },
             { name: 'Projects', icon: <FaProjectDiagram />, path: '/projects' },
             { name: 'Blog', icon: <FaBlog />, path: '/blog' },
             { name: 'Contact', icon: <FaEnvelopeOpenText />, path: '/contact' },
