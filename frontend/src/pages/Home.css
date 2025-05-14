@@ -1,0 +1,375 @@
+/* Updated Home.css */
+
+/* Global Styles */
+.home-container {
+    margin-top:-40px;
+  width: 100%;
+  overflow-x: hidden;
+  background: linear-gradient(135deg, #13151a 0%, #232631 100%);
+  color: #f8f9fa;
+}
+
+/* Hero Section */
+.hero-section {
+  min-height: 100vh;
+  padding: 0 5%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease-out;
+}
+
+.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 600px;
+}
+
+.name-intro {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.greeting {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #64ffda;
+  margin-bottom: 0.5rem;
+}
+
+.name {
+    
+  font-size: 4rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #f8f9fa, #64ffda);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.role-display {
+  height: 2rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.role-text {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #adb5bd;
+  position: relative;
+}
+
+.role-text::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 10%;
+  height: 80%;
+  width: 2px;
+  background-color: #64ffda;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #adb5bd;
+  margin-bottom: 2rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.primary-button {
+  padding: 0.75rem 1.5rem;
+  background: #64ffda;
+  color: #13151a;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.primary-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(100, 255, 218, 0.2);
+}
+
+.secondary-button {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: #64ffda;
+  border: 1px solid #64ffda;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondary-button:hover {
+  background: rgba(100, 255, 218, 0.1);
+}
+
+.social-icons {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.social-icon {
+  color: #adb5bd;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  color: #64ffda;
+  transform: translateY(-3px);
+}
+
+/* Profile Visual */
+.hero-visual {
+  margin-top:50px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-backdrop {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(100, 255, 218, 0.15) 0%, rgba(100, 255, 218, 0) 70%);
+  border-radius: 50%;
+  animation: pulse 4s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.profile-initials {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, #232631 0%, #13151a 100%);
+  border: 2px solid #64ffda;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  font-weight: 700;
+  color: #64ffda;
+  box-shadow: 0 0 40px rgba(100, 255, 218, 0.3);
+  z-index: 10;
+}
+
+.tech-stack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: orbit 20s linear infinite;
+}
+
+@keyframes orbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tech-badge {
+  position: absolute;
+  padding: 0.4rem 0.8rem;
+  background: rgba(35, 38, 49, 0.8);
+  border: 1px solid #64ffda;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  color: #64ffda;
+  font-weight: 600;
+
+  /* Center base point */
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+}
+
+/* Position badges around a circle using rotation and translation */
+
+.tech-badge:nth-child(1) {
+  transform: rotate(0deg) translateX(120px) rotate(-0deg);
+}
+
+.tech-badge:nth-child(2) {
+  transform: rotate(60deg) translateX(120px) rotate(-60deg);
+}
+
+.tech-badge:nth-child(3) {
+  transform: rotate(120deg) translateX(145px) rotate(-120deg);
+}
+
+.tech-badge:nth-child(4) {
+  transform: rotate(180deg) translateX(178px) rotate(-180deg);
+}
+
+.tech-badge:nth-child(5) {
+  transform: rotate(240deg) translateX(164px) rotate(-240deg);
+}
+
+.tech-badge:nth-child(6) {
+  transform: rotate(300deg) translateX(150px) rotate(-300deg);
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #adb5bd;
+  font-size: 0.9rem;
+}
+
+.bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+/* Skills Section */
+.skills-highlight {
+  padding: 6rem 5%;
+  background: #13151a;
+}
+
+.skills-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skill-card {
+  background: linear-gradient(135deg, #232631 0%, #1a1d25 100%);
+  border-radius: 8px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  border-left: 3px solid #64ffda;
+}
+
+.skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.skill-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #f8f9fa;
+}
+
+.skill-card p {
+  color: #adb5bd;
+  line-height: 1.6;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .hero-content {
+    flex-direction: column-reverse;
+    gap: 3rem;
+    text-align: center;
+  }
+  
+  .hero-text {
+    max-width: 100%;
+  }
+  
+  .name-intro {
+    align-items: center;
+  }
+  
+  .name {
+    font-size: 3.5rem;
+  }
+  
+  .action-buttons {
+    justify-content: center;
+  }
+  
+  .social-icons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .name {
+    font-size: 3rem;
+  }
+  
+  .hero-description {
+    font-size: 1rem;
+  }
+  
+  .skills-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .primary-button, .secondary-button {
+    width: 100%;
+  }
+}

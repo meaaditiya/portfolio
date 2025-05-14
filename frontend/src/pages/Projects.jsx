@@ -110,10 +110,10 @@ const Projects = () => {
                     />
                     <div className="project-tech-badges">
                       {project.tech.slice(0, 3).map((tech, idx) => (
-                        <span key={idx} className="tech-badge">{tech}</span>
+                        <span key={idx} className="tech-badge1">{tech}</span>
                       ))}
                       {project.tech.length > 3 && (
-                        <span className="tech-badge more-badge">+{project.tech.length - 3}</span>
+                        <span className="tech-badge1 more-badge1">+{project.tech.length - 3}</span>
                       )}
                     </div>
                   </div>
