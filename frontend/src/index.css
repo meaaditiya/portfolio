@@ -1326,3 +1326,76 @@ body {
   padding: 6rem 1rem 2rem; 
  /* Increased top padding to account for header height */
 }
+/* Scrollbar Styles for All Devices */
+html {
+  /* Ensure scrollbar has zero margin */
+  margin: 0;
+  padding: 0;
+  /* Enable smooth scrolling */
+  scroll-behavior: smooth;
+  /* Ensure scrollbar is above content */
+  overflow-x: hidden;
+}
+
+/* Webkit Browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px; /* Slim scrollbar width */
+  height: 8px; /* For horizontal scrollbar */
+  margin: 0; /* Zero margin */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+  margin: 0; /* Zero margin */
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6, #ec4899); /* Gradient matching theme */
+  border-radius: 4px; /* Rounded edges */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for contrast */
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563eb, #d81b60); /* Darker gradient on hover */
+}
+
+/* Ensure scrollbar is above content */
+::-webkit-scrollbar {
+  z-index: 1000; /* High z-index to appear above content */
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin; /* Slim scrollbar */
+  scrollbar-color: #3b82f6 transparent; /* Thumb color and transparent track */
+}
+
+/* Mobile Devices (Smaller Scrollbar) */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px; /* Very small scrollbar for mobile */
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 2px; /* Smaller radius for mobile */
+  }
+
+  html {
+    scrollbar-width: thin; /* Even thinner for Firefox */
+    scrollbar-color: #3b82f6 transparent;
+  }
+}
+
+/* Extra Small Mobiles */
+@media (max-width: 480px) {
+  ::-webkit-scrollbar {
+    width: 3px; /* Ultra-small scrollbar for small mobiles */
+    height: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 1.5px;
+  }
+}

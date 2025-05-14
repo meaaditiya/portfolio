@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .projects-section {
-  margin-top:-10px;
+  margin-top:-90px;
   padding: 5rem 0;
   background-color: #f9fafb;
 }
@@ -352,6 +352,9 @@
 }
 
 @media (max-width: 480px) {
+  .projects-section{
+      margin-top:-90px;
+  }
   .section-heading {
     font-size: 1.75rem;
   }

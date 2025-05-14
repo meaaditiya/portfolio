@@ -3,6 +3,7 @@
 /* Global Styles */
 .home-container {
     margin-top:-40px;
+    margin-right:-30px;
   width: 100%;
   overflow-x: hidden;
   background: linear-gradient(135deg, #13151a 0%, #232631 100%);
