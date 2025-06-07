@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { Heart, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import './Posts.css';
 
 const Posts = () => {
@@ -16,8 +16,8 @@ const Posts = () => {
   const [showUserForm, setShowUserForm] = useState(!userInfo.name || !userInfo.email);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showComments, setShowComments] = useState(false);
+  const [imageLoadStates, setImageLoadStates] = useState({});
 
-  // Fetch posts
   useEffect(() => {
     fetchPosts();
   }, [currentPage]);
@@ -25,23 +25,28 @@ const Posts = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts?page=${currentPage}&limit=8`);
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts?page=${currentPage}&limit=9`);
+      const data = await response.json();
+      
       const postsWithDetails = await Promise.all(
-        response.data.posts.map(async (post) => {
-          const detailResponse = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}`);
-          const reactionResponse = await axios.get(
-            `https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}/has-reacted`,
-            { params: { email: userInfo.email } }
+        data.posts.map(async (post) => {
+          const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}`);
+          const detailData = await detailResponse.json();
+          
+          const reactionResponse = await fetch(
+            `https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}/has-reacted?email=${encodeURIComponent(userInfo.email)}`
           );
+          const reactionData = await reactionResponse.json();
+          
           return {
-            ...detailResponse.data.post,
-            comments: detailResponse.data.comments,
-            hasReacted: reactionResponse.data.hasReacted,
+            ...detailData.post,
+            comments: detailData.comments,
+            hasReacted: reactionData.hasReacted,
           };
         })
       );
       setPosts(postsWithDetails);
-      setTotalPages(response.data.pagination.pages);
+      setTotalPages(data.pagination.pages);
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch posts. Please try again later.');
@@ -50,7 +55,14 @@ const Posts = () => {
     }
   };
 
-  // Handle user info submission
+  const handleImageLoad = (postId) => {
+    setImageLoadStates(prev => ({ ...prev, [postId]: 'loaded' }));
+  };
+
+  const handleImageError = (postId) => {
+    setImageLoadStates(prev => ({ ...prev, [postId]: 'error' }));
+  };
+
   const handleUserInfoSubmit = (e) => {
     e.preventDefault();
     if (userInfo.name && userInfo.email) {
@@ -62,18 +74,15 @@ const Posts = () => {
     }
   };
 
-  // Handle user info changes
   const handleUserInfoChange = (e) => {
     const { name, value } = e.target;
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle comment input changes
   const handleCommentChange = (e) => {
     setCommentInput(e.target.value);
   };
 
-  // Submit a new comment
   const handleCommentSubmit = async () => {
     if (!commentInput.trim() || !userInfo.name || !userInfo.email || !selectedPost) {
       alert('Please provide your name, email, and a comment.');
@@ -81,35 +90,41 @@ const Posts = () => {
     }
     
     try {
-      await axios.post(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
-        name: userInfo.name,
-        email: userInfo.email,
-        content: commentInput,
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userInfo.name,
+          email: userInfo.email,
+          content: commentInput,
+        }),
       });
+      
+      if (!response.ok) throw new Error('Failed to post comment');
       
       setCommentInput('');
       
-      // Refresh comments for the selected post
-      const detailResponse = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
+      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
+      const detailData = await detailResponse.json();
       
-      // Update the posts array
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === selectedPost.id
             ? {
                 ...post,
-                comments: detailResponse.data.comments,
-                commentCount: detailResponse.data.post.commentCount,
+                comments: detailData.comments,
+                commentCount: detailData.post.commentCount,
               }
             : post
         )
       );
       
-      // Update the selected post state
       setSelectedPost({
         ...selectedPost,
-        comments: detailResponse.data.comments,
-        commentCount: detailResponse.data.post.commentCount,
+        comments: detailData.comments,
+        commentCount: detailData.post.commentCount,
       });
       
     } catch (err) {
@@ -118,7 +133,6 @@ const Posts = () => {
     }
   };
 
-  // Toggle like/unlike
   const handleReaction = async (postId, e) => {
     e.stopPropagation();
     
@@ -128,23 +142,32 @@ const Posts = () => {
     }
     
     try {
-      const response = await axios.post(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${postId}/react`, {
-        name: userInfo.name,
-        email: userInfo.email,
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${postId}/react`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userInfo.name,
+          email: userInfo.email,
+        }),
       });
+      
+      if (!response.ok) throw new Error('Failed to react to post');
+      const data = await response.json();
       
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post.id === postId) {
             const newReactionCount =
               post.reactionCount !== null
-                ? response.data.hasReacted
+                ? data.hasReacted
                   ? post.reactionCount + 1
                   : post.reactionCount - 1
                 : null;
             return {
               ...post,
-              hasReacted: response.data.hasReacted,
+              hasReacted: data.hasReacted,
               reactionCount: newReactionCount,
             };
           }
@@ -155,10 +178,10 @@ const Posts = () => {
       if (selectedPost?.id === postId) {
         setSelectedPost((prev) => ({
           ...prev,
-          hasReacted: response.data.hasReacted,
+          hasReacted: data.hasReacted,
           reactionCount:
             prev.reactionCount !== null
-              ? response.data.hasReacted
+              ? data.hasReacted
                 ? prev.reactionCount + 1
                 : prev.reactionCount - 1
               : null,
@@ -170,7 +193,6 @@ const Posts = () => {
     }
   };
 
-  // Delete a comment
   const handleDeleteComment = async (commentId) => {
     if (!userInfo.email) {
       alert('Please provide your email to delete your comment.');
@@ -182,20 +204,26 @@ const Posts = () => {
     }
     
     try {
-      await axios.delete(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
-        data: { email: userInfo.email },
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: userInfo.email }),
       });
       
-      // Refresh comments for the selected post
-      const detailResponse = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
+      if (!response.ok) throw new Error('Failed to delete comment');
+      
+      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
+      const detailData = await detailResponse.json();
       
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === selectedPost.id
             ? {
                 ...post,
-                comments: detailResponse.data.comments,
-                commentCount: detailResponse.data.post.commentCount,
+                comments: detailData.comments,
+                commentCount: detailData.post.commentCount,
               }
             : post
         )
@@ -203,8 +231,8 @@ const Posts = () => {
       
       setSelectedPost({
         ...selectedPost,
-        comments: detailResponse.data.comments,
-        commentCount: detailResponse.data.post.commentCount,
+        comments: detailData.comments,
+        commentCount: detailData.post.commentCount,
       });
       
     } catch (err) {
@@ -213,246 +241,312 @@ const Posts = () => {
     }
   };
 
-  // Format date
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Open post modal
   const openPostModal = (post) => {
     setSelectedPost(post);
     setShowComments(false);
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    document.body.style.overflow = 'hidden';
   };
 
-  // Open comments modal
   const openCommentsModal = (e) => {
     e.stopPropagation();
     setShowComments(true);
   };
 
-  // Close modals
   const closeModals = () => {
     setSelectedPost(null);
     setShowComments(false);
-    document.body.style.overflow = ''; // Re-enable scrolling
+    document.body.style.overflow = '';
   };
 
-  // Handle keyboard events to close modals with Escape key
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        closeModals();
-      }
-    };
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      closeModals();
+    }
+  };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, []);
 
   if (loading && posts.length === 0) {
-    return <div className="imageFeed_loadingIndicator">Loading posts...</div>;
+    return (
+      <div className="pst-main">
+        <div className="pst-loading">
+          <div className="pst-spinner"></div>
+          <p className="pst-loading-text">Loading posts...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="imageFeed_errorMessage">{error}</div>;
+    return (
+      <div className="pst-main">
+        <div className="pst-error">
+          <div className="pst-error-icon">⚠️</div>
+          <p className="pst-error-text">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="imageFeed_mainContainer">
+    <div className="pst-main">
       {showUserForm && (
-        <div className="imageFeed_userInfoOverlayWrapper">
-          <div className="imageFeed_userInfoModalBox">
-            <h3>Welcome</h3>
-            <p>Please enter your information to interact with posts</p>
-            <form onSubmit={handleUserInfoSubmit}>
-              <div className="imageFeed_formFieldGroup">
-                <input
-                  type="text"
-                  name="name"
-                  value={userInfo.name}
-                  onChange={handleUserInfoChange}
-                  placeholder="Your Name"
-                  required
-                />
+        <div className="pst-user-modal">
+          <div className="pst-user-form">
+            <div className="pst-user-header">
+              <div className="pst-user-icon">
+                <User className="pst-icon" />
               </div>
-              <div className="imageFeed_formFieldGroup">
-                <input
-                  type="email"
-                  name="email"
-                  value={userInfo.email}
-                  onChange={handleUserInfoChange}
-                  placeholder="Your Email"
-                  required
-                />
-              </div>
-              <button type="submit" className="imageFeed_submitActionButton">
+              <h3 className="pst-user-title">Welcome!</h3>
+              <p className="pst-user-subtitle">Enter your details to engage with posts</p>
+            </div>
+            <div className="pst-user-inputs">
+              <input
+                type="text"
+                name="name"
+                value={userInfo.name}
+                onChange={handleUserInfoChange}
+                placeholder="Your Name"
+                className="pst-input"
+              />
+              <input
+                type="email"
+                name="email"
+                value={userInfo.email}
+                onChange={handleUserInfoChange}
+                placeholder="Your Email"
+                className="pst-input"
+              />
+              <button 
+                onClick={handleUserInfoSubmit}
+                className="pst-user-submit"
+              >
                 Continue
               </button>
-            </form>
+            </div>
           </div>
         </div>
       )}
 
-      {posts.length === 0 ? (
-        <div className="imageFeed_emptyStateMessage">No posts available.</div>
-      ) : (
-        <>
-          <div className="imageFeed_postsGridLayout">
-            {posts.map((post) => (
-              <div key={post.id} className="imageFeed_postCardItem" onClick={() => openPostModal(post)}>
-                <div className="imageFeed_postImageContainer">
-                  <img src={post.image} alt={post.caption || 'Post image'} className="imageFeed_postThumbnailImage" />
-                  <div className="imageFeed_postOverlayEffect">
-                    <div className="imageFeed_postStatsContainer">
-                      <span className="imageFeed_statItemDisplay">
-                        <span className="imageFeed_statIconDisplay">❤️</span>
-                        <span className="imageFeed_statCountDisplay">{post.reactionCount || 0}</span>
-                      </span>
-                      <span className="imageFeed_statItemDisplay">
-                        <span className="imageFeed_statIconDisplay">💬</span>
-                        <span className="imageFeed_statCountDisplay">{post.commentCount || 0}</span>
-                      </span>
+      <div className="pst-container">
+        {posts.length === 0 ? (
+          <div className="pst-empty">
+            <div className="pst-empty-icon">📷</div>
+            <p className="pst-empty-text">No posts yet.</p>
+          </div>
+        ) : (
+          <>
+            <div className="pst-grid">
+              {posts.map((post) => (
+                <div 
+                  key={post.id} 
+                  className="pst-post"
+                  onClick={() => openPostModal(post)}
+                >
+                  <div className="pst-post-card">
+                    <div className="pst-post-image">
+                      {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
+                        <div className="pst-image-loading">
+                          <div className="pst-image-spinner"></div>
+                        </div>
+                      )}
+                      {imageLoadStates[post.id] === 'error' ? (
+                        <div className="pst-image-error">
+                          <div className="pst-image-error-content">
+                            <div className="pst-image-error-icon">🖼️</div>
+                            <p className="pst-image-error-text">Image unavailable</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <img 
+                          src={post.image} 
+                          alt={post.caption || 'Post image'} 
+                          className="pst-image"
+                          onLoad={() => handleImageLoad(post.id)}
+                          onError={() => handleImageError(post.id)}
+                        />
+                      )}
+                      <div className="pst-post-overlay">
+                        <div className="pst-post-stats">
+                          <div className="pst-stat">
+                            <Heart className="pst-icon-sm" />
+                            <span className="pst-stat-count">{post.reactionCount || 0}</span>
+                          </div>
+                          <div className="pst-stat">
+                            <MessageCircle className="pst-icon-sm" />
+                            <span className="pst-stat-count">{post.commentCount || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="pst-post-caption">
+                      <p className="pst-caption-text">
+                        {post.caption}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <div className="imageFeed_postInfoSection">
-                  <div className="imageFeed_postCaptionPreviewText">{post.caption}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="imageFeed_paginationControls">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="imageFeed_paginationButton"
-              >
-                Previous
-              </button>
-              <span className="imageFeed_pageIndicatorText">
-                {currentPage} / {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="imageFeed_paginationButton"
-              >
-                Next
-              </button>
+              ))}
             </div>
-          )}
-        </>
-      )}
 
-      {/* Post View Modal */}
+            {totalPages > 1 && (
+              <div className="pst-pagination">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="pst-prev-button"
+                >
+                  <ChevronLeft className="pst-icon-sm" />
+                  <span className="pst-button-text">Previous</span>
+                </button>
+                <div className="pst-page-info">
+                  <div className="pst-page-number">
+                    {currentPage} / {totalPages}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="pst-next-button"
+                >
+                  <span className="pst-button-text">Next</span>
+                  <ChevronRight className="pst-icon-sm" />
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
       {selectedPost && (
-        <div className="imageFeed_modalOverlayBackdrop" onClick={closeModals}>
-          <div className={`imageFeed_postModalContainer ${showComments ? 'imageFeed_withCommentsSection' : ''}`} onClick={(e) => e.stopPropagation()}>
-            <button className="imageFeed_closeModalButton" onClick={closeModals}>
-              <span className="imageFeed_closeIconSymbol">×</span>
+        <div className="pst-post-modal" onClick={closeModals}>
+          <div className="pst-post-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="pst-close-button"
+              onClick={closeModals}
+            >
+              <X className="pst-icon" />
             </button>
-            
-            <div className="imageFeed_modalContentLayout">
-              {/* Post Image Section */}
-              <div className="imageFeed_modalImageContainer">
+            <div className="pst-modal-image">
+              {imageLoadStates[selectedPost.id] === 'error' ? (
+                <div className="pst-modal-image-error">
+                  <div className="pst-modal-image-error-icon">🖼️</div>
+                  <p className="pst-modal-image-error-text">Image unavailable</p>
+                </div>
+              ) : (
                 <img
                   src={selectedPost.image}
                   alt={selectedPost.caption || 'Post image'}
-                  className="imageFeed_modalFullImage"
+                  className="pst-modal-image-content"
+                  onLoad={() => handleImageLoad(selectedPost.id)}
+                  onError={() => handleImageError(selectedPost.id)}
                 />
-              </div>
-              
-              {/* Post Details Section */}
-              <div className="imageFeed_modalDetailsContainer">
-               
-                
-                <div className="imageFeed_postCaptionContainer">
-                  <p className="imageFeed_postCaptionText">{selectedPost.caption}</p>
-                  <p className="imageFeed_postDateDisplay">{formatDate(selectedPost.createdAt)}</p>
+              )}
+            </div>
+            <div className="pst-modal-details">
+              <div className="pst-modal-info">
+                <div className="pst-modal-caption">
+                  <p className="pst-modal-caption-text">
+                    {selectedPost.caption}
+                  </p>
+                  <p className="pst-modal-date">
+                    {formatDate(selectedPost.createdAt)}
+                  </p>
                 </div>
-                
-                <div className="imageFeed_modalActionsBar">
+                <div className="pst-modal-actions">
                   <button
-                    className={`imageFeed_actionButtonGeneric imageFeed_likeButtonSpecific ${selectedPost.hasReacted ? 'imageFeed_activeState' : ''}`}
+                    className={`pst-like-button ${selectedPost.hasReacted ? 'pst-liked' : ''}`}
                     onClick={(e) => handleReaction(selectedPost.id, e)}
                   >
-                    <span className="imageFeed_actionIconDisplay">{selectedPost.hasReacted ? '❤️' : '🤍'}</span>
-                    <span className="imageFeed_actionCountDisplay">{selectedPost.reactionCount || 0}</span>
+                    <Heart className={`pst-icon-sm ${selectedPost.hasReacted ? 'pst-icon-filled' : ''}`} />
+                    <span className="pst-stat-count">{selectedPost.reactionCount || 0}</span>
                   </button>
-                  
                   <button 
-                    className="imageFeed_actionButtonGeneric imageFeed_commentButtonSpecific"
+                    className="pst-comment-button"
                     onClick={openCommentsModal}
                   >
-                    <span className="imageFeed_actionIconDisplay">💬</span>
-                    <span className="imageFeed_actionCountDisplay">{selectedPost.commentCount || 0}</span>
+                    <MessageCircle className="pst-icon-sm" />
+                    <span className="pst-stat-count">{selectedPost.commentCount || 0}</span>
                   </button>
                 </div>
               </div>
+              {showComments && (
+                <div className="pst-comments-panel">
+                  <div className="pst-comments-header">
+                    <h3 className="pst-comments-title">Comments</h3>
+                    <button 
+                      className="pst-comments-close"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowComments(false);
+                      }}
+                    >
+                      <X className="pst-icon-sm" />
+                    </button>
+                  </div>
+                  <div className="pst-comments-list">
+                    {selectedPost.comments && selectedPost.comments.length > 0 ? (
+                      selectedPost.comments.map((comment) => (
+                        <div key={comment._id} className="pst-comment">
+                          <div className="pst-comment-icon">
+                            <User className="pst-icon-sm" />
+                          </div>
+                          <div className="pst-comment-content">
+                            <div className="pst-comment-header">
+                              <span className="pst-comment-name">{comment.user.name}</span>
+                              <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
+                            </div>
+                            <p className="pst-comment-text">{comment.content}</p>
+                            {comment.user.email === userInfo.email && (
+                              <button
+                                className="pst-delete-comment"
+                                onClick={() => handleDeleteComment(comment._id)}
+                              >
+                                <Trash2 className="pst-icon-xs" />
+                                <span>Delete</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="pst-no-comments">
+                        <MessageCircle className="pst-icon-lg" />
+                        <p className="pst-no-comments-text">No comments yet.</p>
+                        <p className="pst-no-comments-subtext">Be the first to comment!</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pst-comment-form">
+                    <div className="pst-comment-input">
+                      <textarea
+                        placeholder="Add a comment..."
+                        value={commentInput}
+                        onChange={handleCommentChange}
+                        className="pst-textarea"
+                        rows="2"
+                      />
+                      <button
+                        className="pst-submit-comment"
+                        onClick={handleCommentSubmit}
+                        disabled={!commentInput.trim() || !userInfo.name || !userInfo.email}
+                      >
+                        <Send className="pst-icon-sm" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          
-          {/* Comments Modal */}
-          {showComments && (
-            <div className="imageFeed_commentsModalPanel" onClick={(e) => e.stopPropagation()}>
-              <div className="imageFeed_commentsHeaderBar">
-                <h3>Comments</h3>
-                <button className="imageFeed_closeCommentsButton" onClick={(e) => {
-                  e.stopPropagation();
-                  setShowComments(false);
-                }}>
-                  <span className="imageFeed_closeIconSymbol">×</span>
-                </button>
-              </div>
-              
-              <div className="imageFeed_commentsListContainer">
-                {selectedPost.comments && selectedPost.comments.length > 0 ? (
-                  selectedPost.comments.map((comment) => (
-                    <div key={comment._id} className="imageFeed_commentItemBox">
-                      <div className="imageFeed_commentAvatarPlaceholder"></div>
-                      <div className="imageFeed_commentContentWrapper">
-                        <div className="imageFeed_commentHeaderBar">
-                          <span className="imageFeed_commentAuthorName">{comment.user.name}</span>
-                          <span className="imageFeed_commentTimestamp">{formatDate(comment.createdAt)}</span>
-                        </div>
-                        <p className="imageFeed_commentTextContent">{comment.content}</p>
-                        {comment.user.email === userInfo.email && (
-                          <button
-                            className="imageFeed_deleteCommentButton"
-                            onClick={() => handleDeleteComment(comment._id)}
-                          >
-                            Delete
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="imageFeed_noCommentsPlaceholder">No comments yet. Be the first to comment!</div>
-                )}
-              </div>
-              
-              <div className="imageFeed_commentFormContainer">
-                <textarea
-                  placeholder="Add a comment..."
-                  value={commentInput}
-                  onChange={handleCommentChange}
-                  className="imageFeed_commentInputField"
-                />
-                <button
-                  className="imageFeed_postCommentActionButton"
-                  onClick={handleCommentSubmit}
-                  disabled={!commentInput.trim() || !userInfo.name || !userInfo.email}
-                >
-                  Post
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
