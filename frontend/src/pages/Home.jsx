@@ -75,14 +75,56 @@ const Home = () => {
             <div className="profile-container">
               <div className="profile-backdrop"></div>
               <div className="profile-initials">AT</div>
-              <div className="tech-stack">
-                <div className="tech-badge">React</div>
-                <div className="tech-badge">Node</div>
-                <div className="tech-badge">MongoDB</div>
-                <div className="tech-badge">Express</div>
-                <div className="tech-badge">SQL</div>
-                <div className="tech-badge">Java</div>
-              </div>
+             <div className="tech-stack">
+  <a 
+    href="https://reactjs.org" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="tech-badge"
+  >
+    React
+  </a>
+  <a 
+    href="https://nodejs.org" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="tech-badge"
+  >
+    Node
+  </a>
+  <a 
+    href="https://www.mongodb.com" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="tech-badge"
+  >
+    MongoDB
+  </a>
+  <a 
+    href="https://expressjs.com" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="tech-badge"
+  >
+    Express
+  </a>
+  <a 
+    href="https://www.mysql.com" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="tech-badge"
+  >
+    SQL
+  </a>
+  <a 
+    href="https://www.oracle.com/java/" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="tech-badge"
+  >
+    Java
+  </a>
+</div>
             </div>
           </div>
         </div>

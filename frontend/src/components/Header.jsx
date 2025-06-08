@@ -1,22 +1,29 @@
 import { Link, useLocation } from 'react-router-dom';
-import { FaUser, FaProjectDiagram, FaBlog, FaEnvelopeOpenText } from 'react-icons/fa';
+import { 
+  FaHome, 
+  FaUser, 
+  FaFileAlt, 
+  FaProjectDiagram, 
+  FaBlog, 
+  FaEnvelopeOpenText 
+} from 'react-icons/fa';
 import './Header.css';
 
 const Header = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-  
+     
   return (
     <header className="tyagi-header">
       <div className="tyagi-header-content">
         <div className="tyagi-logo-container">
-          
+                   
         </div>
         <nav className="tyagi-nav">
           {[
-            { name: 'Home', icon: <FaUser />, path: '/' },
+            { name: 'Home', icon: <FaHome />, path: '/' },
             { name: 'About', icon: <FaUser />, path: '/about' },
-            { name: 'Posts', icon: <FaUser />, path: '/posts' },
+            { name: 'Posts', icon: <FaFileAlt />, path: '/posts' },
             { name: 'Projects', icon: <FaProjectDiagram />, path: '/projects' },
             { name: 'Blog', icon: <FaBlog />, path: '/blog' },
             { name: 'Contact', icon: <FaEnvelopeOpenText />, path: '/contact' },

@@ -168,10 +168,11 @@
 .profile-container {
   position: relative;
   width: 300px;
-  height: 300px;
+  height: 380px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding-top: 40px;
 }
 
 .profile-backdrop {
@@ -206,57 +207,89 @@
 }
 
 .tech-stack {
+ 
   position: absolute;
-  width: 100%;
-  height: 100%;
-  animation: orbit 20s linear infinite;
-}
-
-@keyframes orbit {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  bottom: -0px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 350px;
+   
 }
 
 .tech-badge {
-  position: absolute;
-  padding: 0.4rem 0.8rem;
-  background: rgba(35, 38, 49, 0.8);
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(35, 38, 49, 0.9) 0%, rgba(19, 21, 26, 0.9) 100%);
   border: 1px solid #64ffda;
-  border-radius: 30px;
-  font-size: 0.8rem;
+  border-radius: 25px;
+  font-size: 0.85rem;
   color: #64ffda;
   font-weight: 600;
-
-  /* Center base point */
-  top: 50%;
-  left: 50%;
-  transform-origin: center center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Position badges around a circle using rotation and translation */
+.tech-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.2), transparent);
+  transition: left 0.5s ease;
+}
 
+.tech-badge:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(100, 255, 218, 0.25);
+  border-color: #80ffea;
+  background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(35, 38, 49, 0.9) 100%);
+}
+
+.tech-badge:hover::before {
+  left: 100%;
+}
+
+/* Staggered animation on load */
 .tech-badge:nth-child(1) {
-  transform: rotate(0deg) translateX(120px) rotate(-0deg);
+  animation: slideInUp 0.6s ease-out 0.1s both;
 }
 
 .tech-badge:nth-child(2) {
-  transform: rotate(60deg) translateX(120px) rotate(-60deg);
+  animation: slideInUp 0.6s ease-out 0.2s both;
 }
 
 .tech-badge:nth-child(3) {
-  transform: rotate(120deg) translateX(145px) rotate(-120deg);
+  animation: slideInUp 0.6s ease-out 0.3s both;
 }
 
 .tech-badge:nth-child(4) {
-  transform: rotate(180deg) translateX(178px) rotate(-180deg);
+  animation: slideInUp 0.6s ease-out 0.4s both;
 }
 
 .tech-badge:nth-child(5) {
-  transform: rotate(240deg) translateX(164px) rotate(-240deg);
+  animation: slideInUp 0.6s ease-out 0.5s both;
 }
 
 .tech-badge:nth-child(6) {
-  transform: rotate(300deg) translateX(150px) rotate(-300deg);
+  animation: slideInUp 0.6s ease-out 0.6s both;
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Scroll Indicator */
@@ -373,4 +406,27 @@
   .primary-button, .secondary-button {
     width: 100%;
   }
+}
+/* Tech badge link styling */
+.tech-badge {
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+.tech-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  color: inherit;
+}
+
+.tech-badge:visited {
+  color: inherit;
+}
+
+.tech-badge:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
