@@ -387,10 +387,13 @@ useEffect(() => {
                         </div>
                       </div>
                     </div>
-                    <div className="pst-post-caption">
-                      <p className="pst-caption-text">
-                        {post.caption}
-                      </p>
+                   <div className="pst-post-caption">                       
+                    <p className="pst-caption-text">                         
+                     {post.caption}
+                    </p>                        
+                     <p className="pst-modal-date">
+                       {formatDate(post.createdAt)}                                       
+                      </p>                     
                     </div>
                   </div>
                 </div>
@@ -460,6 +463,7 @@ useEffect(() => {
                   <p className="pst-modal-date">
                     {formatDate(selectedPost.createdAt)}
                   </p>
+                  
                 </div>
                 <div className="pst-modal-actions">
                   <button
