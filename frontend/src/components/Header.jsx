@@ -25,7 +25,7 @@ const Header = () => {
             { name: 'About', icon: <FaUser />, path: '/about' },
             { name: 'Posts', icon: <FaFileAlt />, path: '/posts' },
             { name: 'Projects', icon: <FaProjectDiagram />, path: '/projects' },
-            { name: 'Blog', icon: <FaBlog />, path: '/blog' },
+            { name: 'Blogs', icon: <FaBlog />, path: '/blog' },
             { name: 'Contact', icon: <FaEnvelopeOpenText />, path: '/contact' },
           ].map((item) => (
             <Link
