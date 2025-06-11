@@ -476,5 +476,213 @@
     color: #ffffff;
   }
 }
+/* Control buttons container */
+.tyagi-control-buttons {
+  display: none; /* Hidden by default on mobile */
+  gap: 16px;
+  align-items: center;
+  flex: 1;
+  justify-content: flex-end;
+  padding: 0 8px;
+}
 
-/* Remove scroll indicator - not needed anymore */
+/* Ultra Premium Dark Control Button */
+.tyagi-control-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+  color: #a0a0a0;
+  cursor: pointer;
+  font-size: 18px;
+  outline: none;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.02);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+}
+
+/* Premium glass morphism effect */
+.tyagi-control-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.01) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  border-radius: inherit;
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+/* Animated border glow */
+.tyagi-control-btn::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+
+  border-radius: 18px;
+  opacity: 0;
+  z-index: -1;
+  transition: all 0.4s ease;
+  animation: border-rotate 3s linear infinite;
+}
+
+/* Border rotation animation */
+@keyframes border-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hover effects with micro-interactions */
+
+.tyagi-control-btn:hover::after {
+  opacity: 1;
+  animation-duration: 1.5s;
+}
+
+/* Active state with satisfying feedback */
+.tyagi-control-btn:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s ease;
+}
+
+
+/* Icon animations with premium feel */
+.tyagi-control-btn svg {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+
+
+
+/* Premium press animation */
+@keyframes premium-press {
+  0% { 
+    transform: translateY(-4px) scale(1.02); 
+  }
+  50% { 
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  100% { 
+    transform: translateY(-4px) scale(1.02); 
+  }
+}
+
+.tyagi-control-btn:active {
+  animation: premium-press 0.2s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+/* Refreshing state with elegant loading */
+@keyframes premium-loading {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1) rotateZ(0deg);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.05) rotateZ(180deg);
+  }
+}
+
+.tyagi-control-btn.refreshing {
+  pointer-events: none;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.tyagi-control-btn.refreshing svg {
+  animation: premium-loading 2s cubic-bezier(0.23, 1, 0.320, 1) infinite;
+}
+
+/* Particle effect on hover (optional enhancement) */
+.tyagi-control-btn:hover {
+  position: relative;
+}
+
+.tyagi-control-btn:hover::before {
+  background-size: 200% 200%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 200%; }
+  100% { background-position: -200% -200%; }
+}
+
+/* Responsive enhancements */
+@media (min-width: 500px) {
+  .tyagi-control-buttons {
+    display: flex;
+    gap: 16px;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 768px) {
+  .tyagi-control-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 14px;
+  }
+  
+  .tyagi-control-buttons {
+    gap: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tyagi-control-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+    border-radius: 18px;
+  }
+  
+  .tyagi-control-buttons {
+    gap: 20px;
+  }
+  
+  .tyagi-control-btn:hover {
+    transform: translateY(-6px) scale(1.03);
+  }
+}
+
+/* Ultra-wide screen enhancements */
+@media (min-width: 1920px) {
+  .tyagi-control-btn {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    border-radius: 20px;
+  }
+}
