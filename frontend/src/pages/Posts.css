@@ -1306,3 +1306,412 @@
 .pst-modal-date {
   min-width: 80px; /* Adjust based on shortest acceptable date display */
 }
+/* Tab Navigation */
+.pst-tab-navigation {
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.pst-tab-buttons {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 320px;
+  margin: 0 auto;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.pst-tab-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pst-tab-button.pst-tab-active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.pst-tab-button .pst-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+/* Platform Filter */
+.pst-platform-filter {
+ margin-bottom: 2rem;
+ padding: 0 1rem;
+ display: flex;
+ justify-content: center;
+}
+
+.pst-platform-buttons {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ overflow-x: auto;
+ padding: 8px;
+ background: white;
+ border-radius: 16px;
+ box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+ scrollbar-width: none;
+ -ms-overflow-style: none;
+}
+
+.pst-platform-buttons::-webkit-scrollbar {
+  display: none;
+}
+
+.pst-platform-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.pst-platform-button:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.pst-platform-button.pst-platform-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.pst-platform-button .pst-icon-sm {
+  width: 14px;
+  height: 14px;
+}
+
+/* Social Media Cards */
+.pst-social-embed {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pst-social-embed:hover {
+  transform: translateY(-4px);
+}
+
+.pst-social-embed .pst-post-card {
+  border: 1px solid #e2e8f0;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.pst-social-embed:hover .pst-post-card {
+  border-color: #c7d2fe;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.pst-social-header {
+  padding: 16px 16px 8px;
+}
+
+.pst-platform-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: capitalize;
+}
+
+.pst-social-content {
+  padding: 8px 16px 16px;
+}
+
+.pst-social-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pst-social-description {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Social Media Modal */
+.pst-social-modal-content {
+  background: white;
+  border-radius: 20px;
+  max-width: 900px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.pst-social-modal-header {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.pst-social-modal-header .pst-platform-badge {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pst-social-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 16px 0 8px 0;
+  line-height: 1.3;
+}
+
+.pst-social-modal-description {
+  font-size: 15px;
+  color: #475569;
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.pst-social-embed-container {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+  background: white;
+}
+
+.pst-social-embed-content {
+  width: 100%;
+  min-height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.pst-social-embed-content iframe {
+  width: 100% !important;
+  min-height: 400px;
+  border: none;
+  border-radius: 12px;
+}
+
+/* Platform Colors */
+.pst-platform-button.pst-platform-active[data-platform="twitter"],
+.pst-platform-badge[data-platform="twitter"] {
+  background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+.pst-platform-button.pst-platform-active[data-platform="facebook"],
+.pst-platform-badge[data-platform="facebook"] {
+  background: linear-gradient(135deg, #1877f2 0%, #165ed0 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+.pst-platform-button.pst-platform-active[data-platform="linkedin"],
+.pst-platform-badge[data-platform="linkedin"] {
+  background: linear-gradient(135deg, #0a66c2 0%, #084d94 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .pst-tab-navigation {
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+  }
+  
+  .pst-tab-buttons {
+    max-width: 100%;
+  }
+  
+  .pst-tab-button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .pst-platform-filter {
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+  }
+  
+  .pst-platform-buttons {
+    padding: 6px;
+    gap: 6px;
+  }
+  
+  .pst-platform-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .pst-social-modal-content {
+    width: 95vw;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+  
+  .pst-social-modal-header {
+    padding: 20px;
+  }
+  
+  .pst-social-modal-title {
+    font-size: 18px;
+  }
+  
+  .pst-social-modal-description {
+    font-size: 14px;
+  }
+  
+  .pst-social-embed-container {
+    padding: 20px;
+  }
+  
+  .pst-social-embed-content iframe {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pst-tab-button {
+    padding: 8px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+  
+  .pst-tab-button .pst-icon-sm {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .pst-platform-button {
+    padding: 6px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  
+  .pst-platform-button .pst-icon-sm {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .pst-social-header {
+    padding: 12px 12px 6px;
+  }
+  
+  .pst-social-content {
+    padding: 6px 12px 12px;
+  }
+  
+  .pst-social-title {
+    font-size: 14px;
+  }
+  
+  .pst-social-description {
+    font-size: 12px;
+  }
+  
+  .pst-platform-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  
+  .pst-social-modal-header {
+    padding: 16px;
+  }
+  
+  .pst-social-modal-title {
+    font-size: 16px;
+    margin: 12px 0 6px 0;
+  }
+  
+  .pst-social-modal-description {
+    font-size: 13px;
+  }
+  
+  .pst-social-embed-container {
+    padding: 16px;
+  }
+  
+  .pst-social-embed-content {
+    min-height: 300px;
+  }
+  
+  .pst-social-embed-content iframe {
+    min-height: 250px;
+  }
+}
+
+/* Smooth animations */
+.pst-tab-button,
+.pst-platform-button,
+.pst-social-embed {
+  will-change: transform;
+}
+
+/* Loading shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.pst-social-loading {
+  background: linear-gradient(90deg, #f0f0f0 0px, #e0e0e0 40px, #f0f0f0 80px);
+  background-size: 200px;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Glassmorphism effect for modal */
+.pst-social-modal-content {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.95);
+}
