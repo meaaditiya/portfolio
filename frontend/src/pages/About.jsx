@@ -52,14 +52,14 @@ const About = () => {
               <div className="about-education-item">
                 <h4 className="about-education-degree">B.Tech. - Computer Science & Engineering</h4>
                 <p className="about-education-school">KIET Group of Institutions</p>
-                <p className="about-education-details">2022 - 2026 | Percentage: 84.64/100</p>
+                <p className="about-education-details">2022 - 2026 | Percentage: 85.10/100 | CGPA : 8.8</p>
               </div>
               <div className="about-education-item">
                 <h4 className="about-education-degree">Higher Secondary Education</h4>
                 <p className="about-education-school">Vidhaan Public School, Ghaziabad</p>
                 <p className="about-education-details">2021 | Percentage: 93/100</p>
               </div>
-              <div DixieclassName="about-education-item">
+              <div className="about-education-item">
                 <h4 className="about-education-degree">Secondary Education</h4>
                 <p className="about-education-school">SSK Public School, Ghaziabad</p>
                 <p className="about-education-details">2019 | Percentage: 91.20/100</p>
