@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaQuestionCircle, FaProjectDiagram, FaArrowLeft } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaQuestionCircle, FaProjectDiagram, FaArrowLeft, FaTimes, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import axios from 'axios';
 import './contact.css';
 
@@ -30,6 +30,14 @@ const Contact = () => {
     error: null
   });
   
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupData, setPopupData] = useState({
+    type: '', // 'success' or 'error'
+    title: '',
+    message: '',
+    isProject: false
+  });
+  
   const [activeSection, setActiveSection] = useState('contact'); // 'contact', 'project'
 
   const frequentQueries = [
@@ -39,6 +47,28 @@ const Contact = () => {
     "Are your applications secure and scalable?",
     "Do you offer support for deployment and hosting?"
   ];
+
+  // Auto-close popup after 8 seconds
+  useEffect(() => {
+    let timer;
+    if (showPopup) {
+      timer = setTimeout(() => {
+        setShowPopup(false);
+      }, 8000);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [showPopup]);
+
+  const showFullScreenPopup = (type, title, message, isProject = false) => {
+    setPopupData({ type, title, message, isProject });
+    setShowPopup(true);
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
+  };
 
   const validateEmail = (email) => {
     const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -105,6 +135,11 @@ const Contact = () => {
       ...prev,
       message: query
     }));
+    // Scroll to the message textarea
+    const messageTextarea = document.getElementById('message');
+    if (messageTextarea) {
+      messageTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -153,6 +188,13 @@ const Contact = () => {
           additionalInfo: '',
           image: null
         });
+
+        showFullScreenPopup(
+          'success',
+          'Project Request Submitted!',
+          'Thank you for your project request! I\'ve received all the details and will review your requirements carefully. I\'ll get back to you with a detailed quote and timeline within 24-48 hours.',
+          true
+        );
       } else {
         const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/contact', formData);
         
@@ -161,6 +203,13 @@ const Contact = () => {
           email: '',
           message: ''
         });
+
+        showFullScreenPopup(
+          'success',
+          'Message Sent Successfully!',
+          'Thanks for reaching out! Your message has been delivered successfully. I\'ll get back to you as soon as possible, usually within 24 hours.',
+          false
+        );
       }
       
       setSubmitStatus({
@@ -169,19 +218,21 @@ const Contact = () => {
         error: null
       });
       
-      setTimeout(() => {
-        setSubmitStatus(prev => ({
-          ...prev,
-          success: false
-        }));
-      }, 5000);
-      
     } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
+      
       setSubmitStatus({
         loading: false,
         success: false,
-        error: error.response?.data?.message || 'Something went wrong. Please try again.'
+        error: errorMessage
       });
+
+      showFullScreenPopup(
+        'error',
+        'Submission Failed',
+        `Oops! ${errorMessage} Please check your internet connection and try again. If the problem persists, you can reach me directly at aaditiyatyagi123@gmail.com`,
+        isProject
+      );
     }
   };
 
@@ -259,18 +310,6 @@ const Contact = () => {
         <div className="cnt-form-container">
           <h3 className="cnt-card-title">Send a Message</h3>
           
-          {submitStatus.success && (
-            <div className="cnt-notification cnt-notification-success">
-              Your message has been sent successfully! I'll get back to you soon.
-            </div>
-          )}
-          
-          {submitStatus.error && (
-            <div className="cnt-notification cnt-notification-error">
-              {submitStatus.error}
-            </div>
-          )}
-          
           <form className="cnt-form" onSubmit={handleSubmit}>
             <div className="cnt-form-group">
               <label htmlFor="name" className="cnt-form-label">Name</label>
@@ -336,18 +375,6 @@ const Contact = () => {
         </button>
         <h3 className="cnt-section-subtitle">Project Request Form</h3>
       </div>
-
-      {submitStatus.success && (
-        <div className="cnt-notification cnt-notification-success">
-          Your project request has been sent successfully! I'll review your requirements and get back to you with a detailed quote soon.
-        </div>
-      )}
-      
-      {submitStatus.error && (
-        <div className="cnt-notification cnt-notification-error">
-          {submitStatus.error}
-        </div>
-      )}
 
       <div className="cnt-project-form-container">
         <form className="cnt-form cnt-project-form" onSubmit={handleSubmit}>
@@ -510,15 +537,48 @@ const Contact = () => {
     </>
   );
 
-  return (
-    <section className="cnt-main-section">
-      <h2 className="cnt-section-title">
-        {activeSection === 'contact' ? 'Contact Me' : 'Project Request'}
-      </h2>
-      <div className="cnt-card">
-        {activeSection === 'contact' ? renderContactSection() : renderProjectSection()}
+  const renderFullScreenPopup = () => (
+    <div className="cnt-popup-overlay">
+      <div className="cnt-popup-container">
+        <button className="cnt-popup-close" onClick={closePopup}>
+          <FaTimes />
+        </button>
+        
+        <div className="cnt-popup-content">
+          <div className={`cnt-popup-icon ${popupData.type}`}>
+            {popupData.type === 'success' ? (
+              <FaCheckCircle size={60} />
+            ) : (
+              <FaExclamationTriangle size={60} />
+            )}
+          </div>
+          
+          <h2 className="cnt-popup-title">{popupData.title}</h2>
+          <p className="cnt-popup-message">{popupData.message}</p>
+          
+          <div className="cnt-popup-actions">
+            <button className="cnt-popup-btn" onClick={closePopup}>
+              Close
+            </button>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
+  );
+
+  return (
+    <>
+      <section className="cnt-main-section">
+        <h2 className="cnt-section-title">
+          {activeSection === 'contact' ? 'Contact Me' : 'Project Request'}
+        </h2>
+        <div className="cnt-card">
+          {activeSection === 'contact' ? renderContactSection() : renderProjectSection()}
+        </div>
+      </section>
+
+      {showPopup && renderFullScreenPopup()}
+    </>
   );
 };
 

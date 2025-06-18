@@ -458,7 +458,7 @@ const Posts = () => {
     return (
       <div className="pst-main">
         <div className="pst-loading">
-          <div className="pst-spinner"></div>
+           <div className="spinner"></div>
           <p className="pst-loading-text">Loading posts...</p>
         </div>
       </div>
@@ -659,7 +659,7 @@ const Posts = () => {
           <>
             {socialLoading ? (
               <div className="pst-loading">
-                <div className="pst-spinner"></div>
+               <div className="spinner"></div>
                 <p className="pst-loading-text">Loading social media posts...</p>
               </div>
             ) : socialEmbeds.length === 0 ? (

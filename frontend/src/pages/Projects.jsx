@@ -9,7 +9,7 @@ const Projects = () => {
 
   const projects = [
     {
-      id: 1, // Added unique ID
+      id: 1,
       title: 'E-Portal for Case Management',
       period: '08 Mar, 2023 - 15 May, 2024',
       mentor: 'Anmol Jain',
@@ -30,12 +30,12 @@ const Projects = () => {
         'Reduced administrative overhead.',
         'Enabled seamless communication between judges, lawyers, and clients.'
       ],
-        link: 'https://ecourtfiling.onrender.com/',
+      link: 'https://ecourtfiling.onrender.com/',
       color: 'purple',
       image: aadiImage10
     },
     {
-      id: 2, // Added unique ID
+      id: 2,
       title: 'Personal Attendance Manager',
       period: '01 Jan, 2025 - 10 Mar, 2025',
       teamSize: 1,
@@ -58,7 +58,7 @@ const Projects = () => {
       image: aadiImage1
     },
     {
-      id: 3, // Added unique ID
+      id: 3,
       title: 'Weather Tracking for Farmers',
       period: '01 May, 2023 - 23 Jul, 2024',
       teamSize: 4,
@@ -88,60 +88,60 @@ const Projects = () => {
   };
 
   return (
-    <section className="projects-section" id="projects">
-      <div className="container">
-        <h2 className="section-heading">Featured Projects</h2>
+    <section className="tyagi-project-section" id="projects">
+      <div className="tyagi-project-container">
+        <h2 className="tyagi-project-section-heading">Featured Projects</h2>
         
-        <div className="projects-layout">
+        <div className="tyagi-project-layout">
           {projects.map((project) => {
             const isActive = activeProject === project.id;
             
             return (
               <div 
                 key={project.id} 
-                className={`project-card ${project.color}-accent ${isActive ? 'expanded' : ''}`}
+                className={`tyagi-project-card ${project.color}-accent ${isActive ? 'tyagi-project-expanded' : ''}`}
               >
-                <div className="project-header" onClick={() => toggleProjectDetails(project.id)}>
-                  <div className="project-image-container">
+                <div className="tyagi-project-header" onClick={() => toggleProjectDetails(project.id)}>
+                  <div className="tyagi-project-image-container">
                     <img 
                       src={project.image} 
                       alt={project.title} 
-                      className="project-image" 
+                      className="tyagi-project-image" 
                     />
-                    <div className="project-tech-badges">
+                    <div className="tyagi-project-tech-badges">
                       {project.tech.slice(0, 3).map((tech, idx) => (
-                        <span key={idx} className="tech-badge1">{tech}</span>
+                        <span key={idx} className="tyagi-project-tech-badge1">{tech}</span>
                       ))}
                       {project.tech.length > 3 && (
-                        <span className="tech-badge1 more-badge1">+{project.tech.length - 3}</span>
+                        <span className="tyagi-project-tech-badge1 tyagi-project-more-badge1">+{project.tech.length - 3}</span>
                       )}
                     </div>
                   </div>
                   
-                  <div className="project-summary">
-                    <h3 className="project-title">{project.title}</h3>
-                    <p className="project-period">{project.period}</p>
-                    <p className="project-team">
-                      <span className="detail-label">Team:</span> {project.teamSize}
-                      {project.mentor && <> | <span className="detail-label">Mentor:</span> {project.mentor}</>}
+                  <div className="tyagi-project-summary">
+                    <h3 className="tyagi-project-title">{project.title}</h3>
+                    <p className="tyagi-project-period">{project.period}</p>
+                    <p className="tyagi-project-team">
+                      <span className="tyagi-project-detail-label">Team:</span> {project.teamSize}
+                      {project.mentor && <> | <span className="tyagi-project-detail-label">Mentor:</span> {project.mentor}</>}
                     </p>
-                    <p className="project-brief">{project.description}</p>
-                    <div className="project-toggle">
-                      <button className="toggle-button">
+                    <p className="tyagi-project-brief">{project.description}</p>
+                    <div className="tyagi-project-toggle">
+                      <button className="tyagi-project-toggle-button">
                         {isActive ? 'Hide Details' : 'Show Details'}
-                        <span className={`arrow-icon ${isActive ? 'up' : 'down'}`}></span>
+                        <span className={`tyagi-project-arrow-icon ${isActive ? 'tyagi-project-up' : 'tyagi-project-down'}`}></span>
                       </button>
                     </div>
                   </div>
                 </div>
                 
                 {isActive && (
-                  <div className="project-details">
-                    <div className="details-content">
+                  <div className="tyagi-project-details">
+                    <div className="tyagi-project-details-content">
                       {/* Features Section */}
-                      <div className="details-section">
-                        <h4 className="details-heading">Key Features</h4>
-                        <ul className="details-list">
+                      <div className="tyagi-project-details-section">
+                        <h4 className="tyagi-project-details-heading">Key Features</h4>
+                        <ul className="tyagi-project-details-list">
                           {project.detailedDescription.map((detail, idx) => (
                             <li key={idx}>{detail}</li>
                           ))}
@@ -149,19 +149,19 @@ const Projects = () => {
                       </div>
                       
                       {/* Technologies Section */}
-                      <div className="details-section">
-                        <h4 className="details-heading">Technologies Used</h4>
-                        <div className="tech-tags">
+                      <div className="tyagi-project-details-section">
+                        <h4 className="tyagi-project-details-heading">Technologies Used</h4>
+                        <div className="tyagi-project-tech-tags">
                           {project.tech.map((tech, idx) => (
-                            <span key={idx} className="tech-tag">{tech}</span>
+                            <span key={idx} className="tyagi-project-tech-tag">{tech}</span>
                           ))}
                         </div>
                       </div>
                       
                       {/* Outcomes Section */}
-                      <div className="details-section">
-                        <h4 className="details-heading">Outcomes</h4>
-                        <ul className="details-list">
+                      <div className="tyagi-project-details-section">
+                        <h4 className="tyagi-project-details-heading">Outcomes</h4>
+                        <ul className="tyagi-project-details-list">
                           {project.outcomes.map((outcome, idx) => (
                             <li key={idx}>{outcome}</li>
                           ))}
@@ -170,12 +170,12 @@ const Projects = () => {
                       
                       {/* Action Button Section */}
                       {project.link && (
-                        <div className="details-actions">
+                        <div className="tyagi-project-details-actions">
                           <a 
                             href={project.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="action-button"
+                            className="tyagi-project-action-button"
                           >
                             Visit Project
                           </a>

@@ -1,20 +1,19 @@
-/* Premium Horizontal Projects Component CSS */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-card: rgba(18, 18, 26, 0.9); /* Slightly more opaque for better readability */
-  --border-subtle: rgba(255, 255, 255, 0.1); /* Softer border for premium feel */
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0; /* Slightly brighter for better contrast */
-  --text-muted: #808080; /* Adjusted for better readability */
-  --accent-gold: #d4af37;
-  --accent-platinum: #e5e4e2;
-  --accent-silver: #c0c0c0;
+  --bg-primary: #f5f5f5; /* Light gray background */
+  --bg-secondary: #e0e0e0; /* Slightly darker gray for gradient */
+  --bg-card: rgba(255, 255, 255, 0.95); /* White card with slight transparency */
+  --border-subtle: rgba(0, 0, 0, 0.1); /* Subtle dark border for contrast */
+  --text-primary: #333333; /* Dark gray for text */
+  --text-secondary: #555555; /* Slightly lighter for secondary text */
+  --text-muted: #777777; /* Muted text for placeholders */
+  --accent-gold: #d4af37; /* Gold for premium accents */
+  --accent-platinum: #e5e4e2; /* Platinum for secondary accents */
+  --accent-silver: #c0c0c0; /* Silver for tertiary accents */
   --gradient-premium: linear-gradient(135deg, #d4af37 0%, #e5e4e2 50%, #c0c0c0 100%);
-  --shadow-premium: 0 15px 50px rgba(0, 0, 0, 0.3); /* Softer shadow */
-  --shadow-hover: 0 25px 70px rgba(0, 0, 0, 0.5); /* Refined hover shadow */
+  --shadow-premium: 0 10px 40px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  --shadow-hover: 0 15px 60px rgba(0, 0, 0, 0.1); /* Enhanced hover shadow */
 }
 
 * {
@@ -23,16 +22,16 @@
   padding: 0;
 }
 
-.projects-section {
+.tyagi-project-section {
   min-height: 100vh;
-  padding: 80px 0; /* Reduced padding for better vertical spacing */
+  padding: 80px 0;
   background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
   position: relative;
   overflow: hidden;
-  margin-top:-60px;
+  margin-top: -60px;
 }
 
-.projects-section::before {
+.tyagi-project-section::before {
   content: '';
   position: absolute;
   top: 0;
@@ -40,21 +39,20 @@
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(229, 228, 226, 0.01) 0%, transparent 50%);
+    radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(229, 228, 226, 0.05) 0%, transparent 50%);
   pointer-events: none;
 }
 
-.container {
-  max-width: 1400px; /* Slightly smaller for better focus */
+.tyagi-project-container {
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 30px;
   position: relative;
   z-index: 1;
 }
 
-/* Search Bar - Added for alignment with Quality Veda Portal style */
-.search-bar {
+.tyagi-project-search-bar {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -64,31 +62,31 @@
   margin-right: auto;
 }
 
-.search-bar input {
+.tyagi-project-search-bar input {
   flex: 1;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
   font-size: 0.9rem;
   outline: none;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.8);
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   transition: border-color 0.3s ease;
 }
 
-.search-bar input:focus {
+.tyagi-project-search-bar input:focus {
   border-color: var(--accent-gold);
 }
 
-.search-bar input::placeholder {
+.tyagi-project-search-bar input::placeholder {
   color: var(--text-muted);
 }
 
-.search-bar button {
+.tyagi-project-search-bar button {
   padding: 0.75rem 1.5rem;
   background: var(--accent-gold);
-  color: var(--bg-primary);
+  color: var(--text-primary);
   border: none;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -98,14 +96,14 @@
   transition: background 0.3s ease;
 }
 
-.search-bar button:hover {
+.tyagi-project-search-bar button:hover {
   background: var(--accent-platinum);
 }
 
-.section-heading {
+.tyagi-project-section-heading {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(2.5rem, 5vw, 4rem); /* Slightly smaller for better balance */
-  font-weight: 300; /* Lighter weight for elegance */
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
   text-align: center;
   margin-bottom: 80px;
   color: var(--text-primary);
@@ -114,7 +112,7 @@
   animation: fadeInUp 1s ease-out;
 }
 
-.section-heading::after {
+.tyagi-project-section-heading::after {
   content: '';
   position: absolute;
   bottom: -20px;
@@ -142,18 +140,18 @@
   to { width: 100px; }
 }
 
-.projects-layout {
+.tyagi-project-layout {
   display: flex;
   flex-direction: column;
-  gap: 40px; /* Reduced gap for tighter layout */
+  gap: 40px;
 }
 
-.project-card {
+.tyagi-project-card {
   background: var(--bg-card);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px; /* Rounded corners for a softer look */
+  border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-premium);
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -164,9 +162,9 @@
   min-height: 350px;
 }
 
-.project-card:nth-child(1) { --animation-order: 0; }
-.project-card:nth-child(2) { --animation-order: 1; }
-.project-card:nth-child(3) { --animation-order: 2; }
+.tyagi-project-card:nth-child(1) { --animation-order: 0; }
+.tyagi-project-card:nth-child(2) { --animation-order: 1; }
+.tyagi-project-card:nth-child(3) { --animation-order: 2; }
 
 @keyframes slideInUp {
   from {
@@ -179,7 +177,7 @@
   }
 }
 
-.project-card::before {
+.tyagi-project-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -192,31 +190,31 @@
   transform-origin: left;
 }
 
-.project-card:hover {
+.tyagi-project-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-hover);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
-.project-card:hover::before {
+.tyagi-project-card:hover::before {
   transform: scaleX(1);
 }
 
-.project-card.purple-accent::before {
+.tyagi-project-card.purple-accent::before {
   background: linear-gradient(90deg, var(--accent-platinum), var(--accent-gold));
 }
 
-.project-card.pink-accent::before {
+.tyagi-project-card.pink-accent::before {
   background: linear-gradient(90deg, var(--accent-gold), var(--accent-silver));
 }
 
-.project-card.orange-accent::before {
+.tyagi-project-card.orange-accent::before {
   background: linear-gradient(90deg, var(--accent-silver), var(--accent-platinum));
 }
 
-.project-header {
+.tyagi-project-header {
   display: grid;
-  grid-template-columns: 350px 1fr; /* Adjusted for better proportion */
+  grid-template-columns: 350px 1fr;
   gap: 40px;
   padding: 40px;
   cursor: pointer;
@@ -225,33 +223,33 @@
   min-height: 350px;
 }
 
-.project-header:hover {
-  background: rgba(255, 255, 255, 0.03);
+.tyagi-project-header:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.project-image-container {
+.tyagi-project-image-container {
   position: relative;
   width: 100%;
-  height: 270px; /* Slightly smaller for balance */
+  height: 270px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
-.project-image {
+.tyagi-project-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  filter: grayscale(0.1); /* Reduced grayscale for subtlety */
+  filter: grayscale(0.1);
 }
 
-.project-card:hover .project-image {
+.tyagi-project-card:hover .tyagi-project-image {
   transform: scale(1.03);
   filter: grayscale(0);
 }
 
-.project-tech-badges {
+.tyagi-project-tech-badges {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -259,11 +257,10 @@
   flex-direction: column;
   gap: 6px;
   max-width: 90px;
-  color:white;
 }
 
-.tech-badge1 {
-  background: rgba(0, 0, 0, 0.7);
+.tyagi-project-tech-badge1 {
+  background: rgba(0, 0, 0, 0.1);
   color: var(--text-primary);
   padding: 5px 10px;
   border-radius: 4px;
@@ -274,22 +271,21 @@
   border: 1px solid var(--border-subtle);
   transition: all 0.3s ease;
   text-align: center;
-  color:white;
 }
 
-.tech-badge1:hover {
-  background: rgba(212, 175, 55, 0.15);
+.tyagi-project-tech-badge1:hover {
+  background: rgba(212, 175, 55, 0.2);
   border-color: var(--accent-gold);
   color: var(--accent-gold);
 }
 
-.more-badge1 {
-  background: rgba(212, 175, 55, 0.15) !important;
+.tyagi-project-more-badge1 {
+  background: rgba(212, 175, 55, 0.2) !important;
   color: var(--accent-gold) !important;
   border-color: var(--accent-gold) !important;
 }
 
-.project-summary {
+.tyagi-project-summary {
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
@@ -297,18 +293,17 @@
   height: 100%;
 }
 
-.project-title {
+.tyagi-project-title {
   font-family: 'Inter', sans-serif;
-  font-size: 2.2rem; /* Slightly smaller for better fit */
-  font-weight: 400; /* Slightly heavier for balance */
+  font-size: 2.2rem;
+  font-weight: 400;
   margin-bottom: 15px;
   line-height: 1.3;
   color: var(--text-primary);
   letter-spacing: -0.005em;
-  color:white;
 }
 
-.project-period {
+.tyagi-project-period {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-bottom: 10px;
@@ -317,19 +312,19 @@
   letter-spacing: 0.4px;
 }
 
-.project-team {
+.tyagi-project-team {
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin-bottom: 20px;
   font-weight: 400;
 }
 
-.detail-label {
+.tyagi-project-detail-label {
   font-weight: 500;
   color: var(--accent-gold);
 }
 
-.project-brief {
+.tyagi-project-brief {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text-secondary);
@@ -338,21 +333,22 @@
   font-weight: 300;
   max-width: 95%;
 }
-.project-brief:hover{
-  color:white;
+
+.tyagi-project-brief:hover {
+  color: var(--text-primary);
 }
 
-.project-toggle {
+.tyagi-project-toggle {
   display: flex;
   justify-content: flex-start;
 }
 
-.toggle-button {
+.tyagi-project-toggle-button {
   background: transparent;
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   padding: 12px 24px;
-  border-radius: 6px; /* Rounded for a softer look */
+  border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -363,16 +359,15 @@
   font-family: 'Inter', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  color:white;
 }
 
-.toggle-button:hover {
-  background: rgba(212, 175, 55, 0.08);
+.tyagi-project-toggle-button:hover {
+  background: rgba(212, 175, 55, 0.1);
   border-color: var(--accent-gold);
   color: var(--accent-gold);
 }
 
-.arrow-icon {
+.tyagi-project-arrow-icon {
   width: 0;
   height: 0;
   border-left: 4px solid transparent;
@@ -380,34 +375,34 @@
   transition: all 0.3s ease;
 }
 
-.arrow-icon.down {
+.tyagi-project-arrow-icon.tyagi-project-down {
   border-top: 5px solid currentColor;
 }
 
-.arrow-icon.up {
+.tyagi-project-arrow-icon.tyagi-project-up {
   border-bottom: 5px solid currentColor;
   transform: rotate(180deg);
 }
 
-.project-card.expanded {
+.tyagi-project-card.tyagi-project-expanded {
   transform: translateY(-10px);
   box-shadow: var(--shadow-hover);
 }
 
-.project-details {
+.tyagi-project-details {
   max-height: 0;
   overflow: hidden;
   transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.project-card.expanded .project-details {
-  max-height: 1500px; /* Reduced for better performance */
+.tyagi-project-card.tyagi-project-expanded .tyagi-project-details {
+  max-height: 1500px;
   border-top: 1px solid var(--border-subtle);
 }
 
-.details-content {
+.tyagi-project-details-content {
   padding: 40px;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.05);
   animation: fadeInDetails 0.6s ease-out 0.1s both;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -425,11 +420,11 @@
   }
 }
 
-.details-section {
+.tyagi-project-details-section {
   margin-bottom: 0;
 }
 
-.details-heading {
+.tyagi-project-details-heading {
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
@@ -439,38 +434,38 @@
   letter-spacing: 0.8px;
 }
 
-.details-list {
+.tyagi-project-details-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.details-list li {
+.tyagi-project-details-list li {
   position: relative;
   padding: 12px 0;
   color: var(--text-secondary);
   line-height: 1.5;
   font-family: 'Inter', sans-serif;
   font-weight: 300;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
   transition: all 0.3s ease;
 }
 
-.details-list li:last-child {
+.tyagi-project-details-list li:last-child {
   border-bottom: none;
 }
 
-.details-list li:hover {
-  color:white;
+.tyagi-project-details-list li:hover {
+  color: var(--text-primary);
 }
 
-.tech-tags {
+.tyagi-project-tech-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.tech-tag {
+.tyagi-project-tech-tag {
   background: transparent;
   color: var(--text-secondary);
   padding: 10px 18px;
@@ -484,14 +479,14 @@
   letter-spacing: 0.4px;
 }
 
-.tech-tag:hover {
-  background: rgba(212, 175, 55, 0.08);
+.tyagi-project-tech-tag:hover {
+  background: rgba(212, 175, 55, 0.1);
   color: var(--accent-gold);
   border-color: var(--accent-gold);
   transform: translateY(-1px);
 }
 
-.details-actions {
+.tyagi-project-details-actions {
   grid-column: 1 / -1;
   text-align: center;
   margin-top: 30px;
@@ -499,7 +494,7 @@
   border-top: 1px solid var(--border-subtle);
 }
 
-.action-button {
+.tyagi-project-action-button {
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -517,10 +512,9 @@
   overflow: hidden;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color:white;
 }
 
-.action-button::before {
+.tyagi-project-action-button::before {
   content: '';
   position: absolute;
   top: 0;
@@ -532,115 +526,115 @@
   z-index: -1;
 }
 
-.action-button:hover {
+.tyagi-project-action-button:hover {
   color: var(--bg-primary);
   transform: translateY(-2px);
 }
 
-.action-button:hover::before {
+.tyagi-project-action-button:hover::before {
   left: 0;
 }
 
-.action-button::after {
+.tyagi-project-action-button::after {
   content: '→';
   transition: transform 0.3s ease;
   font-size: 1rem;
 }
 
-.action-button:hover::after {
+.tyagi-project-action-button:hover::after {
   transform: translateX(4px);
 }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .project-header {
+  .tyagi-project-header {
     grid-template-columns: 300px 1fr;
     gap: 30px;
   }
   
-  .details-content {
+  .tyagi-project-details-content {
     grid-template-columns: 1fr;
     gap: 30px;
   }
 }
 
 @media (max-width: 768px) {
-  .projects-section {
+  .tyagi-project-section {
     padding: 60px 0;
   }
   
-  .container {
+  .tyagi-project-container {
     padding: 0 15px;
   }
   
-  .section-heading {
+  .tyagi-project-section-heading {
     font-size: 2rem;
     margin-bottom: 60px;
   }
   
-  .project-header {
+  .tyagi-project-header {
     grid-template-columns: 1fr;
     gap: 20px;
     padding: 25px;
     min-height: auto;
   }
   
-  .project-image-container {
+  .tyagi-project-image-container {
     height: 220px;
   }
   
-  .project-title {
+  .tyagi-project-title {
     font-size: 1.8rem;
   }
   
-  .details-content {
+  .tyagi-project-details-content {
     padding: 25px;
     grid-template-columns: 1fr;
   }
   
-  .tech-tags {
+  .tyagi-project-tech-tags {
     gap: 6px;
   }
   
-  .tech-tag {
+  .tyagi-project-tech-tag {
     padding: 8px 14px;
     font-size: 0.7rem;
   }
 
-  .search-bar {
+  .tyagi-project-search-bar {
     flex-direction: column;
     max-width: 100%;
   }
 
-  .search-bar input,
-  .search-bar button {
+  .tyagi-project-search-bar input,
+  .tyagi-project-search-bar button {
     width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .project-header {
+  .tyagi-project-header {
     padding: 15px;
   }
   
-  .project-image-container {
+  .tyagi-project-image-container {
     height: 180px;
   }
   
-  .project-title {
+  .tyagi-project-title {
     font-size: 1.4rem;
   }
   
-  .details-content {
+  .tyagi-project-details-content {
     padding: 15px;
   }
 
-  .project-brief {
+  .tyagi-project-brief {
     font-size: 0.9rem;
   }
 
-  .search-bar input,
-  .search-bar button {
+  .tyagi-project-search-bar input,
+  .tyagi-project-search-bar button {
     padding: 0.6rem;
     font-size: 0.85rem;
   }
@@ -655,20 +649,20 @@
   }
 }
 
-.toggle-button:focus,
-.action-button:focus {
+.tyagi-project-toggle-button:focus,
+.tyagi-project-action-button:focus {
   outline: 2px solid var(--accent-gold);
   outline-offset: 2px;
 }
 
 /* Print styles */
 @media print {
-  .projects-section {
+  .tyagi-project-section {
     background: white;
-    color: black;
+    color: var(--text-primary);
   }
   
-  .project-card {
+  .tyagi-project-card {
     break-inside: avoid;
     box-shadow: none;
     border: 1px solid #ccc;
