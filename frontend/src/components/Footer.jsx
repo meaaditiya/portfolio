@@ -1,6 +1,6 @@
 import React from 'react';
 import { Github, Instagram, Twitter, Mail, Linkedin } from 'lucide-react';
-
+import './Footer.css';
 const Footer = () => {
   const socialLinks = [
     {
