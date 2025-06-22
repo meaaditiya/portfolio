@@ -1,96 +1,211 @@
-
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { 
+  Mail, Phone, MapPin, User, GraduationCap, Code, Award, Calendar,
+  Globe, Database, Server, Smartphone, GitBranch, Layers, FileCode, Palette
+} from 'lucide-react';
+import './About.css';
 import profileImage from '../images/aadiprofile.png';
-import './about.css';
 
 const About = () => {
-  const navigate = useNavigate();
-
   const handleConnectClick = () => {
-    navigate('/about');
+    // Navigate to contact section or show contact modal
+    console.log('Navigate to contact');
   };
 
+  const skills = [
+    { name: "React.js", icon: <Globe size={18} /> },
+    { name: "Node.js", icon: <Server size={18} /> },
+    { name: "Java", icon: <Code size={18} /> },
+    { name: "Javascript", icon: <FileCode size={18} /> },
+    { name: "MongoDB", icon: <Database size={18} /> },
+    { name: "SQL", icon: <Database size={18} /> },
+    { name: "NoSQL", icon: <Database size={18} /> },
+    { name: "Express.js", icon: <Server size={18} /> },
+    { name: "HTML", icon: <FileCode size={18} /> },
+    { name: "CSS", icon: <Palette size={18} /> },
+    { name: "Git", icon: <GitBranch size={18} /> },
+    { name: "REST APIs", icon: <Layers size={18} /> }
+  ];
+
+  const educationData = [
+    {
+      degree: "B.Tech. - Computer Science & Engineering",
+      school: "KIET Group of Institutions",
+      duration: "2022 - 2026",
+      grade: "CGPA: 8.8 | 85.10%",
+      icon: <GraduationCap className="education-icon" />
+    },
+    {
+      degree: "Higher Secondary Education",
+      school: "Vidhaan Public School, Ghaziabad",
+      duration: "2021",
+      grade: "93%",
+      icon: <Award className="education-icon" />
+    },
+    {
+      degree: "Secondary Education",
+      school: "SSK Public School, Ghaziabad",
+      duration: "2019",
+      grade: "91.20%",
+      icon: <Award className="education-icon" />
+    }
+  ];
+ 
   return (
     <section className="about-section">
       <div className="about-container">
-        <div className="about-header">
-          <div className="about-text-container">
-            <h2 className="about-main-title">About Me</h2>
-            <p className="about-intro">
-             Full-stack developer with a strong command of React.js, Node.js, and modern web technologies, dedicated to building scalable, high-performance, and user-focused digital solutions. Passionate about innovation, clean code, and crafting seamless web experiences that drive real-world impact.
-            </p>
-            <div className="about-cta-container">
+        {/* Hero Section */}
+        <div className="about-hero">
+          <div className="about-hero-content">
+            <div className="about-text-content">
+              <div className="about-badge">
+                <User size={16} />
+                <span>About Me</span>
+              </div>
+              <h1 className="about-title">
+                Full-Stack Developer
+              </h1>
+              <p className="about-description">
+                Full-stack developer with a strong command of React.js, Node.js, and modern web technologies, 
+                dedicated to building scalable, high-performance, and user-focused digital solutions. 
+                Passionate about innovation, clean code, and crafting seamless web experiences that drive real-world impact.
+              </p>
              
             </div>
-          </div>
-          <div className="about-image-container">
-            <img src={profileImage} alt="Aaditiya Tyagi" className="about-profile-image" />
+            <div className="about-image-wrapper">
+              <div className="about-image-container">
+                <img src={profileImage} alt="Aaditiya Tyagi" className="about-profile-image" />
+                <div className="about-image-overlay"></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="about-content">
+        {/* Single Row Layout */}
+        <div className="about-single-row">
+          {/* Professional Summary */}
           <div className="about-card about-summary-card">
-            <h3 className="about-card-title">Professional Summary</h3>
-            <p className="about-card-text">
-              As a Computer Science student with hands-on experience in full-stack web development, I leverage 
-              my skills in modern web technologies like React.js, Node.js, and MongoDB to build innovative software solutions.
-            </p>
-            <p className="about-card-text">
-              Through my case management e-Portal project, I've demonstrated expertise in building scalable, secure 
-              web applications with robust features like role-based authentication and real-time communication.
-            </p>
-            <p className="about-card-text">
-              I'm passionate about solving complex technological challenges while delivering high-quality, user-centric 
-              solutions that make a meaningful impact.
-            </p>
+            <div className="card-header">
+              <div className="card-icon">
+                <User size={20} />
+              </div>
+              <h3 className="card-title">Professional Summary</h3>
+            </div>
+            <div className="card-content">
+              <p className="summary-text">
+                As a Computer Science student with hands-on experience in full-stack web development, I leverage 
+                my skills in modern web technologies like React.js, Node.js, and MongoDB to build innovative software solutions.
+              </p>
+              <p className="summary-text">
+                Through my case management e-Portal project, I've demonstrated expertise in building scalable, secure 
+                web applications with robust features like role-based authentication and real-time communication.
+              </p>
+              <p className="summary-text">
+                I'm passionate about solving complex technological challenges while delivering high-quality, user-centric 
+                solutions that make a meaningful impact.
+              </p>
+            </div>
           </div>
 
-          <div className="about-two-column">
-            <div className="about-card about-education-card">
-              <h3 className="about-card-title">Education</h3>
-              <div className="about-education-item">
-                <h4 className="about-education-degree">B.Tech. - Computer Science & Engineering</h4>
-                <p className="about-education-school">KIET Group of Institutions</p>
-                <p className="about-education-details">2022 - 2026 | Percentage: 85.10/100 | CGPA : 8.8</p>
+          {/* Education */}
+          <div className="about-card about-education-card">
+            <div className="card-header">
+              <div className="card-icon">
+                <GraduationCap size={20} />
               </div>
-              <div className="about-education-item">
-                <h4 className="about-education-degree">Higher Secondary Education</h4>
-                <p className="about-education-school">Vidhaan Public School, Ghaziabad</p>
-                <p className="about-education-details">2021 | Percentage: 93/100</p>
-              </div>
-              <div className="about-education-item">
-                <h4 className="about-education-degree">Secondary Education</h4>
-                <p className="about-education-school">SSK Public School, Ghaziabad</p>
-                <p className="about-education-details">2019 | Percentage: 91.20/100</p>
-              </div>
+              <h3 className="card-title">Education</h3>
             </div>
-
-            <div className="about-card about-skills-card">
-              <h3 className="about-card-title">Technical Expertise</h3>
-              <div className="about-skills-container">
-                {["React.js", "Node.js", "Java", "Javascript", "MongoDB", "SQL", 
-                  "NoSQL", "Express.js", "HTML", "CSS"].map((skill, index) => (
-                  <span key={index} className="about-skill-tag">{skill}</span>
+            <div className="card-content">
+              <div className="education-timeline">
+                {educationData.map((edu, index) => (
+                  <div key={index} className="education-item">
+                    <div className="education-icon-wrapper">
+                      {edu.icon}
+                    </div>
+                    <div className="education-content">
+                      <h4 className="education-degree">{edu.degree}</h4>
+                      <p className="education-school">{edu.school}</p>
+                      <div className="education-meta">
+                        <span className="education-duration">
+                          <Calendar size={14} />
+                          {edu.duration}
+                        </span>
+                        <span className="education-grade">{edu.grade}</span>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <h3 className="about-card-title about-card-title-secondary">Contact Information</h3>
-              <div className="about-contact-info">
-                <p className="about-contact-item">
-                  <span className="about-contact-label">Email:</span> 
-                  <a href="mailto:aaditiyatyagi123@gmail.com" className="about-contact-value">aaditiyatyagi123@gmail.com</a>
-                </p>
-                <p className="about-contact-item">
-                  <span className="about-contact-label">Phone:</span> 
-                  <a href="tel:+917351102036" className="about-contact-value">+91 7351102036</a>
-                </p>
-                <p className="about-contact-item">
-                  <span className="about-contact-label">Location:</span> 
-                  <span className="about-contact-value">Ghaziabad, Uttar Pradesh</span>
-                </p>
-                <p className="about-contact-item">
-            
-                </p>
+            </div>
+          </div>
+
+          {/* Technical Skills */}
+          <div className="about-card about-skills-card">
+            <div className="card-header">
+              <div className="card-icon">
+                <Code size={20} />
+              </div>
+              <h3 className="card-title">Technical Expertise</h3>
+            </div>
+            <div className="card-content">
+              <div className="skills-scroll-container">
+                <div className="skills-grid">
+                  {skills.map((skill, index) => (
+                    <div key={index} className="skill-item">
+                      <div className="skill-icon">
+                        {skill.icon}
+                      </div>
+                      <span className="skill-name">{skill.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Information - Separate Row */}
+        <div className="about-contact-row">
+          <div className="about-card about-contact-card">
+            <div className="card-header">
+              <div className="card-icon">
+                <Mail size={20} />
+              </div>
+              <h3 className="card-title">Contact Information</h3>
+            </div>
+            <div className="card-content">
+              <div className="contact-items">
+                <div className="contact-item">
+                  <div className="contact-icon">
+                    <Mail size={18} />
+                  </div>
+                  <div className="contact-content">
+                    <span className="contact-label">Email</span>
+                    <a href="mailto:aaditiyatyagi123@gmail.com" className="contact-value">
+                      aaditiyatyagi123@gmail.com
+                    </a>
+                  </div>
+                </div>
+                <div className="contact-item">
+                  <div className="contact-icon">
+                    <Phone size={18} />
+                  </div>
+                  <div className="contact-content">
+                    <span className="contact-label">Phone</span>
+                    <a href="tel:+917351102036" className="contact-value">
+                      +91 7351102036
+                    </a>
+                  </div>
+                </div>
+                <div className="contact-item">
+                  <div className="contact-icon">
+                    <MapPin size={18} />
+                  </div>
+                  <div className="contact-content">
+                    <span className="contact-label">Location</span>
+                    <span className="contact-value">Ghaziabad, Uttar Pradesh</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -45,6 +45,7 @@
   padding: var(--spacing-xl) 0;
   color: var(--text-primary);
   line-height: 1.5;
+  margin-top:90px;
 }
 
 /* Loading Styles */

@@ -1,154 +1,249 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {GithubIcon, Linkedin, Mail, ArrowRight, ChevronDown } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, ExternalLink} from 'lucide-react';
+// Import the actual page components
+import About from './About';
+import Projects from './Projects';
+import Contact from './Contact';
 import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [isVisible, setIsVisible] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isLoaded, setIsLoaded] = useState(false);
   const roles = ["Full-Stack Developer", "React Specialist", "Node.js Expert", "UI/UX Enthusiast"];
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
 
-  // Animation setup
   useEffect(() => {
-    setIsVisible(true);
+    const timer = setTimeout(() => setIsLoaded(true), 100);
     
-    // Role rotation
     const roleInterval = setInterval(() => {
       setCurrentRoleIndex((prevIndex) => (prevIndex + 1) % roles.length);
-    }, 3000);
+    }, 4000);
+
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
     
-    return () => clearInterval(roleInterval);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(roleInterval);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
+  const navigateToPage = (path) => {
+    navigate(path);
+  };
+
+  const handleBlogRedirect = () => {
+    window.open('/blog', '_blank');
+  };
+
   return (
-    <div className="home-container">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className={`hero-content ${isVisible ? 'fade-in' : ''}`}>
-          <div className="hero-text">
-            <h1 className="name-intro">
-              <span className="greeting">Hi, I'm</span>
-              <span className="name">Aaditiya Tyagi</span>
-            </h1>
-            
-            <div className="role-display">
-              <span className="role-text">{roles[currentRoleIndex]}</span>
-            </div>
-            
-            <p className="hero-description">
-              I create elegant, performant web applications with modern technologies.
-              My expertise spans the entire development stack, focusing on scalable and
-              innovative solutions that deliver exceptional user experiences.
-            </p>
-            
-            <div className="action-buttons">
-              <button 
-                className="primary-button"
-                onClick={() => navigate('/projects')}
-              >
-                View My Work <ArrowRight size={16} className="ml-2" />
-              </button>
-              
-              <button 
-                className="secondary-button"
-                onClick={() => navigate('/contact')}
-              >
-                Get In Touch
-              </button>
-            </div>
-            
-            <div className="social-icons">
-              <a href="https://github.com/aaditiyatyagi" target="_blank" rel="noopener noreferrer" className="social-icon">
-                <GithubIcon size={20} />
-              </a>
-              <a href="https://linkedin.com/in/aaditiyatyagi" target="_blank" rel="noopener noreferrer" className="social-icon">
-                <Linkedin size={20} />
-              </a>
-              <a href="mailto:contact@aaditiyatyagi.com" className="social-icon">
-                <Mail size={20} />
-              </a>
-            </div>
-          </div>
-          
-          <div className="hero-visual">
-            <div className="profile-container">
-              <div className="profile-backdrop"></div>
-              <div className="profile-initials">AT</div>
-             <div className="tech-stack">
-  <a 
-    href="https://reactjs.org" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="tech-badge"
-  >
-    React
-  </a>
-  <a 
-    href="https://nodejs.org" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="tech-badge"
-  >
-    Node
-  </a>
-  <a 
-    href="https://www.mongodb.com" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="tech-badge"
-  >
-    MongoDB
-  </a>
-  <a 
-    href="https://expressjs.com" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="tech-badge"
-  >
-    Express
-  </a>
-  <a 
-    href="https://www.mysql.com" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="tech-badge"
-  >
-    SQL
-  </a>
-  <a 
-    href="https://www.oracle.com/java/" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="tech-badge"
-  >
-    Java
-  </a>
-</div>
-            </div>
-          </div>
-        </div>
-        
-       
-      </section>
+    <div className="portfolio-container">
+      {/* Cursor Follower - Desktop Only */}
+      <div 
+        className="cursor-follower"
+        style={{
+          left: mousePosition.x - 10,
+          top: mousePosition.y - 10,
+        }}
+      />
       
-      {/* Skills Highlight */}
-      <section className="skills-highlight">
-        <div className="skills-container">
-          <div className="skill-card">
-            <h3>Frontend Development</h3>
-            <p>Creating responsive, beautiful interfaces with React.js and modern CSS</p>
+     
+      
+      {/* Main Content */}
+      <main className="portfolio-main">
+        {/* Hero Section */}
+        <section className="hero-section">
+          <div className="hero-content">
+            <div className={`hero-text ${isLoaded ? 'content-visible' : ''}`}>
+              <div className="hero-left">
+                <div className="hero-greeting">
+                  <span className="greeting-label">Hello, I'm</span>
+                  <h1 className="hero-name">Aaditiya Tyagi</h1>
+                  
+                  <div className="role-rotator">
+                    <span className="role-prefix">—</span>
+                    <span className="role-text">{roles[currentRoleIndex]}</span>
+                  </div>
+                  
+                  <p className="hero-description">
+                    Crafting digital experiences through clean code and thoughtful design.
+                    I specialize in building scalable web applications that solve real-world
+                    problems with modern technologies and best practices.
+                  </p>
+                  
+                  <div className="hero-actions">
+                    <button 
+                      onClick={() => navigate('/projects')}
+                      className="primary-cta"
+                    >
+                      View Projects <ArrowUpRight size={16} />
+                    </button>
+                    
+                    <button 
+                      onClick={() => navigate('/contact')}
+                      className="secondary-cta"
+                    >
+                      Get in Touch
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="hero-right">
+                <div className="profile-container">
+                  <div className="profile-avatar">AT</div>
+                  <div className="profile-glow"></div>
+                </div>
+                
+                <div className="tech-stack">
+                  {[
+                    { name: 'React', icon: <Code size={14} /> },
+                    { name: 'Node.js', icon: <Globe size={14} /> },
+                    { name: 'MongoDB', icon: <Database size={14} /> },
+                    { name: 'Express', icon: <Code size={14} /> },
+                    { name: 'SQL', icon: <Database size={14} /> },
+                    { name: 'Java', icon: <Code size={14} /> }
+                  ].map((tech, index) => (
+                    <div key={tech.name} className="tech-item" style={{ animationDelay: `${index * 0.1}s` }}>
+                      {tech.icon}
+                      <span>{tech.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <div className="social-links">
+              <a href="https://github.com/aaditiyatyagi" target="_blank" rel="noopener noreferrer" className="social-link">
+                <Github size={18} />
+                <span>GitHub</span>
+              </a>
+              <a href="https://linkedin.com/in/aaditiyatyagi" target="_blank" rel="noopener noreferrer" className="social-link">
+                <Linkedin size={18} />
+                <span>LinkedIn</span>
+              </a>
+              <a href="mailto:contact@aaditiyatyagi.com" className="social-link">
+                <Mail size={18} />
+                <span>Email</span>
+              </a>
+            </div>
           </div>
-          <div className="skill-card">
-            <h3>Backend Solutions</h3>
-            <p>Building robust APIs and services with Node.js, Express, and MongoDB</p>
+        </section>
+
+        {/* About Section */}
+        <section className="content-section about-section">
+          <div className="section-container">
+            <div className="section-header">
+            </div>
+            
+            <div 
+              className="section-content"
+              onClick={() => navigateToPage('/about')}
+              style={{ cursor: 'pointer' }}
+            >
+              <About />
+            </div>
+             <button 
+                onClick={() => navigateToPage('/about')}
+                className="section-nav-btn"
+              >
+                Read More <ArrowUpRight size={16} />
+              </button>
           </div>
-          <div className="skill-card">
-            <h3>Full-Stack Integration</h3>
-            <p>Seamlessly connecting all components for powerful web applications</p>
+        </section>
+
+        {/* Projects Section */}
+        <section className="content-section projects-section">
+          <div className="section-container">
+            <div className="section-header">
+             
+            </div>
+            
+            <div 
+              className="section-content"
+              onClick={() => navigateToPage('/projects')}
+              style={{ cursor: 'pointer' }}
+            >
+              <Projects />
+            </div>
+            <button 
+                onClick={() => navigateToPage('/projects')}
+                className="section-nav-btn"
+              >
+                View All <ArrowUpRight size={16} />
+              </button>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Blog Section - No Import, Just Link */}
+    
+<section className="content-section blog-section">
+  <div className="section-container">
+    <div className="section-header">
+      
+      <div className="section-info">
+        <h2 className="section-title">Writing</h2>
+        <p className="section-subtitle">Thoughts on development and technology</p>
+      </div>
+      <button 
+        onClick={handleBlogRedirect}
+        className="section-nav-btn"
+      >
+        Visit Blog <ExternalLink size={16} />
+      </button>
+    </div>
+    <div 
+      className="blog-intro"
+      onClick={handleBlogRedirect}
+      style={{ cursor: 'pointer' }}
+    >
+      <p className="blog-description">
+        Explore a curated collection of insights, tutorials, and reflections on the ever-evolving world of coding and innovation.
+      </p>
+     
+    </div>
+    <div 
+      className="featured-topics"
+      onClick={handleBlogRedirect}
+      style={{ cursor: 'pointer' }}
+    >
+      <h3 className="topics-title">Featured Topics</h3>
+      <div className="topics-list">
+        <span className="topic-item">React Development</span>
+        <span className="topic-item">Node.js Best Practices</span>
+        <span className="topic-item">UI/UX Design Trends</span>
+      </div>
+    </div>
+  </div>
+</section>
+        {/* Contact Section */}
+        <section className="content-section contact-section">
+          <div className="section-container">
+            <div className="section-header">
+            </div>
+            
+            <div 
+              className="section-content"
+              onClick={() => navigateToPage('/contact')}
+              style={{ cursor: 'pointer' }}
+            >
+              <Contact />
+            </div>
+               <button 
+                onClick={() => navigateToPage('/contact')}
+                className="section-nav-btn"
+              >
+                Get in Touch <ArrowUpRight size={16} />
+              </button>
+          </div>
+        </section>
+      </main>
     </div>
   );
 };

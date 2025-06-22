@@ -2,11 +2,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './blog.css';
+
 const Blog = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Function to extract domain from URL
+  const getImageSource = (imageUrl) => {
+    if (!imageUrl) return null;
+    try {
+      const url = new URL(imageUrl);
+      return url.hostname.replace('www.', '');
+    } catch {
+      return 'Unknown Source';
+    }
+  };
 
   // Fetch blogs from API
   useEffect(() => {
@@ -23,7 +35,7 @@ const Blog = () => {
         setIsLoading(false);
       }
     };
-    
+        
     fetchBlogs();
   }, []);
 
@@ -51,14 +63,23 @@ const Blog = () => {
         {blogs.map((blog) => (
           <div
             key={blog._id}
-            className="blog-card"
+            className="blog-card1"
             onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
           >
             {blog.featuredImage ? (
-              <img src={blog.featuredImage} alt={blog.title} className="blog-image" />
+              <div className="blog-image-container">
+                <img src={blog.featuredImage} alt={blog.title} className="blog-image" />
+                <div className="image-source">
+                  Photo: {getImageSource(blog.featuredImage)}
+                </div>
+              </div>
             ) : (
               <div className="blog-placeholder">
-                <span>AT</span>
+                <div className="placeholder-title">AT</div>
+                <div className="placeholder-text">
+                  Photo: Default<br />
+                  Placeholder Image
+                </div>
               </div>
             )}
             <div className="blog-content">

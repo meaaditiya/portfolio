@@ -8,6 +8,7 @@
   color: #333;
   margin-left:-10px;
   margin-right:-10px;
+  margin-top:70px;
 }
 
 .card.blog-post {
@@ -84,8 +85,8 @@
 }
 
 .tag {
-  background-color: #f0f5ff;
-  color: #4263eb;
+  background-color: black;
+  color: white;
   padding: 0.3rem 0.8rem;
   border-radius: 50px;
   font-size: 0.8rem;

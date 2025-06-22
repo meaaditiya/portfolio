@@ -1,32 +1,13 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import {
-  FaHome,
-  FaUser,
-  FaFileAlt,
-  FaProjectDiagram,
-  FaBlog,
-  FaEnvelopeOpenText,
-  FaRedo,
-  FaExpand,
-  FaCompress
-} from 'react-icons/fa';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
-
 const Header = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Check fullscreen status on mount and when it changes
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
+  const navigateToPage = (path) => {
+    navigate(path);
+  };
 
   const handleRefresh = () => {
     window.location.reload();
@@ -44,50 +25,52 @@ const Header = () => {
     }
   };
 
+  const navItems = [
+    { name: 'Home', path: '/' },
+    { name: 'About', path: '/about' },
+    { name: 'Posts', path: '/posts' },
+    { name: 'Projects', path: '/projects' },
+    { name: 'Blogs', path: '/blog' },
+    { name: 'Contact', path: '/contact' },
+  ];
+
   return (
-    <header className="tyagi-header">
-      <div className="tyagi-header-content">
-        <div className="tyagi-logo-container">
-          {/* Your logo content here */}
+    <header className="portfolio-header">
+      <div className="header-content">
+        <div className="logo-section">
+          <span className="logo-initials">AT</span>
+          <div className="logo-text">
+            <span className="logo-name">Aaditiya Tyagi</span>
+            <span className="logo-role">Developer</span>
+          </div>
         </div>
         
-        <nav className="tyagi-nav">
-          {[
-            { name: 'Home', icon: <FaHome />, path: '/' },
-            { name: 'About', icon: <FaUser />, path: '/about' },
-            { name: 'Posts', icon: <FaFileAlt />, path: '/posts' },
-            { name: 'Projects', icon: <FaProjectDiagram />, path: '/projects' },
-            { name: 'Blogs', icon: <FaBlog />, path: '/blog' },
-            { name: 'Contact', icon: <FaEnvelopeOpenText />, path: '/contact' },
-          ].map((item) => (
-            <Link
+        <nav className="main-navigation">
+          {navItems.map((item) => (
+            <button
               key={item.path}
-              to={item.path}
-              className={`tyagi-nav-link ${currentPath === item.path ? 'tyagi-nav-link-active' : ''}`}
+              onClick={() => navigateToPage(item.path)}
+              className={`nav-item ${currentPath === item.path ? 'nav-item-active' : ''}`}
             >
-              {item.icon}
-              <span>{item.name}</span>
-            </Link>
+              <span className="nav-label">{item.name}</span>
+            </button>
           ))}
         </nav>
-
-        {/* Control buttons - only visible on desktop/laptop */}
-        <div className="tyagi-control-buttons">
-          <button
-            onClick={handleRefresh}
-            className="tyagi-control-btn"
+        
+        <div className="header-controls">
+          <button 
+            onClick={handleRefresh} 
+            className="control-btn" 
             title="Refresh Page"
-            aria-label="Refresh Page"
           >
-            <FaRedo />
+            ↻
           </button>
-          <button
-            onClick={handleFullscreen}
-            className="tyagi-control-btn"
-            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-            aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          <button 
+            onClick={handleFullscreen} 
+            className="control-btn" 
+            title={document.fullscreenElement ? "Exit Fullscreen" : "Enter Fullscreen"}
           >
-            {isFullscreen ? <FaCompress /> : <FaExpand />}
+            {document.fullscreenElement ? '⤓' : '⤢'}
           </button>
         </div>
       </div>
