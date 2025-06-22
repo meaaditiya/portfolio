@@ -141,7 +141,7 @@
           height: 40px;
           border-radius: 10px;
           background: var(--primary-white);
-          color: var(--accent-gray);
+          color: black;
           text-decoration: none;
           transition: var(--transition-snappy);
           border: 1px solid var(--border-color);
@@ -168,11 +168,11 @@
         }
 
         .status-dot {
-          width: 6px;
-          height: 6px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
           background: green;
-          animation: pulse 2s infinite;
+         
         }
 
         @keyframes pulse {
