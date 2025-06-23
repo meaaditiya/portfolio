@@ -39,7 +39,6 @@ const BlogPost = () => {
         const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
         const data = await response.json();
         
-        // Don't modify the content format - keep it as is
         setBlogPost(data);
         
         // Also fetch reactions if blog post is found
@@ -256,6 +255,133 @@ const BlogPost = () => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
+  // Custom component to render content with inline images
+const renderContentWithImages = (content) => {
+  if (!content) return null;
+  
+  // Check if blog post has inline images
+  if (blogPost.contentImages && blogPost.contentImages.length > 0) {
+    // Create a map of imageId to image object for quick lookup
+    const imageMap = {};
+    blogPost.contentImages.forEach(image => {
+      if (image.imageId) {
+        imageMap[image.imageId] = image;
+      }
+    });
+    
+    // Split content by image placeholders
+    let processedContent = content;
+    const parts = [];
+    let currentIndex = 0;
+    
+    // Find all image placeholders and their positions
+    const imagePlaceholders = [];
+    Object.keys(imageMap).forEach(imageId => {
+      const placeholder = `[IMAGE:${imageId}]`;
+      let searchIndex = 0;
+      let foundIndex;
+      
+      while ((foundIndex = processedContent.indexOf(placeholder, searchIndex)) !== -1) {
+        imagePlaceholders.push({
+          imageId,
+          placeholder,
+          startIndex: foundIndex,
+          endIndex: foundIndex + placeholder.length,
+          image: imageMap[imageId]
+        });
+        searchIndex = foundIndex + placeholder.length;
+      }
+    });
+    
+    // Sort placeholders by their position in content
+    imagePlaceholders.sort((a, b) => a.startIndex - b.startIndex);
+    
+    // Build parts array with text and images
+    imagePlaceholders.forEach((placeholderInfo, index) => {
+      // Add text content before this image
+      if (placeholderInfo.startIndex > currentIndex) {
+        const textContent = processedContent.substring(currentIndex, placeholderInfo.startIndex);
+        if (textContent.trim()) {
+          parts.push({
+            type: 'text',
+            content: textContent.trim(),
+            key: `text-${index}`
+          });
+        }
+      }
+      
+      // Add the image
+      parts.push({
+        type: 'image',
+        image: placeholderInfo.image,
+        key: `image-${placeholderInfo.imageId}`
+      });
+      
+      currentIndex = placeholderInfo.endIndex;
+    });
+    
+    // Add remaining text content after the last image
+    if (currentIndex < processedContent.length) {
+      const remainingContent = processedContent.substring(currentIndex);
+      if (remainingContent.trim()) {
+        parts.push({
+          type: 'text',
+          content: remainingContent.trim(),
+          key: `text-final`
+        });
+      }
+    }
+    
+    // If no placeholders were found, render as normal markdown
+    if (parts.length === 0) {
+      return (
+        <div className="blog-post-content">
+          <ReactMarkdown>{content}</ReactMarkdown>
+        </div>
+      );
+    }
+    
+    // Render mixed content
+    return (
+      <div className="blog-post-content">
+        {parts.map(part => {
+          if (part.type === 'text') {
+            return (
+              <div key={part.key}>
+                <ReactMarkdown>{part.content}</ReactMarkdown>
+              </div>
+            );
+          } else if (part.type === 'image') {
+            return (
+              <div 
+                key={part.key} 
+                className={`blog-image blog-image-${part.image.position || 'center'}`}
+              >
+                <img 
+                  src={part.image.url} 
+                  alt={part.image.alt || ''} 
+                  loading="lazy" 
+                />
+                {part.image.caption && (
+                  <p className="image-caption">{part.image.caption}</p>
+                )}
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
+  }
+  
+  // No inline images, render as normal markdown
+  return (
+    <div className="blog-post-content">
+      <ReactMarkdown>{content}</ReactMarkdown>
+    </div>
+  );
+};
+
   return (
     <section className="section blog-post-section">
       <button
@@ -303,10 +429,8 @@ const BlogPost = () => {
             ))}
           </div>
           
-          {/* Use ReactMarkdown for proper markdown rendering */}
-          <div className="blog-post-content">
-            <ReactMarkdown>{blogPost.content}</ReactMarkdown>
-          </div>
+          {/* Render content with inline images */}
+          {renderContentWithImages(blogPost.content)}
           
           {/* Reactions section */}
           <div className="blog-reactions">
