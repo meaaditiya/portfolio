@@ -679,10 +679,13 @@
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+  position: relative;;
+  left:60px;
+  top:34px;
 }
 
 .pst-comments-close {
-  background: var(--bg-secondary);
+  background:none;
   border: 1px solid var(--border-light);
   color: var(--text-primary);
   cursor: pointer;
@@ -694,6 +697,9 @@
   align-items: center;
   justify-content: center;
   transition: all var(--transition-fast);
+  position: relative;
+  left:10px;
+  border: none;
 }
 
 .pst-comments-close:hover {

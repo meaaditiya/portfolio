@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin } from 'lucide-react';
+import { Heart, ArrowLeft,MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin } from 'lucide-react';
 import './Posts.css';
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -792,8 +792,7 @@ const Posts = () => {
               </div>
               {showComments && (
                 <div className="pst-comments-panel">
-                  <div className="pst-comments-header">
-                    <h3 className="pst-comments-title">Comments</h3>
+                   <h3 className="pst-comments-title">Comments</h3>
                     <button 
                       className="pst-comments-close"
                       onClick={(e) => {
@@ -801,8 +800,10 @@ const Posts = () => {
                         setShowComments(false);
                       }}
                     >
-                      <X className="pst-icon-sm" />
+                      <ArrowLeft className="pst-icon-sm" />
                     </button>
+                  <div className="pst-comments-header">
+                   
                   </div>
                   <div className="pst-comments-list">
                     {selectedPost.comments && selectedPost.comments.length > 0 ? (
