@@ -34,6 +34,9 @@ const BlogPost = () => {
   // Share state
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [deleteCommentLoading, setDeleteCommentLoading] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null);
 
   // Fetch blog post details
   useEffect(() => {
@@ -246,6 +249,47 @@ const BlogPost = () => {
       setCommentError(err.response?.data?.message || 'Failed to submit comment');
     }
   };
+const showDeleteConfirmation = (commentId, userEmail) => {
+  setCommentToDelete({ id: commentId, email: userEmail });
+  setShowDeleteModal(true);
+};
+
+// Add this function to handle comment deletion
+const handleDeleteComment = async () => {
+  if (!commentToDelete) return;
+
+  setDeleteCommentLoading(commentToDelete.id);
+  
+  try {
+    await axios.delete(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentToDelete.id}/user`,
+      { 
+        data: { email: commentToDelete.email },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+    
+    // Refresh comments after successful deletion
+    if (blogPost && blogPost._id) {
+      fetchComments(blogPost._id, commentPagination.page);
+    }
+    
+    // Close modal and reset state
+    setShowDeleteModal(false);
+    setCommentToDelete(null);
+  } catch (err) {
+    console.error('Error deleting comment:', err);
+    alert(err.response?.data?.message || 'Failed to delete comment');
+  } finally {
+    setDeleteCommentLoading(null);
+  }
+};
+
+// Add this function to cancel deletion
+const cancelDelete = () => {
+  setShowDeleteModal(false);
+  setCommentToDelete(null);
+};
 
   // Share functions
   const getCurrentUrl = () => {
@@ -642,17 +686,61 @@ const renderContentWithImages = (content) => {
               </div>
             ) : (
               <>
-                <div className="comments-list">
-                  {comments.map(comment => (
-                    <div className="comment-card" key={comment._id}>
-                      <div className="comment-header">
-                        <strong className="comment-author">{comment.user.name}</strong>
-                        <span className="comment-date">{formatDate(comment.createdAt)}</span>
-                      </div>
-                      <div className="comment-content">{comment.content}</div>
-                    </div>
-                  ))}
-                </div>
+               <div className="comments-list">
+  {comments.map(comment => (
+    <div className={`comment-card ${comment.isAuthorComment ? 'author-comment' : ''}`} key={comment._id}>
+      <div className="comment-header">
+        <div className="comment-author-info">
+          <strong className="comment-author">
+            {comment.user.name}
+            {comment.isAuthorComment && <span className="author-badge">Author</span>}
+          </strong>
+          <span className="comment-date">{formatDate(comment.createdAt)}</span>
+        </div>
+        
+        {/* Show delete button only for non-author comments and if user email matches */}
+        {!comment.isAuthorComment && storedUserInfo && storedUserInfo.email === comment.user.email && (
+          <button
+            className="delete-comment-btn"
+            onClick={() => showDeleteConfirmation(comment._id, comment.user.email)}
+            disabled={deleteCommentLoading === comment._id}
+            title="Delete your comment"
+          >
+            {deleteCommentLoading === comment._id ? '...' : '×'}
+          </button>
+        )}
+      </div>
+      <div className="comment-content">{comment.content}</div>
+    </div>
+  ))}
+</div>
+
+{/* Delete confirmation modal */}
+{showDeleteModal && (
+  <div className="modal-overlay" onClick={cancelDelete}>
+    <div className="modal-content delete-modal" onClick={(e) => e.stopPropagation()}>
+      <h3>Delete Comment</h3>
+      <p>Are you sure you want to delete this comment? This action cannot be undone.</p>
+      
+      <div className="modal-actions">
+        <button 
+          onClick={cancelDelete}
+          className="btn btn-secondary"
+          disabled={deleteCommentLoading}
+        >
+          Cancel
+        </button>
+        <button 
+          onClick={handleDeleteComment}
+          className="btn btn-danger"
+          disabled={deleteCommentLoading}
+        >
+          {deleteCommentLoading ? 'Deleting...' : 'Delete'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
                 
                 {/* Comment pagination */}
                 {commentPagination.pages > 1 && (
