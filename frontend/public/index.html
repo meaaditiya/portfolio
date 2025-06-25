@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        try {
+          new google.translate.TranslateElement(
+            {
+              pageLanguage: 'en',
+              includedLanguages: 'en,es,fr,de,it,pt,ru,ja,ko,zh-CN,zh-TW,ar,hi,th,vi,nl,sv,da,no,fi,pl,cs,hu,ro,bg,hr,sk,sl,et,lv,lt',
+              layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+              autoDisplay: false,
+              multilanguagePage: true
+            },
+            'google_translate_element'
+          );
+
+          // Add custom styles
+          const style = document.createElement('style');
+          style.id = 'google-translate-styles';
+          style.textContent = `
+            .goog-te-banner-frame.skiptranslate { display: none !important; }
+            body { top: 0 !important; }
+            .translate-widget {
+              background: #f8f9fa;
+              border: 1px solid #e9ecef;
+              border-radius: 8px;
+              padding: 12px;
+              margin: 16px 0;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+            }
+            .translate-label {
+              font-weight: 500;
+              color: #495057;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-size: 14px;
+            }
+            .goog-te-combo {
+              padding: 6px 12px !important;
+              border: 1px solid #ced4da !important;
+              border-radius: 4px !important;
+              background-color: white !important;
+              font-size: 14px !important;
+              color: #495057 !important;
+              cursor: pointer !important;
+              min-width: 140px !important;
+              font-family: inherit !important;
+            }
+            .goog-te-combo:hover { border-color: #007bff !important; }
+            .goog-te-combo:focus {
+              outline: none !important;
+              border-color: #007bff !important;
+              box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25) !important;
+            }
+            .goog-logo-link { display: none !important; }
+            .goog-te-gadget { color: transparent !important; }
+            .goog-te-gadget > span > a { display: none !important; }
+            .goog-te-gadget .goog-te-combo { margin: 0 !important; }
+            .translated { font-style: italic; }
+            .goog-te-menu-value span:first-child { display: none; }
+          `;
+          document.head.appendChild(style);
+        } catch (error) {
+          console.error('Google Translate initialization failed:', error);
+          // Hide the loading message if it exists
+          const loadingMessage = document.querySelector('.translate-widget span');
+          if (loadingMessage) {
+            loadingMessage.style.display = 'none';
+          }
+        }
+      }
+
+      // Load the Google Translate script
+      (function () {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        script.async = true;
+        script.onerror = function () {
+          console.error('Failed to load Google Translate script');
+          // Hide the loading message if it exists
+          const loadingMessage = document.querySelector('.translate-widget span');
+          if (loadingMessage) {
+            loadingMessage.style.display = 'none';
+          }
+        };
+        document.head.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

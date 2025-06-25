@@ -41,7 +41,7 @@ const Header = () => {
           <span className="logo-initials">AT</span>
           <div className="logo-text">
             <span className="logo-name">Aaditiya Tyagi</span>
-            <span className="logo-role">Developer</span>
+            <span className="logo-role">keep Learning</span>
           </div>
         </div>
         

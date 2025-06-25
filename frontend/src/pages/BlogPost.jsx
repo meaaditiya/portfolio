@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown } from 'react-icons/fa';
+import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy } from 'react-icons/fa';
 import axios from 'axios';
 import './blogPost.css';
 
@@ -30,6 +30,10 @@ const BlogPost = () => {
   const [commentSuccess, setCommentSuccess] = useState(null);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentPagination, setCommentPagination] = useState({ page: 1, pages: 1, total: 0 });
+
+  // Share state
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // Fetch blog post details
   useEffect(() => {
@@ -240,6 +244,93 @@ const BlogPost = () => {
     } catch (err) {
       console.error('Error submitting comment:', err);
       setCommentError(err.response?.data?.message || 'Failed to submit comment');
+    }
+  };
+
+  // Share functions
+  const getCurrentUrl = () => {
+    return window.location.href;
+  };
+
+  const getShareData = () => {
+    const url = getCurrentUrl();
+    const title = blogPost ? blogPost.title : 'Check out this blog post';
+    const text = blogPost ? `Check out this amazing blog post: "${blogPost.title}"` : 'Check out this blog post';
+    
+    return { url, title, text };
+  };
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        const shareData = getShareData();
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Error sharing:', err);
+        // Fall back to showing share modal
+        setShowShareModal(true);
+      }
+    } else {
+      setShowShareModal(true);
+    }
+  };
+
+  const handleSocialShare = (platform) => {
+    const { url, title, text } = getShareData();
+    const encodedUrl = encodeURIComponent(url);
+    const encodedTitle = encodeURIComponent(title);
+    const encodedText = encodeURIComponent(text);
+    
+    let shareUrl = '';
+    
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
+        break;
+      default:
+        return;
+    }
+    
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
+
+  const handleCopyLink = async () => {
+    const url = getCurrentUrl();
+    
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopySuccess(true);
+      setTimeout(() => {
+        setCopySuccess(false);
+        setShowShareModal(false);
+      }, 2000);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setCopySuccess(true);
+        setTimeout(() => {
+          setCopySuccess(false);
+          setShowShareModal(false);
+        }, 2000);
+      } catch (fallbackErr) {
+        console.error('Could not copy text: ', fallbackErr);
+      }
+      document.body.removeChild(textArea);
     }
   };
   
@@ -453,6 +544,18 @@ const renderContentWithImages = (content) => {
             </div>
           </div>
           
+          {/* Share section */}
+          <div className="blog-share">
+            
+            <button 
+              className="btn share-btn"
+              onClick={handleNativeShare}
+            >
+              <FaShare />
+              Share
+            </button>
+          </div>
+          
           {/* Comments section */}
           <div className="blog-comments">
             <div className="comments-header">
@@ -583,6 +686,67 @@ const renderContentWithImages = (content) => {
                 )}
               </>
             )}
+          </div>
+        </div>
+      )}
+      
+      {/* Share modal */}
+      {showShareModal && (
+        <div className="modal-overlay" onClick={() => setShowShareModal(false)}>
+          <div className="modal-content share-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Share this article</h3>
+            <p>Choose how you'd like to share this blog post</p>
+            
+            <div className="share-options">
+              <button 
+                className="share-option-btn facebook"
+                onClick={() => handleSocialShare('facebook')}
+              >
+                <FaFacebook />
+                Facebook
+              </button>
+              
+              <button 
+                className="share-option-btn twitter"
+                onClick={() => handleSocialShare('twitter')}
+              >
+                <FaTwitter />
+                Twitter
+              </button>
+              
+              <button 
+                className="share-option-btn linkedin"
+                onClick={() => handleSocialShare('linkedin')}
+              >
+                <FaLinkedin />
+                LinkedIn
+              </button>
+              
+              <button 
+                className="share-option-btn whatsapp"
+                onClick={() => handleSocialShare('whatsapp')}
+              >
+                <FaWhatsapp />
+                WhatsApp
+              </button>
+              
+              <button 
+                className="share-option-btn copy-link"
+                onClick={handleCopyLink}
+              >
+                <FaCopy />
+                {copySuccess ? 'Copied!' : 'Copy Link'}
+              </button>
+            </div>
+            
+            <div className="modal-actions">
+              <button 
+                onClick={() => setShowShareModal(false)}
+                className="btn btn-secondary"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

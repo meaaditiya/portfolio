@@ -153,7 +153,7 @@ const Home = () => {
                 onClick={() => navigateToPage('/about')}
                 className="section-nav-btn"
               >
-                Read More <ArrowUpRight size={16} />
+                Read More About Me <ArrowUpRight size={16} />
               </button>
           </div>
         </section>
@@ -176,7 +176,7 @@ const Home = () => {
                 onClick={() => navigateToPage('/projects')}
                 className="section-nav-btn"
               >
-                View All <ArrowUpRight size={16} />
+                View All Projects <ArrowUpRight size={16} />
               </button>
           </div>
         </section>
@@ -186,7 +186,6 @@ const Home = () => {
 <section className="content-section blog-section">
   <div className="section-container">
     <div className="section-header">
-      
       <div className="section-info">
         <h2 className="section-title">Writing</h2>
         <p className="section-subtitle">Thoughts on development and technology</p>
@@ -195,7 +194,7 @@ const Home = () => {
         onClick={handleBlogRedirect}
         className="section-nav-btn"
       >
-        Visit Blog <ExternalLink size={16} />
+        Visit Blog
       </button>
     </div>
     <div 
@@ -204,9 +203,8 @@ const Home = () => {
       style={{ cursor: 'pointer' }}
     >
       <p className="blog-description">
-        Explore a curated collection of insights, tutorials, and reflections on the ever-evolving world of coding and innovation.
+        Discover insights, tutorials, and reflections on coding and innovation.
       </p>
-     
     </div>
     <div 
       className="featured-topics"

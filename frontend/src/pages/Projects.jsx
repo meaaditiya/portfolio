@@ -101,7 +101,7 @@ const Projects = () => {
                 key={project.id} 
                 className={`tyagi-project-card ${project.color}-accent ${isActive ? 'tyagi-project-expanded' : ''}`}
               >
-                <div className="tyagi-project-header" onClick={() => toggleProjectDetails(project.id)}>
+                <div className="tyagi-project-header">
                   <div className="tyagi-project-image-container">
                     <img 
                       src={project.image} 
@@ -127,7 +127,10 @@ const Projects = () => {
                     </p>
                     <p className="tyagi-project-brief">{project.description}</p>
                     <div className="tyagi-project-toggle">
-                      <button className="tyagi-project-toggle-button">
+                      <button 
+                        className="tyagi-project-toggle-button"
+                        onClick={() => toggleProjectDetails(project.id)}
+                      >
                         {isActive ? 'Hide Details' : 'Show Details'}
                         <span className={`tyagi-project-arrow-icon ${isActive ? 'tyagi-project-up' : 'tyagi-project-down'}`}></span>
                       </button>

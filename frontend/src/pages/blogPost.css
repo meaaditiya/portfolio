@@ -209,7 +209,7 @@
 }
 
 .reaction-btn.active {
-  color: #4263eb;
+  color: black;
 }
 
 .reaction-btn span {
@@ -247,14 +247,12 @@
 }
 
 .btn-primary {
-  background-color: #4263eb;
+  background-color: black;
   color: white;
   border: none;
 }
 
-.btn-primary:hover {
-  background-color: #3b5bdb;
-}
+
 
 .btn-secondary {
   background-color: #f1f3f5;
@@ -807,4 +805,89 @@
     color: #333;
     font-size: 0.8rem;
   }
+}
+/* Share section */
+.blog-share {
+  margin: 2rem 0;
+  padding: 1.5rem 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.blog-share h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: black;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  position: relative;
+  right: -20px;;
+}
+
+.share-btn:hover {
+  background: black;
+}
+
+/* Share modal */
+.share-modal {
+  max-width: 400px;
+}
+
+.share-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.share-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.share-option-btn:hover {
+  transform: translateY(-2px);
+}
+
+.share-option-btn.facebook {
+  background: #1877f2;
+  color: white;
+}
+
+.share-option-btn.twitter {
+  background: #1da1f2;
+  color: white;
+}
+
+.share-option-btn.linkedin {
+  background: #0077b5;
+  color: white;
+}
+
+.share-option-btn.whatsapp {
+  background: #25d366;
+  color: white;
+}
+
+.share-option-btn.copy-link {
+  background: #6c757d;
+  color: white;
 }
