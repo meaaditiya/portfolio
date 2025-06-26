@@ -10,11 +10,14 @@ import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import './index.css';
 import Posts from './pages/Posts';
+import Fetcher from './pages/fetcher'; // Background API fetcher
+
 const App = () => {
   return (
     <Router>
       <div className="app-container">
         <Header />
+        <Fetcher /> {/* ✅ Background fetcher runs silently here */}
         <main className="main">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -23,10 +26,8 @@ const App = () => {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="posts" element ={<Posts/>}/>
+            <Route path="/posts" element={<Posts />} />
           </Routes>
-
-
         </main>
         <Footer />
       </div>
