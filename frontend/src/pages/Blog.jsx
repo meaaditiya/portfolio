@@ -1,4 +1,3 @@
-// src/pages/Blog.js
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './blog.css';
@@ -8,6 +7,8 @@ const Blog = () => {
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [limit, setLimit] = useState(6); // Initial limit of 6 blogs
+  const [hasMore, setHasMore] = useState(true); // Track if more blogs are available
 
   // Function to extract domain from URL
   const getImageSource = (imageUrl) => {
@@ -25,9 +26,14 @@ const Blog = () => {
     const fetchBlogs = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=6');
+        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=${limit}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch blogs');
+        }
         const data = await response.json();
         setBlogs(data.blogs);
+        // Check if there are more blogs to load
+        setHasMore(data.blogs.length === limit);
       } catch (err) {
         setError('Failed to fetch blogs');
         console.error(err);
@@ -37,17 +43,16 @@ const Blog = () => {
     };
         
     fetchBlogs();
-  }, []);
+  }, [limit]); // Re-run when limit changes
+
+  // Handle Load More button click
+  const handleLoadMore = () => {
+    setLimit((prevLimit) => prevLimit + 2); // Increase limit by 2
+  };
 
   return (
     <section className="section">
       <h2 className="section-title">Blogs</h2>
-
-      {isLoading && (
-        <div className="loading">
-          <div className="spinner"></div>
-        </div>
-      )}
 
       {error && (
         <div className="error">{error}</div>
@@ -101,6 +106,20 @@ const Blog = () => {
           </div>
         ))}
       </div>
+
+      {hasMore && !isLoading && !error && (
+        <div className="load-more-container">
+          <button className="load-more-button" onClick={handleLoadMore}>
+            Load More
+          </button>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      )}
     </section>
   );
 };
