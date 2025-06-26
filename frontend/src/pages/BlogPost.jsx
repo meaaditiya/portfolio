@@ -37,46 +37,62 @@ const BlogPost = () => {
   const [deleteCommentLoading, setDeleteCommentLoading] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
+const [showReplyForm, setShowReplyForm] = useState({});
+const [replyForm, setReplyForm] = useState({ name: '', email: '', content: '' });
+const [replyError, setReplyError] = useState(null);
+const [replySuccess, setReplySuccess] = useState(null);
+const [replyLoading, setReplyLoading] = useState(null);
+
+// Comment replies state
+const [commentReplies, setCommentReplies] = useState({});
+const [repliesLoading, setRepliesLoading] = useState({});
+const [showReplies, setShowReplies] = useState({});
+
+// Comment reactions state
+const [commentReactions, setCommentReactions] = useState({});
+const [userCommentReactions, setUserCommentReactions] = useState({});
+const [commentReactionLoading, setCommentReactionLoading] = useState(null);
+const [commentReactionTarget, setCommentReactionTarget] = useState(null);
 
   // Fetch blog post details
-  useEffect(() => {
-    const fetchBlogDetails = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
-        const data = await response.json();
+useEffect(() => {
+  const fetchBlogDetails = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
+      const data = await response.json();
+      
+      setBlogPost(data);
+      
+      // Also fetch reactions if blog post is found
+      if (data._id) {
+        fetchReactions(data._id);
+        fetchCommentsWithReactions(data._id); // Updated function call
         
-        setBlogPost(data);
-        
-        // Also fetch reactions if blog post is found
-        if (data._id) {
-          fetchReactions(data._id);
-          fetchComments(data._id);
+        // Check if user has stored info in localStorage
+        const storedInfo = localStorage.getItem('blogUserInfo');
+        if (storedInfo) {
+          const parsedInfo = JSON.parse(storedInfo);
+          setStoredUserInfo(parsedInfo);
+          setUserForm({
+            name: parsedInfo.name || '',
+            email: parsedInfo.email || ''
+          });
           
-          // Check if user has stored info in localStorage
-          const storedInfo = localStorage.getItem('blogUserInfo');
-          if (storedInfo) {
-            const parsedInfo = JSON.parse(storedInfo);
-            setStoredUserInfo(parsedInfo);
-            setUserForm({
-              name: parsedInfo.name || '',
-              email: parsedInfo.email || ''
-            });
-            
-            // Check if user has already reacted
-            checkUserReaction(data._id, parsedInfo.email);
-          }
+          // Check if user has already reacted
+          checkUserReaction(data._id, parsedInfo.email);
         }
-      } catch (err) {
-        setError('Failed to fetch blog details');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
       }
-    };
-    
-    fetchBlogDetails();
-  }, [slug]);
+    } catch (err) {
+      setError('Failed to fetch blog details');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  fetchBlogDetails();
+}, [slug]);
   
   // Fetch reaction counts
   const fetchReactions = async (blogId) => {
@@ -105,34 +121,14 @@ const BlogPost = () => {
   };
   
   // Fetch comments
-  const fetchComments = async (blogId, page = 1) => {
-    setCommentsLoading(true);
-    try {
-      const response = await axios.get(
-        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogId}/comments`,
-        { params: { page, limit: 5 } }
-      );
-      
-      setComments(response.data.comments);
-      setCommentPagination({
-        page: response.data.pagination.page,
-        pages: response.data.pagination.pages,
-        total: response.data.pagination.total
-      });
-    } catch (err) {
-      console.error('Error fetching comments:', err);
-    } finally {
-      setCommentsLoading(false);
-    }
-  };
-  
+ 
   // Handle page change for comments
-  const handleCommentPageChange = (newPage) => {
-    if (blogPost && blogPost._id) {
-      fetchComments(blogPost._id, newPage);
-    }
-  };
-  
+ const handleCommentPageChange = (newPage) => {
+  if (blogPost && blogPost._id) {
+    fetchCommentsWithReactions(blogPost._id, newPage); // Updated function call
+  }
+};
+
   // Handle reaction click
   const handleReactionClick = (type) => {
     setReactionType(type);
@@ -183,15 +179,22 @@ const BlogPost = () => {
   };
   
   // Handle user form submit for reaction
-  const handleReactionFormSubmit = (e) => {
-    e.preventDefault();
-    if (userForm.name.trim() === '' || userForm.email.trim() === '') {
-      alert('Name and email are required');
-      return;
-    }
-    
+const handleReactionFormSubmit = (e) => {
+  e.preventDefault();
+  if (userForm.name.trim() === '' || userForm.email.trim() === '') {
+    alert('Name and email are required');
+    return;
+  }
+  
+  if (commentReactionTarget) {
+    // This is a comment reaction
+    submitCommentReaction(commentReactionTarget, reactionType, userForm);
+    setCommentReactionTarget(null);
+  } else {
+    // This is a blog post reaction
     submitReaction(reactionType, userForm);
-  };
+  }
+};
   
   // Handle comment form change
   const handleCommentFormChange = (e) => {
@@ -203,57 +206,59 @@ const BlogPost = () => {
   };
   
   // Handle comment form submit
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-    setCommentError(null);
-    setCommentSuccess(null);
-    
-    if (!blogPost || !blogPost._id) return;
-    
-    if (commentForm.name.trim() === '' || 
-        commentForm.email.trim() === '' || 
-        commentForm.content.trim() === '') {
-      setCommentError('All fields are required');
-      return;
-    }
-    
-    try {
-      await axios.post(
-        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/comments`,
-        commentForm
-      );
-      
-      // Store user info for future use
-      localStorage.setItem('blogUserInfo', JSON.stringify({
-        name: commentForm.name,
-        email: commentForm.email
-      }));
-      
-      // Reset form and show success message
-      setCommentForm(prev => ({
-        ...prev,
-        content: ''
-      }));
-      setCommentSuccess('Comment submitted successfully! It will appear after review.');
-      
-      // Refresh comments
-      fetchComments(blogPost._id, 1);
-      
-      // Close form
-      setTimeout(() => {
-        setShowCommentForm(false);
-        setCommentSuccess(null);
-      }, 3000);
-    } catch (err) {
-      console.error('Error submitting comment:', err);
-      setCommentError(err.response?.data?.message || 'Failed to submit comment');
-    }
-  };
+ 
 const showDeleteConfirmation = (commentId, userEmail) => {
   setCommentToDelete({ id: commentId, email: userEmail });
   setShowDeleteModal(true);
 };
-
+const handleCommentSubmit = async (e) => {
+  e.preventDefault();
+  setCommentError(null);
+  setCommentSuccess(null);
+  
+  if (!blogPost || !blogPost._id) return;
+  
+  if (commentForm.name.trim() === '' || 
+      commentForm.email.trim() === '' || 
+      commentForm.content.trim() === '') {
+    setCommentError('All fields are required');
+    return;
+  }
+  
+  try {
+    await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/comments`,
+      commentForm
+    );
+    
+    // Store user info for future use
+    const userInfo = {
+      name: commentForm.name,
+      email: commentForm.email
+    };
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo); // Update stored user info state
+    
+    // Reset form and show success message
+    setCommentForm(prev => ({
+      ...prev,
+      content: ''
+    }));
+    setCommentSuccess('Comment submitted successfully! It will appear after review.');
+    
+    // Refresh comments
+    fetchCommentsWithReactions(blogPost._id, 1); // Updated function call
+    
+    // Close form
+    setTimeout(() => {
+      setShowCommentForm(false);
+      setCommentSuccess(null);
+    }, 3000);
+  } catch (err) {
+    console.error('Error submitting comment:', err);
+    setCommentError(err.response?.data?.message || 'Failed to submit comment');
+  }
+};
 // Add this function to handle comment deletion
 const handleDeleteComment = async () => {
   if (!commentToDelete) return;
@@ -271,7 +276,7 @@ const handleDeleteComment = async () => {
     
     // Refresh comments after successful deletion
     if (blogPost && blogPost._id) {
-      fetchComments(blogPost._id, commentPagination.page);
+      fetchCommentsWithReactions(blogPost._id, commentPagination.page); // Updated function call
     }
     
     // Close modal and reset state
@@ -285,6 +290,18 @@ const handleDeleteComment = async () => {
   }
 };
 
+const loadRepliesReactions = (replies) => {
+  if (replies && replies.length > 0) {
+    replies.forEach(reply => {
+      fetchCommentReactions(reply._id);
+      
+      // Check user reactions if user info exists
+      if (storedUserInfo && storedUserInfo.email) {
+        checkUserCommentReaction(reply._id, storedUserInfo.email);
+      }
+    });
+  }
+};
 // Add this function to cancel deletion
 const cancelDelete = () => {
   setShowDeleteModal(false);
@@ -390,6 +407,260 @@ const cancelDelete = () => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
+  
+
+
+
+
+
+
+
+  const toggleReplies = (commentId) => {
+  setShowReplies(prev => {
+    const newState = { ...prev, [commentId]: !prev[commentId] };
+    
+    // If showing replies and not loaded yet, fetch them
+    if (newState[commentId] && !commentReplies[commentId]) {
+      fetchReplies(commentId);
+    }
+    
+    return newState;
+  });
+};
+
+// Handle reply form change
+const handleReplyFormChange = (e) => {
+  const { name, value } = e.target;
+  setReplyForm(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
+
+// Toggle reply form
+const toggleReplyForm = (commentId) => {
+  setShowReplyForm(prev => {
+    const newState = { ...prev, [commentId]: !prev[commentId] };
+    
+    // Pre-fill form if user info exists
+    if (newState[commentId] && storedUserInfo) {
+      setReplyForm(prevForm => ({
+        ...prevForm,
+        name: storedUserInfo.name,
+        email: storedUserInfo.email
+      }));
+    }
+    
+    // Clear any previous errors/success messages
+    setReplyError(null);
+    setReplySuccess(null);
+    
+    return newState;
+  });
+};
+
+// Handle reply form submit
+const handleReplySubmit = async (e, commentId) => {
+  e.preventDefault();
+  setReplyError(null);
+  setReplySuccess(null);
+  setReplyLoading(commentId);
+  
+  if (replyForm.name.trim() === '' || 
+      replyForm.email.trim() === '' || 
+      replyForm.content.trim() === '') {
+    setReplyError('All fields are required');
+    setReplyLoading(null);
+    return;
+  }
+  
+  try {
+    await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/replies`,
+      replyForm
+    );
+    
+    // Store user info for future use
+    localStorage.setItem('blogUserInfo', JSON.stringify({
+      name: replyForm.name,
+      email: replyForm.email
+    }));
+    
+    // Reset form and show success message
+    setReplyForm(prev => ({
+      ...prev,
+      content: ''
+    }));
+    setReplySuccess('Reply submitted successfully!');
+    
+    // Refresh replies for this comment
+    fetchReplies(commentId);
+    
+    // Also refresh main comments to update reply count
+    if (blogPost && blogPost._id) {
+      fetchCommentsWithReactions(blogPost._id, commentPagination.page);
+    }
+    
+    // Hide reply form after success
+    setTimeout(() => {
+      setShowReplyForm(prev => ({ ...prev, [commentId]: false }));
+      setReplySuccess(null);
+    }, 2000);
+  } catch (err) {
+    console.error('Error submitting reply:', err);
+    setReplyError(err.response?.data?.message || 'Failed to submit reply');
+  } finally {
+    setReplyLoading(null);
+  }
+};
+const fetchReplies= async (commentId) => {
+  setRepliesLoading(prev => ({ ...prev, [commentId]: true }));
+  try {
+    const response = await axios.get(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/replies`
+    );
+    
+    setCommentReplies(prev => ({
+      ...prev,
+      [commentId]: response.data.replies
+    }));
+    
+    // Load reactions for the replies
+    loadRepliesReactions(response.data.replies);
+  } catch (err) {
+    console.error('Error fetching replies:', err);
+  } finally {
+    setRepliesLoading(prev => ({ ...prev, [commentId]: false }));
+  }
+};
+// Toggle replies visibility
+
+
+// Fetch comment reactions
+const fetchCommentReactions = async (commentId) => {
+  try {
+    const response = await axios.get(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions/count`
+    );
+    
+    setCommentReactions(prev => ({
+      ...prev,
+      [commentId]: response.data
+    }));
+  } catch (err) {
+    console.error('Error fetching comment reactions:', err);
+  }
+};
+
+// Check user's reaction to a comment
+const checkUserCommentReaction = async (commentId, email) => {
+  try {
+    const response = await axios.get(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions/user`,
+      { params: { email } }
+    );
+    
+    setUserCommentReactions(prev => ({
+      ...prev,
+      [commentId]: response.data.hasReacted ? response.data.reactionType : null
+    }));
+  } catch (err) {
+    console.error('Error checking user comment reaction:', err);
+  }
+};
+
+// Handle comment reaction
+
+const handleCommentReaction = async (commentId, type) => {
+  // If user info is already stored, submit reaction directly
+  if (storedUserInfo && storedUserInfo.email && storedUserInfo.name) {
+    submitCommentReaction(commentId, type, storedUserInfo);
+  } else {
+    // Otherwise show modal to collect user info
+    setReactionType(type);
+    setCommentReactionTarget(commentId); // You'll need to add this state
+    setShowReactionModal(true);
+  }
+};
+
+// Add this new function to handle the actual comment reaction submission:
+const submitCommentReaction = async (commentId, type, userInfo) => {
+  setCommentReactionLoading(commentId);
+  
+  try {
+    const response = await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions`,
+      {
+        name: userInfo.name,
+        email: userInfo.email,
+        type
+      }
+    );
+    
+    // Store user info for future use
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo);
+    
+    // Update user reaction state
+    if (response.data.reactionRemoved) {
+      setUserCommentReactions(prev => ({
+        ...prev,
+        [commentId]: null
+      }));
+    } else {
+      setUserCommentReactions(prev => ({
+        ...prev,
+        [commentId]: type
+      }));
+    }
+    
+    // Refresh comment reaction counts
+    fetchCommentReactions(commentId);
+    
+    // Close modal if open
+    setShowReactionModal(false);
+  } catch (err) {
+    console.error('Error submitting comment reaction:', err);
+    alert(err.response?.data?.message || 'Failed to submit reaction');
+  } finally {
+    setCommentReactionLoading(null);
+  }
+};
+
+// Update your existing fetchComments function to also fetch reactions
+const fetchCommentsWithReactions = async (blogId, page = 1) => {
+  setCommentsLoading(true);
+  try {
+    const response = await axios.get(
+      `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogId}/comments`,
+      { params: { page, limit: 5 } }
+    );
+    
+    setComments(response.data.comments);
+    setCommentPagination({
+      page: response.data.pagination.page,
+      pages: response.data.pagination.pages,
+      total: response.data.pagination.total
+    });
+    
+    // Fetch reactions for each comment
+    if (response.data.comments.length > 0) {
+      response.data.comments.forEach(comment => {
+        fetchCommentReactions(comment._id);
+        
+        // Check user reactions if user info exists
+        if (storedUserInfo && storedUserInfo.email) {
+          checkUserCommentReaction(comment._id, storedUserInfo.email);
+        }
+      });
+    }
+  } catch (err) {
+    console.error('Error fetching comments:', err);
+  } finally {
+    setCommentsLoading(false);
+  }
+};
+
   // Custom component to render content with inline images
 const renderContentWithImages = (content) => {
   if (!content) return null;
@@ -475,7 +746,8 @@ const renderContentWithImages = (content) => {
         </div>
       );
     }
-    
+    // Fetch replies for a comment
+
     // Render mixed content
     return (
       <div className="blog-post-content">
@@ -686,7 +958,9 @@ const renderContentWithImages = (content) => {
               </div>
             ) : (
               <>
-               <div className="comments-list">
+            
+
+<div className="comments-list">
   {comments.map(comment => (
     <div className={`comment-card ${comment.isAuthorComment ? 'author-comment' : ''}`} key={comment._id}>
       <div className="comment-header">
@@ -710,10 +984,186 @@ const renderContentWithImages = (content) => {
           </button>
         )}
       </div>
+      
       <div className="comment-content">{comment.content}</div>
+      
+      {/* Comment Actions */}
+      <div className="comment-actions">
+        {/* Comment Reactions */}
+      <div className="comment-reactions">
+  <button
+    className={`reaction-btn2 ${userCommentReactions[comment._id] === 'like' ? 'active' : ''}`}
+    onClick={() => handleCommentReaction(comment._id, 'like')}
+    disabled={commentReactionLoading === comment._id}
+  >
+    {userCommentReactions[comment._id] === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
+    <span>{commentReactions[comment._id]?.likes || 0}</span>
+  </button>
+  <button
+    className={`reaction-btn2 ${userCommentReactions[comment._id] === 'dislike' ? 'active' : ''}`}
+    onClick={() => handleCommentReaction(comment._id, 'dislike')}
+    disabled={commentReactionLoading === comment._id}
+  >
+    {userCommentReactions[comment._id] === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
+    <span>{commentReactions[comment._id]?.dislikes || 0}</span>
+  </button>
+</div>
+        
+        {/* Reply Button */}
+        <button
+          className="reply-btn"
+          onClick={() => toggleReplyForm(comment._id)}
+        >
+          Reply
+        </button>
+        
+        {/* Show Replies Button */}
+        {comment.repliesCount > 0 && (
+          <button
+            className="show-replies-btn"
+            onClick={() => toggleReplies(comment._id)}
+          >
+            {showReplies[comment._id] ? 'Hide' : 'Show'} {comment.repliesCount} {comment.repliesCount === 1 ? 'Reply' : 'Replies'}
+          </button>
+        )}
+      </div>
+      
+      {/* Reply Form */}
+      {showReplyForm[comment._id] && (
+        <form className="reply-form" onSubmit={(e) => handleReplySubmit(e, comment._id)}>
+          {replyError && <div className="error-message">{replyError}</div>}
+          {replySuccess && <div className="success-message">{replySuccess}</div>}
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor={`reply-name-${comment._id}`}>Name *</label>
+              <input
+                type="text"
+                id={`reply-name-${comment._id}`}
+                name="name"
+                value={replyForm.name}
+                onChange={handleReplyFormChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor={`reply-email-${comment._id}`}>Email *</label>
+              <input
+                type="email"
+                id={`reply-email-${comment._id}`}
+                name="email"
+                value={replyForm.email}
+                onChange={handleReplyFormChange}
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor={`reply-content-${comment._id}`}>Reply *</label>
+            <textarea
+              id={`reply-content-${comment._id}`}
+              name="content"
+              value={replyForm.content}
+              onChange={handleReplyFormChange}
+              rows="3"
+              required
+              maxLength="1000"
+            ></textarea>
+            <span className="character-count">
+              {replyForm.content.length}/1000
+            </span>
+          </div>
+          
+          <div className="reply-form-actions">
+            <button 
+              type="button" 
+              className="btn btn-secondary"
+              onClick={() => toggleReplyForm(comment._id)}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={replyLoading === comment._id}
+            >
+              {replyLoading === comment._id ? 'Submitting...' : 'Submit Reply'}
+            </button>
+          </div>
+        </form>
+      )}
+      
+      {/* Replies Section */}
+      {showReplies[comment._id] && (
+        <div className="replies-section">
+          {repliesLoading[comment._id] ? (
+            <div className="loading replies-loading">
+              <div className="spinner"></div>
+            </div>
+          ) : commentReplies[comment._id] && commentReplies[comment._id].length > 0 ? (
+            <div className="replies-list">
+              {commentReplies[comment._id].map(reply => (
+                <div 
+                  className={`reply-card ${reply.isAuthorComment ? 'author-reply' : ''}`} 
+                  key={reply._id}
+                >
+                  <div className="reply-header">
+                    <div className="reply-author-info">
+                      <strong className="reply-author">
+                        {reply.user.name}
+                        {reply.isAuthorComment && <span className="author-badge1">Author</span>}
+                      </strong>
+                      <span className="reply-date">{formatDate(reply.createdAt)}</span>
+                    </div>
+                    
+                    {/* Delete button for user's own replies */}
+                    {!reply.isAuthorComment && storedUserInfo && storedUserInfo.email === reply.user.email && (
+                      <button
+                        className="delete-reply-btn"
+                        onClick={() => showDeleteConfirmation(reply._id, reply.user.email)}
+                        disabled={deleteCommentLoading === reply._id}
+                        title="Delete your reply"
+                      >
+                        {deleteCommentLoading === reply._id ? '...' : '×'}
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="reply-content">{reply.content}</div>
+                  
+                  {/* Reply Reactions */}
+                  <div className="reply-actions">
+                   <div className="reply-reactions">
+  <button
+    className={`reaction-btn2 ${userCommentReactions[reply._id] === 'like' ? 'active' : ''}`}
+    onClick={() => handleCommentReaction(reply._id, 'like')}
+    disabled={commentReactionLoading === reply._id}
+  >
+    {userCommentReactions[reply._id] === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
+    <span>{commentReactions[reply._id]?.likes || 0}</span>
+  </button>
+  <button
+    className={`reaction-btn2 ${userCommentReactions[reply._id] === 'dislike' ? 'active' : ''}`}
+    onClick={() => handleCommentReaction(reply._id, 'dislike')}
+    disabled={commentReactionLoading === reply._id}
+  >
+    {userCommentReactions[reply._id] === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
+    <span>{commentReactions[reply._id]?.dislikes || 0}</span>
+  </button>
+</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="no-replies">No replies yet.</div>
+          )}
+        </div>
+      )}
     </div>
   ))}
-</div>
+</div> 
 
 {/* Delete confirmation modal */}
 {showDeleteModal && (
