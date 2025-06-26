@@ -64,22 +64,27 @@ useEffect(() => {
       
       setBlogPost(data);
       
+      // Check if user has stored info in localStorage FIRST
+      const storedInfo = localStorage.getItem('blogUserInfo');
+      let parsedInfo = null;
+      if (storedInfo) {
+        parsedInfo = JSON.parse(storedInfo);
+        setStoredUserInfo(parsedInfo);
+        setUserForm({
+          name: parsedInfo.name || '',
+          email: parsedInfo.email || ''
+        });
+      }
+      
       // Also fetch reactions if blog post is found
       if (data._id) {
         fetchReactions(data._id);
-        fetchCommentsWithReactions(data._id); // Updated function call
         
-        // Check if user has stored info in localStorage
-        const storedInfo = localStorage.getItem('blogUserInfo');
-        if (storedInfo) {
-          const parsedInfo = JSON.parse(storedInfo);
-          setStoredUserInfo(parsedInfo);
-          setUserForm({
-            name: parsedInfo.name || '',
-            email: parsedInfo.email || ''
-          });
-          
-          // Check if user has already reacted
+        // Pass the parsed user info to fetchCommentsWithReactions
+        await fetchCommentsWithReactions(data._id, 1, parsedInfo);
+        
+        // Check if user has already reacted to the blog post
+        if (parsedInfo && parsedInfo.email) {
           checkUserReaction(data._id, parsedInfo.email);
         }
       }
@@ -93,6 +98,7 @@ useEffect(() => {
   
   fetchBlogDetails();
 }, [slug]);
+
   
   // Fetch reaction counts
   const fetchReactions = async (blogId) => {
@@ -125,7 +131,8 @@ useEffect(() => {
   // Handle page change for comments
  const handleCommentPageChange = (newPage) => {
   if (blogPost && blogPost._id) {
-    fetchCommentsWithReactions(blogPost._id, newPage); // Updated function call
+    // Pass the current stored user info
+    fetchCommentsWithReactions(blogPost._id, newPage, storedUserInfo);
   }
 };
 
@@ -143,41 +150,68 @@ useEffect(() => {
   };
   
   // Submit reaction with user info
-  const submitReaction = async (type, userInfo) => {
-    if (!blogPost || !blogPost._id) return;
-    
-    try {
-      const response = await axios.post(
-        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/reactions`,
-        {
-          name: userInfo.name,
-          email: userInfo.email,
-          type
-        }
-      );
-      
-      // Store user info for future use
-      localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
-      setStoredUserInfo(userInfo);
-      
-      // Check if user toggled off their reaction
-      if (response.data.reactionRemoved) {
-        setUserReaction(null);
-      } else {
-        setUserReaction(type);
-      }
-      
-      // Refresh reaction counts
-      fetchReactions(blogPost._id);
-      
-      // Close modal if open
-      setShowReactionModal(false);
-    } catch (err) {
-      console.error('Error submitting reaction:', err);
-      alert(`Error: ${err.response?.data?.message || 'Failed to submit reaction'}`);
-    }
-  };
+const submitReaction = async (type, userInfo) => {
+  if (!blogPost || !blogPost._id) return;
   
+  // Optimistic update - update UI immediately
+  const previousReaction = userReaction;
+  const previousReactions = { ...reactions };
+  
+  // Update reaction counts optimistically
+  let newReactions = { ...reactions };
+  
+  if (previousReaction === type) {
+    // User is removing their reaction
+    newReactions[type] = Math.max(0, newReactions[type] - 1);
+    setUserReaction(null);
+  } else {
+    // User is adding a new reaction or changing reaction
+    if (previousReaction) {
+      // Remove old reaction
+      newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
+    }
+    // Add new reaction
+    newReactions[type] = newReactions[type] + 1;
+    setUserReaction(type);
+  }
+  
+  setReactions(newReactions);
+  
+  try {
+    const response = await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/reactions`,
+      {
+        name: userInfo.name,
+        email: userInfo.email,
+        type
+      }
+    );
+    
+    // Store user info for future use
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo);
+    
+    // Update with actual server response
+    if (response.data.reactionRemoved) {
+      setUserReaction(null);
+    } else {
+      setUserReaction(type);
+    }
+    
+    // Refresh reaction counts from server to ensure accuracy
+    fetchReactions(blogPost._id);
+    
+    // Close modal if open
+    setShowReactionModal(false);
+  } catch (err) {
+    // Revert optimistic update on error
+    setReactions(previousReactions);
+    setUserReaction(previousReaction);
+    
+    console.error('Error submitting reaction:', err);
+    alert(`Error: ${err.response?.data?.message || 'Failed to submit reaction'}`);
+  }
+};
   // Handle user form submit for reaction
 const handleReactionFormSubmit = (e) => {
   e.preventDefault();
@@ -246,8 +280,8 @@ const handleCommentSubmit = async (e) => {
     }));
     setCommentSuccess('Comment submitted successfully! It will appear after review.');
     
-    // Refresh comments
-    fetchCommentsWithReactions(blogPost._id, 1); // Updated function call
+    // Refresh comments with updated user info
+    fetchCommentsWithReactions(blogPost._id, 1, userInfo);
     
     // Close form
     setTimeout(() => {
@@ -259,6 +293,7 @@ const handleCommentSubmit = async (e) => {
     setCommentError(err.response?.data?.message || 'Failed to submit comment');
   }
 };
+// Add this function to handle comment deletion
 // Add this function to handle comment deletion
 const handleDeleteComment = async () => {
   if (!commentToDelete) return;
@@ -274,9 +309,41 @@ const handleDeleteComment = async () => {
       }
     );
     
-    // Refresh comments after successful deletion
-    if (blogPost && blogPost._id) {
-      fetchCommentsWithReactions(blogPost._id, commentPagination.page); // Updated function call
+    // Find if this is a reply being deleted
+    const isReply = Object.values(commentReplies).some(replies => 
+      replies.some(reply => reply._id === commentToDelete.id)
+    );
+    
+    if (isReply) {
+      // Find the parent comment and refresh its replies
+      const parentCommentId = Object.keys(commentReplies).find(commentId =>
+        commentReplies[commentId].some(reply => reply._id === commentToDelete.id)
+      );
+      
+      if (parentCommentId) {
+        // Remove the deleted reply from state immediately
+        setCommentReplies(prev => ({
+          ...prev,
+          [parentCommentId]: prev[parentCommentId].filter(reply => reply._id !== commentToDelete.id)
+        }));
+        
+        // Update the reply count in the main comments list
+        setComments(prevComments => 
+          prevComments.map(comment => 
+            comment._id === parentCommentId 
+              ? { ...comment, repliesCount: Math.max(0, comment.repliesCount - 1) }
+              : comment
+          )
+        );
+        
+        // Also refresh the parent comment to get accurate reply count from server
+        fetchReplies(parentCommentId);
+      }
+    } else {
+      // This is a main comment, refresh the main comments list
+      if (blogPost && blogPost._id) {
+        fetchCommentsWithReactions(blogPost._id, commentPagination.page);
+      }
     }
     
     // Close modal and reset state
@@ -289,15 +356,19 @@ const handleDeleteComment = async () => {
     setDeleteCommentLoading(null);
   }
 };
-
 const loadRepliesReactions = (replies) => {
   if (replies && replies.length > 0) {
     replies.forEach(reply => {
       fetchCommentReactions(reply._id);
       
       // Check user reactions if user info exists
-      if (storedUserInfo && storedUserInfo.email) {
-        checkUserCommentReaction(reply._id, storedUserInfo.email);
+      // Get fresh user info from localStorage in case it was just set
+      const currentStoredInfo = localStorage.getItem('blogUserInfo');
+      if (currentStoredInfo) {
+        const parsedInfo = JSON.parse(currentStoredInfo);
+        if (parsedInfo && parsedInfo.email) {
+          checkUserCommentReaction(reply._id, parsedInfo.email);
+        }
       }
     });
   }
@@ -481,10 +552,12 @@ const handleReplySubmit = async (e, commentId) => {
     );
     
     // Store user info for future use
-    localStorage.setItem('blogUserInfo', JSON.stringify({
+    const userInfo = {
       name: replyForm.name,
       email: replyForm.email
-    }));
+    };
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo); // Update stored user info state
     
     // Reset form and show success message
     setReplyForm(prev => ({
@@ -498,7 +571,7 @@ const handleReplySubmit = async (e, commentId) => {
     
     // Also refresh main comments to update reply count
     if (blogPost && blogPost._id) {
-      fetchCommentsWithReactions(blogPost._id, commentPagination.page);
+      fetchCommentsWithReactions(blogPost._id, commentPagination.page, userInfo);
     }
     
     // Hide reply form after success
@@ -513,7 +586,9 @@ const handleReplySubmit = async (e, commentId) => {
     setReplyLoading(null);
   }
 };
-const fetchReplies= async (commentId) => {
+
+// Toggle replies visibility
+const fetchReplies = async (commentId) => {
   setRepliesLoading(prev => ({ ...prev, [commentId]: true }));
   try {
     const response = await axios.get(
@@ -533,8 +608,6 @@ const fetchReplies= async (commentId) => {
     setRepliesLoading(prev => ({ ...prev, [commentId]: false }));
   }
 };
-// Toggle replies visibility
-
 
 // Fetch comment reactions
 const fetchCommentReactions = async (commentId) => {
@@ -587,6 +660,39 @@ const handleCommentReaction = async (commentId, type) => {
 const submitCommentReaction = async (commentId, type, userInfo) => {
   setCommentReactionLoading(commentId);
   
+  // Optimistic update - update UI immediately
+  const previousReaction = userCommentReactions[commentId];
+  const previousReactions = { ...commentReactions[commentId] } || { likes: 0, dislikes: 0 };
+  
+  // Update comment reaction counts optimistically
+  let newReactions = { ...previousReactions };
+  
+  if (previousReaction === type) {
+    // User is removing their reaction
+    newReactions[type] = Math.max(0, newReactions[type] - 1);
+    setUserCommentReactions(prev => ({
+      ...prev,
+      [commentId]: null
+    }));
+  } else {
+    // User is adding a new reaction or changing reaction
+    if (previousReaction) {
+      // Remove old reaction
+      newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
+    }
+    // Add new reaction
+    newReactions[type] = newReactions[type] + 1;
+    setUserCommentReactions(prev => ({
+      ...prev,
+      [commentId]: type
+    }));
+  }
+  
+  setCommentReactions(prev => ({
+    ...prev,
+    [commentId]: newReactions
+  }));
+  
   try {
     const response = await axios.post(
       `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions`,
@@ -601,7 +707,7 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
     localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
     setStoredUserInfo(userInfo);
     
-    // Update user reaction state
+    // Update user reaction state with server response
     if (response.data.reactionRemoved) {
       setUserCommentReactions(prev => ({
         ...prev,
@@ -614,21 +720,30 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
       }));
     }
     
-    // Refresh comment reaction counts
+    // Refresh comment reaction counts from server to ensure accuracy
     fetchCommentReactions(commentId);
     
     // Close modal if open
     setShowReactionModal(false);
   } catch (err) {
+    // Revert optimistic update on error
+    setCommentReactions(prev => ({
+      ...prev,
+      [commentId]: previousReactions
+    }));
+    setUserCommentReactions(prev => ({
+      ...prev,
+      [commentId]: previousReaction
+    }));
+    
     console.error('Error submitting comment reaction:', err);
     alert(err.response?.data?.message || 'Failed to submit reaction');
   } finally {
     setCommentReactionLoading(null);
   }
 };
-
 // Update your existing fetchComments function to also fetch reactions
-const fetchCommentsWithReactions = async (blogId, page = 1) => {
+const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => {
   setCommentsLoading(true);
   try {
     const response = await axios.get(
@@ -643,14 +758,17 @@ const fetchCommentsWithReactions = async (blogId, page = 1) => {
       total: response.data.pagination.total
     });
     
+    // Use the passed userInfo or fall back to storedUserInfo
+    const currentUserInfo = userInfo || storedUserInfo;
+    
     // Fetch reactions for each comment
     if (response.data.comments.length > 0) {
       response.data.comments.forEach(comment => {
         fetchCommentReactions(comment._id);
         
         // Check user reactions if user info exists
-        if (storedUserInfo && storedUserInfo.email) {
-          checkUserCommentReaction(comment._id, storedUserInfo.email);
+        if (currentUserInfo && currentUserInfo.email) {
+          checkUserCommentReaction(comment._id, currentUserInfo.email);
         }
       });
     }
