@@ -556,7 +556,7 @@
 
 /* Image caption styling */
 .image-caption {
-  margin-top: 1rem;
+  margin-top: -1.5rem;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -565,7 +565,7 @@
   text-align: center;
   background: rgba(248, 249, 250, 0.8);
   border-radius: 8px;
-  border-left: 4px solid #007bff;
+  
 }
 
 /* ========================================
