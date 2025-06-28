@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy } from 'react-icons/fa';
+import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy , FaTelegramPlane, FaPinterest} from 'react-icons/fa';
 import axios from 'axios';
 import './blogPost.css';
 
@@ -384,87 +384,223 @@ const cancelDelete = () => {
     return window.location.href;
   };
 
-  const getShareData = () => {
-    const url = getCurrentUrl();
-    const title = blogPost ? blogPost.title : 'Check out this blog post';
-    const text = blogPost ? `Check out this amazing blog post: "${blogPost.title}"` : 'Check out this blog post';
-    
-    return { url, title, text };
-  };
+// Helper function to clean markdown symbols from text
+const cleanMarkdownSymbols = (text) => {
+  if (!text) return text;
+  
+  return text
+    // Remove leading # symbols (headers)
+    .replace(/^#+\s*/gm, '')
+    // Remove leading * symbols (bold/italic/lists)
+    .replace(/^\*+\s*/gm, '')
+    // Remove ** bold markers
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    // Remove * italic markers (but preserve single * that aren't markdown)
+    .replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '$1')
+    // Clean up any remaining leading whitespace
+    .replace(/^\s+/gm, '')
+    // Remove multiple consecutive spaces
+    .replace(/\s+/g, ' ')
+    .trim();
+};
 
-  const handleNativeShare = async () => {
-    if (navigator.share) {
-      try {
-        const shareData = getShareData();
-        await navigator.share(shareData);
-      } catch (err) {
-        console.log('Error sharing:', err);
-        // Fall back to showing share modal
-        setShowShareModal(true);
+const getShareData = () => {
+  const url = getCurrentUrl();
+  
+  // Clean title from markdown symbols
+  const cleanTitle = blogPost?.title ? cleanMarkdownSymbols(blogPost.title) : 'Check out this blog post';
+  
+  // Clean excerpt/content from markdown symbols
+  const cleanExcerpt = blogPost?.excerpt 
+    ? cleanMarkdownSymbols(blogPost.excerpt)
+    : blogPost?.content 
+      ? cleanMarkdownSymbols(blogPost.content.substring(0, 100)) + '...'
+      : 'An insightful read you shouldn\'t miss!';
+
+  // Enhanced caption with cleaned content
+  const caption = blogPost
+    ? `📖 "${cleanTitle}"
+
+✍️ ${blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
+📅 ${new Date(blogPost.publishedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })}
+
+${blogPost.tags && blogPost.tags.length > 0 
+  ? `🏷️ ${blogPost.tags.map(tag => `${tag.replace(/\s+/g, '')}`).join(' ')}` 
+  : ''}
+
+💡 ${cleanExcerpt}
+
+Read the full article here 👇`
+    : 'Check out this amazing blog post!';
+
+  return {
+    url,
+    title: cleanTitle,
+    text: caption,
+    // Include featured image for platforms that support it
+    ...(blogPost?.featuredImage && { files: [new File([], 'image')] })
+  };
+};
+
+const handleNativeShare = async () => {
+  if (navigator.share) {
+    try {
+      const shareData = getShareData();
+      
+      // For devices that support native sharing with images
+      if (navigator.canShare && blogPost?.featuredImage) {
+        try {
+          // Fetch the image as blob for native sharing
+          const response = await fetch(blogPost.featuredImage);
+          const blob = await response.blob();
+          const file = new File([blob], 'blog-image.jpg', { type: blob.type });
+          
+          const shareDataWithImage = {
+            ...shareData,
+            files: [file]
+          };
+          
+          if (navigator.canShare(shareDataWithImage)) {
+            await navigator.share(shareDataWithImage);
+            return;
+          }
+        } catch (imageError) {
+          console.log('Image sharing not supported, falling back to text only');
+        }
       }
-    } else {
+      
+      // Fallback to text-only sharing
+      await navigator.share(shareData);
+    } catch (err) {
+      console.log('Error sharing:', err);
+      // Fall back to showing share modal
       setShowShareModal(true);
     }
-  };
+  } else {
+    setShowShareModal(true);
+  }
+};
 
-  const handleSocialShare = (platform) => {
-    const { url, title, text } = getShareData();
-    const encodedUrl = encodeURIComponent(url);
-    const encodedTitle = encodeURIComponent(title);
-    const encodedText = encodeURIComponent(text);
-    
-    let shareUrl = '';
-    
-    switch (platform) {
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-        break;
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`;
-        break;
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-        break;
-      case 'whatsapp':
-        shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
-        break;
-      default:
-        return;
-    }
-    
-    window.open(shareUrl, '_blank', 'width=600,height=400');
-  };
+
+const handleSocialShare = (platform) => {
+  const { url, title, text } = getShareData();
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  const encodedText = encodeURIComponent(text);
+  const encodedImage = blogPost?.featuredImage ? encodeURIComponent(blogPost.featuredImage) : '';
+  
+  let shareUrl = '';
+  
+  switch (platform) {
+    case 'facebook':
+      // Facebook with image and description
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+      break;
+    case 'twitter':
+      // Twitter with enhanced text
+      shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`;
+      break;
+    case 'linkedin':
+      // LinkedIn with title, summary and image
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedText}`;
+      break;
+    case 'whatsapp':
+      shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
+      break;
+    case 'telegram':
+      shareUrl = `https://telegram.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+      break;
+    case 'pinterest':
+      // Pinterest specifically for image sharing
+      if (blogPost?.featuredImage) {
+        shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&media=${encodedImage}&description=${encodedText}`;
+      } else {
+        shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`;
+      }
+      break;
+    default:
+      return;
+  }
+  
+  // Open in popup window for better user experience
+  const popup = window.open(
+    shareUrl, 
+    '_blank', 
+    'width=600,height=400,scrollbars=yes,resizable=yes'
+  );
+  
+  // Focus the popup window if it was successfully opened
+  if (popup) {
+    popup.focus();
+  }
+};
+
 
   const handleCopyLink = async () => {
-    const url = getCurrentUrl();
+  const { url, text } = getShareData();
+  const fullText = `${text}\n\n${url}`;
+  
+  try {
+    // Try to copy rich text first
+    if (navigator.clipboard && window.ClipboardItem) {
+      const htmlText = `
+        <div>
+          ${blogPost?.featuredImage ? `<img src="${blogPost.featuredImage}" alt="${blogPost.title}" style="max-width: 300px; border-radius: 8px; margin-bottom: 10px;">` : ''}
+          <h3>${blogPost?.title || 'Blog Post'}</h3>
+          <p>${text}</p>
+          <a href="${url}">${url}</a>
+        </div>
+      `;
+      
+      const blob = new Blob([htmlText], { type: 'text/html' });
+      const textBlob = new Blob([fullText], { type: 'text/plain' });
+      
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': blob,
+          'text/plain': textBlob
+        })
+      ]);
+    } else {
+      // Fallback to plain text
+      await navigator.clipboard.writeText(fullText);
+    }
+    
+    setCopySuccess(true);
+    setTimeout(() => {
+      setCopySuccess(false);
+      setShowShareModal(false);
+    }, 2000);
+  } catch (err) {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = fullText;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
     
     try {
-      await navigator.clipboard.writeText(url);
+      document.execCommand('copy');
       setCopySuccess(true);
       setTimeout(() => {
         setCopySuccess(false);
         setShowShareModal(false);
       }, 2000);
-    } catch (err) {
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = url;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        setCopySuccess(true);
-        setTimeout(() => {
-          setCopySuccess(false);
-          setShowShareModal(false);
-        }, 2000);
-      } catch (fallbackErr) {
-        console.error('Could not copy text: ', fallbackErr);
-      }
-      document.body.removeChild(textArea);
+    } catch (fallbackErr) {
+      console.error('Could not copy text: ', fallbackErr);
+      alert('Could not copy to clipboard. Please copy the URL manually.');
     }
-  };
+    
+    document.body.removeChild(textArea);
+  }
+};
   
   // Format date
   const formatDate = (dateString) => {
@@ -1346,66 +1482,94 @@ const renderContentWithImages = (content) => {
         </div>
       )}
       
-      {/* Share modal */}
-      {showShareModal && (
-        <div className="modal-overlay" onClick={() => setShowShareModal(false)}>
-          <div className="modal-content share-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Share this article</h3>
-            <p>Choose how you'd like to share this blog post</p>
-            
-            <div className="share-options">
-              <button 
-                className="share-option-btn facebook"
-                onClick={() => handleSocialShare('facebook')}
-              >
-                <FaFacebook />
-                Facebook
-              </button>
-              
-              <button 
-                className="share-option-btn twitter"
-                onClick={() => handleSocialShare('twitter')}
-              >
-                <FaTwitter />
-                Twitter
-              </button>
-              
-              <button 
-                className="share-option-btn linkedin"
-                onClick={() => handleSocialShare('linkedin')}
-              >
-                <FaLinkedin />
-                LinkedIn
-              </button>
-              
-              <button 
-                className="share-option-btn whatsapp"
-                onClick={() => handleSocialShare('whatsapp')}
-              >
-                <FaWhatsapp />
-                WhatsApp
-              </button>
-              
-              <button 
-                className="share-option-btn copy-link"
-                onClick={handleCopyLink}
-              >
-                <FaCopy />
-                {copySuccess ? 'Copied!' : 'Copy Link'}
-              </button>
-            </div>
-            
-            <div className="modal-actions">
-              <button 
-                onClick={() => setShowShareModal(false)}
-                className="btn btn-secondary"
-              >
-                Close
-              </button>
-            </div>
-          </div>
+    {showShareModal && (
+  <div className="modal-overlay" onClick={() => setShowShareModal(false)}>
+    <div className="modal-content share-modal" onClick={(e) => e.stopPropagation()}>
+      <h3>Share this article</h3>
+      {blogPost?.featuredImage && (
+        <div className="share-preview">
+          <img 
+            src={blogPost.featuredImage} 
+            alt={blogPost.title}
+            className="share-preview-image"
+          />
         </div>
       )}
+      <p>Choose how you'd like to share "{blogPost?.title}"</p>
+      
+      <div className="share-options">
+        <button 
+          className="share-option-btn facebook"
+          onClick={() => handleSocialShare('facebook')}
+        >
+          <FaFacebook />
+          Facebook
+        </button>
+        
+        <button 
+          className="share-option-btn twitter"
+          onClick={() => handleSocialShare('twitter')}
+        >
+          <FaTwitter />
+          Twitter
+        </button>
+        
+        <button 
+          className="share-option-btn linkedin"
+          onClick={() => handleSocialShare('linkedin')}
+        >
+          <FaLinkedin />
+          LinkedIn
+        </button>
+        
+        <button 
+          className="share-option-btn whatsapp"
+          onClick={() => handleSocialShare('whatsapp')}
+        >
+          <FaWhatsapp />
+          WhatsApp
+        </button>
+        
+        {/* Add Pinterest for image-focused sharing */}
+        {blogPost?.featuredImage && (
+          <button 
+            className="share-option-btn pinterest"
+            onClick={() => handleSocialShare('pinterest')}
+          >
+            <FaPinterest />
+            Pinterest 
+          </button>
+        )}
+        
+        {/* Add Telegram */}
+        <button 
+          className="share-option-btn telegram"
+          onClick={() => handleSocialShare('telegram')}
+        >
+         <FaTelegramPlane /> 
+         Telegram
+        </button>
+        
+        <button 
+          className="share-option-btn copy-link"
+          onClick={handleCopyLink}
+        >
+          <FaCopy />
+          {copySuccess ? 'Copied!' : 'Copy Link'}
+        </button>
+      </div>
+      
+      <div className="modal-actions">
+        <button 
+          onClick={() => setShowShareModal(false)}
+          className="close-button1"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       
       {/* Reaction modal */}
       {showReactionModal && (
