@@ -63,7 +63,7 @@ body {
 }
 
 .cnt-card:hover {
-  transform: translateY(-6px);
+  
   box-shadow: 0 12px 32px var(--shadow-color);
 }
 
@@ -93,7 +93,7 @@ body {
   background: transparent;
   color: var(--primary-black);
   border-color: var(--primary-black);
-  transform: translateY(-2px) scale(1.05);
+  
 }
 
 .cnt-action-icon {
@@ -147,7 +147,7 @@ body {
 }
 
 .cnt-item:hover {
-  transform: translateX(5px);
+  
   box-shadow: 0 8px 20px var(--shadow-color);
 }
 
@@ -221,7 +221,7 @@ body {
 }
 
 .cnt-query-btn:hover {
-  transform: translateY(-4px);
+  transform: translateY(-1px);
   box-shadow: 0 8px 20px var(--shadow-color);
 }
 
@@ -290,7 +290,7 @@ body {
 
 .cnt-btn-primary:hover {
   background: #333333;
-  transform: translateY(-2px);
+ 
 }
 
 .cnt-btn-primary:disabled {
@@ -323,7 +323,7 @@ body {
 
 .cnt-back-btn:hover {
   color: #333333;
-  transform: translateX(-5px);
+ 
 }
 
 .cnt-back-icon {
@@ -445,7 +445,7 @@ body {
 
 .cnt-popup-btn:hover {
   background: #333333;
-  transform: translateY(-2px);
+ 
 }
 
 /* Responsive Design */

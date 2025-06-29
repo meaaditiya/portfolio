@@ -20,7 +20,7 @@ const Contact = () => {
     features: '',
     techPreferences: '',
     additionalInfo: '',
-    image: null
+    files: []
   });
   
   const [errors, setErrors] = useState({});
@@ -110,10 +110,10 @@ const Contact = () => {
     const { id, value, files } = e.target;
     const setter = isProject ? setProjectData : setFormData;
     
-    if (isProject && id === 'image') {
+    if (isProject && id === 'files') {
       setter(prev => ({
         ...prev,
-        image: files[0] || null
+        files: Array.from(files)
       }));
     } else {
       setter(prev => ({
@@ -168,7 +168,13 @@ const Contact = () => {
         if (projectData.features) formDataToSend.append('features', projectData.features);
         if (projectData.techPreferences) formDataToSend.append('techPreferences', projectData.techPreferences);
         if (projectData.additionalInfo) formDataToSend.append('additionalInfo', projectData.additionalInfo);
-        if (projectData.image) formDataToSend.append('image', projectData.image);
+        
+        // Append multiple files
+        if (projectData.files && projectData.files.length > 0) {
+          for (let i = 0; i < projectData.files.length; i++) {
+            formDataToSend.append('files', projectData.files[i]);
+          }
+        }
 
         const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/project/submit', formDataToSend, {
           headers: {
@@ -186,7 +192,7 @@ const Contact = () => {
           features: '',
           techPreferences: '',
           additionalInfo: '',
-          image: null
+          files: []
         });
 
         showFullScreenPopup(
@@ -515,14 +521,24 @@ const Contact = () => {
           </div>
 
           <div className="cnt-form-group">
-            <label htmlFor="image" className="cnt-form-label">Upload Image (Optional)</label>
+            <label htmlFor="files" className="cnt-form-label">Upload Files (Optional - Max 5 files)</label>
             <input
               type="file"
-              id="image"
-              accept="image/*"
+              id="files"
+              multiple
               className="cnt-form-input"
               onChange={(e) => handleChange(e, true)}
             />
+            {projectData.files && projectData.files.length > 0 && (
+              <div className="cnt-file-list">
+                <p>Selected files:</p>
+                <ul>
+                  {Array.from(projectData.files).map((file, index) => (
+                    <li key={index}>{file.name} ({(file.size / 1024).toFixed(2)} KB)</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <button 
