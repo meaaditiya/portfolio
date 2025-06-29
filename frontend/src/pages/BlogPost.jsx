@@ -604,17 +604,59 @@ const handleSocialShare = (platform) => {
   
   // Format date
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-  };
-
+  const now = new Date();
+  const date = new Date(dateString);
+  const diffInSeconds = Math.floor((now - date) / 1000);
   
+  // Less than a minute
+  if (diffInSeconds < 60) {
+    return 'Just now';
+  }
+  
+  // Less than an hour
+  if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+  }
+  
+  // Less than a day
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+  }
+  
+  // Less than a week
+  if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+  }
+  
+  // Less than a month (4 weeks)
+  if (diffInSeconds < 2419200) {
+    const weeks = Math.floor(diffInSeconds / 604800);
+    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+  }
+  
+  // Less than a year
+  if (diffInSeconds < 31536000) {
+    const months = Math.floor(diffInSeconds / 2419200);
+    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+  }
+  
+  // More than a year
+  const years = Math.floor(diffInSeconds / 31536000);
+  return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+};
+
+  const formatBlogDate = (dateString) => {
+  const options = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+   
+  };
+  return new Date(dateString).toLocaleDateString('en-US', options);
+};
 
 
 
@@ -1071,11 +1113,7 @@ const renderContentWithImages = (content) => {
           <h1 className="blog-post-title">{blogPost.title}</h1>
           <div className="blog-post-meta">
             <span className="blog-post-date">
-              {new Date(blogPost.publishedAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+             {formatBlogDate(blogPost.publishedAt)}
             </span>
             <span className="meta-divider">•</span>
             <span className="blog-post-author">

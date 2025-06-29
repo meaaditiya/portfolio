@@ -10,14 +10,14 @@ import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import './index.css';
 import Posts from './pages/Posts';
-import Fetcher from './pages/fetcher'; // Background API fetcher
+ // Background API fetcher
 
 const App = () => {
   return (
     <Router>
       <div className="app-container">
         <Header />
-        <Fetcher /> {/* ✅ Background fetcher runs silently here */}
+      
         <main className="main">
           <Routes>
             <Route path="/" element={<Home />} />

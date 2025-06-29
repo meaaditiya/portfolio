@@ -1411,7 +1411,7 @@
   background: black;
   border-color: transparent;
   color: white;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4), 0 2px 6px rgba(102, 126, 234, 0.2);
+  
 }
 
 .pst-platform-button > * {
@@ -1767,7 +1767,7 @@
   background: black;
   color: white !important;
   border-color: transparent !important;
-  box-shadow: 0 4px 15px rgba(29, 161, 242, 0.4) !important;
+ 
 }
 
 .pst-platform-button.pst-platform-active[data-platform="facebook"],
@@ -1775,15 +1775,15 @@
   background: black;
   color: white !important;
   border-color: transparent !important;
-  box-shadow: 0 4px 15px rgba(24, 119, 242, 0.4) !important;
+ 
 }
 
 .pst-platform-button.pst-platform-active[data-platform="linkedin"],
 .pst-platform-badge[data-platform="linkedin"] {
-  background: linear-gradient(135deg, #0a66c2 0%, #084d94 100%) !important;
+ 
   color: white !important;
   border-color: transparent !important;
-  box-shadow: 0 4px 15px rgba(10, 102, 194, 0.4) !important;
+ 
 }
 
 /* Close Button Styles */
@@ -2034,7 +2034,7 @@
 .pst-tab-button:focus,
 .pst-platform-button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+ 
 }
 
 /* Enhanced gradient backgrounds */
