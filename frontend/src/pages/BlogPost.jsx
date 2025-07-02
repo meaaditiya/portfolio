@@ -404,6 +404,67 @@ const cleanMarkdownSymbols = (text) => {
     .trim();
 };
 
+
+
+
+
+const handleNativeShare = async () => {
+  // Add a check to allow users to choose between native and custom sharing
+  // You might want to add a preference or always show modal for more control
+  const useNativeShare = navigator.share && /Mobi|Android/i.test(navigator.userAgent);
+  
+  if (useNativeShare) {
+    try {
+      const shareData = getShareData();
+      
+      // Try sharing with image for mobile devices
+      if (navigator.canShare && blogPost?.featuredImage) {
+        try {
+          // Check if the image is from the same origin or CORS-enabled
+          const imageUrl = new URL(blogPost.featuredImage, window.location.origin);
+          const response = await fetch(imageUrl.href, {
+            method: 'HEAD',
+            mode: 'cors'
+          });
+          
+          if (response.ok) {
+            const imageResponse = await fetch(imageUrl.href);
+            const blob = await imageResponse.blob();
+            
+            // Get proper file extension from blob type or URL
+            const fileExtension = blob.type.split('/')[1] || 'jpg';
+            const fileName = `blog-image.${fileExtension}`;
+            const file = new File([blob], fileName, { type: blob.type });
+            
+            const shareDataWithImage = {
+              ...shareData,
+              files: [file]
+            };
+            
+            if (navigator.canShare(shareDataWithImage)) {
+              await navigator.share(shareDataWithImage);
+              return;
+            }
+          }
+        } catch (imageError) {
+          console.log('Image sharing failed, falling back to text only:', imageError);
+        }
+      }
+      
+      // Fallback to text-only sharing
+      await navigator.share(shareData);
+    } catch (err) {
+      console.log('Native sharing failed:', err);
+      // Always fall back to modal if native sharing fails
+      setShowShareModal(true);
+    }
+  } else {
+    // Always show modal for desktop/non-mobile devices
+    setShowShareModal(true);
+  }
+};
+
+// Enhanced share data function with better text formatting
 const getShareData = () => {
   const url = getCurrentUrl();
   
@@ -414,7 +475,7 @@ const getShareData = () => {
   const cleanExcerpt = blogPost?.excerpt 
     ? cleanMarkdownSymbols(blogPost.excerpt)
     : blogPost?.content 
-      ? cleanMarkdownSymbols(blogPost.content.substring(0, 100)) + '...'
+      ? cleanMarkdownSymbols(blogPost.content.substring(0, 150)) + '...'
       : 'An insightful read you shouldn\'t miss!';
 
   // Enhanced caption with cleaned content
@@ -429,7 +490,7 @@ const getShareData = () => {
       })}
 
 ${blogPost.tags && blogPost.tags.length > 0 
-  ? `🏷️ ${blogPost.tags.map(tag => `${tag.replace(/\s+/g, '')}`).join(' ')}` 
+  ? `🏷️ ${blogPost.tags.map(tag => `#${tag.replace(/\s+/g, '')}`).join(' ')}` 
   : ''}
 
 💡 ${cleanExcerpt}
@@ -440,134 +501,111 @@ Read the full article here 👇`
   return {
     url,
     title: cleanTitle,
-    text: caption,
-    // Include featured image for platforms that support it
-    ...(blogPost?.featuredImage && { files: [new File([], 'image')] })
+    text: caption
   };
 };
 
-const handleNativeShare = async () => {
-  if (navigator.share) {
-    try {
-      const shareData = getShareData();
-      
-      // For devices that support native sharing with images
-      if (navigator.canShare && blogPost?.featuredImage) {
-        try {
-          // Fetch the image as blob for native sharing
-          const response = await fetch(blogPost.featuredImage);
-          const blob = await response.blob();
-          const file = new File([blob], 'blog-image.jpg', { type: blob.type });
-          
-          const shareDataWithImage = {
-            ...shareData,
-            files: [file]
-          };
-          
-          if (navigator.canShare(shareDataWithImage)) {
-            await navigator.share(shareDataWithImage);
-            return;
-          }
-        } catch (imageError) {
-          console.log('Image sharing not supported, falling back to text only');
-        }
-      }
-      
-      // Fallback to text-only sharing
-      await navigator.share(shareData);
-    } catch (err) {
-      console.log('Error sharing:', err);
-      // Fall back to showing share modal
-      setShowShareModal(true);
-    }
-  } else {
-    setShowShareModal(true);
-  }
-};
-
-
+// Fixed social sharing with better error handling
 const handleSocialShare = (platform) => {
   const { url, title, text } = getShareData();
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
   const encodedText = encodeURIComponent(text);
-  const encodedImage = blogPost?.featuredImage ? encodeURIComponent(blogPost.featuredImage) : '';
+  
+  // For image sharing, use the direct URL instead of blob
+  const imageUrl = blogPost?.featuredImage ? encodeURIComponent(blogPost.featuredImage) : '';
   
   let shareUrl = '';
   
   switch (platform) {
     case 'facebook':
-      // Facebook with image and description
-      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+      // Facebook with better formatting
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`;
       break;
     case 'twitter':
-      // Twitter with enhanced text
-      shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`;
+      // Twitter with hashtags from tags
+      const hashtags = blogPost?.tags 
+        ? blogPost.tags.map(tag => tag.replace(/\s+/g, '')).join(',')
+        : '';
+      shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&hashtags=${hashtags}`;
       break;
     case 'linkedin':
-      // LinkedIn with title, summary and image
-      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedText}`;
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
       break;
     case 'whatsapp':
-      shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
+      shareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
       break;
     case 'telegram':
-      shareUrl = `https://telegram.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+      shareUrl = `https://telegram.me/share/url?url=${encodedUrl}&text=${encodedTitle}`;
       break;
     case 'pinterest':
-      // Pinterest specifically for image sharing
-      if (blogPost?.featuredImage) {
-        shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&media=${encodedImage}&description=${encodedText}`;
+      // Pinterest with image support
+      if (imageUrl) {
+        shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&media=${imageUrl}&description=${encodedTitle}`;
       } else {
-        shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`;
+        shareUrl = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedTitle}`;
       }
       break;
     default:
+      console.error('Unknown platform:', platform);
       return;
   }
   
-  // Open in popup window for better user experience
-  const popup = window.open(
-    shareUrl, 
-    '_blank', 
-    'width=600,height=400,scrollbars=yes,resizable=yes'
-  );
-  
-  // Focus the popup window if it was successfully opened
-  if (popup) {
-    popup.focus();
+  // Open in popup window with proper error handling
+  try {
+    const popup = window.open(
+      shareUrl, 
+      `share-${platform}`,
+      'width=600,height=500,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,status=no'
+    );
+    
+    if (!popup) {
+      // Popup blocked, try opening in new tab
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      popup.focus();
+    }
+  } catch (error) {
+    console.error(`Error opening ${platform} share:`, error);
+    // Fallback to direct navigation
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
   }
 };
 
-
-  const handleCopyLink = async () => {
+// Enhanced copy link function with rich content
+const handleCopyLink = async () => {
   const { url, text } = getShareData();
-  const fullText = `${text}\n\n${url}`;
   
   try {
-    // Try to copy rich text first
+    // Try to copy rich content first (for apps that support it)
     if (navigator.clipboard && window.ClipboardItem) {
-      const htmlText = `
-        <div>
-          ${blogPost?.featuredImage ? `<img src="${blogPost.featuredImage}" alt="${blogPost.title}" style="max-width: 300px; border-radius: 8px; margin-bottom: 10px;">` : ''}
-          <h3>${blogPost?.title || 'Blog Post'}</h3>
-          <p>${text}</p>
-          <a href="${url}">${url}</a>
+      const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 500px;">
+          ${blogPost?.featuredImage ? 
+            `<img src="${blogPost.featuredImage}" alt="${blogPost.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; display: block;">` 
+            : ''
+          }
+          <h3 style="margin: 0 0 8px 0; color: #333;">${blogPost?.title || 'Blog Post'}</h3>
+          <p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${text.substring(0, 200)}...</p>
+          <a href="${url}" style="color: #007bff; text-decoration: none;">${url}</a>
         </div>
       `;
       
-      const blob = new Blob([htmlText], { type: 'text/html' });
-      const textBlob = new Blob([fullText], { type: 'text/plain' });
+      const plainText = `${text}\n\n${url}`;
       
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          'text/html': blob,
-          'text/plain': textBlob
-        })
-      ]);
+      const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+      const textBlob = new Blob([plainText], { type: 'text/plain' });
+      
+      const clipboardItem = new ClipboardItem({
+        'text/html': htmlBlob,
+        'text/plain': textBlob
+      });
+      
+      await navigator.clipboard.write([clipboardItem]);
     } else {
       // Fallback to plain text
-      await navigator.clipboard.writeText(fullText);
+      const plainText = `${text}\n\n${url}`;
+      await navigator.clipboard.writeText(plainText);
     }
     
     setCopySuccess(true);
@@ -575,10 +613,14 @@ const handleSocialShare = (platform) => {
       setCopySuccess(false);
       setShowShareModal(false);
     }, 2000);
+    
   } catch (err) {
-    // Fallback for older browsers
+    console.error('Clipboard API failed:', err);
+    
+    // Final fallback for older browsers
     const textArea = document.createElement('textarea');
-    textArea.value = fullText;
+    const fallbackText = `${text}\n\n${url}`;
+    textArea.value = fallbackText;
     textArea.style.position = 'fixed';
     textArea.style.left = '-999999px';
     textArea.style.top = '-999999px';
@@ -587,21 +629,39 @@ const handleSocialShare = (platform) => {
     textArea.select();
     
     try {
-      document.execCommand('copy');
-      setCopySuccess(true);
-      setTimeout(() => {
-        setCopySuccess(false);
-        setShowShareModal(false);
-      }, 2000);
+      const successful = document.execCommand('copy');
+      if (successful) {
+        setCopySuccess(true);
+        setTimeout(() => {
+          setCopySuccess(false);
+          setShowShareModal(false);
+        }, 2000);
+      } else {
+        throw new Error('Copy command failed');
+      }
     } catch (fallbackErr) {
-      console.error('Could not copy text: ', fallbackErr);
-      alert('Could not copy to clipboard. Please copy the URL manually.');
+      console.error('Fallback copy failed:', fallbackErr);
+      alert('Could not copy to clipboard. Please copy the URL manually: ' + url);
+    } finally {
+      document.body.removeChild(textArea);
     }
-    
-    document.body.removeChild(textArea);
   }
 };
-  
+
+// Add this new function to provide users with sharing options
+const handleShareClick = () => {
+  // Always show modal for better control and consistency
+  setShowShareModal(true);
+};
+
+// Optional: Add a function to detect if native sharing should be preferred
+const shouldUseNativeShare = () => {
+  return navigator.share && 
+         /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) &&
+         !window.matchMedia('(display-mode: standalone)').matches; // Not in PWA mode
+};
+
+
   // Format date
   const formatDate = (dateString) => {
   const now = new Date();
@@ -1152,16 +1212,16 @@ const renderContentWithImages = (content) => {
           </div>
           
           {/* Share section */}
-          <div className="blog-share">
-            
-            <button 
-              className="btn share-btn"
-              onClick={handleNativeShare}
-            >
-              <FaShare />
-              Share
-            </button>
-          </div>
+         {/* Share section */}
+<div className="blog-share">
+  <button 
+    className="btn share-btn"
+    onClick={handleShareClick} // Changed from handleNativeShare
+  >
+    <FaShare />
+    Share
+  </button>
+</div>
           
           {/* Comments section */}
           <div className="blog-comments">
