@@ -1234,7 +1234,6 @@ const renderContentWithImages = (content) => {
     Share
   </button>
 </div>
-          
           {/* Comments section */}
           <div className="blog-comments">
             <div className="comments-header">
@@ -1324,7 +1323,14 @@ const renderContentWithImages = (content) => {
             
 
 <div className="comments-list">
-  {comments.map(comment => (
+  {comments
+    .sort((a, b) => {
+      // Author comments first, then by creation date (newest first)
+      if (a.isAuthorComment && !b.isAuthorComment) return -1;
+      if (!a.isAuthorComment && b.isAuthorComment) return 1;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    })
+    .map(comment => (
     <div className={`comment-card ${comment.isAuthorComment ? 'author-comment' : ''}`} key={comment._id}>
       <div className="comment-header">
         <div className="comment-author-info">
@@ -1466,7 +1472,14 @@ const renderContentWithImages = (content) => {
             </div>
           ) : commentReplies[comment._id] && commentReplies[comment._id].length > 0 ? (
             <div className="replies-list">
-              {commentReplies[comment._id].map(reply => (
+              {commentReplies[comment._id]
+                .sort((a, b) => {
+                  // Author replies first, then by creation date (newest first)
+                  if (a.isAuthorComment && !b.isAuthorComment) return -1;
+                  if (!a.isAuthorComment && b.isAuthorComment) return 1;
+                  return new Date(b.createdAt) - new Date(a.createdAt);
+                })
+                .map(reply => (
                 <div 
                   className={`reply-card ${reply.isAuthorComment ? 'author-reply' : ''}`} 
                   key={reply._id}
@@ -1590,7 +1603,7 @@ const renderContentWithImages = (content) => {
           </div>
         </div>
       )}
-      
+         
     {showShareModal && (
   <div className="modal-overlay" onClick={() => setShowShareModal(false)}>
     <div className="modal-content share-modal" onClick={(e) => e.stopPropagation()}>
