@@ -99,7 +99,19 @@ useEffect(() => {
   fetchBlogDetails();
 }, [slug]);
 
+  // When modal opens
+useEffect(() => {
+  if (showShareModal) {
+    document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
+  }
   
+  // Cleanup on unmount
+  return () => {
+    document.body.classList.remove('modal-open');
+  };
+}, [showShareModal]);
   // Fetch reaction counts
   const fetchReactions = async (blogId) => {
     try {
