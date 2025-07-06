@@ -1761,3 +1761,47 @@ body.modal-open {
     max-height: 80px;
   }
 }
+.video-wrapper {
+ position: relative;
+ width: 100%;
+ height: 0;
+ padding-bottom: 56.25%; /* 16:9 aspect ratio */
+ overflow: hidden;
+}
+
+.video-wrapper iframe {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+ .video-wrapper {
+   padding-bottom: 56.25%; /* Maintain 16:9 on mobile */
+ }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+ .video-wrapper {
+   padding-bottom: 56.25%; /* Still 16:9 for consistency */
+ }
+}
+
+/* Tablet devices */
+@media (min-width: 769px) and (max-width: 1024px) {
+ .video-wrapper {
+   padding-bottom: 56.25%;
+ }
+}
+.video-caption{
+   padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+}
