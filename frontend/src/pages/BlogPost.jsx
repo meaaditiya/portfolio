@@ -578,79 +578,79 @@ Read the full article here 👇`
 
   // Enhanced copy link function with rich content
   const handleCopyLink = async () => {
-    const { url, text } = getShareData();
+  const { url, text } = getShareData();
+  
+  try {
+    // Try to copy rich content first (for apps that support it)
+    if (navigator.clipboard && window.ClipboardItem) {
+      const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 500px;">
+          ${blogPost?.featuredImage ? 
+            `<img src="${blogPost.featuredImage}" alt="${blogPost.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; display: block;">` 
+            : ''
+          }
+          <h3 style="margin: 0 0 8px 0; color: #333;">${blogPost?.title || 'Blog Post'}</h3>
+          <p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${text.replace(/\[IMAGE:[^\]]+\]/g, '').trim()}</p>
+          <a href="${url}" style="color: #007bff; text-decoration: none;">${url}</a>
+        </div>
+      `;
+      
+      const plainText = `${text.replace(/\[IMAGE:[^\]]+\]/g, '').trim()}\n\n${url}`;
+      
+      const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+      const textBlob = new Blob([plainText], { type: 'text/plain' });
+      
+      const clipboardItem = new ClipboardItem({
+        'text/html': htmlBlob,
+        'text/plain': textBlob
+      });
+      
+      await navigator.clipboard.write([clipboardItem]);
+    } else {
+      // Fallback to plain text
+      const plainText = `${text.replace(/\[IMAGE:[^\]]+\]/g, '').trim()}\n\n${url}`;
+      await navigator.clipboard.writeText(plainText);
+    }
+    
+    setCopySuccess(true);
+    setTimeout(() => {
+      setCopySuccess(false);
+      setShowShareModal(false);
+    }, 2000);
+    
+  } catch (err) {
+    console.error('Clipboard API failed:', err);
+    
+    // Final fallback for older browsers
+    const textArea = document.createElement('textarea');
+    const fallbackText = `${text.replace(/\[IMAGE:[^\]]+\]/g, '').trim()}\n\n${url}`;
+    textArea.value = fallbackText;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
     
     try {
-      // Try to copy rich content first (for apps that support it)
-      if (navigator.clipboard && window.ClipboardItem) {
-        const htmlContent = `
-          <div style="font-family: Arial, sans-serif; max-width: 500px;">
-            ${blogPost?.featuredImage ? 
-              `<img src="${blogPost.featuredImage}" alt="${blogPost.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; display: block;">` 
-              : ''
-            }
-            <h3 style="margin: 0 0 8px 0; color: #333;">${blogPost?.title || 'Blog Post'}</h3>
-            <p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${text.substring(0, 200)}...</p>
-            <a href="${url}" style="color: #007bff; text-decoration: none;">${url}</a>
-          </div>
-        `;
-        
-        const plainText = `${text}\n\n${url}`;
-        
-        const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
-        const textBlob = new Blob([plainText], { type: 'text/plain' });
-        
-        const clipboardItem = new ClipboardItem({
-          'text/html': htmlBlob,
-          'text/plain': textBlob
-        });
-        
-        await navigator.clipboard.write([clipboardItem]);
+      const successful = document.execCommand('copy');
+      if (successful) {
+        setCopySuccess(true);
+        setTimeout(() => {
+          setCopySuccess(false);
+          setShowShareModal(false);
+        }, 2000);
       } else {
-        // Fallback to plain text
-        const plainText = `${text}\n\n${url}`;
-        await navigator.clipboard.writeText(plainText);
+        throw new Error('Copy command failed');
       }
-      
-      setCopySuccess(true);
-      setTimeout(() => {
-        setCopySuccess(false);
-        setShowShareModal(false);
-      }, 2000);
-      
-    } catch (err) {
-      console.error('Clipboard API failed:', err);
-      
-      // Final fallback for older browsers
-      const textArea = document.createElement('textarea');
-      const fallbackText = `${text}\n\n${url}`;
-      textArea.value = fallbackText;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      textArea.style.top = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      
-      try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-          setCopySuccess(true);
-          setTimeout(() => {
-            setCopySuccess(false);
-            setShowShareModal(false);
-          }, 2000);
-        } else {
-          throw new Error('Copy command failed');
-        }
-      } catch (fallbackErr) {
-        console.error('Fallback copy failed:', fallbackErr);
-        alert('Could not copy to clipboard. Please copy the URL manually: ' + url);
-      } finally {
-        document.body.removeChild(textArea);
-      }
+    } catch (fallbackErr) {
+      console.error('Fallback copy failed:', fallbackErr);
+      alert('Could not copy to clipboard. Please copy the URL manually: ' + url);
+    } finally {
+      document.body.removeChild(textArea);
     }
-  };
+  }
+};
 
   // Add this new function to provide users with sharing options
   const handleShareClick = () => {
