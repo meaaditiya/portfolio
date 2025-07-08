@@ -997,21 +997,6 @@
 /* Additional CSS to continue/enhance the Posts component */
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #ffffff;
-    --text-secondary: #a8a8a8;
-    --text-light: #6a6a6a;
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #121212;
-    --bg-tertiary: #2a2a2a;
-    --border-light: #333333;
-    --border-medium: #444444;
-    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.6);
-  }
-}
 
 /* Focus Management for Accessibility */
 .pst-post:focus-visible,

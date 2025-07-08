@@ -113,7 +113,7 @@ body {
   background: transparent;
   color: var(--primary-black);
   border-color: var(--primary-black);
-  transform: translateY(-2px) scale(1.05);
+
 }
 
 /* Image Section */
@@ -172,7 +172,7 @@ body {
 }
 
 .about-card:hover {
-  transform: translateY(-6px);
+  
   box-shadow: 0 12px 32px var(--shadow-color);
 }
 
@@ -291,7 +291,7 @@ body {
 
 /* Skills Section */
 .skills-scroll-container {
-  max-height: 300px;
+  max-height: 450px;
   overflow-y: auto;
   padding-right: 0.5rem;
 }
@@ -331,10 +331,11 @@ body {
   text-align: center;
   transition: var(--transition);
   box-shadow: 0 4px 12px var(--shadow-color);
+ margin:10px;
 }
 
 .skill-item:hover {
-  transform: translateY(-4px);
+ 
   box-shadow: 0 8px 20px var(--shadow-color);
 }
 
@@ -378,7 +379,7 @@ body {
 }
 
 .contact-item:hover {
-  transform: translateX(5px);
+  
   box-shadow: 0 8px 20px var(--shadow-color);
 }
 

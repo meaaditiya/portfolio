@@ -1022,48 +1022,7 @@
   cursor: not-allowed;
 }
 
-/* Dark mode support for author comments */
-@media (prefers-color-scheme: dark) {
-  .comment-card.author-comment {
-    border-left-color: #fff;
-    background-color: #2a2a2a;
-  }
-  
-  .author-badge {
-    background-color: #fff;
-    color: #333;
-  }
-  
-  .delete-comment-btn {
-    border-color: #555;
-    color: #ccc;
-  }
-  
-  .delete-comment-btn:hover {
-    background-color: #3a3a3a;
-    border-color: #777;
-    color: #fff;
-  }
 
-  .delete-modal h3 {
-    color: #fff;
-  }
-
-  .delete-modal p {
-    color: #ccc;
-  }
-
-  .btn-danger {
-    background-color: #fff;
-    color: #333;
-    border-color: #fff;
-  }
-
-  .btn-danger:hover {
-    background-color: #ddd;
-    border-color: #ddd;
-  }
-}
 /* Comment Actions */
 .comment-actions {
   display: flex;

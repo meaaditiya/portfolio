@@ -250,7 +250,7 @@ const Contact = () => {
           onClick={() => setActiveSection('project')}
         >
           <FaProjectDiagram className="cnt-action-icon" />
-          Request Project 
+          Request a Project 
         </button>
       </div>
 

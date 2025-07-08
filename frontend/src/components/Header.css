@@ -158,7 +158,7 @@ html {
   background: rgba(255, 255, 255, 0.6);
   padding: 0.5rem;
   border-radius: 16px;
-  border: 1px solid var(--border-color);
+
   backdrop-filter: blur(10px);
 }
 

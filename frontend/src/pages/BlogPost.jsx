@@ -1212,7 +1212,10 @@ Read the full article here 👇`
       </div>
     );
   };
-
+const showDeleteConfirmation = (commentId, email) => {
+    setCommentToDelete({ id: commentId, email });
+    setShowDeleteModal(true);
+  };
   return (
     <section className="section blog-post-section">
       <button
