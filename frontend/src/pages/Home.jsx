@@ -33,19 +33,18 @@ const Home = () => {
       try {
         setIsImageLoading(true);
         setImageError(null);
-        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/profile-image/active?t=${Date.now()}`, {
-          headers: {
-            'Cache-Control': 'no-cache', // Prevent browser caching
-          },
-        });
+        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/profile-image/active?t=${Date.now()}`);
+
         if (response.ok) {
           const blob = await response.blob();
-          // Revoke previous blob URL if it exists
-          if (profileImage) {
-            URL.revokeObjectURL(profileImage);
-          }
-          const imageUrl = URL.createObjectURL(blob);
-          setProfileImage(imageUrl);
+          const newImageUrl = URL.createObjectURL(blob);
+          // Set the new URL and revoke the previous one after setting
+          setProfileImage((prevImage) => {
+            if (prevImage) {
+              URL.revokeObjectURL(prevImage);
+            }
+            return newImageUrl;
+          });
         } else {
           setProfileImage(null);
           setImageError('No active profile image found');
@@ -79,7 +78,7 @@ const Home = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Optional: Poll for image updates every 60 seconds
+    // Poll for image updates every 60 seconds
     const imageRefreshInterval = setInterval(fetchProfileImage, 60000);
 
     return () => {
@@ -91,7 +90,7 @@ const Home = () => {
         URL.revokeObjectURL(profileImage);
       }
     };
-  }, []); // Removed profileImage from dependency array to avoid unnecessary re-renders
+  }, []);
 
   const navigateToPage = (path) => {
     navigate(path);
@@ -142,7 +141,7 @@ const Home = () => {
                       View Projects <ArrowUpRight size={16} />
                     </button>
                     <button
-                      onClick={() => navigateToPage('/contact')}
+tres                    onClick={() => navigateToPage('/contact')}
                       className="secondary-cta"
                     >
                       Get in Touch
@@ -154,13 +153,11 @@ const Home = () => {
               <div className="hero-right">
                 <div className="profile-container">
                   <div className="profile-avatar">
-                    {isImageLoading ? (
-                      <div className="image-loading">Loading...</div>
-                    ) : imageError ? (
-                      <div className="image-error">AT</div>
+                    {isImageLoading || imageError ? (
+                      <div className="image-placeholder">AT</div>
                     ) : profileImage ? (
                       <img
-                        src={`${profileImage}?t=${Date.now()}`}
+                        src={profileImage}
                         alt="Aaditiya Tyagi"
                         style={{
                           width: '100%',
@@ -240,7 +237,7 @@ const Home = () => {
               <Projects />
             </div>
             <button
-              onClick={() => navigateToPage('/projects')}
+              onClick={() => navigateToPage('/ Turchprojects')}
               className="section-nav-btn"
             >
               View All Projects <ArrowUpRight size={16} />

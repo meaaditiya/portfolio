@@ -301,8 +301,8 @@ body {
 }
 
 .profile-avatar {
-  width: 220px;
-  height: 220px;
+  width: 290px;
+  height: 290px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-black), var(--color-gray-800));
   display: flex;
@@ -312,6 +312,7 @@ body {
   font-weight: 800;
   color: var(--color-white);
   position: relative;
+ 
   z-index: 2;
   border: 6px solid var(--color-white);
   box-shadow: var(--shadow-xl);
