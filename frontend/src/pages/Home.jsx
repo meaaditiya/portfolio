@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, ExternalLink} from 'lucide-react';
-// Import the actual page components
+import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, ExternalLink } from 'lucide-react';
 import About from './About';
 import Projects from './Projects';
 import Contact from './Contact';
@@ -11,12 +10,16 @@ const Home = () => {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [quote, setQuote] = useState(null);
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(null);
   const roles = ["Full-Stack Developer", "React Specialist", "Node.js Expert", "UI/UX Enthusiast"];
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100);
-    
+
     const roleInterval = setInterval(() => {
       setCurrentRoleIndex((prevIndex) => (prevIndex + 1) % roles.length);
     }, 4000);
@@ -25,14 +28,70 @@ const Home = () => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
+    // Fetch profile image with cache-busting
+    const fetchProfileImage = async () => {
+      try {
+        setIsImageLoading(true);
+        setImageError(null);
+        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/profile-image/active?t=${Date.now()}`, {
+          headers: {
+            'Cache-Control': 'no-cache', // Prevent browser caching
+          },
+        });
+        if (response.ok) {
+          const blob = await response.blob();
+          // Revoke previous blob URL if it exists
+          if (profileImage) {
+            URL.revokeObjectURL(profileImage);
+          }
+          const imageUrl = URL.createObjectURL(blob);
+          setProfileImage(imageUrl);
+        } else {
+          setProfileImage(null);
+          setImageError('No active profile image found');
+        }
+      } catch (error) {
+        console.error('Error fetching profile image:', error);
+        setProfileImage(null);
+        setImageError('Failed to load profile image');
+      } finally {
+        setIsImageLoading(false);
+      }
+    };
+
+    // Fetch quote
+    const fetchQuote = async () => {
+      try {
+        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/quote');
+        if (response.ok) {
+          const data = await response.json();
+          setQuote(data.quote);
+        } else {
+          setQuote(null);
+        }
+      } catch (error) {
+        console.error('Error fetching quote:', error);
+      }
+    };
+
+    fetchProfileImage();
+    fetchQuote();
+
     window.addEventListener('mousemove', handleMouseMove);
-    
+
+    // Optional: Poll for image updates every 60 seconds
+    const imageRefreshInterval = setInterval(fetchProfileImage, 60000);
+
     return () => {
       clearTimeout(timer);
       clearInterval(roleInterval);
+      clearInterval(imageRefreshInterval);
       window.removeEventListener('mousemove', handleMouseMove);
+      if (profileImage) {
+        URL.revokeObjectURL(profileImage);
+      }
     };
-  }, []);
+  }, []); // Removed profileImage from dependency array to avoid unnecessary re-renders
 
   const navigateToPage = (path) => {
     navigate(path);
@@ -45,16 +104,14 @@ const Home = () => {
   return (
     <div className="portfolio-container">
       {/* Cursor Follower - Desktop Only */}
-      <div 
+      <div
         className="cursor-follower"
         style={{
           left: mousePosition.x - 10,
           top: mousePosition.y - 10,
         }}
       />
-      
-     
-      
+
       {/* Main Content */}
       <main className="portfolio-main">
         {/* Hero Section */}
@@ -65,28 +122,27 @@ const Home = () => {
                 <div className="hero-greeting">
                   <span className="greeting-label">Hello, I'm</span>
                   <h1 className="hero-name">Aaditiya Tyagi</h1>
-                  
+
                   <div className="role-rotator">
                     <span className="role-prefix">—</span>
                     <span className="role-text">{roles[currentRoleIndex]}</span>
                   </div>
-                  
+
                   <p className="hero-description">
                     Crafting digital experiences through clean code and thoughtful design.
                     I specialize in building scalable web applications that solve real-world
                     problems with modern technologies and best practices.
                   </p>
-                  
+
                   <div className="hero-actions">
-                    <button 
-                      onClick={() => navigate('/projects')}
+                    <button
+                      onClick={() => navigateToPage('/projects')}
                       className="primary-cta"
                     >
                       View Projects <ArrowUpRight size={16} />
                     </button>
-                    
-                    <button 
-                      onClick={() => navigate('/contact')}
+                    <button
+                      onClick={() => navigateToPage('/contact')}
                       className="secondary-cta"
                     >
                       Get in Touch
@@ -94,37 +150,63 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="hero-right">
                 <div className="profile-container">
-                  <div className="profile-avatar">AT</div>
+                  <div className="profile-avatar">
+                    {isImageLoading ? (
+                      <div className="image-loading">Loading...</div>
+                    ) : imageError ? (
+                      <div className="image-error">AT</div>
+                    ) : profileImage ? (
+                      <img
+                        src={`${profileImage}?t=${Date.now()}`}
+                        alt="Aaditiya Tyagi"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: '50%',
+                        }}
+                        onError={() => {
+                          setImageError('Failed to load image');
+                          setProfileImage(null);
+                        }}
+                      />
+                    ) : (
+                      <div className="image-placeholder">AT</div>
+                    )}
+                  </div>
                   <div className="profile-glow"></div>
                 </div>
-                
-                <div className="tech-stack">
-                  {[
-                    { name: 'React', icon: <Code size={14} /> },
-                    { name: 'Node.js', icon: <Globe size={14} /> },
-                    { name: 'MongoDB', icon: <Database size={14} /> },
-                    { name: 'Express', icon: <Code size={14} /> },
-                    { name: 'SQL', icon: <Database size={14} /> },
-                    { name: 'Java', icon: <Code size={14} /> }
-                  ].map((tech, index) => (
-                    <div key={tech.name} className="tech-item" style={{ animationDelay: `${index * 0.1}s` }}>
-                      {tech.icon}
-                      <span>{tech.name}</span>
+
+                <div className="quote-section">
+                  {quote && (
+                    <div className="quote-container">
+                      <p className="quote-text">"{quote.content}"</p>
+                      <p className="quote-author">— {quote.author}</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
-            
+
             <div className="social-links">
-              <a href="https://github.com/aaditiyatyagi" target="_blank" rel="noopener noreferrer" className="social-link">
+              <a
+                href="https://github.com/aaditiyatyagi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-link"
+              >
                 <Github size={18} />
                 <span>GitHub</span>
               </a>
-              <a href="https://linkedin.com/in/aaditiyatyagi" target="_blank" rel="noopener noreferrer" className="social-link">
+              <a
+                href="https://linkedin.com/in/aaditiyatyagi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-link"
+              >
                 <Linkedin size={18} />
                 <span>LinkedIn</span>
               </a>
@@ -139,106 +221,84 @@ const Home = () => {
         {/* About Section */}
         <section className="content-section about-section">
           <div className="section-container">
-            <div className="section-header">
-            </div>
-            
-            <div 
-              className="section-content"
-              onClick={() => navigateToPage('/about')}
-              style={{ cursor: 'pointer' }}
-            >
+            <div className="section-content" onClick={() => navigateToPage('/about')} style={{ cursor: 'pointer' }}>
               <About />
             </div>
-             <button 
-                onClick={() => navigateToPage('/about')}
-                className="section-nav-btn"
-              >
-                Read More About Me <ArrowUpRight size={16} />
-              </button>
+            <button
+              onClick={() => navigateToPage('/about')}
+              className="section-nav-btn"
+            >
+              Read More About Me <ArrowUpRight size={16} />
+            </button>
           </div>
         </section>
 
         {/* Projects Section */}
         <section className="content-section projects-section">
           <div className="section-container">
-            <div className="section-header">
-             
-            </div>
-            
-            <div 
-              className="section-content"
-              onClick={() => navigateToPage('/projects')}
-              style={{ cursor: 'pointer' }}
-            >
+            <div className="section-content" onClick={() => navigateToPage('/projects')} style={{ cursor: 'pointer' }}>
               <Projects />
             </div>
-            <button 
-                onClick={() => navigateToPage('/projects')}
-                className="section-nav-btn"
-              >
-                View All Projects <ArrowUpRight size={16} />
-              </button>
+            <button
+              onClick={() => navigateToPage('/projects')}
+              className="section-nav-btn"
+            >
+              View All Projects <ArrowUpRight size={16} />
+            </button>
           </div>
         </section>
 
-        {/* Blog Section - No Import, Just Link */}
-    
-<section className="content-section blog-section">
-  <div className="section-container">
-    <div className="section-header">
-      <div className="section-info">
-        <h2 className="section-title">Writing</h2>
-        <p className="section-subtitle">Thoughts on development and technology</p>
-      </div>
-      <button 
-        onClick={handleBlogRedirect}
-        className="section-nav-btn"
-      >
-        Visit Blog
-      </button>
-    </div>
-    <div 
-      className="blog-intro"
-      onClick={handleBlogRedirect}
-      style={{ cursor: 'pointer' }}
-    >
-      <p className="blog-description">
-        Discover insights, tutorials, and reflections on coding and innovation.
-      </p>
-    </div>
-    <div 
-      className="featured-topics"
-      onClick={handleBlogRedirect}
-      style={{ cursor: 'pointer' }}
-    >
-      <h3 className="topics-title">Featured Topics</h3>
-      <div className="topics-list">
-        <span className="topic-item">React Development</span>
-        <span className="topic-item">Node.js Best Practices</span>
-        <span className="topic-item">UI/UX Design Trends</span>
-      </div>
-    </div>
-  </div>
-</section>
+        {/* Blog Section */}
+        <section className="content-section blog-section">
+          <div className="section-container">
+            <div className="section-header">
+              <div className="section-info">
+                <h2 className="section-title">Writing</h2>
+                <p className="section-subtitle">Thoughts on development and technology</p>
+              </div>
+              <button
+                onClick={handleBlogRedirect}
+                className="section-nav-btn"
+              >
+                Visit Blog <ExternalLink size={16} />
+              </button>
+            </div>
+            <div
+              className="blog-intro"
+              onClick={handleBlogRedirect}
+              style={{ cursor: 'pointer' }}
+            >
+              <p className="blog-description">
+                Discover insights, tutorials, and reflections on coding and innovation.
+              </p>
+            </div>
+            <div
+              className="featured-topics"
+              onClick={handleBlogRedirect}
+              style={{ cursor: 'pointer' }}
+            >
+              <h3 className="topics-title">Featured Topics</h3>
+              <div className="topics-list">
+                <span className="topic-item">React Development</span>
+                <span className="topic-item">Node.js Best Practices</span>
+                <span className="topic-item">UI/UX Design Trends</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Contact Section */}
         <section className="content-section contact-section">
           <div className="section-container">
-            <div className="section-header">
-            </div>
-            
-            <div 
-              className="section-content"
-              onClick={() => navigateToPage('/contact')}
-              style={{ cursor: 'pointer' }}
-            >
+            <div className="section-content" onClick={() => navigateToPage('/contact')} style={{ cursor: 'pointer' }}>
               <Contact />
             </div>
-               <button 
-                onClick={() => navigateToPage('/contact')}
-                className="section-nav-btn"
-              >
-                Get in Touch <ArrowUpRight size={16} />
-              </button>
+            <button
+              onClick={() => navigateToPage('/contact')}
+              className="section-nav-btn"
+            >
+              Get in Touch <ArrowUpRight size={16} />
+            </button>
           </div>
         </section>
       </main>
