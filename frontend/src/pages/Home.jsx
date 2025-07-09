@@ -141,7 +141,7 @@ const Home = () => {
                       View Projects <ArrowUpRight size={16} />
                     </button>
                     <button
-tres                    onClick={() => navigateToPage('/contact')}
+                onClick={() => navigateToPage('/contact')}
                       className="secondary-cta"
                     >
                       Get in Touch
