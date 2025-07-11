@@ -20,7 +20,6 @@ const Community = () => {
   const [fullScreenImage, setFullScreenImage] = useState(null);
 
   useEffect(() => {
-    // Check if user info exists in localStorage
     const savedUserInfo = localStorage.getItem('communityUserInfo');
     if (savedUserInfo) {
       setUserInfo(JSON.parse(savedUserInfo));
@@ -64,7 +63,6 @@ const Community = () => {
     if (!userInfo) return;
 
     try {
-      // Optimistically update the UI
       setPosts(prevPosts => 
         prevPosts.map(post => {
           if (post._id === postId) {
@@ -86,12 +84,10 @@ const Community = () => {
       });
 
       if (!response.ok) {
-        // Revert the optimistic update if the request failed
         fetchPosts();
       }
     } catch (error) {
       console.error('Error liking post:', error);
-      // Revert the optimistic update on error
       fetchPosts();
     }
   };
@@ -133,11 +129,10 @@ const Community = () => {
       });
 
       if (response.ok) {
-        // Optimistically update the comment count
         setPosts(prevPosts => 
           prevPosts.map(post => {
             if (post._id === postId) {
-              return { ...post, comments: [...post.comments, { /* temporary comment object */ }] };
+              return { ...post, comments: [...post.comments, {}] };
             }
             return post;
           })
@@ -156,7 +151,6 @@ const Community = () => {
     if (!userInfo) return;
 
     try {
-      // Optimistically update the comment likes
       setComments(prevComments => {
         const newComments = { ...prevComments };
         Object.keys(newComments).forEach(postId => {
@@ -169,7 +163,6 @@ const Community = () => {
               return { ...comment, likes: newLikes };
             }
             
-            // Check replies too
             if (comment.replies) {
               const updatedReplies = comment.replies.map(reply => {
                 if (reply._id === commentId) {
@@ -197,7 +190,6 @@ const Community = () => {
       });
 
       if (!response.ok) {
-        // Revert the optimistic update if the request failed
         const postId = Object.keys(comments).find(pId => 
           comments[pId].some(comment => comment._id === commentId)
         );
@@ -221,7 +213,6 @@ const Community = () => {
       });
 
       if (response.ok) {
-        // Find the post ID and refresh comments
         const postId = Object.keys(comments).find(pId => 
           comments[pId].some(comment => comment._id === commentId)
         );
@@ -248,7 +239,6 @@ const Community = () => {
       });
 
       if (response.ok) {
-        // Find the post ID and refresh comments
         const postId = Object.keys(comments).find(pId => 
           comments[pId].some(comment => comment._id === commentId)
         );
@@ -268,13 +258,11 @@ const Community = () => {
     if (!userInfo) return;
 
     try {
-      // Optimistically update the poll votes in the UI
       setPosts(prevPosts => 
         prevPosts.map(post => {
           if (post._id === postId) {
             const updatedPollOptions = post.pollOptions.map((option, index) => {
               if (index === optionIndex) {
-                // Add user's vote to the selected option
                 const newVotes = [...option.votes, { userEmail: userInfo.email, userName: userInfo.name }];
                 return { ...option, votes: newVotes };
               }
@@ -301,12 +289,10 @@ const Community = () => {
       } else {
         const error = await response.json();
         alert(error.message);
-        // Revert the optimistic update if the request failed
         fetchPosts();
       }
     } catch (error) {
       console.error('Error voting on poll:', error);
-      // Revert the optimistic update on error
       fetchPosts();
     }
   };
@@ -364,16 +350,16 @@ const Community = () => {
     );
 
     return (
-     <div key={post._id} className="community-post-card">
-  <div className="post-header">
-    <div className="post-author-info">
-      <span className="author-name">{post.author.username}</span>
-      <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
-    </div>
-    {post.postType !== 'image' && (
-      <div className="post-type-badge">{post.postType}</div>
-    )}
-  </div>
+      <div key={post._id} className="community-post-card">
+        <div className="post-header">
+          <div className="post-author-info">
+            <span className="author-name">{post.author.username}</span>
+            <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
+          </div>
+          {post.postType !== 'image' && (
+            <div className="post-type-badge">{post.postType}</div>
+          )}
+        </div>
 
         <div className="post-content">
           <p className="post-description">{post.description}</p>
@@ -533,100 +519,100 @@ const Community = () => {
         </div>
 
         {showComments[post._id] && (
-          <div className="post-comments-section">
-            <div className="add-comment-form">
+          <div className="unique-post-interaction-zone">
+            <div className="unique-comment-input-panel">
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder={replyTo ? "Write a reply..." : "Write a comment..."}
-                className="comment-textarea"
+                className="unique-comment-text-field"
               />
-              <div className="comment-form-actions">
+              <div className="unique-comment-action-controls">
                 {replyTo && (
                   <button
                     onClick={() => setReplyTo(null)}
-                    className="cancel-reply-button"
+                    className="unique-cancel-response-btn"
                   >
                     Cancel Reply
                   </button>
                 )}
                 <button
                   onClick={() => handleComment(post._id)}
-                  className="submit-comment-button"
+                  className="unique-submit-response-btn"
                 >
                   {replyTo ? 'Reply' : 'Comment'}
                 </button>
               </div>
             </div>
 
-            <div className="comments-list">
+            <div className="unique-comment-thread">
               {comments[post._id]?.map((comment) => (
-                <div key={comment._id} className="comment-item">
-                  <div className="comment-header">
-                    <div className="comment-author-info">
-                      <span className="comment-author">{comment.userName}</span>
-                      <span className="comment-date">
+                <div key={comment._id} className="unique-comment-entry">
+                  <div className="unique-comment-header-bar">
+                    <div className="unique-comment-author-details">
+                      <span className="unique-comment-author-name">{comment.userName}</span>
+                      <span className="unique-comment-timestamp">
                         {new Date(comment.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     {comment.userEmail === userInfo?.email && (
                       <button
                         onClick={() => handleDeleteComment(comment._id)}
-                        className="delete-comment-button"
+                        className="unique-comment-remove-btn"
                         title="Delete comment"
                       >
                         ×
                       </button>
                     )}
                   </div>
-                  <p className="comment-text">{comment.comment}</p>
-                  <div className="comment-actions">
+                  <p className="unique-comment-body">{comment.comment}</p>
+                  <div className="unique-comment-interactions">
                     <button
                       onClick={() => handleCommentLike(comment._id)}
-                      className="comment-like-button"
+                      className="unique-comment-like-action"
                     >
-                      <svg className="comment-icon" viewBox="0 0 24 24" fill="currentColor">
+                      <svg className="unique-comment-symbol" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                       </svg>
                       {comment.likes.length}
                     </button>
                     <button
                       onClick={() => setReplyTo(comment._id)}
-                      className="comment-reply-button"
+                      className="unique-comment-reply-action"
                     >
                       Reply
                     </button>
                   </div>
 
                   {comment.replies && comment.replies.length > 0 && (
-                    <div className="comment-replies">
+                    <div className="unique-comment-responses">
                       {comment.replies.map((reply) => (
-                        <div key={reply._id} className="reply-item">
-                          <div className="reply-header">
-                            <div className="reply-author-info">
-                              <span className="reply-author">{reply.userName}</span>
-                              <span className="reply-date">
+                        <div key={reply._id} className="unique-response-item">
+                          <div className="unique-response-header">
+                            <div className="unique-response-author-info">
+                              <span className="unique-response-author">{reply.userName}</span>
+                              <span className="unique-response-timestamp">
                                 {new Date(reply.createdAt).toLocaleDateString()}
                               </span>
                             </div>
                             {reply.userEmail === userInfo?.email && (
                               <button
                                 onClick={() => handleDeleteReply(comment._id, reply._id)}
-                                className="delete-reply-button"
+                                className="unique-response-remove-btn"
                                 title="Delete reply"
                               >
-                                <svg className="delete-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <svg className="unique-delete-symbol" viewBox="0 0 24 24" fill="currentColor">
                                   <path d="M18 6L6 18M6 6l12 12"/>
                                 </svg>
                               </button>
                             )}
                           </div>
-                          <p className="reply-text">{reply.comment}</p>
+                          <p className="unique-response-text">{reply.comment}</p>
                           <button
                             onClick={() => handleCommentLike(reply._id)}
-                            className="reply-like-button"
+                            className="unique-response-like-action"
                           >
-                            <svg className="reply-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <svg className="unique-response-symbol" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
                             {reply.likes.length}
@@ -688,7 +674,6 @@ const Community = () => {
   return (
     <div className="community-container">
       <div className="community-header">
-        
         <div className="user-info">
           <span className="welcome-text">Welcome, {userInfo?.name}!</span>
           <button onClick={handleLogout} className="logout-button">
@@ -735,7 +720,6 @@ const Community = () => {
         </div>
       )}
 
-      {/* Full Screen Image Modal */}
       {fullScreenImage && (
         <div className="fullscreen-image-overlay" onClick={closeFullScreenImage}>
           <div className="fullscreen-image-container">
@@ -743,7 +727,7 @@ const Community = () => {
               onClick={closeFullScreenImage}
               className="fullscreen-close-button"
             >
-             ×
+              ×
             </button>
             <img
               src={fullScreenImage}
