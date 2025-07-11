@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, ArrowLeft,MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin } from 'lucide-react';
 import './Posts.css';
+import Community from './Community.jsx';
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [socialEmbeds, setSocialEmbeds] = useState([]);
@@ -433,7 +434,7 @@ const Posts = () => {
     setActiveTab(tab);
     if (tab === 'social') {
       setSocialCurrentPage(1);
-    } else {
+    } else if (tab==='posts'){
       setCurrentPage(1);
     }
   };
@@ -533,6 +534,13 @@ const Posts = () => {
             <Globe className="pst-icon-sm" />
             <span>Social Media</span>
           </button>
+          <button
+             className={`pst-tab-button ${activeTab === 'community' ? 'pst-tab-active' : ''}`}
+              onClick={() => handleTabChange('community')}
+               >
+              <User className="pst-icon-sm" />
+             <span>Community</span>
+            </button>
         </div>
       </div>
 
@@ -734,6 +742,10 @@ const Posts = () => {
             )}
           </>
         )}
+        {/* Community Tab Content */}
+        {activeTab === 'community' && (
+        <Community />
+           )}
       </div>
 
       {/* Existing Post Modal */}

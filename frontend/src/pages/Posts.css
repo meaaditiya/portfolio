@@ -1298,7 +1298,7 @@
 .pst-tab-buttons {
   display: flex;
   gap: 0.5rem;
-  max-width: 320px;
+  max-width: 600px;
   margin: 0 auto;
   background: #f1f5f9;
   border-radius: 12px;
