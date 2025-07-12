@@ -18,6 +18,7 @@ const Community = () => {
   const [quizResults, setQuizResults] = useState({});
   const [pollVotes, setPollVotes] = useState({});
   const [fullScreenImage, setFullScreenImage] = useState(null);
+  const [activeProfileImage, setActiveProfileImage] = useState(null);
 
   useEffect(() => {
     const savedUserInfo = localStorage.getItem('communityUserInfo');
@@ -28,7 +29,21 @@ const Community = () => {
     }
     
     fetchPosts();
+    fetchActiveProfileImage();
   }, [currentPage]);
+
+  const fetchActiveProfileImage = async () => {
+    try {
+      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/profile-image/active');
+      if (response.ok) {
+        const imageBlob = await response.blob();
+        const imageUrl = URL.createObjectURL(imageBlob);
+        setActiveProfileImage(imageUrl);
+      }
+    } catch (error) {
+      console.error('Error fetching active profile image:', error);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -201,58 +216,78 @@ const Community = () => {
       console.error('Error liking comment:', error);
     }
   };
+const handleDeleteComment = async (commentId) => {
+  if (!userInfo) return;
 
-  const handleDeleteComment = async (commentId) => {
-    if (!userInfo) return;
+  try {
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userEmail: userInfo.email })
+    });
 
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userEmail: userInfo.email })
-      });
-
-      if (response.ok) {
-        const postId = Object.keys(comments).find(pId => 
-          comments[pId].some(comment => comment._id === commentId)
+    if (response.ok) {
+      const postId = Object.keys(comments).find(pId => 
+        comments[pId].some(comment => comment._id === commentId)
+      );
+      if (postId) {
+        // Update the post's comment count
+        setPosts(prevPosts => 
+          prevPosts.map(post => {
+            if (post._id === postId) {
+              return { ...post, comments: post.comments.slice(0, -1) }; // Remove one comment
+            }
+            return post;
+          })
         );
-        if (postId) {
-          fetchComments(postId);
-        }
-      } else {
-        const error = await response.json();
-        alert(error.message);
+        
+        fetchComments(postId);
       }
-    } catch (error) {
-      console.error('Error deleting comment:', error);
+    } else {
+      const error = await response.json();
+      alert(error.message);
     }
-  };
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+  }
+};
+ const handleDeleteReply = async (commentId, replyId) => {
+  if (!userInfo) return;
 
-  const handleDeleteReply = async (commentId, replyId) => {
-    if (!userInfo) return;
+  try {
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}/replies/${replyId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userEmail: userInfo.email })
+    });
 
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}/replies/${replyId}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userEmail: userInfo.email })
-      });
-
-      if (response.ok) {
-        const postId = Object.keys(comments).find(pId => 
-          comments[pId].some(comment => comment._id === commentId)
+    if (response.ok) {
+      const postId = Object.keys(comments).find(pId => 
+        comments[pId].some(comment => comment._id === commentId)
+      );
+      if (postId) {
+        // Update the post's comment count (replies also count as comments)
+        setPosts(prevPosts => 
+          prevPosts.map(post => {
+            if (post._id === postId) {
+              return { ...post, comments: post.comments.slice(0, -1) }; // Remove one comment
+            }
+            return post;
+          })
         );
-        if (postId) {
-          fetchComments(postId);
-        }
-      } else {
-        const error = await response.json();
-        alert(error.message);
+        
+        fetchComments(postId);
       }
-    } catch (error) {
-      console.error('Error deleting reply:', error);
+    } else {
+      const error = await response.json();
+      alert(error.message);
     }
-  };
+  } catch (error) {
+    console.error('Error deleting reply:', error);
+  }
+};
+
+ 
 
   const handlePollVote = async (postId, optionIndex) => {
     if (!userInfo) return;
@@ -343,6 +378,31 @@ const Community = () => {
     setFullScreenImage(null);
   };
 
+  const formatTimeAgo = (dateString) => {
+    const now = new Date();
+    const postDate = new Date(dateString);
+    const diffInSeconds = Math.floor((now - postDate) / 1000);
+
+    if (diffInSeconds < 60) {
+      return 'Just now';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 2592000) {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 31536000) {
+      const months = Math.floor(diffInSeconds / 2592000);
+      return `${months} month${months > 1 ? 's' : ''} ago`;
+    } else {
+      const years = Math.floor(diffInSeconds / 31536000);
+      return `${years} year${years > 1 ? 's' : ''} ago`;
+    }
+  };
+
   const renderPost = (post) => {
     const isLiked = post.likes.some(like => like.userEmail === userInfo?.email);
     const hasVoted = post.postType === 'poll' && post.pollOptions.some(option => 
@@ -351,15 +411,24 @@ const Community = () => {
 
     return (
       <div key={post._id} className="community-post-card">
-        <div className="post-header">
-          <div className="post-author-info">
-            <span className="author-name">{post.author.username}</span>
-            <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
-          </div>
-          {post.postType !== 'image' && (
-            <div className="post-type-badge">{post.postType}</div>
-          )}
-        </div>
+      <div className="post-header">           
+  <div className="post-author-info">             
+    <div className="author-profile-section">               
+      {activeProfileImage && (                 
+        <img                    
+          src={activeProfileImage}                    
+          alt="Profile"                    
+          className="author-profile-image"                 
+        />               
+      )}               
+      <span className="author-name">{post.author.username}</span>
+      <span className="post-time-ago">{formatTimeAgo(post.createdAt)}</span>
+      {post.postType !== 'image' && (                 
+        <div className="post-type-badge">{post.postType}</div>               
+      )}
+    </div>           
+  </div>         
+</div>
 
         <div className="post-content">
           <p className="post-description">{post.description}</p>
@@ -384,6 +453,8 @@ const Community = () => {
                 src={`https://connectwithaaditiyamg.onrender.com/api/community/posts/${post._id}/media/video/0`}
                 controls
                 className="post-video-player"
+                width="100%"
+                height="300"
               />
               {post.caption && <p className="video-caption">{post.caption}</p>}
             </div>
@@ -552,7 +623,7 @@ const Community = () => {
                     <div className="unique-comment-author-details">
                       <span className="unique-comment-author-name">{comment.userName}</span>
                       <span className="unique-comment-timestamp">
-                        {new Date(comment.createdAt).toLocaleDateString()}
+                        {formatTimeAgo(comment.createdAt)}
                       </span>
                     </div>
                     {comment.userEmail === userInfo?.email && (
@@ -592,7 +663,7 @@ const Community = () => {
                             <div className="unique-response-author-info">
                               <span className="unique-response-author">{reply.userName}</span>
                               <span className="unique-response-timestamp">
-                                {new Date(reply.createdAt).toLocaleDateString()}
+                                {formatTimeAgo(reply.createdAt)}
                               </span>
                             </div>
                             {reply.userEmail === userInfo?.email && (
