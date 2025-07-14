@@ -23,7 +23,7 @@ const Posts = () => {
   const [imageLoadStates, setImageLoadStates] = useState({});
   
   // New state for social media functionality
-  const [activeTab, setActiveTab] = useState('posts'); // 'posts' or 'social'
+  const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'posts');
   const [selectedPlatform, setSelectedPlatform] = useState('all'); // 'all', 'twitter', 'facebook', 'linkedin'
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
 
@@ -430,14 +430,15 @@ const Posts = () => {
     document.body.style.overflow = '';
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    if (tab === 'social') {
-      setSocialCurrentPage(1);
-    } else if (tab==='posts'){
-      setCurrentPage(1);
-    }
-  };
+ const handleTabChange = (tab) => {
+  setActiveTab(tab);
+  localStorage.setItem('activeTab', tab); // Add this line
+  if (tab === 'social') {
+    setSocialCurrentPage(1);
+  } else if (tab==='posts'){
+    setCurrentPage(1);
+  }
+};
 
   const handlePlatformChange = (platform) => {
     setSelectedPlatform(platform);
