@@ -1081,7 +1081,10 @@ const toggleMute = (postId) => {
       </div>
 
       {loading ? (
-        <div className="loading-spinner">Loading posts...</div>
+            <div className="pst-loading">
+               <div className="spinner"></div>
+                <p className="pst-loading-text">Bringing for you</p>
+              </div>
       ) : (
         <div className="posts-container">
           {posts.length === 0 ? (

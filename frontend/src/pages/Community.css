@@ -1510,10 +1510,7 @@ select:focus-visible {
   background: var(--text-muted);
 }
 
-::selection {
-  background-color: rgba(29, 155, 240, 0.2);
-  color: var(--text-primary);
-}
+
 
 @media print {
   .community-header,
