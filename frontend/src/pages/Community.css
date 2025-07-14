@@ -1533,3 +1533,14 @@ select:focus-visible {
     margin-bottom: 16px;
   }
 }
+.video-speed-selector {
+  background: white;
+  color: black;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+

@@ -103,6 +103,7 @@ const Community = () => {
               isLoading: false,
               showControls: false,
               quality: 'auto',
+              playbackRate: 1,
               userInteracted: false
             }
           }));
@@ -544,7 +545,16 @@ const toggleMute = (postId) => {
       }
     }
   };
-
+const handleSpeedChange = (postId, speed) => {
+  const video = videoRefs.current[postId];
+  if (video) {
+    video.playbackRate = speed;
+    setVideoStates(prev => ({
+      ...prev,
+      [postId]: { ...prev[postId], playbackRate: speed }
+    }));
+  }
+};
   const handleFullscreen = (postId) => {
     const videoWrapper = videoRefs.current[postId]?.parentElement;
     if (videoWrapper) {
@@ -711,6 +721,23 @@ const toggleMute = (postId) => {
               </div>
 
               <div className="video-controls-right">
+                <select 
+    className="video-speed-selector"
+    value={videoState.playbackRate || 1}
+    onChange={(e) => handleSpeedChange(post._id, parseFloat(e.target.value))}
+  > <option value="0.1">0.1x</option>
+    <option value="0.2">0.2x</option>
+    <option value="0.25">0.25x</option>
+    <option value="0.5">0.5x</option>
+    <option value="0.75">0.75x</option>
+    <option value="1">1x</option>
+    <option value="1.25">1.25x</option>
+    <option value="1.5">1.5x</option>
+    <option value="2">2x</option>
+    <option value="8">8x</option>
+    <option value="16">16x</option>
+    
+  </select>
                 <select 
                   className="video-quality-selector"
                   value={videoState.quality || 'auto'}
