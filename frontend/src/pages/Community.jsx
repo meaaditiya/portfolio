@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import './Community.css';
 
 const Community = () => {
@@ -19,6 +20,8 @@ const Community = () => {
   const [pollVotes, setPollVotes] = useState({});
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [activeProfileImage, setActiveProfileImage] = useState(null);
+  const [videoStates, setVideoStates] = useState({});
+  const videoRefs = useRef({});
 
   useEffect(() => {
     const savedUserInfo = localStorage.getItem('communityUserInfo');
@@ -31,6 +34,39 @@ const Community = () => {
     fetchPosts();
     fetchActiveProfileImage();
   }, [currentPage]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      Object.keys(videoRefs.current).forEach(postId => {
+        const video = videoRefs.current[postId];
+        if (video) {
+          const rect = video.getBoundingClientRect();
+          const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+          
+          if (isVisible && !videoStates[postId]?.userInteracted) {
+            if (video.paused) {
+              video.play().catch(console.error);
+              setVideoStates(prev => ({
+                ...prev,
+                [postId]: { ...prev[postId], isPlaying: true }
+              }));
+            }
+          } else if (!isVisible && !videoStates[postId]?.userInteracted) {
+            if (!video.paused) {
+              video.pause();
+              setVideoStates(prev => ({
+                ...prev,
+                [postId]: { ...prev[postId], isPlaying: false }
+              }));
+            }
+          }
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [videoStates]);
 
   const fetchActiveProfileImage = async () => {
     try {
@@ -52,6 +88,26 @@ const Community = () => {
       const data = await response.json();
       setPosts(data.posts);
       setTotalPages(data.totalPages);
+      
+      // Initialize video states for new posts
+      data.posts.forEach(post => {
+        if (post.postType === 'video') {
+          setVideoStates(prev => ({
+            ...prev,
+            [post._id]: {
+              isPlaying: false,
+              isMuted: true,
+              volume: 0.5,
+              currentTime: 0,
+              duration: 0,
+              isLoading: false,
+              showControls: false,
+              quality: 'auto',
+              userInteracted: false
+            }
+          }));
+        }
+      });
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
@@ -216,78 +272,76 @@ const Community = () => {
       console.error('Error liking comment:', error);
     }
   };
-const handleDeleteComment = async (commentId) => {
-  if (!userInfo) return;
 
-  try {
-    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userEmail: userInfo.email })
-    });
+  const handleDeleteComment = async (commentId) => {
+    if (!userInfo) return;
 
-    if (response.ok) {
-      const postId = Object.keys(comments).find(pId => 
-        comments[pId].some(comment => comment._id === commentId)
-      );
-      if (postId) {
-        // Update the post's comment count
-        setPosts(prevPosts => 
-          prevPosts.map(post => {
-            if (post._id === postId) {
-              return { ...post, comments: post.comments.slice(0, -1) }; // Remove one comment
-            }
-            return post;
-          })
+    try {
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail: userInfo.email })
+      });
+
+      if (response.ok) {
+        const postId = Object.keys(comments).find(pId => 
+          comments[pId].some(comment => comment._id === commentId)
         );
-        
-        fetchComments(postId);
+        if (postId) {
+          setPosts(prevPosts => 
+            prevPosts.map(post => {
+              if (post._id === postId) {
+                return { ...post, comments: post.comments.slice(0, -1) };
+              }
+              return post;
+            })
+          );
+          
+          fetchComments(postId);
+        }
+      } else {
+        const error = await response.json();
+        alert(error.message);
       }
-    } else {
-      const error = await response.json();
-      alert(error.message);
+    } catch (error) {
+      console.error('Error deleting comment:', error);
     }
-  } catch (error) {
-    console.error('Error deleting comment:', error);
-  }
-};
- const handleDeleteReply = async (commentId, replyId) => {
-  if (!userInfo) return;
+  };
 
-  try {
-    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}/replies/${replyId}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userEmail: userInfo.email })
-    });
+  const handleDeleteReply = async (commentId, replyId) => {
+    if (!userInfo) return;
 
-    if (response.ok) {
-      const postId = Object.keys(comments).find(pId => 
-        comments[pId].some(comment => comment._id === commentId)
-      );
-      if (postId) {
-        // Update the post's comment count (replies also count as comments)
-        setPosts(prevPosts => 
-          prevPosts.map(post => {
-            if (post._id === postId) {
-              return { ...post, comments: post.comments.slice(0, -1) }; // Remove one comment
-            }
-            return post;
-          })
+    try {
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/community/comments/${commentId}/replies/${replyId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail: userInfo.email })
+      });
+
+      if (response.ok) {
+        const postId = Object.keys(comments).find(pId => 
+          comments[pId].some(comment => comment._id === commentId)
         );
-        
-        fetchComments(postId);
+        if (postId) {
+          setPosts(prevPosts => 
+            prevPosts.map(post => {
+              if (post._id === postId) {
+                return { ...post, comments: post.comments.slice(0, -x1) };
+              }
+              return post;
+            })
+          );
+          
+          fetchComments(postId);
+        }
+      } else {
+        const error = await response.json();
+        alert(error.message);
       }
-    } else {
-      const error = await response.json();
-      alert(error.message);
+    } catch (error) {
+      console.error('Error deleting reply:', error);
     }
-  } catch (error) {
-    console.error('Error deleting reply:', error);
-  }
-};
-
- 
+  };
 
   const handlePollVote = async (postId, optionIndex) => {
     if (!userInfo) return;
@@ -296,7 +350,9 @@ const handleDeleteComment = async (commentId) => {
       setPosts(prevPosts => 
         prevPosts.map(post => {
           if (post._id === postId) {
-            const updatedPollOptions = post.pollOptions.map((option, index) => {
+            const updatedPollOptions = post
+
+            .pollOptions.map((option, index) => {
               if (index === optionIndex) {
                 const newVotes = [...option.votes, { userEmail: userInfo.email, userName: userInfo.name }];
                 return { ...option, votes: newVotes };
@@ -346,7 +402,7 @@ const handleDeleteComment = async (commentId) => {
     if (!userInfo) return;
 
     const answers = [];
-    for (let i = 0; i < totalQuestions; i++) {
+    for (let i=0; i < totalQuestions; i++) {
       answers.push(quizAnswers[postId]?.[i] || 0);
     }
 
@@ -378,6 +434,153 @@ const handleDeleteComment = async (commentId) => {
     setFullScreenImage(null);
   };
 
+  // Video Player Functions
+  const handleVideoClick = (postId, event) => {
+    event.stopPropagation(); // Prevent click from bubbling to parent elements
+    const video = videoRefs.current[postId];
+    if (!video) {
+      console.error(`Video element not found for postId: ${postId}`);
+      return;
+    }
+
+    console.log(`Video click for postId: ${postId}, paused: ${video.paused}, ended: ${video.ended}`);
+
+    if (video.paused || video.ended) {
+      video.play().then(() => {
+        console.log(`Playing video for postId: ${postId}`);
+        setVideoStates(prev => ({
+          ...prev,
+          [postId]: { ...prev[postId], isPlaying: true, userInteracted: true }
+        }));
+      }).catch(error => {
+        console.error(`Error playing video for postId: ${postId}`, error);
+      });
+    } else {
+      video.pause();
+      console.log(`Pausing video for postId: ${postId}`);
+      setVideoStates(prev => ({
+        ...prev,
+        [postId]: { ...prev[postId], isPlaying: false, userInteracted: true }
+      }));
+    }
+  };
+
+  const handleVolumeChange = (postId, volume) => {
+    const video = videoRefs.current[postId];
+    if (video) {
+      video.volume = volume;
+      setVideoStates(prev => ({
+        ...prev,
+        [postId]: { ...prev[postId], volume, isMuted: volume === 0 }
+      }));
+    }
+  };
+
+const toggleMute = (postId) => {
+  const video = videoRefs.current[postId];
+  if (video) {
+    const newMutedState = !video.muted;
+    video.muted = newMutedState;
+    setVideoStates(prev => ({
+      ...prev,
+      [postId]: { ...prev[postId], isMuted: newMutedState }
+    }));
+  }
+};
+
+  const handleTimeUpdate = (postId) => {
+    const video = videoRefs.current[postId];
+    if (video) {
+      setVideoStates(prev => ({
+        ...prev,
+        [postId]: { 
+          ...prev[postId], 
+          currentTime: video.currentTime,
+          duration: video.duration || 0
+        }
+      }));
+    }
+  };
+
+  const handleProgressClick = (postId, event) => {
+    const video = videoRefs.current[postId];
+    const progressBar = event.currentTarget;
+    const clickX = event.clientX - progressBar.getBoundingClientRect().left;
+    const width = progressBar.offsetWidth;
+    const percentage = clickX / width;
+    
+    if (video && video.duration) {
+      video.currentTime = percentage * video.duration;
+    }
+  };
+
+  const handleQualityChange = (postId, quality) => {
+    const video = videoRefs.current[postId];
+    if (video) {
+      const currentTime = video.currentTime;
+      const isPlaying = !video.paused;
+      
+      // Construct URL for the selected quality
+      const qualityMap = {
+        '1080p': '1080p',
+        '720p': '720p',
+        '480p': '480p',
+        '360p': '360p',
+        'auto': '0'
+      };
+      const qualityPath = qualityMap[quality] || '0';
+      video.src = `https://connectwithaaditiyamg.onrender.com/api/community/posts/${postId}/media/video/${qualityPath}`;
+      
+      setVideoStates(prev => ({
+        ...prev,
+        [postId]: { ...prev[postId], quality, isLoading: true }
+      }));
+
+      video.load();
+      video.currentTime = currentTime;
+      
+      if (isPlaying) {
+        video.play().catch(console.error);
+      }
+    }
+  };
+
+  const handleFullscreen = (postId) => {
+    const videoWrapper = videoRefs.current[postId]?.parentElement;
+    if (videoWrapper) {
+      if (!document.fullscreenElement) {
+        videoWrapper.requestFullscreen().catch(err => {
+          console.error('Error attempting to enable fullscreen:', err);
+        });
+      } else {
+        document.exitFullscreen().catch(err => {
+          console.error('Error attempting to exit fullscreen:', err);
+        });
+      }
+    }
+  };
+
+  const showVideoControls = (postId) => {
+    setVideoStates(prev => ({
+      ...prev,
+      [postId]: { ...prev[postId], showControls: true }
+    }));
+  };
+
+  const hideVideoControls = (postId) => {
+    setVideoStates(prev => ({
+      ...prev,
+      [postId]: { ...prev[postId], showControls: false }
+    }));
+  };
+
+  const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const formatTimeAgo = (dateString) => {
     const now = new Date();
     const postDate = new Date(dateString);
@@ -403,6 +606,141 @@ const handleDeleteComment = async (commentId) => {
     }
   };
 
+  const renderVideoPlayer = (post) => {
+    const videoState = videoStates[post._id] || {};
+    const progress = videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0;
+
+    return (
+      <div className="advanced-video-container">
+        <div 
+          className="video-wrapper"
+          onMouseEnter={() => showVideoControls(post._id)}
+          onMouseLeave={() => hideVideoControls(post._id)}
+        >
+          <video
+            ref={el => videoRefs.current[post._id] = el}
+            src={`https://connectwithaaditiyamg.onrender.com/api/community/posts/${post._id}/media/video/0`}
+            className="advanced-video-player"
+            loop
+            muted={videoState.isMuted}
+            onTimeUpdate={() => handleTimeUpdate(post._id)}
+            onLoadedMetadata={() => handleTimeUpdate(post._id)}
+            onClick={(e) => handleVideoClick(post._id, e)}
+            onWaiting={() => setVideoStates(prev => ({ ...prev, [post._id]: { ...prev[post._id], isLoading: true } }))}
+            onCanPlay={() => setVideoStates(prev => ({ ...prev, [post._id]: { ...prev[post._id], isLoading: false } }))}
+          />
+          
+          {/* Loading Spinner */}
+          {videoState.isLoading && (
+            <div className="video-loading-spinner">
+              <div className="spinner"></div>
+            </div>
+          )}
+
+        
+
+          {/* Video Controls */}
+          <div className={`video-controls ${videoState.showControls ? 'visible' : ''}`}>
+            <div className="video-controls-background"></div>
+            
+            {/* Progress Bar */}
+            <div className="video-progress-container">
+              <div 
+                className="video-progress-bar"
+                onClick={(e) => handleProgressClick(post._id, e)}
+              >
+                <div 
+                  className="video-progress-fill"
+                  style={{ width: `${progress}%` }}
+                ></div>
+                <div 
+                  className="video-progress-handle"
+                  style={{ left: `${progress}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Control Buttons */}
+            <div className="video-controls-bar">
+              <div className="video-controls-left">
+                <button 
+                  className="video-control-button"
+                  onClick={(e) => handleVideoClick(post._id, e)}
+                >
+                  {videoState.isPlaying ? (
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  )}
+                </button>
+
+                <button 
+                  className="video-control-button"
+                  onClick={() => toggleMute(post._id)}
+                >
+                  {videoState.isMuted ? (
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                  )}
+                </button>
+
+                <div className="video-volume-container">
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={videoState.volume || 0.5}
+                    onChange={(e) => handleVolumeChange(post._id, parseFloat(e.target.value))}
+                    className="video-volume-slider"
+                  />
+                </div>
+
+                <span className="video-time">
+                  {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
+                </span>
+              </div>
+
+              <div className="video-controls-right">
+                <select 
+                  className="video-quality-selector"
+                  value={videoState.quality || 'auto'}
+                  onChange={(e) => handleQualityChange(post._id, e.target.value)}
+                >
+                  <option value="auto">Auto</option>
+                  <option value="1080p">1080p</option>
+                  <option value="720p">720p</option>
+                  <option value="480p">480p</option>
+                  <option value="360p">360p</option>
+                </select>
+
+                <button 
+                  className="video-control-button"
+                  onClick={() => handleFullscreen(post._id)}
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {post.caption && <p className="video-caption">{post.caption}</p>}
+      </div>
+    );
+  };
+
   const renderPost = (post) => {
     const isLiked = post.likes.some(like => like.userEmail === userInfo?.email);
     const hasVoted = post.postType === 'poll' && post.pollOptions.some(option => 
@@ -411,24 +749,24 @@ const handleDeleteComment = async (commentId) => {
 
     return (
       <div key={post._id} className="community-post-card">
-      <div className="post-header">           
-  <div className="post-author-info">             
-    <div className="author-profile-section">               
-      {activeProfileImage && (                 
-        <img                    
-          src={activeProfileImage}                    
-          alt="Profile"                    
-          className="author-profile-image"                 
-        />               
-      )}               
-      <span className="author-name">{post.author.username}</span>
-      <span className="post-time-ago">{formatTimeAgo(post.createdAt)}</span>
-      {post.postType !== 'image' && (                 
-        <div className="post-type-badge">{post.postType}</div>               
-      )}
-    </div>           
-  </div>         
-</div>
+        <div className="post-header">           
+          <div className="post-author-info">             
+            <div className="author-profile-section">               
+              {activeProfileImage && (                 
+                <img                    
+                  src={activeProfileImage}                    
+                  alt="Profile"                    
+                  className="author-profile-image"                 
+                />               
+              )}               
+              <span className="author-name">{post.author.username}</span>
+              <span className="post-time-ago">{formatTimeAgo(post.createdAt)}</span>
+              {post.postType !== 'image' && (                 
+                <div className="post-type-badge">{post.postType}</div>               
+              )}
+            </div>           
+          </div>         
+        </div>
 
         <div className="post-content">
           <p className="post-description">{post.description}</p>
@@ -447,18 +785,7 @@ const handleDeleteComment = async (commentId) => {
             </div>
           )}
 
-          {post.postType === 'video' && post.video && (
-            <div className="post-video">
-              <video 
-                src={`https://connectwithaaditiyamg.onrender.com/api/community/posts/${post._id}/media/video/0`}
-                controls
-                className="post-video-player"
-                width="100%"
-                height="300"
-              />
-              {post.caption && <p className="video-caption">{post.caption}</p>}
-            </div>
-          )}
+          {post.postType === 'video' && post.video && renderVideoPlayer(post)}
 
           {post.postType === 'poll' && (
             <div className="post-poll">
