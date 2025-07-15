@@ -21,6 +21,7 @@ const Community = () => {
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [activeProfileImage, setActiveProfileImage] = useState(null);
   const [videoStates, setVideoStates] = useState({});
+  const [controlsTimeout, setControlsTimeout] = useState({});
   const videoRefs = useRef({});
 
   useEffect(() => {
@@ -67,7 +68,13 @@ const Community = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [videoStates]);
-
+useEffect(() => {
+  return () => {
+    Object.values(controlsTimeout).forEach(timeoutId => {
+      if (timeoutId) clearTimeout(timeoutId);
+    });
+  };
+}, [controlsTimeout]);
   const fetchActiveProfileImage = async () => {
     try {
       const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/profile-image/active');
@@ -437,34 +444,37 @@ const Community = () => {
 
   // Video Player Functions
   const handleVideoClick = (postId, event) => {
-    event.stopPropagation(); // Prevent click from bubbling to parent elements
-    const video = videoRefs.current[postId];
-    if (!video) {
-      console.error(`Video element not found for postId: ${postId}`);
-      return;
-    }
+  event.stopPropagation();
+  const video = videoRefs.current[postId];
+  if (!video) {
+    console.error(`Video element not found for postId: ${postId}`);
+    return;
+  }
 
-    console.log(`Video click for postId: ${postId}, paused: ${video.paused}, ended: ${video.ended}`);
+  // Show controls when video is clicked
+  showVideoControls(postId);
 
-    if (video.paused || video.ended) {
-      video.play().then(() => {
-        console.log(`Playing video for postId: ${postId}`);
-        setVideoStates(prev => ({
-          ...prev,
-          [postId]: { ...prev[postId], isPlaying: true, userInteracted: true }
-        }));
-      }).catch(error => {
-        console.error(`Error playing video for postId: ${postId}`, error);
-      });
-    } else {
-      video.pause();
-      console.log(`Pausing video for postId: ${postId}`);
+  console.log(`Video click for postId: ${postId}, paused: ${video.paused}, ended: ${video.ended}`);
+
+  if (video.paused || video.ended) {
+    video.play().then(() => {
+      console.log(`Playing video for postId: ${postId}`);
       setVideoStates(prev => ({
         ...prev,
-        [postId]: { ...prev[postId], isPlaying: false, userInteracted: true }
+        [postId]: { ...prev[postId], isPlaying: true, userInteracted: true }
       }));
-    }
-  };
+    }).catch(error => {
+      console.error(`Error playing video for postId: ${postId}`, error);
+    });
+  } else {
+    video.pause();
+    console.log(`Pausing video for postId: ${postId}`);
+    setVideoStates(prev => ({
+      ...prev,
+      [postId]: { ...prev[postId], isPlaying: false, userInteracted: true }
+    }));
+  }
+};
 
   const handleVolumeChange = (postId, volume) => {
     const video = videoRefs.current[postId];
@@ -575,14 +585,38 @@ const handleSpeedChange = (postId, speed) => {
       ...prev,
       [postId]: { ...prev[postId], showControls: true }
     }));
-  };
-
-  const hideVideoControls = (postId) => {
+    if (controlsTimeout[postId]) {
+    clearTimeout(controlsTimeout[postId]);
+  }
+   const timeoutId = setTimeout(() => {
     setVideoStates(prev => ({
       ...prev,
       [postId]: { ...prev[postId], showControls: false }
     }));
+  }, 5000);
+  
+  setControlsTimeout(prev => ({
+    ...prev,
+    [postId]: timeoutId
+  }));
   };
+
+ const hideVideoControls = (postId) => {
+  // Clear the timeout when manually hiding
+  if (controlsTimeout[postId]) {
+    clearTimeout(controlsTimeout[postId]);
+    setControlsTimeout(prev => {
+      const newTimeouts = { ...prev };
+      delete newTimeouts[postId];
+      return newTimeouts;
+    });
+  }
+  
+  setVideoStates(prev => ({
+    ...prev,
+    [postId]: { ...prev[postId], showControls: false }
+  }));
+};
 
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return '0:00';
@@ -616,157 +650,156 @@ const handleSpeedChange = (postId, speed) => {
     }
   };
 
-  const renderVideoPlayer = (post) => {
-    const videoState = videoStates[post._id] || {};
-    const progress = videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0;
+ const renderVideoPlayer = (post) => {
+  const videoState = videoStates[post._id] || {};
+  const progress = videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0;
 
-    return (
-      <div className="advanced-video-container">
-        <div 
-          className="video-wrapper"
-          onMouseEnter={() => showVideoControls(post._id)}
-          onMouseLeave={() => hideVideoControls(post._id)}
-        >
-          <video
-            ref={el => videoRefs.current[post._id] = el}
-            src={`https://connectwithaaditiyamg.onrender.com/api/community/posts/${post._id}/media/video/0`}
-            className="advanced-video-player"
-            loop
-            muted={videoState.isMuted}
-            onTimeUpdate={() => handleTimeUpdate(post._id)}
-            onLoadedMetadata={() => handleTimeUpdate(post._id)}
-            onClick={(e) => handleVideoClick(post._id, e)}
-            onWaiting={() => setVideoStates(prev => ({ ...prev, [post._id]: { ...prev[post._id], isLoading: true } }))}
-            onCanPlay={() => setVideoStates(prev => ({ ...prev, [post._id]: { ...prev[post._id], isLoading: false } }))}
-          />
-          
-          {/* Loading Spinner */}
-          {videoState.isLoading && (
-            <div className="video-loading-spinner">
-              <div className="spinner"></div>
-            </div>
-          )}
-
+  return (
+    <div className="advanced-video-container">
+      <div 
+        className="video-wrapper"
+        onMouseEnter={() => showVideoControls(post._id)}
+        onMouseLeave={() => hideVideoControls(post._id)}
+        onMouseMove={() => showVideoControls(post._id)} // Add this to reset timer on mouse movement
+      >
+        <video
+          ref={el => videoRefs.current[post._id] = el}
+          src={`https://connectwithaaditiyamg.onrender.com/api/community/posts/${post._id}/media/video/0`}
+          className="advanced-video-player"
+          loop
+          muted={videoState.isMuted}
+          onTimeUpdate={() => handleTimeUpdate(post._id)}
+          onLoadedMetadata={() => handleTimeUpdate(post._id)}
+          onClick={(e) => handleVideoClick(post._id, e)}
+          onWaiting={() => setVideoStates(prev => ({ ...prev, [post._id]: { ...prev[post._id], isLoading: true } }))}
+          onCanPlay={() => setVideoStates(prev => ({ ...prev, [post._id]: { ...prev[post._id], isLoading: false } }))}
+        />
         
+        {/* Loading Spinner */}
+        {videoState.isLoading && (
+          <div className="video-loading-spinner">
+            <div className="spinner"></div>
+          </div>
+        )}
 
-          {/* Video Controls */}
-          <div className={`video-controls ${videoState.showControls ? 'visible' : ''}`}>
-            <div className="video-controls-background"></div>
-            
-            {/* Progress Bar */}
-            <div className="video-progress-container">
+        {/* Video Controls */}
+        <div className={`video-controls ${videoState.showControls ? 'visible' : ''}`}>
+          <div className="video-controls-background"></div>
+          
+          {/* Progress Bar */}
+          <div className="video-progress-container">
+            <div 
+              className="video-progress-bar"
+              onClick={(e) => handleProgressClick(post._id, e)}
+              onMouseDown={() => showVideoControls(post._id)} // Reset timer when interacting
+            >
               <div 
-                className="video-progress-bar"
-                onClick={(e) => handleProgressClick(post._id, e)}
+                className="video-progress-fill"
+                style={{ width: `${progress}%` }}
+              ></div>
+              <div 
+                className="video-progress-handle"
+                style={{ left: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Control Buttons */}
+          <div className="video-controls-bar">
+            <div className="video-controls-left">
+              <button 
+                className="video-control-button"
+                onClick={(e) => handleVideoClick(post._id, e)}
+                onMouseDown={() => showVideoControls(post._id)} // Reset timer when clicking buttons
               >
-                <div 
-                  className="video-progress-fill"
-                  style={{ width: `${progress}%` }}
-                ></div>
-                <div 
-                  className="video-progress-handle"
-                  style={{ left: `${progress}%` }}
-                ></div>
+                {videoState.isPlaying ? (
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                )}
+              </button>
+
+              <button 
+                className="video-control-button"
+                onClick={() => toggleMute(post._id)}
+                onMouseDown={() => showVideoControls(post._id)}
+              >
+                {/* SVG content remains the same */}
+              </button>
+
+              <div className="video-volume-container">
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={videoState.volume || 0.5}
+                  onChange={(e) => handleVolumeChange(post._id, parseFloat(e.target.value))}
+                  onMouseDown={() => showVideoControls(post._id)}
+                  className="video-volume-slider"
+                />
               </div>
+
+              <span className="video-time">
+                {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
+              </span>
             </div>
 
-            {/* Control Buttons */}
-            <div className="video-controls-bar">
-              <div className="video-controls-left">
-                <button 
-                  className="video-control-button"
-                  onClick={(e) => handleVideoClick(post._id, e)}
-                >
-                  {videoState.isPlaying ? (
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                    </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  )}
-                </button>
+            <div className="video-controls-right">
+              <select 
+                className="video-speed-selector"
+                value={videoState.playbackRate || 1}
+                onChange={(e) => handleSpeedChange(post._id, parseFloat(e.target.value))}
+                onMouseDown={() => showVideoControls(post._id)}
+              >
+                <option value="0.1">0.1x</option>
+                <option value="0.2">0.2x</option>
+                <option value="0.25">0.25x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1">1x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2x</option>
+                <option value="8">8x</option>
+                <option value="16">16x</option>
+              </select>
+              
+              <select 
+                className="video-quality-selector"
+                value={videoState.quality || 'auto'}
+                onChange={(e) => handleQualityChange(post._id, e.target.value)}
+                onMouseDown={() => showVideoControls(post._id)}
+              >
+                <option value="auto">Auto</option>
+                <option value="1080p">1080p</option>
+                <option value="720p">720p</option>
+                <option value="480p">480p</option>
+                <option value="360p">360p</option>
+              </select>
 
-                <button 
-                  className="video-control-button"
-                  onClick={() => toggleMute(post._id)}
-                >
-                  {videoState.isMuted ? (
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-                    </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                    </svg>
-                  )}
-                </button>
-
-                <div className="video-volume-container">
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={videoState.volume || 0.5}
-                    onChange={(e) => handleVolumeChange(post._id, parseFloat(e.target.value))}
-                    className="video-volume-slider"
-                  />
-                </div>
-
-                <span className="video-time">
-                  {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
-                </span>
-              </div>
-
-              <div className="video-controls-right">
-                <select 
-    className="video-speed-selector"
-    value={videoState.playbackRate || 1}
-    onChange={(e) => handleSpeedChange(post._id, parseFloat(e.target.value))}
-  > <option value="0.1">0.1x</option>
-    <option value="0.2">0.2x</option>
-    <option value="0.25">0.25x</option>
-    <option value="0.5">0.5x</option>
-    <option value="0.75">0.75x</option>
-    <option value="1">1x</option>
-    <option value="1.25">1.25x</option>
-    <option value="1.5">1.5x</option>
-    <option value="2">2x</option>
-    <option value="8">8x</option>
-    <option value="16">16x</option>
-    
-  </select>
-                <select 
-                  className="video-quality-selector"
-                  value={videoState.quality || 'auto'}
-                  onChange={(e) => handleQualityChange(post._id, e.target.value)}
-                >
-                  <option value="auto">Auto</option>
-                  <option value="1080p">1080p</option>
-                  <option value="720p">720p</option>
-                  <option value="480p">480p</option>
-                  <option value="360p">360p</option>
-                </select>
-
-                <button 
-                  className="video-control-button"
-                  onClick={() => handleFullscreen(post._id)}
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                  </svg>
-                </button>
-              </div>
+              <button 
+                className="video-control-button"
+                onClick={() => handleFullscreen(post._id)}
+                onMouseDown={() => showVideoControls(post._id)}
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
-        
-        {post.caption && <p className="video-caption">{post.caption}</p>}
       </div>
-    );
-  };
+      
+      {post.caption && <p className="video-caption">{post.caption}</p>}
+    </div>
+  );
+};
 
   const renderPost = (post) => {
     const isLiked = post.likes.some(like => like.userEmail === userInfo?.email);

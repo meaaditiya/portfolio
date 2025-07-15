@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BlogSkeletonLoader from './BlogSkeletonLoader';
 import './blog.css';
 
 const Blog = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Set initial loading to true
   const [error, setError] = useState(null);
   const [limit, setLimit] = useState(6); // Initial limit of 6 blogs
   const [hasMore, setHasMore] = useState(true); // Track if more blogs are available
+  const [isLoadingMore, setIsLoadingMore] = useState(false); // Track load more state
 
   // Function to extract domain from URL
   const getImageSource = (imageUrl) => {
@@ -46,9 +48,36 @@ const Blog = () => {
   }, [limit]); // Re-run when limit changes
 
   // Handle Load More button click
-  const handleLoadMore = () => {
-    setLimit((prevLimit) => prevLimit + 2); // Increase limit by 2
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    const newLimit = limit + 2;
+    
+    try {
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=${newLimit}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch more blogs');
+      }
+      const data = await response.json();
+      setBlogs(data.blogs);
+      setLimit(newLimit);
+      setHasMore(data.blogs.length === newLimit);
+    } catch (err) {
+      setError('Failed to load more blogs');
+      console.error(err);
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
+
+  // Show skeleton loader on initial load
+  if (isLoading) {
+    return (
+      <section className="section">
+        <h2 className="section-title">Blogs</h2>
+        <BlogSkeletonLoader count={6} />
+      </section>
+    );
+  }
 
   return (
     <section className="section">
@@ -58,7 +87,7 @@ const Blog = () => {
         <div className="error">{error}</div>
       )}
 
-      {!isLoading && !error && blogs.length === 0 && (
+      {!error && blogs.length === 0 && (
         <div className="empty-state">
           <p>No blog posts available at the moment.</p>
         </div>
@@ -107,15 +136,19 @@ const Blog = () => {
         ))}
       </div>
 
-      {hasMore && !isLoading && !error && (
+      {hasMore && !error && (
         <div className="load-more-container">
-          <button className="load-more-button" onClick={handleLoadMore}>
-            Load More
+          <button 
+            className="load-more-button" 
+            onClick={handleLoadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? 'Loading...' : 'Load More'}
           </button>
         </div>
       )}
 
-      {isLoading && (
+      {isLoadingMore && (
         <div className="loading">
           <div className="spinner"></div>
         </div>

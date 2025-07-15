@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Heart, ArrowLeft,MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin } from 'lucide-react';
 import './Posts.css';
 import Community from './Community.jsx';
+import SkeletonLoader from './PostSkeleton.jsx';
+
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [socialEmbeds, setSocialEmbeds] = useState([]);
@@ -13,7 +15,7 @@ const Posts = () => {
   const [socialCurrentPage, setSocialCurrentPage] = useState(1);
   const [socialTotalPages, setSocialTotalPages] = useState(1);
   const [commentInput, setCommentInput] = useState('');
-   const [userInfo, setUserInfo] = useState({
+  const [userInfo, setUserInfo] = useState({
     name: localStorage.getItem('userName') || '',
     email: localStorage.getItem('userEmail') || '',
   });
@@ -35,8 +37,10 @@ const Posts = () => {
   ];
 
   useEffect(() => {
-    fetchPosts();
-  }, [currentPage]);
+    if (activeTab === 'posts') {
+      fetchPosts();
+    }
+  }, [currentPage, activeTab]);
 
   useEffect(() => {
     if (activeTab === 'social') {
@@ -218,6 +222,8 @@ const Posts = () => {
   const handleUserInfoSubmit = (e) => {
     e.preventDefault();
     if (userInfo.name && userInfo.email) {
+      localStorage.setItem('userName', userInfo.name);
+      localStorage.setItem('userEmail', userInfo.email);
       setShowUserForm(false);
     } else {
       alert('Please provide both name and email.');
@@ -430,15 +436,15 @@ const Posts = () => {
     document.body.style.overflow = '';
   };
 
- const handleTabChange = (tab) => {
-  setActiveTab(tab);
-  localStorage.setItem('activeTab', tab); // Add this line
-  if (tab === 'social') {
-    setSocialCurrentPage(1);
-  } else if (tab==='posts'){
-    setCurrentPage(1);
-  }
-};
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    localStorage.setItem('activeTab', tab);
+    if (tab === 'social') {
+      setSocialCurrentPage(1);
+    } else if (tab === 'posts') {
+      setCurrentPage(1);
+    }
+  };
 
   const handlePlatformChange = (platform) => {
     setSelectedPlatform(platform);
@@ -456,27 +462,224 @@ const Posts = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  if (loading && posts.length === 0 && activeTab === 'posts') {
-    return (
-      <div className="pst-main">
-        <div className="pst-loading">
-           <div className="spinner"></div>
-          <p className="pst-loading-text">Loading posts...</p>
+  const renderPostsContent = () => {
+    if (loading && posts.length === 0) {
+      return (
+        <div className="pst-container">
+          <div className="pst-grid">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonLoader key={index} type="post" />
+            ))}
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (error && activeTab === 'posts') {
-    return (
-      <div className="pst-main">
-        <div className="pst-error">
-          <div className="pst-error-icon">⚠️</div>
-          <p className="pst-error-text">{error}</p>
+    if (error) {
+      return (
+        <div className="pst-container">
+          <div className="pst-error">
+            <div className="pst-error-icon">⚠️</div>
+            <p className="pst-error-text">{error}</p>
+            <button 
+              onClick={fetchPosts}
+              className="pst-retry-button"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
+      );
+    }
+
+    if (posts.length === 0) {
+      return (
+        <div className="pst-container">
+          <div className="pst-empty">
+            <div className="pst-empty-icon">📷</div>
+            <p className="pst-empty-text">No posts yet.</p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="pst-container">
+        <div className="pst-grid">
+          {posts.map((post) => (
+            <div 
+              key={post.id} 
+              className="pst-post"
+              onClick={() => openPostModal(post)}
+            >
+              <div className="pst-post-card">
+                <div className="pst-post-image">
+                  {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
+                    <div className="pst-image-loading">
+                      <div className="pst-image-spinner"></div>
+                    </div>
+                  )}
+                  {imageLoadStates[post.id] === 'error' ? (
+                    <div className="pst-image-error">
+                      <div className="pst-image-error-content">
+                        <div className="pst-image-error-icon">🖼️</div>
+                        <p className="pst-image-error-text">Image unavailable</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img 
+                      src={post.image} 
+                      alt={post.caption || 'Post image'} 
+                      className="pst-image"
+                      onLoad={() => handleImageLoad(post.id)}
+                      onError={() => handleImageError(post.id)}
+                    />
+                  )}
+                  <div className="pst-post-overlay">
+                    <div className="pst-post-stats">
+                      <div className="pst-stat">
+                        <Heart className="pst-icon-sm" />
+                        <span className="pst-stat-count">{post.reactionCount || 0}</span>
+                      </div>
+                      <div className="pst-stat">
+                        <MessageCircle className="pst-icon-sm" />
+                        <span className="pst-stat-count">{post.commentCount || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="pst-post-caption">                       
+                  <p className="pst-caption-text">                         
+                    {post.caption}
+                  </p>                        
+                  <p className="pst-modal-date">
+                    {formatDate(post.createdAt)}                                       
+                  </p>                     
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="pst-pagination">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="pst-prev-button"
+            >
+              <ChevronLeft className="pst-icon-sm" />
+              <span className="pst-button-text">Previous</span>
+            </button>
+            <div className="pst-page-info">
+              <div className="pst-page-number">
+                {currentPage} / {totalPages}
+              </div>
+            </div>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="pst-next-button"
+            >
+              <span className="pst-button-text">Next</span>
+              <ChevronRight className="pst-icon-sm" />
+            </button>
+          </div>
+        )}
       </div>
     );
-  }
+  };
+
+  const renderSocialContent = () => {
+    if (socialLoading) {
+      return (
+        <div className="pst-container">
+          <div className="pst-grid">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonLoader key={index} type="social" />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (socialEmbeds.length === 0) {
+      return (
+        <div className="pst-container">
+          <div className="pst-empty">
+            <div className="pst-empty-icon">🌐</div>
+            <p className="pst-empty-text">No social media posts available.</p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="pst-container">
+        <div className="pst-grid">
+          {socialEmbeds.map((embed) => {
+            const platformIcon = platforms.find(p => p.id === embed.platform)?.icon || Globe;
+            const PlatformIcon = platformIcon;
+            
+            return (
+              <div 
+                key={embed._id} 
+                className="pst-post pst-social-embed"
+                onClick={() => openSocialEmbedModal(embed)}
+              >
+                <div className="pst-post-card">
+                  <div className="pst-social-header">
+                    <div className="pst-platform-badge">
+                      <PlatformIcon className="pst-icon-sm" />
+                      <span className="pst-platform-name">{embed.platform}</span>
+                    </div>
+                  </div>
+                  <div className="pst-social-content">
+                    <h3 className="pst-social-title">{embed.title}</h3>
+                    {embed.description && (
+                      <p className="pst-social-description">{embed.description}</p>
+                    )}
+                    <p className="pst-modal-date">
+                      {formatDate(embed.createdAt)}
+                    </p>
+                    <div className="pst-social-preview">
+                      {renderNativeEmbed(embed)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {socialTotalPages > 1 && (
+          <div className="pst-pagination">
+            <button
+              onClick={() => setSocialCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={socialCurrentPage === 1}
+              className="pst-prev-button"
+            >
+              <ChevronLeft className="pst-icon-sm" />
+              <span className="pst-button-text">Previous</span>
+            </button>
+            <div className="pst-page-info">
+              <div className="pst-page-number">
+                {socialCurrentPage} / {socialTotalPages}
+              </div>
+            </div>
+            <button
+              onClick={() => setSocialCurrentPage((prev) => Math.min(prev + 1, socialTotalPages))}
+              disabled={socialCurrentPage === socialTotalPages}
+              className="pst-next-button"
+            >
+              <span className="pst-button-text">Next</span>
+              <ChevronRight className="pst-icon-sm" />
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="pst-main">
@@ -518,7 +721,7 @@ const Posts = () => {
         </div>
       )}
 
-      {/* Tab Navigation */}
+      {/* Tab Navigation - Always visible */}
       <div className="pst-tab-navigation">
         <div className="pst-tab-buttons">
           <button
@@ -536,16 +739,16 @@ const Posts = () => {
             <span>Social Media</span>
           </button>
           <button
-             className={`pst-tab-button ${activeTab === 'community' ? 'pst-tab-active' : ''}`}
-              onClick={() => handleTabChange('community')}
-               >
-              <User className="pst-icon-sm" />
-             <span>Community</span>
-            </button>
+            className={`pst-tab-button ${activeTab === 'community' ? 'pst-tab-active' : ''}`}
+            onClick={() => handleTabChange('community')}
+          >
+            <User className="pst-icon-sm" />
+            <span>Community</span>
+          </button>
         </div>
       </div>
 
-      {/* Platform Filter for Social Tab */}
+      {/* Platform Filter for Social Tab - Always visible when social tab is active */}
       {activeTab === 'social' && (
         <div className="pst-platform-filter">
           <div className="pst-platform-buttons">
@@ -566,188 +769,10 @@ const Posts = () => {
         </div>
       )}
 
-      <div className="pst-container">
-        {/* Posts Tab Content */}
-        {activeTab === 'posts' && (
-          <>
-            {posts.length === 0 ? (
-              <div className="pst-empty">
-                <div className="pst-empty-icon">📷</div>
-                <p className="pst-empty-text">No posts yet.</p>
-              </div>
-            ) : (
-              <>
-                <div className="pst-grid">
-                  {posts.map((post) => (
-                    <div 
-                      key={post.id} 
-                      className="pst-post"
-                      onClick={() => openPostModal(post)}
-                    >
-                      <div className="pst-post-card">
-                        <div className="pst-post-image">
-                          {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
-                            <div className="pst-image-loading">
-                              <div className="pst-image-spinner"></div>
-                            </div>
-                          )}
-                          {imageLoadStates[post.id] === 'error' ? (
-                            <div className="pst-image-error">
-                              <div className="pst-image-error-content">
-                                <div className="pst-image-error-icon">🖼️</div>
-                                <p className="pst-image-error-text">Image unavailable</p>
-                              </div>
-                            </div>
-                          ) : (
-                            <img 
-                              src={post.image} 
-                              alt={post.caption || 'Post image'} 
-                              className="pst-image"
-                              onLoad={() => handleImageLoad(post.id)}
-                              onError={() => handleImageError(post.id)}
-                            />
-                          )}
-                          <div className="pst-post-overlay">
-                            <div className="pst-post-stats">
-                              <div className="pst-stat">
-                                <Heart className="pst-icon-sm" />
-                                <span className="pst-stat-count">{post.reactionCount || 0}</span>
-                              </div>
-                              <div className="pst-stat">
-                                <MessageCircle className="pst-icon-sm" />
-                                <span className="pst-stat-count">{post.commentCount || 0}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                       <div className="pst-post-caption">                       
-                        <p className="pst-caption-text">                         
-                         {post.caption}
-                        </p>                        
-                         <p className="pst-modal-date">
-                           {formatDate(post.createdAt)}                                       
-                          </p>                     
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {totalPages > 1 && (
-                  <div className="pst-pagination">
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="pst-prev-button"
-                    >
-                      <ChevronLeft className="pst-icon-sm" />
-                      <span className="pst-button-text">Previous</span>
-                    </button>
-                    <div className="pst-page-info">
-                      <div className="pst-page-number">
-                        {currentPage} / {totalPages}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                      className="pst-next-button"
-                    >
-                      <span className="pst-button-text">Next</span>
-                      <ChevronRight className="pst-icon-sm" />
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </>
-        )}
-
-        {/* Social Media Tab Content */}
-        {activeTab === 'social' && (
-          <>
-            {socialLoading ? (
-              <div className="pst-loading">
-               <div className="spinner"></div>
-                <p className="pst-loading-text">Loading social media posts...</p>
-              </div>
-            ) : socialEmbeds.length === 0 ? (
-              <div className="pst-empty">
-                <div className="pst-empty-icon">🌐</div>
-                <p className="pst-empty-text">No social media posts available.</p>
-              </div>
-            ) : (
-              <>
-                <div className="pst-grid">
-                  {socialEmbeds.map((embed) => {
-                    const platformIcon = platforms.find(p => p.id === embed.platform)?.icon || Globe;
-                    const PlatformIcon = platformIcon;
-                    
-                    return (
-                      <div 
-                        key={embed._id} 
-                        className="pst-post pst-social-embed"
-                        onClick={() => openSocialEmbedModal(embed)}
-                      >
-                        <div className="pst-post-card">
-                          <div className="pst-social-header">
-                            <div className="pst-platform-badge">
-                              <PlatformIcon className="pst-icon-sm" />
-                              <span className="pst-platform-name">{embed.platform}</span>
-                            </div>
-                          </div>
-                          <div className="pst-social-content">
-                            <h3 className="pst-social-title">{embed.title}</h3>
-                            {embed.description && (
-                              <p className="pst-social-description">{embed.description}</p>
-                            )}
-                            <p className="pst-modal-date">
-                              {formatDate(embed.createdAt)}
-                            </p>
-                            <div className="pst-social-preview">
-                              {renderNativeEmbed(embed)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {socialTotalPages > 1 && (
-                  <div className="pst-pagination">
-                    <button
-                      onClick={() => setSocialCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      disabled={socialCurrentPage === 1}
-                      className="pst-prev-button"
-                    >
-                      <ChevronLeft className="pst-icon-sm" />
-                      <span className="pst-button-text">Previous</span>
-                    </button>
-                    <div className="pst-page-info">
-                      <div className="pst-page-number">
-                        {socialCurrentPage} / {socialTotalPages}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setSocialCurrentPage((prev) => Math.min(prev + 1, socialTotalPages))}
-                      disabled={socialCurrentPage === socialTotalPages}
-                      className="pst-next-button"
-                    >
-                      <span className="pst-button-text">Next</span>
-                      <ChevronRight className="pst-icon-sm" />
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </>
-        )}
-        {/* Community Tab Content */}
-        {activeTab === 'community' && (
-        <Community />
-           )}
-      </div>
+      {/* Content based on active tab */}
+      {activeTab === 'posts' && renderPostsContent()}
+      {activeTab === 'social' && renderSocialContent()}
+      {activeTab === 'community' && <Community />}
 
       {/* Existing Post Modal */}
       {selectedPost && (
@@ -784,7 +809,6 @@ const Posts = () => {
                   <p className="pst-modal-date">
                     {formatDate(selectedPost.createdAt)}
                   </p>
-                  
                 </div>
                 <div className="pst-modal-actions">
                   <button
