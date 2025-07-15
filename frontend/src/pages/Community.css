@@ -174,13 +174,25 @@ body {
   word-break: break-word;
 }
 
+.post-content::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--border-color);
+  opacity: 0.3;
+  margin: 8px 0;
+}
+
 .post-images {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   border-radius: var(--radius-medium);
   overflow: hidden;
   margin-bottom: 12px;
   width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .post-images:has(img:nth-child(1):last-child) {
@@ -208,10 +220,12 @@ body {
 .post-image {
   width: 100%;
   height: auto;
-  max-height: 400px;
-  object-fit: contain;
+  max-height: 500px;
+  object-fit: cover;
+  object-position: center;
   cursor: pointer;
   transition: var(--transition);
+  border-radius: var(--radius-medium);
 }
 
 .post-image:hover {
@@ -240,7 +254,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Ensures video fits without cropping */
+  object-fit: contain; /* Original video style */
   display: block;
 }
 
@@ -263,7 +277,7 @@ body {
   height: 100%;
   max-width: none;
   max-height: none;
-  object-fit: contain; /* Maintains aspect ratio in fullscreen */
+  object-fit: contain; /* Original video style */
 }
 
 .video-loading-spinner {
@@ -325,7 +339,7 @@ body {
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
   opacity: 0;
   transition: opacity 0.3s ease;
-  z-index: 10; /* Increased z-index to ensure controls are above other elements */
+  z-index: 10;
 }
 
 .video-controls.visible {
@@ -881,7 +895,7 @@ body {
   color: var(--text-muted);
 }
 
-.unique-comment-remove文化的-btn {
+.unique-comment-remove-btn {
   background: none;
   border: none;
   color: var(--text-muted);
@@ -1180,8 +1194,8 @@ body {
 
 .fullscreen-image-container {
   position: relative;
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 100%;
+  max-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1242,7 +1256,7 @@ body {
   }
 
   .post-image {
-    max-height: 300px;
+    max-height: 400px;
   }
 
   .post-actions {
@@ -1312,7 +1326,7 @@ body {
   }
 
   .video-wrapper {
-    padding-bottom: 56.25%; /* Maintain 16:9 aspect ratio */
+    padding-bottom: 56.25%;
   }
 
   .video-wrapper:fullscreen,
@@ -1355,7 +1369,7 @@ body {
   }
 
   .post-image {
-    max-height: 200px;
+    max-height: 300px;
   }
 
   .action-button {
@@ -1460,7 +1474,7 @@ body {
   }
 
   .video-wrapper {
-    padding-bottom: 56.25%; /* Maintain 16:9 aspect ratio */
+    padding-bottom: 56.25%;
   }
 
   .video-wrapper:fullscreen,
@@ -1478,12 +1492,11 @@ body {
     height: 100%;
     object-fit: contain;
   }
-  
 }
 
 @media (orientation: landscape) {
   .video-controls {
-    bottom: 20px; /* Ensure controls are visible in landscape */
+    bottom: 20px;
     z-index: 10;
   }
 
@@ -1502,13 +1515,13 @@ body {
   .video-wrapper:-webkit-full-screen .video-controls,
   .video-wrapper:-moz-full-screen .video-controls {
     bottom: 10px;
-    z-index: 10; /* Ensure controls are above video and navigation */
+    z-index: 10;
   }
 }
 
 @media (orientation: portrait) {
   .video-controls {
-    bottom: 10px; /* Ensure controls are visible in portrait */
+    bottom: 10px;
     z-index: 10;
   }
 
@@ -1527,7 +1540,7 @@ body {
   .video-wrapper:-webkit-full-screen .video-controls,
   .video-wrapper:-moz-full-screen .video-controls {
     bottom: 10px;
-    z-index: 10; /* Ensure controls are above video and navigation */
+    z-index: 10;
   }
 }
 
@@ -1636,4 +1649,75 @@ select:focus-visible {
     border: 1px solid #ccc;
     margin-bottom: 16px;
   }
+}
+/* Quiz expiration styles */
+.quiz-expired-notice {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #c33;
+  text-align: center;
+}
+
+.quiz-expired-notice p {
+  margin: 4px 0;
+  font-weight: 500;
+}
+
+.quiz-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quiz-option.disabled input {
+  cursor: not-allowed;
+}
+
+.quiz-submit-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #ccc;
+}
+
+.quiz-submit-button.disabled:hover {
+  background-color: #ccc;
+}
+
+.quiz-expiry {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 12px;
+  text-align: center;
+}
+/* Poll expiration styles */
+.poll-expired-notice {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #c33;
+  text-align: center;
+}
+
+.poll-expired-notice p {
+  margin: 4px 0;
+  font-weight: 500;
+}
+
+.poll-option-button.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.poll-option-button.disabled:hover {
+  background-color: initial;
+  transform: none;
+}
+
+.poll-expiry.expired {
+  color: #c33;
+  font-weight: 500;
 }

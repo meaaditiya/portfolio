@@ -351,16 +351,25 @@ useEffect(() => {
     }
   };
 
+   const isPollExpired = (post) => {
+    if (!post.pollExpiresAt) return false;
+    return new Date() > new Date(post.pollExpiresAt);
+  };
+
+  // Updated handlePollVote function
   const handlePollVote = async (postId, optionIndex) => {
     if (!userInfo) return;
+
+    const post = posts.find(p => p._id === postId);
+    if (isPollExpired(post)) {
+      return; // Don't allow voting on expired polls
+    }
 
     try {
       setPosts(prevPosts => 
         prevPosts.map(post => {
           if (post._id === postId) {
-            const updatedPollOptions = post
-
-            .pollOptions.map((option, index) => {
+            const updatedPollOptions = post.pollOptions.map((option, index) => {
               if (index === optionIndex) {
                 const newVotes = [...option.votes, { userEmail: userInfo.email, userName: userInfo.name }];
                 return { ...option, votes: newVotes };
@@ -387,16 +396,33 @@ useEffect(() => {
         setPollVotes(prev => ({ ...prev, [postId]: optionIndex }));
       } else {
         const error = await response.json();
-        alert(error.message);
+        if (error.message && error.message.includes('expired')) {
+          alert('This poll has expired and is no longer accepting votes.');
+        } else {
+          alert(error.message || 'Error voting on poll');
+        }
         fetchPosts();
       }
     } catch (error) {
       console.error('Error voting on poll:', error);
+      alert('Error voting on poll. Please try again.');
       fetchPosts();
     }
   };
 
+
+  const isQuizExpired = (post) => {
+    if (!post.quizExpiresAt) return false;
+    return new Date() > new Date(post.quizExpiresAt);
+  };
+
+  // Updated handleQuizAnswer function
   const handleQuizAnswer = (postId, questionIndex, answer) => {
+    const post = posts.find(p => p._id === postId);
+    if (isQuizExpired(post)) {
+      return; // Don't allow answering expired quizzes
+    }
+    
     setQuizAnswers(prev => ({
       ...prev,
       [postId]: {
@@ -406,11 +432,18 @@ useEffect(() => {
     }));
   };
 
+  // Updated submitQuiz function
   const submitQuiz = async (postId, totalQuestions) => {
     if (!userInfo) return;
 
+    const post = posts.find(p => p._id === postId);
+    if (isQuizExpired(post)) {
+      alert('This quiz has expired and can no longer be submitted.');
+      return;
+    }
+
     const answers = [];
-    for (let i=0; i < totalQuestions; i++) {
+    for (let i = 0; i < totalQuestions; i++) {
       answers.push(quizAnswers[postId]?.[i] || 0);
     }
 
@@ -428,11 +461,20 @@ useEffect(() => {
       if (response.ok) {
         const result = await response.json();
         setQuizResults(prev => ({ ...prev, [postId]: result }));
+      } else {
+        const error = await response.json();
+        if (error.message && error.message.includes('expired')) {
+          alert('This quiz has expired and can no longer be submitted.');
+        } else {
+          alert(error.message || 'Error submitting quiz');
+        }
       }
     } catch (error) {
       console.error('Error submitting quiz:', error);
+      alert('Error submitting quiz. Please try again.');
     }
   };
+
 
   const openFullScreenImage = (imageUrl) => {
     setFullScreenImage(imageUrl);
@@ -848,96 +890,117 @@ const handleSpeedChange = (postId, speed) => {
           {post.postType === 'video' && post.video && renderVideoPlayer(post)}
 
           {post.postType === 'poll' && (
-            <div className="post-poll">
-              <div className="poll-options">
-                {post.pollOptions.map((option, index) => {
-                  const totalVotes = post.pollOptions.reduce((sum, opt) => sum + opt.votes.length, 0);
-                  const percentage = totalVotes > 0 ? (option.votes.length / totalVotes) * 100 : 0;
-                  
-                  return (
-                    <div key={index} className="poll-option">
-                      <button
-                        onClick={() => handlePollVote(post._id, index)}
-                        disabled={hasVoted}
-                        className={`poll-option-button ${hasVoted ? 'disabled' : ''}`}
-                      >
-                        <span className="poll-option-text">{option.option}</span>
-                        {hasVoted && (
-                          <div className="poll-result">
-                            <div 
-                              className="poll-progress-bar"
-                              style={{ width: `${percentage}%` }}
-                            />
-                            <span className="poll-percentage">{percentage.toFixed(1)}%</span>
-                          </div>
-                        )}
-                      </button>
-                      <span className="poll-vote-count">{option.votes.length} votes</span>
-                    </div>
-                  );
-                })}
-              </div>
-              {post.pollExpiresAt && (
-                <p className="poll-expiry">
-                  Expires: {new Date(post.pollExpiresAt).toLocaleDateString()}
-                </p>
-              )}
-            </div>
-          )}
-
-          {post.postType === 'quiz' && (
-            <div className="post-quiz">
-              {!quizResults[post._id] ? (
-                <div className="quiz-questions">
-                  {post.quizQuestions.map((question, qIndex) => (
-                    <div key={qIndex} className="quiz-question">
-                      <h4 className="question-text">{question.question}</h4>
-                      <div className="quiz-options">
-                        {question.options.map((option, oIndex) => (
-                          <label key={oIndex} className="quiz-option">
-                            <input
-                              type="radio"
-                              name={`quiz-${post._id}-${qIndex}`}
-                              value={oIndex}
-                              onChange={() => handleQuizAnswer(post._id, qIndex, oIndex)}
-                              checked={quizAnswers[post._id]?.[qIndex] === oIndex}
-                            />
-                            <span className="quiz-option-text">{option}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                  <button
-                    onClick={() => submitQuiz(post._id, post.quizQuestions.length)}
-                    className="quiz-submit-button"
-                  >
-                    Submit Quiz
-                  </button>
-                </div>
-              ) : (
-                <div className="quiz-results">
-                  <h4 className="quiz-score">
-                    Score: {quizResults[post._id].score} / {quizResults[post._id].totalQuestions}
-                  </h4>
-                  <div className="quiz-detailed-results">
-                    {quizResults[post._id].results.map((result, index) => (
-                      <div key={index} className={`quiz-result-item ${result.isCorrect ? 'correct' : 'incorrect'}`}>
-                        <p className="result-question">{result.question}</p>
-                        <p className="result-status">
-                          {result.isCorrect ? 'Correct!' : 'Incorrect'}
-                        </p>
-                        {result.explanation && (
-                          <p className="result-explanation">{result.explanation}</p>
-                        )}
-                      </div>
-                    ))}
+    <div className="post-poll">
+      
+      
+      <div className="poll-options">
+        {post.pollOptions.map((option, index) => {
+          const totalVotes = post.pollOptions.reduce((sum, opt) => sum + opt.votes.length, 0);
+          const percentage = totalVotes > 0 ? (option.votes.length / totalVotes) * 100 : 0;
+          const userHasVoted = post.pollOptions.some(opt => 
+            opt.votes.some(vote => vote.userEmail === userInfo?.email)
+          );
+          
+          return (
+            <div key={index} className="poll-option">
+              <button
+                onClick={() => handlePollVote(post._id, index)}
+                disabled={userHasVoted || isPollExpired(post)}
+                className={`poll-option-button ${userHasVoted || isPollExpired(post) ? 'disabled' : ''}`}
+              >
+                <span className="poll-option-text">{option.option}</span>
+                {(userHasVoted || isPollExpired(post)) && (
+                  <div className="poll-result">
+                    <div 
+                      className="poll-progress-bar"
+                      style={{ width: `${percentage}%` }}
+                    />
+                    <span className="poll-percentage">{percentage.toFixed(1)}%</span>
                   </div>
-                </div>
-              )}
+                )}
+              </button>
+              <span className="poll-vote-count">{option.votes.length} votes</span>
             </div>
+          );
+        })}
+      </div>
+      
+      {post.pollExpiresAt && (
+        <p className={`poll-expiry ${isPollExpired(post) ? 'expired' : ''}`}>
+          {isPollExpired(post) ? 'Expired' : 'Expires'}: {new Date(post.pollExpiresAt).toLocaleDateString()}
+        </p>
+      )}
+    </div>
+  )}
+         {post.postType === 'quiz' && (
+    <div className="post-quiz">
+      {isQuizExpired(post) && (
+        <div className="quiz-expired-notice">
+          <p>This quiz has expired and is no longer available.</p>
+          {post.quizExpiresAt && (
+            <p>Expired on: {new Date(post.quizExpiresAt).toLocaleDateString()}</p>
           )}
-
+        </div>
+      )}
+      
+      {!quizResults[post._id] ? (
+        <div className="quiz-questions">
+          {post.quizQuestions.map((question, qIndex) => (
+            <div key={qIndex} className="quiz-question">
+              <h4 className="question-text">{question.question}</h4>
+              <div className="quiz-options">
+                {question.options.map((option, oIndex) => (
+                  <label key={oIndex} className={`quiz-option ${isQuizExpired(post) ? 'disabled' : ''}`}>
+                    <input
+                      type="radio"
+                      name={`quiz-${post._id}-${qIndex}`}
+                      value={oIndex}
+                      onChange={() => handleQuizAnswer(post._id, qIndex, oIndex)}
+                      checked={quizAnswers[post._id]?.[qIndex] === oIndex}
+                      disabled={isQuizExpired(post)}
+                    />
+                    <span className="quiz-option-text">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={() => submitQuiz(post._id, post.quizQuestions.length)}
+            className={`quiz-submit-button ${isQuizExpired(post) ? 'disabled' : ''}`}
+            disabled={isQuizExpired(post)}
+          >
+            {isQuizExpired(post) ? 'Quiz Expired' : 'Submit Quiz'}
+          </button>
+        </div>
+      ) : (
+        <div className="quiz-results">
+          <h4 className="quiz-score">
+            Score: {quizResults[post._id].score} / {quizResults[post._id].totalQuestions}
+          </h4>
+          <div className="quiz-detailed-results">
+            {quizResults[post._id].results.map((result, index) => (
+              <div key={index} className={`quiz-result-item ${result.isCorrect ? 'correct' : 'incorrect'}`}>
+                <p className="result-question">{result.question}</p>
+                <p className="result-status">
+                  {result.isCorrect ? 'Correct!' : 'Incorrect'}
+                </p>
+                {result.explanation && (
+                  <p className="result-explanation">{result.explanation}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {post.quizExpiresAt && !isQuizExpired(post) && (
+        <p className="quiz-expiry">
+          Expires: {new Date(post.quizExpiresAt).toLocaleDateString()}
+        </p>
+      )}
+    </div>
+  )}
           {post.postType === 'link' && (
             <div className="post-link">
               <a href={post.linkUrl} target="_blank" rel="noopener noreferrer" className="link-preview">
