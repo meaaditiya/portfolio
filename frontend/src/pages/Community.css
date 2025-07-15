@@ -1478,11 +1478,12 @@ body {
     height: 100%;
     object-fit: contain;
   }
+  
 }
 
 @media (orientation: landscape) {
   .video-controls {
-    bottom: 90px; /* Ensure controls are visible in landscape */
+    bottom: 20px; /* Ensure controls are visible in landscape */
     z-index: 10;
   }
 
