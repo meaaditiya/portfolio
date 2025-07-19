@@ -3,7 +3,7 @@ import { Heart, ArrowLeft,MessageCircle, X, Send, Trash2, User, ChevronLeft, Che
 import './Posts.css';
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
-
+import Error from './Error.jsx';
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [socialEmbeds, setSocialEmbeds] = useState([]);
@@ -636,9 +636,6 @@ const Posts = () => {
                   </div>
                   <div className="pst-social-content">
                     <h3 className="pst-social-title">{embed.title}</h3>
-                    {embed.description && (
-                      <p className="pst-social-description">{embed.description}</p>
-                    )}
                     <p className="pst-modal-date">
                       {formatDate(embed.createdAt)}
                     </p>
@@ -680,7 +677,9 @@ const Posts = () => {
       </div>
     );
   };
-
+ if (error) {
+    return <Error />;
+  }
   return (
     <div className="pst-main">
       {showUserForm && (

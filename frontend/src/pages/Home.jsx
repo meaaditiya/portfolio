@@ -79,7 +79,7 @@ const Home = () => {
     window.addEventListener('mousemove', handleMouseMove);
 
     // Poll for image updates every 60 seconds
-    const imageRefreshInterval = setInterval(fetchProfileImage, 60000);
+    const imageRefreshInterval = setInterval(fetchProfileImage, 600000);
 
     return () => {
       clearTimeout(timer);
@@ -115,6 +115,14 @@ const Home = () => {
       <main className="portfolio-main">
         {/* Hero Section */}
         <section className="hero-section">
+          <video
+            className="hero-video"
+            autoPlay
+            loop
+            muted
+            playsInline
+            src="/bg2.mp4"
+          />
           <div className="hero-content">
             <div className={`hero-text ${isLoaded ? 'content-visible' : ''}`}>
               <div className="hero-left">
@@ -141,7 +149,7 @@ const Home = () => {
                       View Projects <ArrowUpRight size={16} />
                     </button>
                     <button
-                onClick={() => navigateToPage('/contact')}
+                      onClick={() => navigateToPage('/contact')}
                       className="secondary-cta"
                     >
                       Get in Touch
@@ -237,7 +245,7 @@ const Home = () => {
               <Projects />
             </div>
             <button
-              onClick={() => navigateToPage('/ Turchprojects')}
+              onClick={() => navigateToPage('/projects')}
               className="section-nav-btn"
             >
               View All Projects <ArrowUpRight size={16} />

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import './Community.css';
+import Dots from './DotsLoader';
 
 const Community = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -1224,8 +1225,7 @@ const renderVideoPlayer = (post) => {
 
       {loading ? (
             <div className="pst-loading">
-               <div className="spinner"></div>
-                <p className="pst-loading-text">Bringing for you</p>
+              <div><Dots/></div>
               </div>
       ) : (
         <div className="posts-container">

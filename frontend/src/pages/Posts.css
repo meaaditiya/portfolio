@@ -586,6 +586,9 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin: 0;
+  position: relative;
+  left:-36px;
+  top:-5px;
 }
 
 .pst-modal-actions {
