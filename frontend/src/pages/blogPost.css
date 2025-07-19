@@ -12,9 +12,9 @@
 }
 
 .card.blog-post {
-  background-color: #fff;
+  background-color:  var(--accent-white);
  
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  
   overflow: hidden;
   padding: 0 0 2rem;
   margin-top: 1.5rem;
