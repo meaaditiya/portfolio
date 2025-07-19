@@ -22,7 +22,7 @@ const Home = () => {
 
     const roleInterval = setInterval(() => {
       setCurrentRoleIndex((prevIndex) => (prevIndex + 1) % roles.length);
-    }, 4000);
+    }, 9000);
 
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });

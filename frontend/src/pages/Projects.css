@@ -29,6 +29,8 @@
   position: relative;
   overflow: hidden;
   margin-top: 30px;
+  max-width: 2000px;
+   background: var(--color-white);
 }
 
 .tyagi-project-section::before {
@@ -38,9 +40,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(0, 0, 0, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(51, 51, 51, 0.05) 0%, transparent 50%);
   pointer-events: none;
 }
 

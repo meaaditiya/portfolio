@@ -25,6 +25,7 @@ body {
   color: var(--primary-black);
   font-family: var(--font-family);
   line-height: 1.6;
+   background: var(--color-white);
 }
 
 /* Main Section */
@@ -35,8 +36,9 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: var(--primary-white);
+  
   margin-top:82px;
+   background: var(--color-white);
 }
 
 /* Section Title */

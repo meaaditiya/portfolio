@@ -85,6 +85,7 @@ html {
   padding: 1rem 0;
   transition: var(--transition-smooth);
   width: 100%;
+  padding:-20px;
 }
 
 .header-content {
@@ -424,7 +425,7 @@ html {
 }
 
 /* Mobile Breakpoint - Below 560px */
-@media (max-width: 560px) {
+@media (max-width: 680px) {
   .main-navigation {
     display: none;
   }

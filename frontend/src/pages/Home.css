@@ -1,25 +1,20 @@
-/* ========================================
-   MODERN FULL-WIDTH PORTFOLIO DESIGN
-   Clean, Spacious, Professional
-   ======================================== */
-
 /* CSS Custom Properties */
 :root {
   --color-primary: #2563eb;
   --color-secondary: #8b5cf6;
   --color-accent: #06b6d4;
   --color-black: #0f172a;
-  --color-white: #ffffff;
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1;
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #64748b;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b;
-  --color-gray-900: #0f172a;
+  --color-white: #f5f3f0;
+  --color-gray-50: #f5f3f0;
+  --color-gray-100: #ede8e3;
+  --color-gray-200: #e2d9d0;
+  --color-gray-300: #d4c7b8;
+  --color-gray-400: #b8a894;
+  --color-gray-500: #9c8a70;
+  --color-gray-600: #7d6b53;
+  --color-gray-700: #5e4d3a;
+  --color-gray-800: #453629;
+  --color-gray-900: #2d201a;
   
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -53,7 +48,7 @@ html {
 body {
   font-family: var(--font-sans);
   line-height: 1.6;
-  color: var(--color-gray-900);
+  color: black;
   background-color: var(--color-white);
   font-weight: 400;
   letter-spacing: -0.01em;
@@ -163,7 +158,7 @@ body {
 .greeting-label {
   display: block;
   font-size: 1rem;
-  color: var(--color-gray-500);
+  color: black;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -189,14 +184,14 @@ body {
 
 .role-prefix {
   font-size: 2rem;
-  color: var(--color-gray-400);
+  color: black;
   font-weight: 300;
 }
 
 .role-text {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-gray-700);
+  color: black;
   min-width: 280px;
   animation: fadeInOut 4s infinite;
 }
@@ -210,7 +205,7 @@ body {
 .hero-description {
   font-size: 1.25rem;
   line-height: 1.7;
-  color: var(--color-gray-600);
+  color: black;
   max-width: 600px;
   margin-bottom: 3rem;
   font-weight: 400;
@@ -350,7 +345,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(245, 243, 240, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-gray-200);
   border-radius: 2rem;
@@ -378,7 +373,7 @@ body {
   transform: translateY(-6px) scale(1.05);
   box-shadow: var(--shadow-lg);
   border-color: var(--color-primary);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(245, 243, 240, 0.95);
   color: var(--color-primary);
 }
 
@@ -405,7 +400,7 @@ body {
   border-radius: 2rem;
   transition: var(--transition-bounce);
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(245, 243, 240, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-gray-200);
   position: relative;
@@ -431,7 +426,7 @@ body {
   color: var(--color-primary);
   transform: translateY(-4px) scale(1.05);
   box-shadow: var(--shadow-lg);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(245, 243, 240, 0.9);
   border-color: var(--color-primary);
 }
 
@@ -503,8 +498,8 @@ body {
   position: relative;
   top: 10px;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.05) 100%);
-  border: 1px solid #d1d5db; /* Subtle border for definition */
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0%, rgba(245, 243, 240, 0.1) 50%, rgba(0, 0, 0, 0.05) 100%);
+  border: 1px solid var(--color-gray-300); /* Subtle border for definition */
   border-radius: 25px; /* Rounded corners for modern feel */
   display: inline-flex;
   align-items: center;
@@ -552,7 +547,7 @@ body {
 }
 
 .blog-card {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(245, 243, 240, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid var(--color-gray-200);
   border-radius: 2rem;
@@ -585,7 +580,7 @@ body {
   transform: translateY(-12px) rotateX(5deg);
   box-shadow: var(--shadow-xl);
   border-color: var(--color-primary);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(245, 243, 240, 0.95);
 }
 
 .blog-card-image {
@@ -701,7 +696,7 @@ body {
   padding: 4rem 2rem;
   border: 2px dashed var(--color-gray-300);
   border-radius: 2.5rem;
-  background: rgba(248, 250, 252, 0.6);
+  background: rgba(237, 232, 227, 0.6);
   backdrop-filter: blur(10px);
   transition: var(--transition-slow);
   position: relative;
@@ -728,7 +723,7 @@ body {
 
 .blog-placeholder:hover {
   transform: translateY(-8px) scale(1.02);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(245, 243, 240, 0.8);
   border-color: transparent;
   box-shadow: var(--shadow-lg);
 }
@@ -900,7 +895,7 @@ body {
 .blog-intro {
   margin-top: 2rem;
   padding: 1.5rem;
-  background: #ffffff;
+  background: var(--color-white);
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
@@ -908,7 +903,7 @@ body {
 
 .blog-description {
   font-size: 1.1rem;
-  color: #1f2937;
+  color: var(--color-gray-700);
   line-height: 1.6;
   font-weight: 400;
   max-width: 700px;
@@ -919,7 +914,7 @@ body {
 .featured-topics {
   margin-top: 2rem;
   padding: 1.5rem;
-  background: #f9f9f9;
+  background: var(--color-gray-100);
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
@@ -928,7 +923,7 @@ body {
 .topics-title {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #000000;
+  color: var(--color-black);
   margin-bottom: 1.5rem;
 }
 
@@ -942,15 +937,15 @@ body {
 .topic-item {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #000000;
+  color: var(--color-black);
   padding: 0.4rem 1rem;
-  background: #e5e7eb;
+  background: var(--color-gray-200);
   border-radius: 20px;
   transition: all 0.3s ease;
 }
 
 .topic-item:hover {
-  background: #d1d5db;
+  background: var(--color-gray-300);
   transform: translateY(-2px);
 }
 /* ========================================
@@ -1062,6 +1057,8 @@ a:focus-visible {
   margin-left: auto;
   margin-right: auto;
   display: block;
+  position:relative;
+  bottom:30px;
 }
 
 .content-section.blog-section:hover {
