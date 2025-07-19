@@ -21,13 +21,12 @@ console.log(
   'color: #00adb5; font-size: 14px; font-family: monospace;'
 );
 
-// ❌ Disable all other console methods in production
-if (import.meta.env.MODE === 'production') {
+
   console.log = () => {};
   console.info = () => {};
   console.warn = () => {};
   console.error = () => {};
-}
+
 
 // ✅ Register Service Worker
 if ('serviceWorker' in navigator) {
