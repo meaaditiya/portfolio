@@ -436,7 +436,6 @@ body {
   display: flex;
   align-items: center;
 }
-
 .video-volume-slider {
   width: 60px;
   height: 3px;
@@ -444,6 +443,57 @@ body {
   border-radius: 2px;
   outline: none;
   cursor: pointer;
+  -webkit-appearance: none; /* Remove default browser styling */
+  appearance: none;
+}
+
+/* Style the slider track */
+.video-volume-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.video-volume-slider::-moz-range-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+/* Style the slider thumb */
+.video-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -4.5px; /* Center the thumb vertically */
+}
+
+.video-volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Hover and focus states */
+.video-volume-slider:hover::-webkit-slider-thumb {
+  background: var(--accent-hover);
+}
+
+.video-volume-slider:hover::-moz-range-thumb {
+  background: var(--accent-hover);
+}
+
+.video-volume-slider:focus {
+  outline: none;
 }
 
 .video-time {
@@ -1305,9 +1355,7 @@ body {
     gap: 4px;
   }
 
-  .video-volume-container {
-    display: none;
-  }
+  
 
   .video-time {
     font-size: 11px;
@@ -1720,4 +1768,25 @@ select:focus-visible {
 .poll-expiry.expired {
   color: #c33;
   font-weight: 500;
+}
+.volume-icon {
+  width: 24px;
+  height: 24px;
+  fill: #ffffff;
+  transition: fill 0.3s ease;
+}
+
+.video-volume-button:hover .volume-icon {
+  fill: #cccccc;
+}
+
+.video-volume-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin: 0 5px;
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BlogSkeletonLoader from './BlogSkeletonLoader';
+import Error from './Error.jsx';
 import './blog.css';
 
 const Blog = () => {
@@ -69,6 +70,11 @@ const Blog = () => {
     }
   };
 
+  // Render Error component if any error occurred
+  if (error) {
+    return <Error />;
+  }
+
   // Show skeleton loader on initial load
   if (isLoading) {
     return (
@@ -83,11 +89,7 @@ const Blog = () => {
     <section className="section">
       <h2 className="section-title">Blogs</h2>
 
-      {error && (
-        <div className="error">{error}</div>
-      )}
-
-      {!error && blogs.length === 0 && (
+      {blogs.length === 0 && (
         <div className="empty-state">
           <p>No blog posts available at the moment.</p>
         </div>
@@ -136,7 +138,7 @@ const Blog = () => {
         ))}
       </div>
 
-      {hasMore && !error && (
+      {hasMore && (
         <div className="load-more-container">
           <button 
             className="load-more-button" 

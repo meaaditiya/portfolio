@@ -129,7 +129,7 @@ body {
 .about-cta-button:hover {
   background: transparent;
   color: var(--color-black);
-  dependent: var(--color-black);
+ 
 }
 
 /* Image Section */

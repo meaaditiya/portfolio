@@ -439,8 +439,8 @@ html {
   }
   
   .mobile-sidebar {
-    width: 100%;
-    right: -100%;
+    width: 60%;
+    right: -60%;
   }
   
   .mobile-sidebar.active {
