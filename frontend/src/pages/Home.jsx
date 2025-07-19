@@ -150,7 +150,7 @@ const Home = () => {
                     </button>
                     <button
                       onClick={() => navigateToPage('/contact')}
-                      className="secondary-cta"
+                      className="primary-cta"
                     >
                       Get in Touch
                     </button>

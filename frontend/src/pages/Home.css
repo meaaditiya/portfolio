@@ -228,6 +228,7 @@ body {
   display: flex;
   gap: 1.5rem;
   margin-bottom: 4rem;
+  border-radius: 10px;;
 }
 
 .primary-cta {
@@ -244,6 +245,8 @@ body {
   padding: 0.75rem 0;
   background: none;
   border: none;
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
 }
 
 .primary-cta::after {
@@ -253,8 +256,8 @@ body {
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-  transition: var(--transition);
+  
+ 
   border-radius: 2px;
 }
 
@@ -264,7 +267,7 @@ body {
 
 .primary-cta:hover {
   transform: translateY(-2px);
-  color: var(--color-primary);
+  color: black;
 }
 
 .secondary-cta {
@@ -281,10 +284,11 @@ body {
   padding: 0.75rem 0;
   background: none;
   border: none;
+
 }
 
 .secondary-cta:hover {
-  color: var(--color-black);
+  color: black;
   transform: translateX(4px);
 }
 
@@ -400,6 +404,7 @@ body {
   margin-top: 4rem;
   padding-top: 3rem;
   border-top: 1px solid var(--color-gray-200);
+ 
 }
 
 .social-link {
@@ -821,7 +826,7 @@ body {
   }
   
   .hero-actions {
-    flex-direction: column;
+   
     align-items: center;
     gap: 1rem;
   }
