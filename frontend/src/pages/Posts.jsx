@@ -636,7 +636,7 @@ const Posts = () => {
                   </div>
                   <div className="pst-social-content">
                     <h3 className="pst-social-title">{embed.title}</h3>
-                    <p className="pst-modal-date">
+                    <p className="pst-modal-date1">
                       {formatDate(embed.createdAt)}
                     </p>
                     <div className="pst-social-preview">
@@ -922,7 +922,7 @@ const Posts = () => {
               {selectedSocialEmbed.description && (
                 <p className="pst-social-modal-description">{selectedSocialEmbed.description}</p>
               )}
-              <p className="pst-modal-date">{formatDate(selectedSocialEmbed.createdAt)}</p>
+              <p className="pst-modal-date1">{formatDate(selectedSocialEmbed.createdAt)}</p>
             </div>
             <div className="pst-social-embed-container">
               <div 

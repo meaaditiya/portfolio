@@ -586,11 +586,20 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin: 0;
-  position: relative;
-  left:-36px;
-  top:-5px;
+ 
 }
-
+.pst-modal-date1 {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+  position: relative;
+  left:-1px;
+  top:-5px;
+ 
+}
 .pst-modal-actions {
   display: flex;
   gap: var(--spacing-lg);
