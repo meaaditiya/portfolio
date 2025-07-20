@@ -59,6 +59,10 @@
             scrollbar-width: thin;
             scrollbar-color: var(--gradient-primary) transparent;
           }
+          .portfolio-footer{
+            position:relative;
+             top:90px;
+          }
         }
 
         @media (max-width: 480px) {

@@ -469,6 +469,7 @@ body {
   margin: 0 auto;
   padding: 0;
   margin-right: -5px;
+  margin-top:30px;
 }
 
 .section-header {
@@ -542,11 +543,27 @@ body {
   margin-top: -200px;
   margin-right: -600px;
 }
-
-/* ========================================
+.about-section{
+  position: relative;
+  top:30px;
+  max-width: 1800px;
+  margin-left:-10px;
+  margin-right:-10px;
+}
+.projects-section{
+  max-width: 2000px;
+ 
+}
+.contact-section{
+  margin-left:-16px;
+  
+}
+/* =======================================
    MODERN BLOG SECTION
    ======================================== */
-
+.blog-section{
+  margin-left:-20px;
+}
 .blog-section .section-header {
   border-bottom-color: var(--color-gray-200);
 }
@@ -567,6 +584,7 @@ body {
   transition: var(--transition-slow);
   box-shadow: var(--shadow-sm);
   position: relative;
+
   transform-style: preserve-3d;
 }
 
@@ -817,6 +835,19 @@ body {
 }
 
 @media (max-width: 768px) {
+  .projects-section{
+  position:relative;
+  top:90px;
+}
+.blog-section{
+  position:relative;
+  top:90px;
+
+}
+.contact-section{
+  position:relative;
+  top:120px;
+}
   .hero-section {
     padding: 4rem 1rem 2rem;
   }

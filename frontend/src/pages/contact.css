@@ -39,6 +39,7 @@ body {
   
   margin-top:82px;
    background: var(--color-white);
+   margin-right:-16px;
 }
 
 /* Section Title */
