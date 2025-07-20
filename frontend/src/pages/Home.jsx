@@ -226,7 +226,7 @@ const Home = () => {
         {/* About Section */}
         <section className="content-section about-section">
           <div className="section-container">
-            <div className="section-content" onClick={() => navigateToPage('/about')} style={{ cursor: 'pointer' }}>
+            <div className="section-content"  style={{ cursor: 'pointer' }}>
               <About />
             </div>
             <button
@@ -241,7 +241,7 @@ const Home = () => {
         {/* Projects Section */}
         <section className="content-section projects-section">
           <div className="section-container">
-            <div className="section-content" onClick={() => navigateToPage('/projects')} style={{ cursor: 'pointer' }}>
+            <div className="section-content" style={{ cursor: 'pointer' }}>
               <Projects />
             </div>
             <button
@@ -295,7 +295,7 @@ const Home = () => {
         {/* Contact Section */}
         <section className="content-section contact-section">
           <div className="section-container">
-            <div className="section-content" onClick={() => navigateToPage('/contact')} style={{ cursor: 'pointer' }}>
+            <div className="section-content" style={{ cursor: 'pointer' }}>
               <Contact />
             </div>
             <button

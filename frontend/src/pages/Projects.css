@@ -31,8 +31,6 @@
   margin-top: 30px;
   max-width: 2000px;
    background: var(--color-white);
-   margin-left:-20px;
-   margin-right:-8px;
 }
 
 .tyagi-project-section::before {

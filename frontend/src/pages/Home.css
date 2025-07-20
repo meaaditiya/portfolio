@@ -452,11 +452,13 @@ body {
    ======================================== */
 
 .content-section {
-  width: 100vw;
+  
   padding: 8rem 3rem;
   position: relative;
   margin: 0;
   max-width: 2000px;
+  margin-right:-22px;
+  margin-left:-18px;
 }
 
 .content-section:nth-child(even) {
@@ -468,7 +470,7 @@ body {
   max-width: 2000px;
   margin: 0 auto;
   padding: 0;
-  margin-right: -5px;
+  
   margin-top:30px;
 }
 
@@ -547,22 +549,14 @@ body {
   position: relative;
   top:30px;
   max-width: 1800px;
-  margin-left:-10px;
-  margin-right:-10px;
-}
-.projects-section{
-  max-width: 2000px;
  
 }
-.contact-section{
-  margin-left:-16px;
-  
-}
+
 /* =======================================
    MODERN BLOG SECTION
    ======================================== */
 .blog-section{
-  margin-left:-20px;
+ 
 }
 .blog-section .section-header {
   border-bottom-color: var(--color-gray-200);
@@ -1129,6 +1123,8 @@ a:focus-visible {
   font-size: 13px;
   font-weight: bold;
   cursor: pointer;
+  position:relative;
+  left:10px;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -1212,3 +1208,28 @@ a:focus-visible {
   color: black;
  
 }
+/* Increase width of sections and containers to cover more of the screen */
+
+
+/* Ensure blog section follows the same full-width behavior */
+
+
+/* Responsive adjustments for smaller screens */
+.section-content,
+.blog-intro,
+.featured-topics {
+  outline: none !important;
+  background: transparent !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.section-content:focus,
+.section-content:active,
+.blog-intro:focus,
+.blog-intro:active,
+.featured-topics:focus,
+.featured-topics:active {
+  background: transparent !important;
+  outline: none !important;
+}
+
