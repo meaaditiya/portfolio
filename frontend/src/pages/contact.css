@@ -105,7 +105,7 @@ body {
   cursor: pointer;
   transition: var(--transition);
   position: relative;
-  right:20px;
+  right:10px;
 }
 
 
@@ -371,8 +371,9 @@ body {
 }
 
 .cnt-btn-large {
-  padding: 1rem 2rem;
+  padding: 0.5rem 0.5rem;
   font-size: 1.125rem;
+  
 }
 
 /* Popup */
@@ -495,10 +496,13 @@ body {
   }
 
   .cnt-action-btn-project {
-    padding: 0.3rem 1rem;
+    padding: 0.1rem 0.7rem;
     font-size: 0.875rem;
   }
-
+ .cnt-action-btn-project2 {
+    padding: 0.2rem 0.7rem;
+    font-size: 0.875rem;
+  }
   .cnt-form-input, .cnt-form-textarea, .cnt-form-select {
     font-size: 0.875rem;
   }
