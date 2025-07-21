@@ -12,6 +12,13 @@ const Blog = () => {
   const [limit, setLimit] = useState(6); // Initial limit of 6 blogs
   const [hasMore, setHasMore] = useState(true); // Track if more blogs are available
   const [isLoadingMore, setIsLoadingMore] = useState(false); // Track load more state
+  
+  // Summary popup states
+  const [showSummaryPopup, setShowSummaryPopup] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [generatedSummary, setGeneratedSummary] = useState('');
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   // Function to extract domain from URL
   const getImageSource = (imageUrl) => {
@@ -68,6 +75,46 @@ const Blog = () => {
     } finally {
       setIsLoadingMore(false);
     }
+  };
+
+  // Handle Generate Summary button click
+  const handleGenerateSummary = async (blog, event) => {
+    event.stopPropagation(); // Prevent blog card navigation
+    setSelectedBlog(blog);
+    setShowSummaryPopup(true);
+    setGeneratedSummary('');
+    setSummaryError(null);
+    setIsGeneratingSummary(true);
+
+    try {
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${blog._id}/generate-summary`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to generate summary');
+      }
+
+      const data = await response.json();
+      setGeneratedSummary(data.summary);
+    } catch (err) {
+      setSummaryError(err.message);
+      console.error('Error generating summary:', err);
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
+
+  // Close summary popup
+  const closeSummaryPopup = () => {
+    setShowSummaryPopup(false);
+    setSelectedBlog(null);
+    setGeneratedSummary('');
+    setSummaryError(null);
   };
 
   // Render Error component if any error occurred
@@ -133,6 +180,12 @@ const Blog = () => {
                   <span key={index} className="tag">{tag}</span>
                 ))}
               </div>
+              <button
+                className="generate-summary-btn"
+                onClick={(e) => handleGenerateSummary(blog, e)}
+              >
+                Generate Summary
+              </button>
             </div>
           </div>
         ))}
@@ -153,6 +206,59 @@ const Blog = () => {
       {isLoadingMore && (
         <div className="loading">
           <div className="spinner"></div>
+        </div>
+      )}
+
+      {/* Summary Popup */}
+      {showSummaryPopup && (
+        <div className="summary-popup-overlay">
+          <div className="summary-popup">
+            <div className="popup-header">
+              <h3>AI Generated Summary</h3>
+              <button onClick={closeSummaryPopup} className="close-btn">×</button>
+            </div>
+            <div className="popup-content">
+              {selectedBlog && (
+                <div className="blog-info">
+                  <h4>{selectedBlog.title}</h4>
+                  <p className="blog-date-popup">
+                    {new Date(selectedBlog.publishedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </div>
+              )}
+              
+              <div className="summary-content">
+                {isGeneratingSummary && (
+                  <div className="generating-summary">
+                    <div className="spinner"></div>
+                    <p>Generating AI summary...</p>
+                  </div>
+                )}
+                
+                {summaryError && (
+                  <div className="summary-error">
+                    <p>Error: {summaryError}</p>
+                  </div>
+                )}
+                
+                {generatedSummary && !isGeneratingSummary && (
+                  <div className="generated-summary">
+                    <h5>Summary:</h5>
+                    <p>{generatedSummary}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="popup-footer">
+              <button onClick={closeSummaryPopup} className="close-popup-btn">
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>
