@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaQuestionCircle, FaProjectDiagram, FaArrowLeft, FaTimes, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaQuestionCircle, FaProjectDiagram, FaArrowLeft, FaTimes, FaCheckCircle, FaExclamationTriangle, FaMicrophone, FaStop, FaPlay, FaPause } from 'react-icons/fa';
 import axios from 'axios';
 import './contact.css';
 
@@ -22,6 +22,21 @@ const Contact = () => {
     additionalInfo: '',
     files: []
   });
+
+  // Audio recording states
+  const [audioData, setAudioData] = useState({
+    name: '',
+    email: ''
+  });
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [audioUrl, setAudioUrl] = useState('');
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioLoaded, setAudioLoaded] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioRef = useRef(null);
+  const timerRef = useRef(null);
   
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState({
@@ -38,7 +53,7 @@ const Contact = () => {
     isProject: false
   });
   
-  const [activeSection, setActiveSection] = useState('contact'); // 'contact', 'project'
+  const [activeSection, setActiveSection] = useState('contact'); // 'contact', 'project', 'audio'
 
   const frequentQueries = [
     "What technologies do you work with as a full-stack developer?",
@@ -61,6 +76,15 @@ const Contact = () => {
     };
   }, [showPopup]);
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
   const showFullScreenPopup = (type, title, message, isProject = false) => {
     setPopupData({ type, title, message, isProject });
     setShowPopup(true);
@@ -75,9 +99,15 @@ const Contact = () => {
     return emailRegex.test(email);
   };
 
-  const validate = (isProject = false) => {
+  const validate = (isProject = false, isAudio = false) => {
     const newErrors = {};
-    const data = isProject ? projectData : formData;
+    let data;
+    
+    if (isAudio) {
+      data = audioData;
+    } else {
+      data = isProject ? projectData : formData;
+    }
     
     if (!data.name.trim()) {
       newErrors.name = 'Name is required';
@@ -89,6 +119,10 @@ const Contact = () => {
       newErrors.email = 'Please enter a valid email address';
     }
     
+    if (isAudio && !audioBlob) {
+      newErrors.audio = 'Please record an audio message';
+    }
+    
     if (isProject) {
       if (!data.projectType.trim()) {
         newErrors.projectType = 'Project type is required';
@@ -96,7 +130,7 @@ const Contact = () => {
       if (!data.description.trim()) {
         newErrors.description = 'Project description is required';
       }
-    } else {
+    } else if (!isAudio) {
       if (!data.message.trim()) {
         newErrors.message = 'Message is required';
       }
@@ -106,9 +140,15 @@ const Contact = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e, isProject = false) => {
+  const handleChange = (e, isProject = false, isAudio = false) => {
     const { id, value, files } = e.target;
-    const setter = isProject ? setProjectData : setFormData;
+    let setter;
+    
+    if (isAudio) {
+      setter = setAudioData;
+    } else {
+      setter = isProject ? setProjectData : setFormData;
+    }
     
     if (isProject && id === 'files') {
       setter(prev => ({
@@ -142,105 +182,225 @@ const Contact = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const isProject = activeSection === 'project';
-    
-    if (!validate(isProject)) {
-      return;
-    }
-    
-    setSubmitStatus({
-      loading: true,
-      success: false,
-      error: null
-    });
-    
+  // Audio recording functions
+  const startRecording = async () => {
     try {
-      if (isProject) {
-        const formDataToSend = new FormData();
-        formDataToSend.append('name', projectData.name);
-        formDataToSend.append('email', projectData.email);
-        formDataToSend.append('projectType', projectData.projectType);
-        formDataToSend.append('description', projectData.description);
-        if (projectData.budget) formDataToSend.append('budget', projectData.budget);
-        if (projectData.timeline) formDataToSend.append('timeline', projectData.timeline);
-        if (projectData.features) formDataToSend.append('features', projectData.features);
-        if (projectData.techPreferences) formDataToSend.append('techPreferences', projectData.techPreferences);
-        if (projectData.additionalInfo) formDataToSend.append('additionalInfo', projectData.additionalInfo);
-        
-        // Append multiple files
-        if (projectData.files && projectData.files.length > 0) {
-          for (let i = 0; i < projectData.files.length; i++) {
-            formDataToSend.append('files', projectData.files[i]);
-          }
-        }
-
-        const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/project/submit', formDataToSend, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        
-        setProjectData({
-          name: '',
-          email: '',
-          projectType: '',
-          budget: '',
-          timeline: '',
-          description: '',
-          features: '',
-          techPreferences: '',
-          additionalInfo: '',
-          files: []
-        });
-
-        showFullScreenPopup(
-          'success',
-          'Project Request Submitted!',
-          'Thank you for your project request! I\'ve received all the details and will review your requirements carefully. I\'ll get back to you with a detailed quote and timeline within 24-48 hours.',
-          true
-        );
-      } else {
-        const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/contact', formData);
-        
-        setFormData({
-          name: '',
-          email: '',
-          message: ''
-        });
-
-        showFullScreenPopup(
-          'success',
-          'Message Sent Successfully!',
-          'Thanks for reaching out! Your message has been delivered successfully. I\'ll get back to you as soon as possible, usually within 24 hours.',
-          false
-        );
-      }
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
       
-      setSubmitStatus({
-        loading: false,
-        success: true,
-        error: null
-      });
+      const audioChunks = [];
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+      
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        setAudioBlob(audioBlob);
+        const audioUrl = URL.createObjectURL(audioBlob);
+        setAudioUrl(audioUrl);
+        setAudioLoaded(false);
+        
+        // Stop all audio tracks
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+      
+      // Start timer
+      timerRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
       
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
+      console.error('Error starting recording:', error);
+      alert('Could not access microphone. Please check permissions.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      clearInterval(timerRef.current);
+    }
+  };
+
+  const playAudio = async () => {
+    if (audioRef.current) {
+      try {
+        setIsPlaying(true);
+        await audioRef.current.play();
+      } catch (error) {
+        console.error('Error playing audio:', error);
+        setIsPlaying(false);
+      }
+    }
+  };
+
+  const pauseAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const resetRecording = () => {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
+    setAudioBlob(null);
+    setAudioUrl('');
+    setRecordingDuration(0);
+    setIsPlaying(false);
+    setAudioLoaded(false);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const isProject = activeSection === 'project';
+  const isAudio = activeSection === 'audio';
+  
+  if (!validate(isProject, isAudio)) {
+    return;
+  }
+  
+  setSubmitStatus({
+    loading: true,
+    success: false,
+    error: null
+  });
+  
+  try {
+    if (isAudio) {
+      // Create FormData for multipart upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', audioData.name);
+      formDataToSend.append('email', audioData.email);
+      formDataToSend.append('duration', recordingDuration.toString());
+      formDataToSend.append('transcription', ''); // Add transcription if available
       
-      setSubmitStatus({
-        loading: false,
-        success: false,
-        error: errorMessage
+      // Convert audioBlob to File object for proper upload
+      const audioFile = new File([audioBlob], 'audio-recording.wav', {
+        type: audioBlob.type || 'audio/wav'
+      });
+      formDataToSend.append('audioFile', audioFile);
+
+      const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/audio-contact', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      // Reset form and audio data
+      setAudioData({
+        name: '',
+        email: ''
+      });
+      resetRecording();
+
+      showFullScreenPopup(
+        'success',
+        'Audio Message Sent!',
+        response.data.message || 'Thank you for your audio message! I\'ve received your recording and will listen to it shortly. I\'ll get back to you via email soon.',
+        false
+      );
+    } else if (isProject) {
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', projectData.name);
+      formDataToSend.append('email', projectData.email);
+      formDataToSend.append('projectType', projectData.projectType);
+      formDataToSend.append('description', projectData.description);
+      if (projectData.budget) formDataToSend.append('budget', projectData.budget);
+      if (projectData.timeline) formDataToSend.append('timeline', projectData.timeline);
+      if (projectData.features) formDataToSend.append('features', projectData.features);
+      if (projectData.techPreferences) formDataToSend.append('techPreferences', projectData.techPreferences);
+      if (projectData.additionalInfo) formDataToSend.append('additionalInfo', projectData.additionalInfo);
+      
+      // Append multiple files
+      if (projectData.files && projectData.files.length > 0) {
+        for (let i = 0; i < projectData.files.length; i++) {
+          formDataToSend.append('files', projectData.files[i]);
+        }
+      }
+
+      const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/project/submit', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      setProjectData({
+        name: '',
+        email: '',
+        projectType: '',
+        budget: '',
+        timeline: '',
+        description: '',
+        features: '',
+        techPreferences: '',
+        additionalInfo: '',
+        files: []
       });
 
       showFullScreenPopup(
-        'error',
-        'Submission Failed',
-        `Oops! ${errorMessage} Please check your internet connection and try again. If the problem persists, you can reach me directly at aaditiyatyagi123@gmail.com`,
-        isProject
+        'success',
+        'Project Request Submitted!',
+        'Thank you for your project request! I\'ve received all the details and will review your requirements carefully. I\'ll get back to you with a detailed quote and timeline within 24-48 hours.',
+        true
+      );
+    } else {
+      // Regular contact form
+      const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/contact', formData);
+      
+      setFormData({
+        name: '',
+        email: '',
+        message: ''
+      });
+
+      showFullScreenPopup(
+        'success',
+        'Message Sent Successfully!',
+        'Thanks for reaching out! Your message has been delivered successfully. I\'ll get back to you as soon as possible, usually within 24 hours.',
+        false
       );
     }
-  };
+    
+    setSubmitStatus({
+      loading: false,
+      success: true,
+      error: null
+    });
+    
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
+    
+    setSubmitStatus({
+      loading: false,
+      success: false,
+      error: errorMessage
+    });
+
+    showFullScreenPopup(
+      'error',
+      'Submission Failed',
+      `Oops! ${errorMessage} Please check your internet connection and try again. If the problem persists, you can reach me directly at aaditiyatyagi123@gmail.com`,
+      isProject || isAudio
+    );
+  }
+};
 
   const renderContactSection = () => (
     <>
@@ -251,6 +411,13 @@ const Contact = () => {
         >
           <FaProjectDiagram className="cnt-action-icon" />
           Request a Project 
+        </button>
+        <button 
+          className="cnt-action-btn-project2"
+          onClick={() => setActiveSection('audio')}
+        >
+          <FaMicrophone className="cnt-action-icon" />
+          Send Audio Message
         </button>
       </div>
 
@@ -368,6 +535,130 @@ const Contact = () => {
       </div>
     </>
   );
+
+  const renderAudioSection = () => (
+  <>
+    <div className="cnt-section-headers">
+      <button 
+        className="cnt-back-btn"
+        onClick={() => setActiveSection('contact')}
+      >
+        <FaArrowLeft className="cnt-back-icon" />
+        Back to Contact
+      </button>
+      <h3 className="cnt-section-subtitle">Send Audio Message</h3>
+    </div>
+
+    <div className="cnt-project-form-container">
+      <form className="cnt-form" onSubmit={handleSubmit}>
+        <div className="cnt-form-row">
+          <div className="cnt-form-group">
+            <label htmlFor="name" className="cnt-form-label">Full Name *</label>
+            <input
+              type="text"
+              id="name"
+              className={`cnt-form-input ${errors.name ? 'cnt-input-error' : ''}`}
+              placeholder="Your Full Name"
+              value={audioData.name}
+              onChange={(e) => handleChange(e, false, true)}
+            />
+            {errors.name && <p className="cnt-error-text">{errors.name}</p>}
+          </div>
+          
+          <div className="cnt-form-group">
+            <label htmlFor="email" className="cnt-form-label">Email Address *</label>
+            <input
+              type="email"
+              id="email"
+              className={`cnt-form-input ${errors.email ? 'cnt-input-error' : ''}`}
+              placeholder="your.email@example.com"
+              value={audioData.email}
+              onChange={(e) => handleChange(e, false, true)}
+            />
+            {errors.email && <p className="cnt-error-text">{errors.email}</p>}
+          </div>
+        </div>
+
+        <div className="cnt-form-group">
+          <label className="cnt-form-label">Audio Message *</label>
+          <div className="cnt-audio-recorder">
+            {!audioBlob ? (
+              <div className="cnt-record-section">
+                <button
+                  type="button"
+                  className={`cnt-record-btn ${isRecording ? 'recording' : ''}`}
+                  onClick={isRecording ? stopRecording : startRecording}
+                >
+                  {isRecording ? <FaStop /> : <FaMicrophone />}
+                  {isRecording ? 'Stop Recording' : 'Start Recording'}
+                </button>
+                {isRecording && (
+                  <div className="cnt-recording-info">
+                    <span className="cnt-recording-indicator">● REC</span>
+                    <span className="cnt-recording-duration">{formatTime(recordingDuration)}</span>
+                    <div className="cnt-audio-waves">
+                      <div className="cnt-wave-bar"></div>
+                      <div className="cnt-wave-bar"></div>
+                      <div className="cnt-wave-bar"></div>
+                      <div className="cnt-wave-bar"></div>
+                      <div className="cnt-wave-bar"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="cnt-audio-preview">
+                <audio
+                  ref={audioRef}
+                  src={audioUrl}
+                  onLoadedData={() => setAudioLoaded(true)}
+                  onEnded={() => setIsPlaying(false)}
+                  onPause={() => setIsPlaying(false)}
+                  onPlay={() => setIsPlaying(true)}
+                  preload="auto"
+                />
+                <div className="cnt-audio-controls">
+                  <button
+                    type="button"
+                    className="cnt-play-btn"
+                    onClick={isPlaying ? pauseAudio : playAudio}
+                    disabled={!audioLoaded}
+                  >
+                    {isPlaying ? <FaPause /> : <FaPlay />}
+                  </button>
+                  <div className="cnt-audio-waves static">
+                    <div className="cnt-wave-bar"></div>
+                    <div className="cnt-wave-bar"></div>
+                    <div className="cnt-wave-bar"></div>
+                    <div className="cnt-wave-bar"></div>
+                    <div className="cnt-wave-bar"></div>
+                  </div>
+                  <span className="cnt-audio-duration">Duration: {formatTime(recordingDuration)}</span>
+                  <button
+                    type="button"
+                    className="cnt-reset-btn"
+                    onClick={resetRecording}
+                  >
+                    Record Again
+                  </button>
+                </div>
+              </div>
+            )}
+            {errors.audio && <p className="cnt-error-text">{errors.audio}</p>}
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          className="cnt-btn-primary cnt-btn-large"
+          disabled={submitStatus.loading || !audioBlob}
+        >
+          {submitStatus.loading ? 'Sending Audio...' : 'Send Audio Message'}
+        </button>
+      </form>
+    </div>
+  </>
+);
 
   const renderProjectSection = () => (
     <>
@@ -586,10 +877,12 @@ const Contact = () => {
     <>
       <section className="cnt-main-section">
         <h2 className="cnt-section-title">
-          {activeSection === 'contact' ? 'Contact Me' : 'Project Request'}
+          {activeSection === 'contact' ? 'Contact Me' : activeSection === 'project' ? 'Project Request' : 'Send Audio Message'}
         </h2>
         <div className="cnt-card">
-          {activeSection === 'contact' ? renderContactSection() : renderProjectSection()}
+          {activeSection === 'contact' && renderContactSection()}
+          {activeSection === 'project' && renderProjectSection()}
+          {activeSection === 'audio' && renderAudioSection()}
         </div>
       </section>
 
