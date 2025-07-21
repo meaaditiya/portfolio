@@ -3,23 +3,21 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
 
-// 👀 Custom Console Message
 console.log(
-  `%c🚨 Hey there, curious developer! 🚨`,
-  'color: white; background-color: crimson; font-size: 20px; padding: 8px; font-weight: bold; border-radius: 6px;'
+  `%c⚡️ Greetings, Code Explorer! ⚡️`,
+  'color: white; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); font-size: 18px; padding: 12px 24px; font-weight: 700; border-radius: 10px; border: 1px solid #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); text-shadow: 0 0 5px rgba(255, 255, 255, 0.3); animation: pulse 2s ease-in-out infinite; font-family: "Fira Code", monospace;'
 );
 
 console.log(
-  `%cSo you’ve opened the console... 🕵️‍♂️✨\n\n` +
-  `Welcome to the backstage of this web app! 🎭\n` +
-  `You're clearly someone special — the 1% who dives deep 🤓🧠\n\n` +
-  `This site was handcrafted with 💖, sweat 💦, and way too much coffee ☕.\n` +
-  `If you're looking for secrets 🔐, easter eggs 🥚, or bugs 🐞... you might find a few (shhh 🤫).\n\n` +
-  `Anyway, thanks for being curious! Curiosity builds great things 🚀\n\n` +
-  `— Yours truly, the Dev 👨‍💻\n\n` +
-  `🌈✨💡💻🛠️🔥📦🧩🎉`,
-  'color: #00adb5; font-size: 14px; font-family: monospace;'
+  `%cYou've unlocked the console — the heart of this digital realm.\n\n` +
+  `This application was meticulously crafted with cutting-edge tech and a passion for innovation.\n` +
+  `As a curious coder, you're diving into the hidden layers of this creation.\n` +
+  `Explore, experiment, and uncover the secrets within the code.\n\n` +
+  `— Aaditiya Tyagi`,
+  'color: black; font-size: 14px; font-family: "Fira Code", monospace; line-height: 1.6; text-shadow: 0 0 3px rgba(163, 191, 250, 0.5); animation: fadeIn 1.5s ease-in;'
 );
+
+
 
 
   console.log = () => {};

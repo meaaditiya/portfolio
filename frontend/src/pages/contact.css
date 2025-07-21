@@ -89,6 +89,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  position: relative;
+  left:10px;
  
 }
 .cnt-action-btn-project {
@@ -496,11 +498,11 @@ body {
   }
 
   .cnt-action-btn-project {
-    padding: 0.1rem 0.7rem;
+    padding: 0.1rem 0.5rem;
     font-size: 0.875rem;
   }
  .cnt-action-btn-project2 {
-    padding: 0.2rem 0.7rem;
+    padding: 0.1rem 0.5rem;
     font-size: 0.875rem;
   }
   .cnt-form-input, .cnt-form-textarea, .cnt-form-select {

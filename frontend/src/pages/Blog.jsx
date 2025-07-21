@@ -180,12 +180,33 @@ const Blog = () => {
                   <span key={index} className="tag">{tag}</span>
                 ))}
               </div>
-              <button
-                className="generate-summary-btn"
-                onClick={(e) => handleGenerateSummary(blog, e)}
-              >
-                Generate Summary
-              </button>
+            <button
+  className="generate-summary-btn"
+  onClick={(e) => handleGenerateSummary(blog, e)}
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth="1.8"
+    stroke="url(#starGradient)"
+    style={{ width: '18px', height: '18px', verticalAlign: 'middle', marginRight: '8px' }}
+  >
+    <defs>
+      <linearGradient id="starGradient" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#00C4CC" />
+        <stop offset="100%" stopColor="#0072FF" />
+      </linearGradient>
+    </defs>
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
+    />
+  </svg>
+  Generate Summary
+</button>
+
             </div>
           </div>
         ))}
