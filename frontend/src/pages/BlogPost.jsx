@@ -54,6 +54,11 @@ const BlogPost = () => {
   const [userCommentReactions, setUserCommentReactions] = useState({});
   const [commentReactionLoading, setCommentReactionLoading] = useState(null);
   const [commentReactionTarget, setCommentReactionTarget] = useState(null);
+  const [showSummaryPopup, setShowSummaryPopup] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [generatedSummary, setGeneratedSummary] = useState('');
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   // Fetch blog post details
   useEffect(() => {
@@ -1013,7 +1018,42 @@ Read the full article here 👇`
       setCommentsLoading(false);
     }
   };
+const handleGenerateSummary = async (blog, event) => {
+  event.stopPropagation(); // Prevent any parent click handlers
+  setSelectedBlog(blog);
+  setShowSummaryPopup(true);
+  setGeneratedSummary('');
+  setSummaryError(null);
+  setIsGeneratingSummary(true);
 
+  try {
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${blog._id}/generate-summary`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to generate summary');
+    }
+
+    const data = await response.json();
+    setGeneratedSummary(data.summary);
+  } catch (err) {
+    setSummaryError(err.message);
+    console.error('Error generating summary:', err);
+  } finally {
+    setIsGeneratingSummary(false);
+  }
+};
+const closeSummaryPopup = () => {
+  setShowSummaryPopup(false);
+  setSelectedBlog(null);
+  setGeneratedSummary('');
+  setSummaryError(null);
+};
   // Custom component to render content with inline images and videos
   const renderContentWithMedia = (content) => {
     if (!content) return null;
@@ -1198,6 +1238,7 @@ Read the full article here 👇`
                     <p className="video-caption">{part.media.caption}</p> // Using same caption class as images
                   )}
                 </div>
+                
               );
             }
             return null;
@@ -1251,6 +1292,34 @@ const showDeleteConfirmation = (commentId, email) => {
             <span className="blog-post-author">
               {blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
             </span>
+            <span>
+              <button
+  className="generate-summary-btn summarybtn"
+  onClick={(e) => handleGenerateSummary(blogPost, e)}
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth="1.8"
+    stroke="url(#starGradient)"
+    style={{ width: '18px', height: '18px', verticalAlign: 'middle', marginRight: '8px' }}
+  >
+    <defs>
+      <linearGradient id="starGradient" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#00C4CC" />
+        <stop offset="100%" stopColor="#0072FF" />
+      </linearGradient>
+    </defs>
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
+    />
+  </svg>
+  Generate Summary
+</button>
+            </span>
           </div>
           
           {/* Display tags exactly as they are in the blog post */}
@@ -1283,6 +1352,7 @@ const showDeleteConfirmation = (commentId, email) => {
               </button>
             </div>
           </div>
+             
           
           {/* Share section */}
           <div className="blog-share">
@@ -1292,8 +1362,8 @@ const showDeleteConfirmation = (commentId, email) => {
             >
               <FaShare />
               Share
-            </button>
-          </div>
+            </button></div>
+           
           
           {/* Comments section */}
           <div className="blog-comments">
@@ -1800,6 +1870,54 @@ const showDeleteConfirmation = (commentId, email) => {
           </div>
         </div>
       )}
+      {showSummaryPopup && (
+  <div className="summary-popup-overlay">
+    <div className="summary-popup">
+      <div className="popup-header">
+        <h3>AI Generated Summary</h3>
+        <button onClick={closeSummaryPopup} className="close-btn">×</button>
+      </div>
+      <div className="popup-content">
+        {selectedBlog && (
+          <div className="blog-info">
+            <h4>{selectedBlog.title}</h4>
+            <p className="blog-date-popup">
+              {new Date(selectedBlog.publishedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+          </div>
+        )}
+        <div className="summary-content">
+          {isGeneratingSummary && (
+            <div className="generating-summary">
+              <div className="spinner"></div>
+              <p>Generating AI summary...</p>
+            </div>
+          )}
+          {summaryError && (
+            <div className="summary-error">
+              <p>Error: {summaryError}</p>
+            </div>
+          )}
+          {generatedSummary && !isGeneratingSummary && (
+            <div className="generated-summary">
+              <h5>Summary:</h5>
+              <p>{generatedSummary}</p>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="popup-footer">
+        <button onClick={closeSummaryPopup} className="close-popup-btn">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </section>
   );
 };

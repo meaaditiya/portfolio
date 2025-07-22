@@ -1762,3 +1762,8 @@ body.modal-open {
   font-style: italic;
   text-align: center;
 }
+.summarybtn{
+  position: relative;
+  left:30px;
+  top:-4px;
+}
