@@ -54,6 +54,8 @@ const BlogPost = () => {
   const [userCommentReactions, setUserCommentReactions] = useState({});
   const [commentReactionLoading, setCommentReactionLoading] = useState(null);
   const [commentReactionTarget, setCommentReactionTarget] = useState(null);
+
+  //summary State
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [generatedSummary, setGeneratedSummary] = useState('');
@@ -1292,8 +1294,16 @@ const showDeleteConfirmation = (commentId, email) => {
             <span className="blog-post-author">
               {blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
             </span>
-            <span>
-              <button
+          </div>
+          
+          {/* Display tags exactly as they are in the blog post */}
+          <div className="blog-post-tags">
+            {blogPost.tags && blogPost.tags.map((tag, index) => (
+              <span key={index} className="tag">{tag}</span>
+            ))}
+          </div>
+          <div>
+            <button
   className="generate-summary-btn summarybtn"
   onClick={(e) => handleGenerateSummary(blogPost, e)}
 >
@@ -1319,14 +1329,6 @@ const showDeleteConfirmation = (commentId, email) => {
   </svg>
   Generate Summary
 </button>
-            </span>
-          </div>
-          
-          {/* Display tags exactly as they are in the blog post */}
-          <div className="blog-post-tags">
-            {blogPost.tags && blogPost.tags.map((tag, index) => (
-              <span key={index} className="tag">{tag}</span>
-            ))}
           </div>
           
           {/* Render content with inline images and videos */}
