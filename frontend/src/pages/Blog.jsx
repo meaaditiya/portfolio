@@ -7,7 +7,7 @@ import './blog.css';
 const Blog = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Set initial loading to true
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // Only for initial load with skeleton
   const [error, setError] = useState(null);
   const [limit, setLimit] = useState(6); // Initial limit of 6 blogs
   const [hasMore, setHasMore] = useState(true); // Track if more blogs are available
@@ -31,10 +31,10 @@ const Blog = () => {
     }
   };
 
-  // Fetch blogs from API
+  // Fetch blogs from API (initial load only)
   useEffect(() => {
     const fetchBlogs = async () => {
-      setIsLoading(true);
+      setIsInitialLoading(true);
       try {
         const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=${limit}`);
         if (!response.ok) {
@@ -48,12 +48,15 @@ const Blog = () => {
         setError('Failed to fetch blogs');
         console.error(err);
       } finally {
-        setIsLoading(false);
+        setIsInitialLoading(false);
       }
     };
         
-    fetchBlogs();
-  }, [limit]); // Re-run when limit changes
+    // Only fetch on initial mount
+    if (limit === 6) {
+      fetchBlogs();
+    }
+  }, []); // Empty dependency array for initial load only
 
   // Handle Load More button click
   const handleLoadMore = async () => {
@@ -122,8 +125,8 @@ const Blog = () => {
     return <Error />;
   }
 
-  // Show skeleton loader on initial load
-  if (isLoading) {
+  // Show skeleton loader ONLY on initial load
+  if (isInitialLoading) {
     return (
       <section className="section">
         <h2 className="section-title">Blogs</h2>
@@ -224,6 +227,7 @@ const Blog = () => {
         </div>
       )}
 
+      {/* Simple spinner for Load More (not skeleton loader) */}
       {isLoadingMore && (
         <div className="loading">
           <div className="spinner"></div>

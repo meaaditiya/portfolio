@@ -36,6 +36,9 @@ const BlogSkeletonLoader = ({ count = 6 }) => {
               <div className="skeleton-tag"></div>
               <div className="skeleton-tag skeleton-tag-small"></div>
             </div>
+            
+            {/* Generate Summary Button Skeleton */}
+            <div className="skeleton-generate-btn"></div>
           </div>
         </div>
       ))}
