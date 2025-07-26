@@ -207,7 +207,7 @@ const Home = () => {
                 <span>GitHub</span>
               </a>
               <a
-                href="https://linkedin.com/in/aaditiyatyagi"
+                href="https://www.linkedin.com/in/aaditiya-tyagi-babb26290/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link"
