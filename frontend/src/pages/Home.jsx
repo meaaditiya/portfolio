@@ -198,7 +198,7 @@ const Home = () => {
 
             <div className="social-links">
               <a
-                href="https://github.com/aaditiyatyagi"
+                href="https://github.com/meaaditiya"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link"
@@ -215,7 +215,7 @@ const Home = () => {
                 <Linkedin size={18} />
                 <span>LinkedIn</span>
               </a>
-              <a href="mailto:contact@aaditiyatyagi.com" className="social-link">
+              <a href="aaditiyatyagi123@gmail.com" className="social-link">
                 <Mail size={18} />
                 <span>Email</span>
               </a>
