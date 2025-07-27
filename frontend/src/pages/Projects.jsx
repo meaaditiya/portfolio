@@ -3,7 +3,7 @@ import './Projects.css';
 import aadiImage10 from '../images/aadiimage10.jpg';
 import aadiImage1 from '../images/aadiimage01.jpeg';
 import weatherImage from '../images/weather.jpg';
-
+import castwave from '../images/Castwave.png';
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
 
@@ -12,7 +12,6 @@ const Projects = () => {
       id: 1,
       title: 'E-Portal for Case Management',
       period: '08 Mar, 2023 - 15 May, 2024',
-      mentor: 'Anmol Jain',
       teamSize: 4,
       description: 'Developed an advanced e-Portal to streamline judicial processes, enhancing transparency, accessibility, and communication between judges, lawyers, and clients.',
       detailedDescription: [
@@ -58,7 +57,35 @@ const Projects = () => {
       image: aadiImage1
     },
     {
-      id: 3,
+  id: 3,
+  title: 'CastWave',
+  period: '30 May, 2025 - 23 Jul, 2024',
+  teamSize: 1,
+  description: 'A full-stack live chat application enabling real-time chatting community sessions, and interactive conversations with advanced host controls.',
+  detailedDescription: [
+    'Built with Next.js (App Router) and TypeScript for scalable, maintainable architecture.',
+    'Implemented secure user authentication and session-based login persistence using Firebase Auth.',
+    'Designed dynamic session creation, scheduling, and real-time live control features for hosts.',
+    'Integrated Firestore for real-time chat synchronization and participant management.',
+    'Enabled live polls with real-time voting and results display for session engagement.',
+    'Developed featured messages and message voting for interactive discussion flow.',
+    'Integrated Google Genkit for AI-powered live chat summarization.',
+    'Styled using Tailwind CSS and ShadCN UI for responsive, modern light/dark themed UI.',
+    'Managed app-wide state using React Hooks and Context API.'
+  ],
+  tech: ['Next.js', 'TypeScript', 'Firebase', 'Firestore', 'Tailwind CSS', 'ShadCN UI', 'Genkit', 'React Hooks', 'Context API'],
+  outcomes: [
+    'Enabled creators and communities to host live chat events with rich interaction.',
+    'Improved user engagement through polls, featured messages, and voting.',
+    'Enhanced content accessibility with AI-based chat summarization.'
+  ],
+   link: 'https://castwave-red.vercel.app/',
+  color: 'purple',
+  image: castwave
+}
+,
+    {
+      id: 4,
       title: 'Weather Tracking for Farmers',
       period: '01 May, 2023 - 23 Jul, 2024',
       teamSize: 4,
