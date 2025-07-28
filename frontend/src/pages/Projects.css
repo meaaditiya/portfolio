@@ -575,6 +575,13 @@
     gap: 12px;
   }
 }
+.link {
+  color: white;
+  text-decoration: none; /* optional: remove underline */
+}
+.link:hover {
+  color: white;
+}
 
 /* GitHub Explorer Styles */
 .github-explorer-overlay {

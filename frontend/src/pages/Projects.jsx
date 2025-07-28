@@ -8,7 +8,7 @@ import React from 'react';
 import { Search, Folder, File, GitBranch, Star, Eye, AlertCircle, Loader2, FolderOpen, FileText, Code } from 'lucide-react';
 
 const GitHubRepoExplorer = ({ repoUrl: initialRepoUrl, onClose }) => {
-   const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN; // Store in .env file
+  const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN; 
   const [repoUrl, setRepoUrl] = useState(initialRepoUrl || '');
   const [repoData, setRepoData] = useState(null);
   const [fileTree, setFileTree] = useState([]);
@@ -276,7 +276,7 @@ const GitHubRepoExplorer = ({ repoUrl: initialRepoUrl, onClose }) => {
                 onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
                 placeholder="https://github.com/username/repository"
                 className="github-search-input"
-              />
+              /> 
               <button
                 onClick={handleSubmit}
                 disabled={loading}
@@ -285,6 +285,14 @@ const GitHubRepoExplorer = ({ repoUrl: initialRepoUrl, onClose }) => {
                 {loading ? <Loader2 className="github-loading-spinner" /> : <GitBranch className="github-search-icon" />}
                 {loading ? 'Loading...' : 'Explore'}
               </button>
+              <button className="github-search-button"><a
+                className="link"
+                href={repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Visit repository
+              </a></button>
             </div>
           </div>
 
