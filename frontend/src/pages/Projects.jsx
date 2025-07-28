@@ -8,6 +8,7 @@ import React from 'react';
 import { Search, Folder, File, GitBranch, Star, Eye, AlertCircle, Loader2, FolderOpen, FileText, Code } from 'lucide-react';
 
 const GitHubRepoExplorer = ({ repoUrl: initialRepoUrl, onClose }) => {
+   const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN; // Store in .env file
   const [repoUrl, setRepoUrl] = useState(initialRepoUrl || '');
   const [repoData, setRepoData] = useState(null);
   const [fileTree, setFileTree] = useState([]);
@@ -23,7 +24,6 @@ const GitHubRepoExplorer = ({ repoUrl: initialRepoUrl, onClose }) => {
     return null;
   };
 
-    const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN; // Store in .env file
 
   const fetchRepoData = async (owner, repo) => {
     const headers = {};
