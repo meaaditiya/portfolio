@@ -10,7 +10,7 @@ import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import './index.css';
 import Posts from './pages/Posts';
-
+import Stream from './pages/Stream';
  // Background API fetcher
 
 const App = () => {
@@ -28,7 +28,7 @@ const App = () => {
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/posts" element={<Posts />} />
-            
+            <Route path="/stream" element={<Stream/>}/>
           </Routes>
         </main>
         <Footer />

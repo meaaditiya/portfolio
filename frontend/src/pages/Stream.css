@@ -1,0 +1,629 @@
+/* Stream.css - Responsive styles for Stream Hub */
+
+:root {
+  --color-black: #0f172a;
+  --color-white: #f5f3f0;
+  --color-gray-50: #f5f3f0;
+  --color-gray-100: #ede8e3;
+  --color-gray-200: #e2d9d0;
+  --color-gray-300: #d4c7b8;
+  --color-gray-400: #b8a894;
+  --color-gray-500: #9c8a70;
+  --color-gray-600: #7d6b53;
+  --color-gray-700: #5e4d3a;
+  --color-gray-800: #453629;
+  --color-gray-900: #2d201a;
+}
+
+/* Base App Styles */
+.tyagi-app {
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+  color: var(--color-black);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+
+}
+
+.tyagi-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  margin-top:70px;
+}
+
+/* Header Styles */
+.tyagi-header {
+  color:black;
+  padding: 2rem 0;
+  margin: -1rem -1rem 2rem -1rem;
+  border-radius: 0 0 1rem 1rem;
+}
+
+.tyagi-header-content {
+  color:black;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.tyagi-header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.tyagi-header-icon {
+  color: var(--color-gray-300);
+}
+
+.tyagi-header-subtitle {
+  font-size: 1.1rem;
+  color: black;
+  margin: 0;
+}
+
+/* Tab Navigation */
+.tyagi-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  background-color: var(--color-gray-100);
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+}
+
+.tyagi-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tyagi-tab:hover {
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+.tyagi-tab-active {
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+}
+
+.tyagi-tab-active:hover {
+  background-color: var(--color-gray-700);
+  color: var(--color-white);
+}
+
+/* Content Area */
+.tyagi-content {
+  min-height: 400px;
+}
+
+/* Loading State */
+.tyagi-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--color-gray-600);
+}
+
+.tyagi-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--color-gray-300);
+  border-top: 3px solid var(--color-gray-600);
+  border-radius: 50%;
+  animation: tyagi-spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes tyagi-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.tyagi-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--color-gray-500);
+}
+
+.tyagi-empty-icon {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.tyagi-empty-state h3 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-gray-600);
+}
+
+.tyagi-empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Streams Grid */
+.tyagi-streams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Stream Card */
+.tyagi-stream-card {
+  background-color: var(--color-white);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.tyagi-stream-card:hover {
+ 
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Stream Thumbnail */
+.tyagi-stream-thumbnail {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.tyagi-thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.tyagi-stream-card:hover .tyagi-thumbnail-img {
+  transform: scale(1.05);
+}
+
+.tyagi-thumbnail-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tyagi-stream-card:hover .tyagi-thumbnail-overlay {
+  opacity: 1;
+}
+
+.tyagi-play-btn {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background-color: var(--color-white);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-800);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tyagi-play-btn:hover {
+  transform: scale(1.1);
+  background-color: var(--color-gray-100);
+}
+
+/* Status Badge */
+.tyagi-status-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tyagi-status-scheduled {
+  background-color: var(--color-gray-600);
+  color: var(--color-white);
+}
+
+.tyagi-status-live {
+  background-color: #dc2626;
+  color: var(--color-white);
+}
+
+.tyagi-status-ended {
+  background-color: var(--color-gray-400);
+  color: var(--color-white);
+}
+
+.tyagi-live-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--color-white);
+  border-radius: 50%;
+  animation: tyagi-pulse 2s infinite;
+}
+
+@keyframes tyagi-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Stream Info */
+.tyagi-stream-info {
+  padding: 1.5rem;
+}
+
+.tyagi-stream-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-gray-800);
+  line-height: 1.3;
+}
+
+.tyagi-stream-description {
+  color: var(--color-gray-600);
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tyagi-stream-meta {
+  margin-bottom: 1.5rem;
+}
+
+.tyagi-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-gray-500);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.tyagi-meta-row:last-child {
+  margin-bottom: 0;
+}
+
+.tyagi-watch-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tyagi-watch-btn:hover {
+  background-color: var(--color-gray-700);
+ 
+}
+
+/* Back Button */
+.tyagi-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.tyagi-back-btn:hover {
+  background-color: var(--color-gray-300);
+  color: var(--color-gray-800);
+}
+
+/* Stream Viewer */
+.tyagi-stream-viewer {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  min-height: 600px;
+}
+
+.tyagi-video-section {
+  background-color: var(--color-white);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tyagi-video-container {
+  position: relative;
+  aspect-ratio: 16/9;
+  background-color: var(--color-gray-900);
+}
+
+.tyagi-video-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.tyagi-video-info {
+  padding: 1.5rem;
+}
+
+.tyagi-video-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  color: var(--color-gray-800);
+  line-height: 1.3;
+}
+
+.tyagi-video-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tyagi-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+}
+
+.tyagi-video-description {
+  color: var(--color-gray-600);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Chat Section */
+.tyagi-chat-section {
+  background-color: var(--color-white);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tyagi-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background-color: var(--color-gray-100);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.tyagi-chat-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.tyagi-chat-container {
+  height: 500px;
+  position: relative;
+}
+
+.tyagi-chat-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: var(--color-gray-50);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .tyagi-stream-viewer {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .tyagi-chat-container {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tyagi-container {
+    padding: 0.75rem;
+  }
+  
+  .tyagi-header {
+    margin: -0.75rem -0.75rem 1.5rem -0.75rem;
+    padding: 1.5rem 0;
+  }
+  
+  .tyagi-header-title {
+    font-size: 2rem;
+  }
+  
+  .tyagi-header-subtitle {
+    font-size: 1rem;
+  }
+  
+  .tyagi-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .tyagi-tab {
+    justify-content: flex-start;
+  }
+  
+  .tyagi-streams-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .tyagi-video-info {
+    padding: 1rem;
+  }
+  
+  .tyagi-video-title {
+    font-size: 1.25rem;
+  }
+  
+  .tyagi-video-meta {
+    gap: 0.75rem;
+  }
+  
+  .tyagi-chat-container {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tyagi-container {
+    padding: 0.5rem;
+  }
+  
+  .tyagi-header {
+    margin: -0.5rem -0.5rem 1rem -0.5rem;
+    padding: 1rem 0;
+  }
+  
+  .tyagi-header-title {
+    font-size: 1.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .tyagi-stream-info {
+    padding: 1rem;
+  }
+  
+  .tyagi-stream-title {
+    font-size: 1.125rem;
+  }
+  
+  .tyagi-video-info {
+    padding: 0.75rem;
+  }
+  
+  .tyagi-video-title {
+    font-size: 1.125rem;
+  }
+  
+  .tyagi-chat-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .tyagi-chat-container {
+    height: 250px;
+  }
+  
+  .tyagi-meta-item {
+    font-size: 0.8rem;
+  }
+}
+
+/* High DPI Display Support */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .tyagi-thumbnail-img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark Mode Support (if system preference) */
+@media (prefers-color-scheme: dark) {
+  .tyagi-app {
+    background-color: var(--color-gray-900);
+    color: var(--color-gray-100);
+  }
+  
+  .tyagi-stream-card {
+    background-color: var(--color-gray-800);
+  }
+  
+  .tyagi-stream-title {
+    color: var(--color-gray-100);
+  }
+  
+  .tyagi-video-section,
+  .tyagi-chat-section {
+    background-color: var(--color-gray-800);
+  }
+  
+  .tyagi-video-title {
+    color: var(--color-gray-100);
+  }
+  
+  .tyagi-chat-header {
+    background-color: var(--color-gray-700);
+    border-bottom-color: var(--color-gray-600);
+  }
+  
+  .tyagi-chat-header h3 {
+    color: var(--color-gray-100);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .tyagi-header,
+  .tyagi-tabs,
+  .tyagi-chat-section,
+  .tyagi-back-btn,
+  .tyagi-play-btn,
+  .tyagi-watch-btn {
+    display: none;
+  }
+  
+  .tyagi-stream-viewer {
+    grid-template-columns: 1fr;
+  }
+  
+  .tyagi-video-container {
+    display: none;
+  }
+}
