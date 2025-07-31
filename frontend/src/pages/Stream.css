@@ -573,41 +573,6 @@
     image-rendering: crisp-edges;
   }
 }
-
-/* Dark Mode Support (if system preference) */
-@media (prefers-color-scheme: dark) {
-  .tyagi-app {
-    background-color: var(--color-gray-900);
-    color: var(--color-gray-100);
-  }
-  
-  .tyagi-stream-card {
-    background-color: var(--color-gray-800);
-  }
-  
-  .tyagi-stream-title {
-    color: var(--color-gray-100);
-  }
-  
-  .tyagi-video-section,
-  .tyagi-chat-section {
-    background-color: var(--color-gray-800);
-  }
-  
-  .tyagi-video-title {
-    color: var(--color-gray-100);
-  }
-  
-  .tyagi-chat-header {
-    background-color: var(--color-gray-700);
-    border-bottom-color: var(--color-gray-600);
-  }
-  
-  .tyagi-chat-header h3 {
-    color: var(--color-gray-100);
-  }
-}
-
 /* Print Styles */
 @media print {
   .tyagi-header,
