@@ -1,6 +1,6 @@
 
 import React from 'react';
-import './PostSkeleton.css';
+import '../pagesCSS/PostSkeleton.css';
 
 const SkeletonLoader = ({ type = 'post' }) => {
   return (

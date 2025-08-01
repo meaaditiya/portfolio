@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import './Community.css';
+import '../pagesCSS/Community.css';
 import Dots from './DotsLoader';
 
 const Community = () => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaQuestionCircle, FaProjectDiagram, FaArrowLeft, FaTimes, FaCheckCircle, FaExclamationTriangle, FaMicrophone, FaStop, FaPlay, FaPause } from 'react-icons/fa';
 import axios from 'axios';
-import './contact.css';
+import '../pagesCSS/contact.css';
 
 const Contact = () => {
   const [formData, setFormData] = useState({

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, Play, Tv } from 'lucide-react';
-import './Stream.css';
+import '../pagesCSS/Stream.css';
 
 const StreamApp = () => {
   const [streams, setStreams] = useState([]);
@@ -27,10 +27,14 @@ const StreamApp = () => {
       let streamData = data.streams || [];
       
       // Filter based on active tab
+
       if (activeTab === 'upcoming') {
         streamData = streamData.filter(stream => stream.status === 'scheduled');
       } else if (activeTab === 'live') {
         streamData = streamData.filter(stream => stream.status === 'live');
+      }
+      else if(activeTab === 'ended'){
+        streamData = streamData.filter(stream => stream.status === 'ended');
       }
       
       setStreams(streamData);
@@ -214,6 +218,13 @@ const StreamApp = () => {
           >
             <Play size={20} />
             Live Now
+          </button>
+            <button
+            className={`tyagi-tab ${activeTab === 'ended' ? 'tyagi-tab-active' : ''}`}
+            onClick={() => setActiveTab('ended')}
+          >
+            <Tv size={20} />
+            Ended Streams
           </button>
         </div>
 

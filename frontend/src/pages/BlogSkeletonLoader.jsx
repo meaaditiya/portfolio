@@ -1,5 +1,5 @@
 import React from 'react';
-import './BlogSkeletonLoader.css';
+import '../pagesCSS/BlogSkeletonLoader.css';
 
 const BlogSkeletonLoader = ({ count = 6 }) => {
   return (

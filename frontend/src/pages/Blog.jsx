@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BlogSkeletonLoader from './BlogSkeletonLoader';
 import Error from './Error.jsx';
-import './blog.css';
+import '../pagesCSS/blog.css';
 
 const Blog = () => {
   const navigate = useNavigate();

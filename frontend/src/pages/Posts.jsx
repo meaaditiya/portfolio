@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, ArrowLeft,MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin } from 'lucide-react';
-import './Posts.css';
+import '../pagesCSS/Posts.css';
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
 import Error from './Error.jsx';

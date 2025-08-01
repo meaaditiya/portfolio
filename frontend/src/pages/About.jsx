@@ -3,7 +3,7 @@ import {
   Mail, Phone, MapPin, User, GraduationCap, Code, Award, Calendar,
   Globe, Database, Server, Smartphone, GitBranch, Layers, FileCode, Palette
 } from 'lucide-react';
-import './about.css';
+import '../pagesCSS/about.css';
 import profileImage from '../images/aadiprofile.png';
 
 const About = () => {

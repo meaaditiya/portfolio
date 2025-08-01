@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest } from 'react-icons/fa';
 import axios from 'axios';
-import './blogPost.css';
+import '../pagesCSS/blogPost.css';
 import Dots from './DotsLoader';
 
 // Import ReactMarkdown for proper markdown rendering

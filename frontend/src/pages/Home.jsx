@@ -4,7 +4,7 @@ import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, 
 import About from './About';
 import Projects from './Projects';
 import Contact from './Contact';
-import './Home.css';
+import '../pagesCSS/Home.css';
 
 const Home = () => {
   const navigate = useNavigate();

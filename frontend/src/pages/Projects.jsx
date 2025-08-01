@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './Projects.css';
+import '../pagesCSS/Projects.css';
 import aadiImage10 from '../images/aadiimage10.jpg';
 import aadiImage1 from '../images/aadiimage01.jpeg';
 import weatherImage from '../images/weather.jpg';
