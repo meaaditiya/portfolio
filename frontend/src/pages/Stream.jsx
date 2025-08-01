@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, Play, Tv } from 'lucide-react';
+import { Calendar, Clock, Users, Play, Tv, Lock, X } from 'lucide-react';
 import '../pagesCSS/Stream.css';
-
+import profileImage from '../images/livestream.png';
 const StreamApp = () => {
   const [streams, setStreams] = useState([]);
   const [selectedStream, setSelectedStream] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
   const [embedData, setEmbedData] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [pendingStream, setPendingStream] = useState(null);
 
   useEffect(() => {
     fetchStreams();
@@ -17,7 +22,6 @@ const StreamApp = () => {
     try {
       setLoading(true);
       
-      // Always use the main streams endpoint and filter client-side
       const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/streams');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -26,14 +30,11 @@ const StreamApp = () => {
       const data = await response.json();
       let streamData = data.streams || [];
       
-      // Filter based on active tab
-
       if (activeTab === 'upcoming') {
         streamData = streamData.filter(stream => stream.status === 'scheduled');
       } else if (activeTab === 'live') {
         streamData = streamData.filter(stream => stream.status === 'live');
-      }
-      else if(activeTab === 'ended'){
+      } else if(activeTab === 'ended'){
         streamData = streamData.filter(stream => stream.status === 'ended');
       }
       
@@ -46,38 +47,93 @@ const StreamApp = () => {
     }
   };
 
-  const fetchEmbedData = async (streamId) => {
+  const fetchEmbedData = async (streamId, streamPassword = '') => {
     try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/streams/${streamId}/embed`);
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/streams/${streamId}/embed`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: streamPassword })
+      });
+      
       if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 401) {
+          throw new Error(errorData.message || 'Password required');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
       const data = await response.json();
       setEmbedData(data);
+      return data;
     } catch (error) {
       console.error('Error fetching embed data:', error);
-      setEmbedData(null);
+      throw error;
     }
   };
 
-  const selectStream = (stream) => {
-    setSelectedStream(stream);
-    fetchEmbedData(stream._id);
+  const selectStream = async (stream) => {
+    // Check if stream is password protected
+    if (stream.isPasswordProtected) {
+      setPendingStream(stream);
+      setShowPasswordModal(true);
+      setPassword('');
+      setPasswordError('');
+      return;
+    }
+    
+    // If not password protected, proceed normally
+    try {
+      setSelectedStream(stream);
+      await fetchEmbedData(stream._id);
+    } catch (error) {
+      console.error('Error selecting stream:', error);
+    }
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (!password.trim()) {
+      setPasswordError('Please enter a password');
+      return;
+    }
+
+    setPasswordLoading(true);
+    setPasswordError('');
+
+    try {
+      await fetchEmbedData(pendingStream._id, password);
+      setSelectedStream(pendingStream);
+      setShowPasswordModal(false);
+      setPendingStream(null);
+      setPassword('');
+    } catch (error) {
+      setPasswordError(error.message || 'Invalid password. Please try again.');
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  const closePasswordModal = () => {
+    setShowPasswordModal(false);
+    setPendingStream(null);
+    setPassword('');
+    setPasswordError('');
   };
 
   const formatDate = (dateStr) => {
     try {
-      // Handle different date formats
       let date;
       if (dateStr.includes('-')) {
-        // Format: YYYY-MM-DD
         date = new Date(dateStr + 'T00:00:00');
       } else {
         date = new Date(dateStr);
       }
       
       if (isNaN(date.getTime())) {
-        return dateStr; // Return original if parsing fails
+        return dateStr;
       }
       
       return date.toLocaleDateString('en-US', {
@@ -93,7 +149,6 @@ const StreamApp = () => {
   };
 
   const formatTime = (timeStr) => {
-    // The time is already in the correct format from the schema (HH:MM AM/PM)
     return timeStr;
   };
 
@@ -111,6 +166,71 @@ const StreamApp = () => {
       </span>
     );
   };
+
+  // Password Modal Component
+  const PasswordModal = () => (
+    <div className="tyagi-modal-overlay">
+      <div className="tyagi-modal">
+        <div className="tyagi-modal-header">
+          <div className="tyagi-modal-title">
+            <Lock size={20} />
+            <h3>Password Protected Stream</h3>
+          </div>
+          <button 
+            className="tyagi-modal-close"
+            onClick={closePasswordModal}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        <div className="tyagi-modal-body">
+          <p>This stream is password protected. Please enter the password to continue.</p>
+          <p className="tyagi-modal-stream-title">
+            <strong>{pendingStream?.title}</strong>
+          </p>
+          
+          <form onSubmit={handlePasswordSubmit}>
+            <div className="tyagi-form-group">
+              <label htmlFor="stream-password">Password</label>
+              <input
+                type="password"
+                id="stream-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="tyagi-form-input"
+                placeholder="Enter stream password"
+                autoFocus
+              />
+            </div>
+            
+            {passwordError && (
+              <div className="tyagi-error-message">
+                {passwordError}
+              </div>
+            )}
+            
+            <div className="tyagi-modal-actions">
+              <button
+                type="button"
+                onClick={closePasswordModal}
+                className="tyagi-btn tyagi-btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={passwordLoading}
+                className="tyagi-btn tyagi-btn-primary"
+              >
+                {passwordLoading ? 'Verifying...' : 'Access Stream'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 
   if (selectedStream && embedData) {
     return (
@@ -130,7 +250,7 @@ const StreamApp = () => {
             <div className="tyagi-video-section">
               <div className="tyagi-video-container">
                 <iframe
-                  src={`${embedData.embedUrl}?autoplay=1&modestbranding=1&rel=0`}
+                  src={`${embedData.embedUrl}?autoplay=${selectedStream.status === 'live' ? '1' : '0'}&modestbranding=1&rel=0`}
                   title={embedData.title}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -140,7 +260,15 @@ const StreamApp = () => {
               </div>
               
               <div className="tyagi-video-info">
-                <h1 className="tyagi-video-title">{selectedStream.title}</h1>
+                <div className="tyagi-video-title-row">
+                  <h1 className="tyagi-video-title">{selectedStream.title}</h1>
+                  {embedData.isPasswordProtected && (
+                    <div className="tyagi-protected-badge">
+                      <Lock size={16} />
+                      <span>Protected</span>
+                    </div>
+                  )}
+                </div>
                 <div className="tyagi-video-meta">
                   <div className="tyagi-meta-item">
                     <Calendar size={16} />
@@ -174,7 +302,12 @@ const StreamApp = () => {
                   <div className="tyagi-chat-placeholder">
                     <Users size={48} className="tyagi-chat-placeholder-icon" />
                     <h4>Chat Not Available</h4>
-                    <p>Live chat will be available when the stream goes live</p>
+                    <p>
+                      {selectedStream.status === 'ended' 
+                        ? 'This stream has ended. Chat is no longer available.' 
+                        : 'Live chat will be available when the stream goes live'
+                      }
+                    </p>
                     {selectedStream.status === 'scheduled' && (
                       <div className="tyagi-chat-schedule">
                         <Clock size={16} />
@@ -219,7 +352,7 @@ const StreamApp = () => {
             <Play size={20} />
             Live Now
           </button>
-            <button
+          <button
             className={`tyagi-tab ${activeTab === 'ended' ? 'tyagi-tab-active' : ''}`}
             onClick={() => setActiveTab('ended')}
           >
@@ -246,12 +379,13 @@ const StreamApp = () => {
                 <div key={stream._id} className="tyagi-stream-card">
                   <div className="tyagi-stream-thumbnail">
                     <img
-                      src={`https://img.youtube.com/vi/${stream.embedId}/maxresdefault.jpg`}
+                      src={stream.embedId ? `https://img.youtube.com/vi/${stream.embedId}/maxresdefault.jpg` : profileImage}
                       alt={stream.title}
                       className="tyagi-thumbnail-img"
                       onError={(e) => {
-                        // Fallback to standard definition thumbnail
-                        e.target.src = `https://img.youtube.com/vi/${stream.embedId}/sddefault.jpg`;
+                        if (stream.embedId) {
+                          e.target.src = profileImage;
+                        }
                       }}
                     />
                     <div className="tyagi-thumbnail-overlay">
@@ -259,14 +393,24 @@ const StreamApp = () => {
                         className="tyagi-play-btn"
                         onClick={() => selectStream(stream)}
                       >
-                        <Play size={24} />
+                        {stream.isPasswordProtected ? <Lock size={24} /> : <Play size={24} />}
                       </button>
                     </div>
                     {getStatusBadge(stream.status)}
+                    {stream.isPasswordProtected && (
+                      <div className="tyagi-protected-indicator">
+                        <Lock size={16} />
+                      </div>
+                    )}
                   </div>
                   
                   <div className="tyagi-stream-info">
-                    <h3 className="tyagi-stream-title">{stream.title}</h3>
+                    <div className="tyagi-stream-title-row">
+                      <h3 className="tyagi-stream-title">{stream.title}</h3>
+                      {stream.isPasswordProtected && (
+                        <Lock size={16} className="tyagi-lock-icon" />
+                      )}
+                    </div>
                     <p className="tyagi-stream-description">{stream.description}</p>
                     
                     <div className="tyagi-stream-meta">
@@ -284,7 +428,8 @@ const StreamApp = () => {
                       className="tyagi-watch-btn"
                       onClick={() => selectStream(stream)}
                     >
-                      {stream.status === 'live' ? 'Watch Live' : 'Watch Stream'}
+                      {stream.isPasswordProtected && '🔒 '}
+                      {stream.status === 'live' ? 'Watch Live' : stream.status === 'ended' ? 'Watch Recording' : 'Watch Stream'}
                     </button>
                   </div>
                 </div>
@@ -293,6 +438,9 @@ const StreamApp = () => {
           )}
         </div>
       </div>
+
+      {/* Password Modal */}
+      {showPasswordModal && <PasswordModal />}
     </div>
   );
 };
