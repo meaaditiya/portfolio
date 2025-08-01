@@ -11,14 +11,14 @@ import Contact from './pages/Contact';
 import './index.css';
 import Posts from './pages/Posts';
 import Stream from './pages/Stream';
- // Background API fetcher
+import StreamPost from './pages/Streampost';
 
 const App = () => {
   return (
     <Router>
       <div className="app-container">
         <Header />
-      
+        
         <main className="main">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -29,8 +29,10 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/posts" element={<Posts />} />
             <Route path="/stream" element={<Stream/>}/>
+            <Route path="/streampost/:id" element={<StreamPost/>}/>
           </Routes>
         </main>
+        
         <Footer />
       </div>
     </Router>
