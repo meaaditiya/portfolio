@@ -165,69 +165,73 @@ const StreamPost = () => {
   };
 
   // Password Modal Component
-  const PasswordModal = () => (
-    <div className="tyagi-modal-overlay">
-      <div className="tyagi-modal">
-        <div className="tyagi-modal-header">
-          <div className="tyagi-modal-title">
-            <Lock size={20} />
-            <h3>Password Protected Stream</h3>
-          </div>
-          <button 
-            className="tyagi-modal-close"
-            onClick={closePasswordModal}
-          >
-            <X size={20} />
-          </button>
+ const PasswordModal = () => (
+  <div className="tyagi-modal-overlay">
+    <div className="tyagi-modal">
+      <div className="tyagi-modal-header">
+        <div className="tyagi-modal-title">
+          <Lock size={20} />
+          <h3>Password Protected Stream</h3>
         </div>
+        <button 
+          className="tyagi-modal-close"
+          onClick={closePasswordModal}
+        >
+          <X size={20} />
+        </button>
+      </div>
+      
+      <div className="tyagi-modal-body">
+        <p>This stream is password protected. Please enter the password to continue.</p>
+        <p className="tyagi-modal-stream-title">
+          <strong>{stream?.title}</strong>
+        </p>
         
-        <div className="tyagi-modal-body">
-          <p>This stream is password protected. Please enter the password to continue.</p>
-          <p className="tyagi-modal-stream-title">
-            <strong>{stream?.title}</strong>
-          </p>
+        <form onSubmit={handlePasswordSubmit}>
+          <div className="tyagi-form-group">
+            <label htmlFor="stream-password">Password</label>
+            <input
+              type="password"
+              id="stream-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="tyagi-form-input"
+              placeholder="Enter stream password"
+              autoFocus
+              autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+            />
+          </div>
           
-          <form onSubmit={handlePasswordSubmit}>
-            <div className="tyagi-form-group">
-              <label htmlFor="stream-password">Password</label>
-              <input
-                type="password"
-                id="stream-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="tyagi-form-input"
-                placeholder="Enter stream password"
-                autoFocus
-              />
+          {passwordError && (
+            <div className="tyagi-error-message">
+              {passwordError}
             </div>
-            
-            {passwordError && (
-              <div className="tyagi-error-message">
-                {passwordError}
-              </div>
-            )}
-            
-            <div className="tyagi-modal-actions">
-              <button
-                type="button"
-                onClick={closePasswordModal}
-                className="tyagi-btn tyagi-btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={passwordLoading}
-                className="tyagi-btn tyagi-btn-primary"
-              >
-                {passwordLoading ? 'Verifying...' : 'Access Stream'}
-              </button>
-            </div>
-          </form>
-        </div>
+          )}
+          
+          <div className="tyagi-modal-actions">
+            <button
+              type="button"
+              onClick={closePasswordModal}
+              className="tyagi-btn tyagi-btn-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={passwordLoading}
+              className="tyagi-btn tyagi-btn-primary"
+            >
+              {passwordLoading ? 'Verifying...' : 'Access Stream'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  );
+  </div>
+);
 
   // Loading state
   if (loading) {
