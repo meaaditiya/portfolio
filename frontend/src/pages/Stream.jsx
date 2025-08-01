@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, Play, Tv, Lock, X } from 'lucide-react';
 import '../pagesCSS/Stream.css';
 import profileImage from '../images/livestream.png';
+
 const StreamApp = () => {
   const [streams, setStreams] = useState([]);
   const [selectedStream, setSelectedStream] = useState(null);
@@ -14,9 +15,52 @@ const StreamApp = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [pendingStream, setPendingStream] = useState(null);
 
+  // Get stream ID from URL
+  const getStreamIdFromUrl = () => {
+    const path = window.location.pathname;
+    const match = path.match(/\/stream\/([^\/]+)/);
+    return match ? match[1] : null;
+  };
+
+  // Update URL when stream is selected
+  const updateUrl = (streamId) => {
+    if (streamId) {
+      window.history.pushState(null, '', `/stream/${streamId}`);
+    } else {
+      window.history.pushState(null, '', '/streams');
+    }
+  };
+
   useEffect(() => {
     fetchStreams();
   }, [activeTab]);
+
+  // Check for stream ID in URL on component mount
+  useEffect(() => {
+    const streamIdFromUrl = getStreamIdFromUrl();
+    if (streamIdFromUrl && streams.length > 0) {
+      const stream = streams.find(s => s._id === streamIdFromUrl);
+      if (stream) {
+        selectStreamById(streamIdFromUrl);
+      }
+    }
+  }, [streams]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const streamIdFromUrl = getStreamIdFromUrl();
+      if (!streamIdFromUrl) {
+        setSelectedStream(null);
+        setEmbedData(null);
+        setShowPasswordModal(false);
+        setPendingStream(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const fetchStreams = async () => {
     try {
@@ -74,7 +118,32 @@ const StreamApp = () => {
     }
   };
 
+  const selectStreamById = async (streamId) => {
+    // First try to find stream in current streams
+    let stream = streams.find(s => s._id === streamId);
+    
+    // If not found in current filtered streams, fetch all streams to find it
+    if (!stream) {
+      try {
+        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/streams');
+        if (response.ok) {
+          const data = await response.json();
+          stream = (data.streams || []).find(s => s._id === streamId);
+        }
+      } catch (error) {
+        console.error('Error fetching stream by ID:', error);
+      }
+    }
+
+    if (stream) {
+      selectStream(stream);
+    }
+  };
+
   const selectStream = async (stream) => {
+    // Update URL
+    updateUrl(stream._id);
+    
     // Check if stream is password protected
     if (stream.isPasswordProtected) {
       setPendingStream(stream);
@@ -121,6 +190,14 @@ const StreamApp = () => {
     setPendingStream(null);
     setPassword('');
     setPasswordError('');
+    // Update URL back to streams list
+    updateUrl(null);
+  };
+
+  const goBackToStreams = () => {
+    setSelectedStream(null);
+    setEmbedData(null);
+    updateUrl(null);
   };
 
   const formatDate = (dateStr) => {
@@ -238,10 +315,7 @@ const StreamApp = () => {
         <div className="tyagi-container">
           <button 
             className="tyagi-back-btn"
-            onClick={() => {
-              setSelectedStream(null);
-              setEmbedData(null);
-            }}
+            onClick={goBackToStreams}
           >
             ← Back to Streams
           </button>
