@@ -138,6 +138,7 @@ body {
 
 /* Firefox */
 html {
+  
   scrollbar-width: thin; /* Slim scrollbar */
   scrollbar-color: #3b82f6 transparent; /* Thumb color and transparent track */
 }
@@ -145,8 +146,9 @@ html {
 /* Mobile Devices (Smaller Scrollbar) */
 @media (max-width: 768px) {
   ::-webkit-scrollbar {
-    width: 1px; /* Very small scrollbar for mobile */
-    height: 1px;
+    display: none;
+    width: 0px; /* Very small scrollbar for mobile */
+    height: 0px;
   }
 
   ::-webkit-scrollbar-thumb {
