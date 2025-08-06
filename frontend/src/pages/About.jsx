@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Mail, Phone, MapPin, User, GraduationCap, Code, Award, Calendar,
-  Globe, Database, Server, Smartphone, GitBranch, Layers, FileCode, Palette
+  Globe, Database, Server, Smartphone, GitBranch, Layers, FileCode, Palette, Download
 } from 'lucide-react';
 import '../pagesCSS/about.css';
 import profileImage from '../images/aadiprofile.png';
@@ -10,6 +10,19 @@ const About = () => {
   const handleConnectClick = () => {
     // Navigate to contact section or show contact modal
     console.log('Navigate to contact');
+  };
+
+  const handleDownloadResume = () => {
+    // Open resume in new popup window
+    window.open('/resume.pdf', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+    
+    // Also trigger download
+    const link = document.createElement('a');
+    link.href = '/resume.pdf'; // Assuming resume.pdf is in the public folder
+    link.download = 'Aaditiya_Tyagi_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const skills = [
@@ -163,7 +176,17 @@ const About = () => {
             </div>
           </div>
         </div>
-
+         {/* Download Resume Button */}
+        <div className="about-resume-row">
+          <button 
+            className="download-resume-btn" 
+            onClick={handleDownloadResume}
+            aria-label="Download Resume"
+          >
+            <Download size={20} />
+            <span>Download Resume</span>
+          </button>
+        </div>
         {/* Contact Information - Separate Row */}
         <div className="about-contact-row">
           <div className="about-card about-contact-card">
@@ -210,6 +233,8 @@ const About = () => {
             </div>
           </div>
         </div>
+
+       
       </div>
     </section>
   );
