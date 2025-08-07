@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Instagram, Twitter, Mail, Linkedin } from 'lucide-react';
+import { Github, Instagram, Twitter, Mail, Linkedin , Download} from 'lucide-react';
 import '../pagesCSS/Footer.css';
 const Footer = () => {
   const socialLinks = [
@@ -29,15 +29,26 @@ const Footer = () => {
       label: "LinkedIn"
     }
   ];
+    const handleDownloadResume = () => {
+    // Open resume in new popup window
+    window.open('/resume.pdf', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+    
+    // Also trigger download
+    const link = document.createElement('a');
+    link.href = '/resume.pdf'; // Assuming resume.pdf is in the public folder
+    link.download = 'Aaditiya_Tyagi_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   return (
     <footer className="portfolio-footer">
       <div className="footer-content">
         <div className="footer-brand">
-          <span className="footer-initials">AT</span>
-          <span className="footer-year">© 2024</span>
+          <span className="footer-year">Aaditiya Tyagi © 2024 All Rights Reserved</span>
         </div>
-        
         <div className="footer-socials1">
           {socialLinks.map((social, index) => {
             const IconComponent = social.icon;
@@ -60,6 +71,17 @@ const Footer = () => {
           <span className="status-text">Available for opportunities</span>
           <div className="status-dot"></div>
           <span className="location-text">Remote / Global</span>
+        </div>
+          {/*download section*/}
+         <div className="about-resume-row1">
+          <button 
+            className="download-resume-btn1" 
+            onClick={handleDownloadResume}
+            aria-label="Download Resume1"
+          >
+            <Download size={20} />
+            <span>Download Resume</span>
+          </button>
         </div>
       </div>
       

@@ -4,16 +4,15 @@ import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, 
 import About from './About';
 import Projects from './Projects';
 import Contact from './Contact';
+import profileImage from '../images/aadiprofile.png';
+import weatherBackground from '../images/home.png';
 import '../pagesCSS/Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
   const [quote, setQuote] = useState(null);
-  const [isImageLoading, setIsImageLoading] = useState(true);
-  const [imageError, setImageError] = useState(null);
   const roles = ["Full-Stack Developer", "React Specialist", "Node.js Expert", "UI/UX Enthusiast"];
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
 
@@ -26,36 +25,6 @@ const Home = () => {
 
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    // Fetch profile image with cache-busting
-    const fetchProfileImage = async () => {
-      try {
-        setIsImageLoading(true);
-        setImageError(null);
-        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/profile-image/active?t=${Date.now()}`);
-
-        if (response.ok) {
-          const blob = await response.blob();
-          const newImageUrl = URL.createObjectURL(blob);
-          // Set the new URL and revoke the previous one after setting
-          setProfileImage((prevImage) => {
-            if (prevImage) {
-              URL.revokeObjectURL(prevImage);
-            }
-            return newImageUrl;
-          });
-        } else {
-          setProfileImage(null);
-          setImageError('No active profile image found');
-        }
-      } catch (error) {
-        console.error('Error fetching profile image:', error);
-        setProfileImage(null);
-        setImageError('Failed to load profile image');
-      } finally {
-        setIsImageLoading(false);
-      }
     };
 
     // Fetch quote
@@ -73,22 +42,14 @@ const Home = () => {
       }
     };
 
-    fetchProfileImage();
     fetchQuote();
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Poll for image updates every 60 seconds
-    const imageRefreshInterval = setInterval(fetchProfileImage, 600000);
-
     return () => {
       clearTimeout(timer);
       clearInterval(roleInterval);
-      clearInterval(imageRefreshInterval);
       window.removeEventListener('mousemove', handleMouseMove);
-      if (profileImage) {
-        URL.revokeObjectURL(profileImage);
-      }
     };
   }, []);
 
@@ -113,16 +74,8 @@ const Home = () => {
 
       {/* Main Content */}
       <main className="portfolio-main">
-        {/* Hero Section */}
+        {/* Hero Section with Weather Background */}
         <section className="hero-section">
-          <video
-            className="hero-video"
-            autoPlay
-            loop
-            muted
-            playsInline
-            src="/bg2.mp4"
-          />
           <div className="hero-content">
             <div className={`hero-text ${isLoaded ? 'content-visible' : ''}`}>
               <div className="hero-left">
@@ -161,26 +114,16 @@ const Home = () => {
               <div className="hero-right">
                 <div className="profile-container">
                   <div className="profile-avatar">
-                    {isImageLoading || imageError ? (
-                      <div className="image-placeholder">AT</div>
-                    ) : profileImage ? (
-                      <img
-                        src={profileImage}
-                        alt="Aaditiya Tyagi"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          borderRadius: '50%',
-                        }}
-                        onError={() => {
-                          setImageError('Failed to load image');
-                          setProfileImage(null);
-                        }}
-                      />
-                    ) : (
-                      <div className="image-placeholder">AT</div>
-                    )}
+                    <img
+                      src={profileImage}
+                      alt="Aaditiya Tyagi"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        borderRadius: '50%',
+                      }}
+                    />
                   </div>
                   <div className="profile-glow"></div>
                 </div>

@@ -1,5 +1,4 @@
- 
-        :root {
+:root {
           --primary-black: #0a0a0a;
           --secondary-black: #1a1a1a;
           --tertiary-black: #2a2a2a;
@@ -131,6 +130,51 @@
           font-weight: 500;
         }
 
+        /* Download Resume Button Styles */
+        .about-resume-row1 {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .download-resume-btn1 {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          background: var(--primary-black);
+          color: var(--primary-white);
+          border: none;
+          border-radius: 10px;
+          font-size: 0.875rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: var(--transition-snappy);
+          text-decoration: none;
+          font-family: inherit;
+          box-shadow: 0 2px 8px var(--shadow-subtle);
+          border: 1px solid var(--border-color);
+        }
+
+        .download-resume-btn1:hover {
+          background: var(--secondary-black);
+          box-shadow: 0 6px 20px var(--shadow-medium);
+          border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .download-resume-btn1:active {
+          transform: scale(0.98);
+        }
+
+        .download-resume-btn1:focus {
+          outline: 2px solid var(--primary-black);
+          outline-offset: 2px;
+        }
+
+        .download-resume-btn1 span {
+          font-weight: 500;
+        }
+
         .footer-socials1 {
           display: flex;
           align-items: center;
@@ -206,6 +250,10 @@
             text-align: center;
           }
           
+          .about-resume-row1 {
+            order: 1;
+          }
+          
           .footer-socials1 {
             order: 2;
           }
@@ -224,6 +272,29 @@
             width: 36px;
             height: 36px;
           }
+          
+          .download-resume-btn1 {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.8125rem;
+            gap: 0.4rem;
+          }
+          
+          .download-resume-btn1 svg {
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .download-resume-btn1 {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+          }
+          
+          .download-resume-btn1 svg {
+            width: 16px;
+            height: 16px;
+          }
         }
 
         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
@@ -241,5 +312,12 @@
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
           }
+          
+          .download-resume-btn1 {
+            transition: none;
+          }
+          
+          .download-resume-btn1:active {
+            transform: none;
+          }
         }
-      
