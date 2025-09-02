@@ -26,7 +26,8 @@ const Contact = () => {
   // Audio recording states
   const [audioData, setAudioData] = useState({
     name: '',
-    email: ''
+    email: '',
+    transcription: ''
   });
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
@@ -289,7 +290,7 @@ const Contact = () => {
       formDataToSend.append('name', audioData.name);
       formDataToSend.append('email', audioData.email);
       formDataToSend.append('duration', recordingDuration.toString());
-      formDataToSend.append('transcription', ''); // Add transcription if available
+      formDataToSend.append('transcription', audioData.transcription); // Add transcription if available
       
       // Convert audioBlob to File object for proper upload
       const audioFile = new File([audioBlob], 'audio-recording.wav', {
@@ -306,7 +307,8 @@ const Contact = () => {
       // Reset form and audio data
       setAudioData({
         name: '',
-        email: ''
+        email: '',
+        transcription:''
       });
       resetRecording();
 
@@ -576,6 +578,18 @@ const Contact = () => {
               onChange={(e) => handleChange(e, false, true)}
             />
             {errors.email && <p className="cnt-error-text">{errors.email}</p>}
+          </div>
+          <div className="cnt-form-group">
+            <label htmlFor="transcription" className="cnt-form-label">Transcription</label>
+            <input
+              type="text"
+              id="transcription"
+              className="cnt-form-input"
+              placeholder="your message"
+              value={audioData.transcription}
+              onChange={(e) => handleChange(e, false, true)}
+            />
+          {errors.name && <p className="cnt-error-text">{errors.name}</p>}
           </div>
         </div>
 
