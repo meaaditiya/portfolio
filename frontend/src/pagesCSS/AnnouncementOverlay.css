@@ -343,3 +343,190 @@
     max-height: 150px;
   }
 }
+/* Announcement Label Trigger Button */
+.announcement_label_trigger {
+  position: fixed;
+  left: 0;
+  bottom: 50%;
+  transform: translateY(50%);
+  background: linear-gradient(135deg, #e91e63 0%, #d81b60 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px 12px 8px;
+  border-radius: 0 25px 25px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 
+    0 4px 15px rgba(233, 30, 99, 0.4),
+    0 0 0 2px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+  overflow: hidden;
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Slide in animation from left */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%) translateY(50%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) translateY(50%);
+    opacity: 1;
+  }
+}
+
+/* Hover effect */
+.announcement_label_trigger:hover {
+  padding-right: 24px;
+  box-shadow: 
+    0 6px 25px rgba(233, 30, 99, 0.5),
+    0 0 0 3px rgba(255, 255, 255, 0.15);
+  transform: translateX(5px) translateY(50%);
+}
+
+/* Active/Click effect */
+.announcement_label_trigger:active {
+  transform: translateX(3px) translateY(50%) scale(0.98);
+}
+
+/* Icon styling */
+.announcement_label_icon {
+  flex-shrink: 0;
+  animation: bellRing 2s ease-in-out infinite;
+}
+
+/* Bell ring animation */
+@keyframes bellRing {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  10%, 30% {
+    transform: rotate(-15deg);
+  }
+  20%, 40% {
+    transform: rotate(15deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Label text */
+.announcement_label_text {
+  font-weight: 800;
+  position: relative;
+  z-index: 2;
+}
+
+/* Pulse effect */
+.announcement_label_pulse {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Ribbon effect with stripe pattern */
+.announcement_label_trigger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.1) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Shine effect on hover */
+.announcement_label_trigger::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 100%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.announcement_label_trigger:hover::after {
+  left: 100%;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .announcement_label_trigger {
+    bottom: 20px;
+    transform: translateY(0);
+    padding: 10px 16px 10px 6px;
+    font-size: 12px;
+    border-radius: 0 20px 20px 0;
+  }
+
+  .announcement_label_trigger:hover {
+    transform: translateX(5px);
+    padding-right: 20px;
+  }
+
+  .announcement_label_trigger:active {
+    transform: translateX(3px) scale(0.98);
+  }
+
+  .announcement_label_icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  .announcement_label_trigger {
+    padding: 8px 14px 8px 5px;
+    font-size: 11px;
+  }
+
+  .announcement_label_text {
+    letter-spacing: 0.5px;
+  }
+}

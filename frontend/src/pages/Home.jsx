@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, ExternalLink, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, ExternalLink, X, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
 import About from './About';
 import Projects from './Projects';
 import Contact from './Contact';
@@ -8,6 +8,7 @@ import profileImage from '../images/aadiprofile.png';
 import weatherBackground from '../images/home.png';
 import '../pagesCSS/Home.css';
 import '../pagesCSS/AnnouncementOverlay.css';
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const Home = () => {
   const [showAnnouncementOverlay, setShowAnnouncementOverlay] = useState(false);
   const [announcementImages, setAnnouncementImages] = useState({});
   const [currentAnnouncementIndex, setCurrentAnnouncementIndex] = useState(0);
+  const [hasAnnouncements, setHasAnnouncements] = useState(false);
   const roles = ["Full-Stack Developer", "React Specialist", "Node.js Expert", "UI/UX Enthusiast"];
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
 
@@ -63,6 +65,7 @@ const Home = () => {
             });
             
             setAnnouncements(sortedAnnouncements);
+            setHasAnnouncements(true);
             
             // Create direct image URLs instead of blobs
             const imageMap = {};
@@ -116,6 +119,11 @@ const Home = () => {
     });
   };
 
+  const handleOpenAnnouncement = () => {
+    setShowAnnouncementOverlay(true);
+    setCurrentAnnouncementIndex(0);
+  };
+
   const handleNextAnnouncement = () => {
     setCurrentAnnouncementIndex((prev) => 
       prev < announcements.length - 1 ? prev + 1 : prev
@@ -132,6 +140,19 @@ const Home = () => {
 
   return (
     <div className="portfolio-container">
+      {/* Announcement Label - Shows when there are announcements */}
+      {hasAnnouncements && !showAnnouncementOverlay && (
+        <button 
+          className="announcement_label_trigger"
+          onClick={handleOpenAnnouncement}
+          aria-label="View announcements"
+        >
+          <Bell size={16} className="announcement_label_icon" />
+          <span className="announcement_label_text">NEW</span>
+          <span className="announcement_label_pulse"></span>
+        </button>
+      )}
+
       {/* Announcement Overlay */}
       {showAnnouncementOverlay && announcements.length > 0 && currentAnnouncement && (
         <div className="announcement_overlay_wrapper_unique_2024">
