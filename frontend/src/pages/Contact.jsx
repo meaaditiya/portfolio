@@ -7,7 +7,8 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    otp: ''
   });
   
   const [projectData, setProjectData] = useState({
@@ -20,15 +21,29 @@ const Contact = () => {
     features: '',
     techPreferences: '',
     additionalInfo: '',
-    files: []
+    files: [],
+    otp: ''
   });
 
   // Audio recording states
   const [audioData, setAudioData] = useState({
     name: '',
     email: '',
-    transcription: ''
+    transcription: '',
+    otp: ''
   });
+  
+  // OTP states
+  const [otpSent, setOtpSent] = useState({
+    contact: false,
+    project: false,
+    audio: false
+  });
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [canResendOtp, setCanResendOtp] = useState(true);
+  const otpTimerRef = useRef(null);
+  
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioUrl, setAudioUrl] = useState('');
@@ -48,13 +63,13 @@ const Contact = () => {
   
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState({
-    type: '', // 'success' or 'error'
+    type: '',
     title: '',
     message: '',
     isProject: false
   });
   
-  const [activeSection, setActiveSection] = useState('contact'); // 'contact', 'project', 'audio'
+  const [activeSection, setActiveSection] = useState('contact');
 
   const frequentQueries = [
     "What technologies do you work with as a full-stack developer?",
@@ -77,11 +92,28 @@ const Contact = () => {
     };
   }, [showPopup]);
 
+  // OTP Timer countdown
+  useEffect(() => {
+    if (otpTimer > 0) {
+      otpTimerRef.current = setTimeout(() => {
+        setOtpTimer(otpTimer - 1);
+      }, 1000);
+    } else if (otpTimer === 0 && !canResendOtp) {
+      setCanResendOtp(true);
+    }
+    return () => {
+      if (otpTimerRef.current) clearTimeout(otpTimerRef.current);
+    };
+  }, [otpTimer, canResendOtp]);
+
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+      }
+      if (otpTimerRef.current) {
+        clearTimeout(otpTimerRef.current);
       }
     };
   }, []);
@@ -137,6 +169,14 @@ const Contact = () => {
       }
     }
     
+    // Validate OTP if sent
+    const sectionKey = isAudio ? 'audio' : isProject ? 'project' : 'contact';
+    if (otpSent[sectionKey] && !data.otp.trim()) {
+      newErrors.otp = 'OTP is required';
+    } else if (otpSent[sectionKey] && data.otp.trim().length !== 6) {
+      newErrors.otp = 'OTP must be 6 digits';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -171,12 +211,131 @@ const Contact = () => {
     }
   };
 
+  const handleOtpChange = (index, value, isProject = false, isAudio = false) => {
+    // Only allow digits
+    if (!/^\d*$/.test(value)) return;
+    
+    let setter;
+    if (isAudio) {
+      setter = setAudioData;
+    } else {
+      setter = isProject ? setProjectData : setFormData;
+    }
+    
+    setter(prev => {
+      const otpArray = prev.otp.split('');
+      otpArray[index] = value;
+      return {
+        ...prev,
+        otp: otpArray.join('')
+      };
+    });
+    
+    // Auto-focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+    
+    if (errors.otp) {
+      setErrors(prev => ({
+        ...prev,
+        otp: null
+      }));
+    }
+  };
+
+  const handleOtpKeyDown = (index, e, isProject = false, isAudio = false) => {
+    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleOtpPaste = (e, isProject = false, isAudio = false) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+    
+    if (!/^\d+$/.test(pastedData)) return;
+    
+    let setter;
+    if (isAudio) {
+      setter = setAudioData;
+    } else {
+      setter = isProject ? setProjectData : setFormData;
+    }
+    
+    setter(prev => ({
+      ...prev,
+      otp: pastedData.padEnd(6, '')
+    }));
+    
+    // Focus the last filled input
+    const lastIndex = Math.min(pastedData.length, 5);
+    const lastInput = document.getElementById(`otp-${lastIndex}`);
+    if (lastInput) lastInput.focus();
+  };
+
+  const sendOtp = async (isProject = false, isAudio = false) => {
+    const data = isAudio ? audioData : isProject ? projectData : formData;
+    
+    if (!data.email.trim()) {
+      setErrors({ email: 'Email is required to send OTP' });
+      return;
+    }
+    
+    if (!validateEmail(data.email)) {
+      setErrors({ email: 'Please enter a valid email address' });
+      return;
+    }
+    
+    setOtpLoading(true);
+    
+ let otpEndpoint = 'https://connectwithaaditiyamg.onrender.com/api/contact/send-otp';
+    if (isProject) {
+      otpEndpoint = 'https://connectwithaaditiyamg.onrender.com/api/project/send-otp';
+    } else if (isAudio) {
+      otpEndpoint = 'https://connectwithaaditiyamg.onrender.com/api/audio-contact/send-otp';
+    }
+    
+    try {
+      const response = await axios.post(otpEndpoint, {
+        email: data.email
+      });
+      
+      const sectionKey = isAudio ? 'audio' : isProject ? 'project' : 'contact';
+      setOtpSent(prev => ({
+        ...prev,
+        [sectionKey]: true
+      }));
+      
+      setOtpTimer(60); // 60 seconds cooldown
+      setCanResendOtp(false);
+      
+      showFullScreenPopup(
+        'success',
+        'OTP Sent!',
+        response.data.message || 'OTP has been sent to your email. Please check your inbox.',
+        false
+      );
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to send OTP. Please try again.';
+      showFullScreenPopup(
+        'error',
+        'OTP Failed',
+        errorMessage,
+        false
+      );
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
   const handleFrequentQuery = (query) => {
     setFormData(prev => ({
       ...prev,
       message: query
     }));
-    // Scroll to the message textarea
     const messageTextarea = document.getElementById('message');
     if (messageTextarea) {
       messageTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -202,7 +361,6 @@ const Contact = () => {
         setAudioUrl(audioUrl);
         setAudioLoaded(false);
         
-        // Stop all audio tracks
         stream.getTracks().forEach(track => track.stop());
       };
       
@@ -210,7 +368,6 @@ const Contact = () => {
       setIsRecording(true);
       setRecordingDuration(0);
       
-      // Start timer
       timerRef.current = setInterval(() => {
         setRecordingDuration(prev => prev + 1);
       }, 1000);
@@ -268,141 +425,214 @@ const Contact = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  const isProject = activeSection === 'project';
-  const isAudio = activeSection === 'audio';
-  
-  if (!validate(isProject, isAudio)) {
-    return;
-  }
-  
-  setSubmitStatus({
-    loading: true,
-    success: false,
-    error: null
-  });
-  
-  try {
-    if (isAudio) {
-      // Create FormData for multipart upload
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', audioData.name);
-      formDataToSend.append('email', audioData.email);
-      formDataToSend.append('duration', recordingDuration.toString());
-      formDataToSend.append('transcription', audioData.transcription); // Add transcription if available
-      
-      // Convert audioBlob to File object for proper upload
-      const audioFile = new File([audioBlob], 'audio-recording.wav', {
-        type: audioBlob.type || 'audio/wav'
-      });
-      formDataToSend.append('audioFile', audioFile);
-
-      const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/audio-contact', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      // Reset form and audio data
-      setAudioData({
-        name: '',
-        email: '',
-        transcription:''
-      });
-      resetRecording();
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const isProject = activeSection === 'project';
+    const isAudio = activeSection === 'audio';
+    const sectionKey = isAudio ? 'audio' : isProject ? 'project' : 'contact';
+    
+    // Check if OTP is sent
+    if (!otpSent[sectionKey]) {
       showFullScreenPopup(
-        'success',
-        'Audio Message Sent!',
-        response.data.message || 'Thank you for your audio message! I\'ve received your recording and will listen to it shortly. I\'ll get back to you via email soon.',
+        'error',
+        'OTP Required',
+        'Please verify your email by requesting and entering the OTP first.',
         false
       );
-    } else if (isProject) {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', projectData.name);
-      formDataToSend.append('email', projectData.email);
-      formDataToSend.append('projectType', projectData.projectType);
-      formDataToSend.append('description', projectData.description);
-      if (projectData.budget) formDataToSend.append('budget', projectData.budget);
-      if (projectData.timeline) formDataToSend.append('timeline', projectData.timeline);
-      if (projectData.features) formDataToSend.append('features', projectData.features);
-      if (projectData.techPreferences) formDataToSend.append('techPreferences', projectData.techPreferences);
-      if (projectData.additionalInfo) formDataToSend.append('additionalInfo', projectData.additionalInfo);
-      
-      // Append multiple files
-      if (projectData.files && projectData.files.length > 0) {
-        for (let i = 0; i < projectData.files.length; i++) {
-          formDataToSend.append('files', projectData.files[i]);
-        }
-      }
-
-      const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/project/submit', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      setProjectData({
-        name: '',
-        email: '',
-        projectType: '',
-        budget: '',
-        timeline: '',
-        description: '',
-        features: '',
-        techPreferences: '',
-        additionalInfo: '',
-        files: []
-      });
-
-      showFullScreenPopup(
-        'success',
-        'Project Request Submitted!',
-        'Thank you for your project request! I\'ve received all the details and will review your requirements carefully. I\'ll get back to you with a detailed quote and timeline within 24-48 hours.',
-        true
-      );
-    } else {
-      // Regular contact form
-      const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/contact', formData);
-      
-      setFormData({
-        name: '',
-        email: '',
-        message: ''
-      });
-
-      showFullScreenPopup(
-        'success',
-        'Message Sent Successfully!',
-        'Thanks for reaching out! Your message has been delivered successfully. I\'ll get back to you as soon as possible, usually within 24 hours.',
-        false
-      );
+      return;
+    }
+    
+    if (!validate(isProject, isAudio)) {
+      return;
     }
     
     setSubmitStatus({
-      loading: false,
-      success: true,
+      loading: true,
+      success: false,
       error: null
     });
     
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
-    
-    setSubmitStatus({
-      loading: false,
-      success: false,
-      error: errorMessage
-    });
+    try {
+      if (isAudio) {
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', audioData.name);
+        formDataToSend.append('email', audioData.email);
+        formDataToSend.append('duration', recordingDuration.toString());
+        formDataToSend.append('transcription', audioData.transcription);
+        formDataToSend.append('otp', audioData.otp);
+        
+        const audioFile = new File([audioBlob], 'audio-recording.wav', {
+          type: audioBlob.type || 'audio/wav'
+        });
+        formDataToSend.append('audioFile', audioFile);
 
-    showFullScreenPopup(
-      'error',
-      'Submission Failed',
-      `Oops! ${errorMessage} Please check your internet connection and try again. If the problem persists, you can reach me directly at aaditiyatyagi123@gmail.com`,
-      isProject || isAudio
+        const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/audio-contact', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        setAudioData({
+          name: '',
+          email: '',
+          transcription: '',
+          otp: ''
+        });
+        resetRecording();
+        setOtpSent(prev => ({ ...prev, audio: false }));
+
+        showFullScreenPopup(
+          'success',
+          'Audio Message Sent!',
+          response.data.message || 'Thank you for your audio message! I\'ve received your recording and will listen to it shortly.',
+          false
+        );
+      } else if (isProject) {
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', projectData.name);
+        formDataToSend.append('email', projectData.email);
+        formDataToSend.append('projectType', projectData.projectType);
+        formDataToSend.append('description', projectData.description);
+        formDataToSend.append('otp', projectData.otp);
+        if (projectData.budget) formDataToSend.append('budget', projectData.budget);
+        if (projectData.timeline) formDataToSend.append('timeline', projectData.timeline);
+        if (projectData.features) formDataToSend.append('features', projectData.features);
+        if (projectData.techPreferences) formDataToSend.append('techPreferences', projectData.techPreferences);
+        if (projectData.additionalInfo) formDataToSend.append('additionalInfo', projectData.additionalInfo);
+        
+        if (projectData.files && projectData.files.length > 0) {
+          for (let i = 0; i < projectData.files.length; i++) {
+            formDataToSend.append('files', projectData.files[i]);
+          }
+        }
+
+        const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/project/submit', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        setProjectData({
+          name: '',
+          email: '',
+          projectType: '',
+          budget: '',
+          timeline: '',
+          description: '',
+          features: '',
+          techPreferences: '',
+          additionalInfo: '',
+          files: [],
+          otp: ''
+        });
+        setOtpSent(prev => ({ ...prev, project: false }));
+
+        showFullScreenPopup(
+          'success',
+          'Project Request Submitted!',
+          'Thank you for your project request! I\'ll review your requirements and get back to you within 24-48 hours.',
+          true
+        );
+      } else {
+        const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/contact', formData);
+        
+        setFormData({
+          name: '',
+          email: '',
+          message: '',
+          otp: ''
+        });
+        setOtpSent(prev => ({ ...prev, contact: false }));
+
+        showFullScreenPopup(
+          'success',
+          'Message Sent Successfully!',
+          'Thanks for reaching out! I\'ll get back to you as soon as possible.',
+          false
+        );
+      }
+      
+      setSubmitStatus({
+        loading: false,
+        success: true,
+        error: null
+      });
+      
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
+      
+      setSubmitStatus({
+        loading: false,
+        success: false,
+        error: errorMessage
+      });
+
+      showFullScreenPopup(
+        'error',
+        'Submission Failed',
+        `Oops! ${errorMessage}`,
+        isProject || isAudio
+      );
+    }
+  };
+
+  const renderOtpInput = (isProject = false, isAudio = false) => {
+    const data = isAudio ? audioData : isProject ? projectData : formData;
+    const sectionKey = isAudio ? 'audio' : isProject ? 'project' : 'contact';
+    
+    return (
+      <div className="cnt-form-group">
+        <label className="cnt-form-label">
+          Email Verification {otpSent[sectionKey] ? '*' : '(Required)'}
+        </label>
+        
+        {!otpSent[sectionKey] ? (
+          <button
+            type="button"
+            className="cnt-btn-otp"
+            onClick={() => sendOtp(isProject, isAudio)}
+            disabled={otpLoading || !data.email}
+          >
+            {otpLoading ? 'Sending OTP...' : 'Send OTP'}
+          </button>
+        ) : (
+          <>
+            <div className="cnt-otp-container">
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <input
+                  key={index}
+                  id={`otp-${index}`}
+                  type="text"
+                  maxLength="1"
+                  className={`cnt-otp-input ${errors.otp ? 'cnt-input-error' : ''}`}
+                  value={data.otp[index] || ''}
+                  onChange={(e) => handleOtpChange(index, e.target.value, isProject, isAudio)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e, isProject, isAudio)}
+                  onPaste={(e) => handleOtpPaste(e, isProject, isAudio)}
+                />
+              ))}
+            </div>
+            {errors.otp && <p className="cnt-error-text">{errors.otp}</p>}
+            
+            <div className="cnt-otp-actions">
+              {canResendOtp ? (
+                <button
+                  type="button"
+                  className="cnt-btn-resend"
+                  onClick={() => sendOtp(isProject, isAudio)}
+                  disabled={otpLoading}
+                >
+                  Resend OTP
+                </button>
+              ) : (
+                <p className="cnt-otp-timer">Resend OTP in {otpTimer}s</p>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     );
-  }
-};
+  };
 
   const renderContactSection = () => (
     <>
@@ -525,10 +755,12 @@ const Contact = () => {
               {errors.message && <p className="cnt-error-text">{errors.message}</p>}
             </div>
             
+            {renderOtpInput(false, false)}
+            
             <button 
               type="submit" 
               className="cnt-btn-primary"
-              disabled={submitStatus.loading}
+              disabled={submitStatus.loading || !otpSent.contact}
             >
               {submitStatus.loading ? 'Sending...' : 'Send Message'}
             </button>
@@ -539,140 +771,142 @@ const Contact = () => {
   );
 
   const renderAudioSection = () => (
-  <>
-    <div className="cnt-section-headers">
-      <button 
-        className="cnt-back-btn"
-        onClick={() => setActiveSection('contact')}
-      >
-        <FaArrowLeft className="cnt-back-icon" />
-        Back to Contact
-      </button>
-      <h3 className="cnt-section-subtitle">Send Audio Message</h3>
-    </div>
+    <>
+      <div className="cnt-section-headers">
+        <button 
+          className="cnt-back-btn"
+          onClick={() => setActiveSection('contact')}
+        >
+          <FaArrowLeft className="cnt-back-icon" />
+          Back to Contact
+        </button>
+        <h3 className="cnt-section-subtitle">Send Audio Message</h3>
+      </div>
 
-    <div className="cnt-project-form-container">
-      <form className="cnt-form" onSubmit={handleSubmit}>
-        <div className="cnt-form-row">
-          <div className="cnt-form-group">
-            <label htmlFor="name" className="cnt-form-label">Full Name *</label>
-            <input
-              type="text"
-              id="name"
-              className={`cnt-form-input ${errors.name ? 'cnt-input-error' : ''}`}
-              placeholder="Your Full Name"
-              value={audioData.name}
-              onChange={(e) => handleChange(e, false, true)}
-            />
-            {errors.name && <p className="cnt-error-text">{errors.name}</p>}
+      <div className="cnt-project-form-container">
+        <form className="cnt-form" onSubmit={handleSubmit}>
+          <div className="cnt-form-row">
+            <div className="cnt-form-group">
+              <label htmlFor="name" className="cnt-form-label">Full Name *</label>
+              <input
+                type="text"
+                id="name"
+                className={`cnt-form-input ${errors.name ? 'cnt-input-error' : ''}`}
+                placeholder="Your Full Name"
+                value={audioData.name}
+                onChange={(e) => handleChange(e, false, true)}
+              />
+              {errors.name && <p className="cnt-error-text">{errors.name}</p>}
+            </div>
+            
+            <div className="cnt-form-group">
+              <label htmlFor="email" className="cnt-form-label">Email Address *</label>
+              <input
+                type="email"
+                id="email"
+                className={`cnt-form-input ${errors.email ? 'cnt-input-error' : ''}`}
+                placeholder="your.email@example.com"
+                value={audioData.email}
+                onChange={(e) => handleChange(e, false, true)}
+              />
+              {errors.email && <p className="cnt-error-text">{errors.email}</p>}
+            </div>
           </div>
-          
+
           <div className="cnt-form-group">
-            <label htmlFor="email" className="cnt-form-label">Email Address *</label>
-            <input
-              type="email"
-              id="email"
-              className={`cnt-form-input ${errors.email ? 'cnt-input-error' : ''}`}
-              placeholder="your.email@example.com"
-              value={audioData.email}
-              onChange={(e) => handleChange(e, false, true)}
-            />
-            {errors.email && <p className="cnt-error-text">{errors.email}</p>}
-          </div>
-          <div className="cnt-form-group">
-            <label htmlFor="transcription" className="cnt-form-label">Transcription</label>
+            <label htmlFor="transcription" className="cnt-form-label">Transcription (Optional)</label>
             <input
               type="text"
               id="transcription"
               className="cnt-form-input"
-              placeholder="your message"
+              placeholder="Add text version of your message"
               value={audioData.transcription}
               onChange={(e) => handleChange(e, false, true)}
             />
-          {errors.name && <p className="cnt-error-text">{errors.name}</p>}
           </div>
-        </div>
 
-        <div className="cnt-form-group">
-          <label className="cnt-form-label">Audio Message *</label>
-          <div className="cnt-audio-recorder">
-            {!audioBlob ? (
-              <div className="cnt-record-section">
-                <button
-                  type="button"
-                  className={`cnt-record-btn ${isRecording ? 'recording' : ''}`}
-                  onClick={isRecording ? stopRecording : startRecording}
-                >
-                  {isRecording ? <FaStop /> : <FaMicrophone />}
-                  {isRecording ? 'Stop Recording' : 'Start Recording'}
-                </button>
-                {isRecording && (
-                  <div className="cnt-recording-info">
-                    <span className="cnt-recording-indicator">● REC</span>
-                    <span className="cnt-recording-duration">{formatTime(recordingDuration)}</span>
-                    <div className="cnt-audio-waves">
+          <div className="cnt-form-group">
+            <label className="cnt-form-label">Audio Message *</label>
+            <div className="cnt-audio-recorder">
+              {!audioBlob ? (
+                <div className="cnt-record-section">
+                  <button
+                    type="button"
+                    className={`cnt-record-btn ${isRecording ? 'recording' : ''}`}
+                    onClick={isRecording ? stopRecording : startRecording}
+                  >
+                    {isRecording ? <FaStop /> : <FaMicrophone />}
+                    {isRecording ? 'Stop Recording' : 'Start Recording'}
+                  </button>
+                  {isRecording && (
+                    <div className="cnt-recording-info">
+                      <span className="cnt-recording-indicator">● REC</span>
+                      <span className="cnt-recording-duration">{formatTime(recordingDuration)}</span>
+                      <div className="cnt-audio-waves">
+                        <div className="cnt-wave-bar"></div>
+                        <div className="cnt-wave-bar"></div>
+                        <div className="cnt-wave-bar"></div>
+                        <div className="cnt-wave-bar"></div>
+                        <div className="cnt-wave-bar"></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="cnt-audio-preview">
+                  <audio
+                    ref={audioRef}
+                    src={audioUrl}
+                    onLoadedData={() => setAudioLoaded(true)}
+                    onEnded={() => setIsPlaying(false)}
+                    onPause={() => setIsPlaying(false)}
+                    onPlay={() => setIsPlaying(true)}
+                    preload="auto"
+                  />
+                  <div className="cnt-audio-controls">
+                    <button
+                      type="button"
+                      className="cnt-play-btn"
+                      onClick={isPlaying ? pauseAudio : playAudio}
+                      disabled={!audioLoaded}
+                    >
+                      {isPlaying ? <FaPause /> : <FaPlay />}
+                    </button>
+                    <div className="cnt-audio-waves static">
                       <div className="cnt-wave-bar"></div>
                       <div className="cnt-wave-bar"></div>
                       <div className="cnt-wave-bar"></div>
                       <div className="cnt-wave-bar"></div>
                       <div className="cnt-wave-bar"></div>
                     </div>
+                    <span className="cnt-audio-duration">Duration: {formatTime(recordingDuration)}</span>
+                    <button
+                      type="button"
+                      className="cnt-reset-btn"
+                      onClick={resetRecording}
+                    >
+                      Record Again
+                    </button>
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="cnt-audio-preview">
-                <audio
-                  ref={audioRef}
-                  src={audioUrl}
-                  onLoadedData={() => setAudioLoaded(true)}
-                  onEnded={() => setIsPlaying(false)}
-                  onPause={() => setIsPlaying(false)}
-                  onPlay={() => setIsPlaying(true)}
-                  preload="auto"
-                />
-                <div className="cnt-audio-controls">
-                  <button
-                    type="button"
-                    className="cnt-play-btn"
-                    onClick={isPlaying ? pauseAudio : playAudio}
-                    disabled={!audioLoaded}
-                  >
-                    {isPlaying ? <FaPause /> : <FaPlay />}
-                  </button>
-                  <div className="cnt-audio-waves static">
-                    <div className="cnt-wave-bar"></div>
-                    <div className="cnt-wave-bar"></div>
-                    <div className="cnt-wave-bar"></div>
-                    <div className="cnt-wave-bar"></div>
-                    <div className="cnt-wave-bar"></div>
-                  </div>
-                  <span className="cnt-audio-duration">Duration: {formatTime(recordingDuration)}</span>
-                  <button
-                    type="button"
-                    className="cnt-reset-btn"
-                    onClick={resetRecording}
-                  >
-                    Record Again
-                  </button>
                 </div>
-              </div>
-            )}
-            {errors.audio && <p className="cnt-error-text">{errors.audio}</p>}
+              )}
+              {errors.audio && <p className="cnt-error-text">{errors.audio}</p>}
+            </div>
           </div>
-        </div>
 
-        <button 
-          type="submit" 
-          className="cnt-btn-primary cnt-btn-large"
-          disabled={submitStatus.loading || !audioBlob}
-        >
-          {submitStatus.loading ? 'Sending Audio...' : 'Send Audio Message'}
-        </button>
-      </form>
-    </div>
-  </>
-);
+          {renderOtpInput(false, true)}
+
+          <button 
+            type="submit" 
+            className="cnt-btn-primary cnt-btn-large"
+            disabled={submitStatus.loading || !audioBlob || !otpSent.audio}
+          >
+            {submitStatus.loading ? 'Sending Audio...' : 'Send Audio Message'}
+          </button>
+        </form>
+      </div>
+    </>
+  );
 
   const renderProjectSection = () => (
     <>
@@ -795,7 +1029,7 @@ const Contact = () => {
               id="features"
               rows="3"
               className="cnt-form-textarea"
-              placeholder="List the key features and functionalities you need (e.g., user authentication, payment processing, admin dashboard, etc.)"
+              placeholder="List the key features and functionalities you need"
               value={projectData.features}
               onChange={(e) => handleChange(e, true)}
             ></textarea>
@@ -807,7 +1041,7 @@ const Contact = () => {
               id="techPreferences"
               rows="2"
               className="cnt-form-textarea"
-              placeholder="Any specific technologies you prefer or need to avoid? (e.g., React, Node.js, Python, specific databases, etc.)"
+              placeholder="Any specific technologies you prefer or need to avoid?"
               value={projectData.techPreferences}
               onChange={(e) => handleChange(e, true)}
             ></textarea>
@@ -819,7 +1053,7 @@ const Contact = () => {
               id="additionalInfo"
               rows="3"
               className="cnt-form-textarea"
-              placeholder="Any additional details, special requirements, or questions you have about the project?"
+              placeholder="Any additional details, special requirements, or questions?"
               value={projectData.additionalInfo}
               onChange={(e) => handleChange(e, true)}
             ></textarea>
@@ -846,10 +1080,12 @@ const Contact = () => {
             )}
           </div>
 
+          {renderOtpInput(true, false)}
+
           <button 
             type="submit" 
             className="cnt-btn-primary cnt-btn-large"
-            disabled={submitStatus.loading}
+            disabled={submitStatus.loading || !otpSent.project}
           >
             {submitStatus.loading ? 'Sending Request...' : 'Submit Project Request'}
           </button>

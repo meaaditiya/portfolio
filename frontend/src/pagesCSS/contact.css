@@ -767,3 +767,290 @@ body {
     transform: scaleY(0.5);
   }
 }
+/* OTP Verification Styles */
+
+/* OTP Button */
+.cnt-btn-otp {
+  width: 35%;
+  padding: 10px 20px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cnt-btn-otp:hover:not(:disabled) {
+  
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.cnt-btn-otp:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* OTP Input Container */
+.cnt-otp-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+/* Individual OTP Input Box */
+.cnt-otp-input {
+  width: 50px;
+  height: 56px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  color: #2d3748;
+  transition: all 0.3s ease;
+  caret-color: #667eea;
+  outline: none;
+}
+
+.cnt-otp-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: scale(1.05);
+}
+
+.cnt-otp-input.cnt-input-error {
+  border-color: #fc8181;
+  background-color: #fff5f5;
+  animation: shake 0.5s ease;
+}
+
+.cnt-otp-input:disabled {
+  background-color: #f7fafc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* OTP Input Animation on Type */
+.cnt-otp-input:not(:placeholder-shown) {
+ 
+  border-color: black;
+}
+
+/* OTP Actions Container */
+.cnt-otp-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  gap: 16px;
+}
+
+/* Resend OTP Button */
+.cnt-btn-resend {
+  background: black;
+  border: 2px solid black;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cnt-btn-resend:hover:not(:disabled) {
+  background: black;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.cnt-btn-resend:disabled {
+  border-color: #cbd5e0;
+  color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+/* OTP Timer */
+.cnt-otp-timer {
+  font-size: 14px;
+  color: #718096;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cnt-otp-timer::before {
+ 
+  font-size: 16px;
+}
+
+/* OTP Success State */
+.cnt-otp-input.success {
+  border-color: #48bb78;
+  background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+  animation: pulse 0.5s ease;
+}
+
+/* Shake Animation for Errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Pulse Animation for Success */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* OTP Verification Info Box */
+.cnt-otp-info {
+  background: linear-gradient(135deg, #ebf4ff 0%, #e0e7ff 100%);
+  border-left: 4px solid #667eea;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #4c51bf;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cnt-otp-info::before {
+  content: "ℹ️";
+  font-size: 20px;
+}
+
+/* OTP Loading State */
+.cnt-otp-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+}
+
+.cnt-otp-loading::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design for OTP Inputs */
+@media (max-width: 640px) {
+  .cnt-otp-input {
+    width: 45px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .cnt-otp-container {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cnt-otp-input {
+    width: 40px;
+    height: 48px;
+    font-size: 18px;
+  }
+  
+  .cnt-otp-container {
+    gap: 6px;
+  }
+  
+  .cnt-btn-otp {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+/* Dark Mode Support (Optional) */
+
+
+
+/* OTP Verification Complete Animation */
+.cnt-otp-verified {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+  border-radius: 8px;
+  color: #22543d;
+  font-weight: 600;
+  animation: fadeIn 0.5s ease;
+}
+
+.cnt-otp-verified::before {
+  content: "✓";
+  width: 24px;
+  height: 24px;
+  background: #48bb78;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* OTP Error Message Styling */
+.cnt-otp-container + .cnt-error-text {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 14px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Accessibility: High Contrast Mode */
+@media (prefers-contrast: high) {
+  .cnt-otp-input {
+    border-width: 3px;
+  }
+  
+  .cnt-otp-input:focus {
+    border-width: 4px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .cnt-otp-container,
+  .cnt-btn-otp,
+  .cnt-btn-resend {
+    display: none;
+  }
+}
