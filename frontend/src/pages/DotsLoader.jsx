@@ -14,12 +14,13 @@ const CircleLoader = () => {
             key={i}
             style={{
               position: 'absolute',
+              top: '-200px',
+              left:'50%',
               width: '12px',
               height: '12px',
               borderRadius: '50%',
               backgroundColor: '#000000',
-              top: '50%',
-              left: '50%',
+             
               transform: `rotate(${angle}deg) translate(30px) translateX(-50%)`,
               animation: `fade 1s linear infinite`,
               animationDelay: `${i * 0.125}s`,

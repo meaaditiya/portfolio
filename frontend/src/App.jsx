@@ -12,7 +12,7 @@ import './index.css';
 import Posts from './pages/Posts';
 import Stream from './pages/Stream';
 import StreamPost from './pages/Streampost';
-import DotsLoader from './pages/DotsLoader.jsx';
+
 
 const App = () => {
   return (
@@ -31,7 +31,7 @@ const App = () => {
             <Route path="/posts" element={<Posts />} />
             <Route path="/stream" element={<Stream/>}/>
             <Route path="/streampost/:id" element={<StreamPost/>}/>
-            <Route path="/dots" element={<DotsLoader/>}/>
+          
           </Routes>
         </main>
         
