@@ -80,8 +80,8 @@ body {
     display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--primary-black);
-  color: white;
+  background: white;
+  color: black;
   border: 2px solid transparent;
   padding: 0.4rem 1rem;
   border-radius: 0.5rem;
@@ -91,14 +91,15 @@ body {
   transition: var(--transition);
   position: relative;
   left:10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
  
 }
 .cnt-action-btn-project {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--primary-black);
-  color: white;
+  background: white;
+  color: black;
   border: 2px solid transparent;
   padding: 0.4rem 1rem;
   border-radius: 0.5rem;
@@ -108,6 +109,7 @@ body {
   transition: var(--transition);
   position: relative;
   right:10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 
