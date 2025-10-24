@@ -1046,11 +1046,247 @@ body {
   }
 }
 
+
 /* Print Styles */
 @media print {
   .cnt-otp-container,
   .cnt-btn-otp,
   .cnt-btn-resend {
     display: none;
+  }
+}
+/* Query Section Buttons */
+.cnt-query-section {
+  margin-top: 40px;
+  width: 100%;
+}
+
+.cnt-query-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.cnt-query-buttons .cnt-btn-primary {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: none;
+  flex: 1;
+  min-width: 150px;
+  max-width: 250px;
+}
+
+.cnt-query-buttons .cnt-btn-primary:hover {
+  background-color: #000;
+  transform: none;
+}
+
+.cnt-query-buttons .cnt-btn-primary:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Responsive - keeps buttons in same row */
+@media (max-width: 768px) {
+  .cnt-query-buttons {
+    gap: 10px;
+  }
+  
+  .cnt-query-buttons .cnt-btn-primary {
+    padding: 10px 16px;
+    font-size: 14px;
+    min-width: 120px;
+  }
+  .query-btn{
+    height:40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cnt-query-buttons {
+    gap: 8px;
+  }
+  
+  .cnt-query-buttons .cnt-btn-primary {
+    padding: 10px 12px;
+    font-size: 13px;
+    min-width: 100px;
+  }
+}
+/* Query Popup Styles */
+.cnt-query-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.cnt-query-popup-container {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.cnt-query-popup-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+  z-index: 1;
+}
+
+.cnt-query-popup-close:hover {
+  color: #000;
+}
+
+.cnt-query-popup-content {
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.cnt-query-popup-icon {
+  margin-bottom: 20px;
+}
+
+.cnt-query-popup-icon.success {
+  color: #10b981;
+}
+
+.cnt-query-popup-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 15px;
+}
+
+.cnt-query-popup-message {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+/* Ticket ID Section */
+.cnt-ticket-id-section {
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.cnt-ticket-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.cnt-ticket-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+.cnt-ticket-id {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 3px;
+  font-family: 'Courier New', monospace;
+}
+
+.cnt-copy-btn {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.cnt-copy-btn:hover {
+  opacity: 0.8;
+}
+
+.cnt-copy-btn:active {
+  transform: scale(0.95);
+}
+
+.cnt-ticket-note {
+  font-size: 13px;
+  color: #f59e0b;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.cnt-query-popup-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.cnt-query-popup-btn {
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.cnt-query-popup-btn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cnt-query-popup-container {
+    max-width: 90%;
+  }
+  
+  .cnt-query-popup-content {
+    padding: 30px 20px;
+  }
+  
+  .cnt-ticket-id {
+    font-size: 18px;
+  }
+  
+  .cnt-query-popup-title {
+    font-size: 20px;
   }
 }

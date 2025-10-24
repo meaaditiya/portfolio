@@ -78,6 +78,21 @@ const Contact = () => {
     "Are your applications secure and scalable?",
     "Do you offer support for deployment and hosting?"
   ];
+const [querySection, setQuerySection] = useState(false); // Toggle query form
+const [checkQuerySection, setCheckQuerySection] = useState(false); // Toggle check query
+const [queryFormData, setQueryFormData] = useState({
+  name: '',
+  email: '',
+  queryText: ''
+});
+const [ticketId, setTicketId] = useState('');
+const [queryResult, setQueryResult] = useState(null);
+const [queryErrors, setQueryErrors] = useState({});
+const [showQueryPopup, setShowQueryPopup] = useState(false);
+const [queryPopupData, setQueryPopupData] = useState({
+  ticketId: '',
+  message: ''
+});
 
   // Auto-close popup after 8 seconds
   useEffect(() => {
@@ -126,7 +141,17 @@ const Contact = () => {
   const closePopup = () => {
     setShowPopup(false);
   };
-
+const showqueryPopup = (ticketId, message) => {
+  setQueryPopupData({ ticketId, message });
+  setShowQueryPopup(true);
+};
+const closeQueryPopup = () => {
+  setShowQueryPopup(false);
+  setQueryPopupData({ ticketId: '', message: '' });
+};
+const copyTicketId = () => {
+  navigator.clipboard.writeText(queryPopupData.ticketId);
+};
   const validateEmail = (email) => {
     const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return emailRegex.test(email);
@@ -652,7 +677,8 @@ const Contact = () => {
           Send Audio Message
         </button>
       </div>
-
+     
+    
       <div className="cnt-grid">
         <div className="cnt-info">
           <h3 className="cnt-card-title">Get In Touch</h3>
@@ -765,6 +791,7 @@ const Contact = () => {
               {submitStatus.loading ? 'Sending...' : 'Send Message'}
             </button>
           </form>
+          {renderQuerySection()}
         </div>
       </div>
     </>
@@ -1122,6 +1149,339 @@ const Contact = () => {
       </div>
     </div>
   );
+const renderQueryPopup = () => (
+  <div className="cnt-query-popup-overlay">
+    <div className="cnt-query-popup-container">
+      <button className="cnt-query-popup-close" onClick={closeQueryPopup}>
+        <FaTimes />
+      </button>
+      
+      <div className="cnt-query-popup-content">
+        <div className="cnt-query-popup-icon success">
+          <FaCheckCircle size={60} />
+        </div>
+        
+        <h2 className="cnt-query-popup-title">Query Submitted Successfully!</h2>
+        <p className="cnt-query-popup-message">{queryPopupData.message}</p>
+        
+        <div className="cnt-ticket-id-section">
+          <label className="cnt-ticket-label">Your Ticket Reference ID:</label>
+          <div className="cnt-ticket-display">
+            <span className="cnt-ticket-id">{queryPopupData.ticketId}</span>
+          </div>
+          <button
+  className="cnt-copy-btn"
+  onClick={(e) => {
+    copyTicketId(); // your function
+    e.target.innerText = "Copied";
+
+    setTimeout(() => {
+      e.target.innerText = "Copy";
+    }, 10000); // 10 seconds
+  }}
+  title="Copy Ticket ID"
+>
+  Copy
+</button>
+          <p className="cnt-ticket-note">
+            Please save this Ticket ID. You'll need it to check your query status.
+          </p>
+        </div>
+        
+        <div className="cnt-query-popup-actions">
+          <button className="cnt-query-popup-btn" onClick={closeQueryPopup}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+  const handleQueryChange = (e) => {
+  const { id, value } = e.target;
+  setQueryFormData(prev => ({
+    ...prev,
+    [id]: value
+  }));
+  if (queryErrors[id]) {
+    setQueryErrors(prev => ({
+      ...prev,
+      [id]: null
+    }));
+  }
+};
+
+// Add validation for query form
+const validateQuery = () => {
+  const newErrors = {};
+  
+  if (!queryFormData.name.trim()) {
+    newErrors.name = 'Name is required';
+  }
+  
+  if (!queryFormData.email.trim()) {
+    newErrors.email = 'Email is required';
+  } else if (!validateEmail(queryFormData.email)) {
+    newErrors.email = 'Please enter a valid email address';
+  }
+  
+  if (!queryFormData.queryText.trim()) {
+    newErrors.queryText = 'Query text is required';
+  }
+  
+  setQueryErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
+// Add function to submit query
+const handleQuerySubmit = async (e) => {
+  e.preventDefault();
+  
+  if (!validateQuery()) {
+    return;
+  }
+  
+  setSubmitStatus({
+    loading: true,
+    success: false,
+    error: null
+  });
+  
+  try {
+    const response = await axios.post('http://localhost:5000/api/queries/create', queryFormData);
+    
+    showqueryPopup(
+     response.data.ticketId,
+      'Your query has been submitted successfully. Please save your Ticket ID for future reference.'
+    );
+    
+    setQueryFormData({
+      name: '',
+      email: '',
+      queryText: ''
+    });
+    
+    setSubmitStatus({
+      loading: false,
+      success: true,
+      error: null
+    });
+    
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Failed to submit query. Please try again.';
+    
+    showFullScreenPopup(
+      'error',
+      'Query Submission Failed',
+      errorMessage,
+      false
+    );
+    
+    setSubmitStatus({
+      loading: false,
+      success: false,
+      error: errorMessage
+    });
+  }
+};
+
+// Add function to check query status
+const handleCheckQuery = async (e) => {
+  e.preventDefault();
+  
+  if (!ticketId.trim()) {
+    setQueryErrors({ ticketId: 'Ticket ID is required' });
+    return;
+  }
+  const raw = ticketId;
+const normalized = String(raw)
+  .trim()
+  .replace(/\u00A0/g, "")
+  .replace(/[\u200B-\u200D]/g, "")
+  .replace(/\s+/g, "")
+  .toUpperCase();
+
+if (!/^QRY\d{12}$/.test(normalized)) {
+  setQueryErrors({
+    ticketId:
+      'Invalid Ticket ID format. Expected "QRY" followed by 12 digits.'
+  });
+  return;
+}
+  setSubmitStatus({
+    loading: true,
+    success: false,
+    error: null
+  });
+  
+  try {
+    const response = await axios.get(`http://localhost:5000/api/queries/check/${ticketId}`);
+    setQueryResult(response.data);
+    setQueryErrors({});
+    
+    setSubmitStatus({
+      loading: false,
+      success: true,
+      error: null
+    });
+    
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Failed to check query status.';
+    setQueryResult(null);
+    setQueryErrors({ ticketId: errorMessage });
+    
+    setSubmitStatus({
+      loading: false,
+      success: false,
+      error: errorMessage
+    });
+  }
+};
+
+// Add this render function for the Query Section
+const renderQuerySection = () => (
+  <div className="cnt-query-section">
+   
+    <div className="cnt-query-buttons">
+    
+
+      <button 
+        className="cnt-action-btn-project query-btn"
+        onClick={() => {
+          setQuerySection(!querySection);
+          setCheckQuerySection(false);
+          setQueryResult(null);
+        }}
+      >
+        {querySection ? 'Hide Query Form' : 'Raise Query'}
+      </button>
+      
+      <button 
+        className="cnt-action-btn-project query-btn"
+        onClick={() => {
+          setCheckQuerySection(!checkQuerySection);
+          setQuerySection(false);
+        }}
+      >
+        {checkQuerySection ? 'Hide Check Status' : 'Check Query Status'}
+      </button>
+    </div>
+
+    {querySection && (
+      <div className="cnt-form-container" style={{ marginTop: '20px' }}>
+        <h3 className="cnt-card-title">Raise a Query</h3>
+        <form className="cnt-form" onSubmit={handleQuerySubmit}>
+          <div className="cnt-form-group">
+            <label htmlFor="name" className="cnt-form-label">Name *</label>
+            <input
+              type="text"
+              id="name"
+              className={`cnt-form-input ${queryErrors.name ? 'cnt-input-error' : ''}`}
+              placeholder="Your Name"
+              value={queryFormData.name}
+              onChange={handleQueryChange}
+            />
+            {queryErrors.name && <p className="cnt-error-text">{queryErrors.name}</p>}
+          </div>
+          
+          <div className="cnt-form-group">
+            <label htmlFor="email" className="cnt-form-label">Email *</label>
+            <input
+              type="email"
+              id="email"
+              className={`cnt-form-input ${queryErrors.email ? 'cnt-input-error' : ''}`}
+              placeholder="Your Email"
+              value={queryFormData.email}
+              onChange={handleQueryChange}
+            />
+            {queryErrors.email && <p className="cnt-error-text">{queryErrors.email}</p>}
+          </div>
+          
+          <div className="cnt-form-group">
+            <label htmlFor="queryText" className="cnt-form-label">Query *</label>
+            <textarea
+              id="queryText"
+              rows="5"
+              className={`cnt-form-textarea ${queryErrors.queryText ? 'cnt-input-error' : ''}`}
+              placeholder="Describe your query in detail"
+              value={queryFormData.queryText}
+              onChange={handleQueryChange}
+            ></textarea>
+            {queryErrors.queryText && <p className="cnt-error-text">{queryErrors.queryText}</p>}
+          </div>
+          
+          <button 
+            type="submit" 
+            className="cnt-btn-primary submit-query"
+            disabled={submitStatus.loading}
+          >
+            {submitStatus.loading ? 'Submitting...' : 'Submit Query'}
+          </button>
+        </form>
+      </div>
+    )}
+
+    {checkQuerySection && (
+      <div className="cnt-form-container" style={{ marginTop: '20px' }}>
+        <h3 className="cnt-card-title">Check Query Status</h3>
+        <form className="cnt-form" onSubmit={handleCheckQuery}>
+          <div className="cnt-form-group">
+            <label htmlFor="ticketId" className="cnt-form-label">Ticket ID *</label>
+            <input
+              type="text"
+              id="ticketId"
+              maxLength="15"
+              className={`cnt-form-input ${queryErrors.ticketId ? 'cnt-input-error' : ''}`}
+              placeholder="Enter your 15-digit ticket ID"
+              value={ticketId}
+              onChange={(e) => {
+                setTicketId(e.target.value);
+                if (queryErrors.ticketId) {
+                  setQueryErrors({});
+                }
+              }}
+            />
+            {queryErrors.ticketId && <p className="cnt-error-text">{queryErrors.ticketId}</p>}
+          </div>
+          
+          <button 
+            type="submit" 
+            className="cnt-btn-primary submit-query"
+            disabled={submitStatus.loading}
+          >
+            {submitStatus.loading ? 'Checking...' : 'Check Status'}
+          </button>
+        </form>
+
+        {queryResult && (
+          <div className="cnt-query-result" style={{ marginTop: '20px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
+            <h4 style={{ marginBottom: '10px' }}>Query Details</h4>
+            <p><strong>Ticket ID:</strong> {queryResult.ticketId}</p>
+            <p><strong>Name:</strong> {queryResult.name}</p>
+            <p><strong>Email:</strong> {queryResult.email}</p>
+            <p><strong>Status:</strong> {queryResult.status}</p>
+            <p><strong>Query:</strong> {queryResult.queryText}</p>
+            <p><strong>Submitted At:</strong> {new Date(queryResult.submittedAt).toLocaleString()}</p>
+            
+            {queryResult.adminReply ? (
+              <>
+                <hr style={{ margin: '15px 0' }} />
+                <h4 style={{ marginBottom: '10px', color: 'green' }}>Admin Reply:</h4>
+                <p>{queryResult.adminReply}</p>
+                <p><strong>Replied At:</strong> {new Date(queryResult.repliedAt).toLocaleString()}</p>
+              </>
+            ) : (
+              <>
+                <hr style={{ margin: '15px 0' }} />
+                <p style={{ color: 'orange' }}>{queryResult.message}</p>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+);
 
   return (
     <>
@@ -1137,6 +1497,7 @@ const Contact = () => {
       </section>
 
       {showPopup && renderFullScreenPopup()}
+      {showQueryPopup && renderQueryPopup()}
     </>
   );
 };

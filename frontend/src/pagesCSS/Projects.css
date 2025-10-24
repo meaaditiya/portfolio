@@ -1006,3 +1006,13 @@
     display: none;
   }
 }
+.summary-btn{
+  position: relative;
+  left:20px;
+}
+.submit-query{
+ 
+  align-items: center;
+  width:300px;
+
+}
