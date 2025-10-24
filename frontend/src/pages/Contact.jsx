@@ -1248,7 +1248,7 @@ const handleQuerySubmit = async (e) => {
   });
   
   try {
-    const response = await axios.post('http://localhost:5000/api/queries/create', queryFormData);
+    const response = await axios.post('https://connectwithaaditiyamg.onrender.com/api/queries/create', queryFormData);
     
     showqueryPopup(
      response.data.ticketId,
@@ -1315,7 +1315,7 @@ if (!/^QRY\d{12}$/.test(normalized)) {
   });
   
   try {
-    const response = await axios.get(`http://localhost:5000/api/queries/check/${ticketId}`);
+    const response = await axios.get(`https://connectwithaaditiyamg.onrender.com/api/queries/check/${ticketId}`);
     setQueryResult(response.data);
     setQueryErrors({});
     
