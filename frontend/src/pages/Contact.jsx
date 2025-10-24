@@ -60,6 +60,16 @@ const Contact = () => {
     success: false,
     error: null
   });
+    const [submitQueryStatus, setSubmitQueryStatus] = useState({
+    loading: false,
+    success: false,
+    error: null
+  });
+    const [checkQueryStatus, setCheckQueryStatus] = useState({
+    loading: false,
+    success: false,
+    error: null
+  });
   
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState({
@@ -1241,7 +1251,7 @@ const handleQuerySubmit = async (e) => {
     return;
   }
   
-  setSubmitStatus({
+  setSubmitQueryStatus({
     loading: true,
     success: false,
     error: null
@@ -1261,7 +1271,7 @@ const handleQuerySubmit = async (e) => {
       queryText: ''
     });
     
-    setSubmitStatus({
+   setSubmitQueryStatus({
       loading: false,
       success: true,
       error: null
@@ -1277,7 +1287,7 @@ const handleQuerySubmit = async (e) => {
       false
     );
     
-    setSubmitStatus({
+    setSubmitQueryStatus({
       loading: false,
       success: false,
       error: errorMessage
@@ -1308,7 +1318,7 @@ if (!/^QRY\d{12}$/.test(normalized)) {
   });
   return;
 }
-  setSubmitStatus({
+  setCheckQueryStatus({
     loading: true,
     success: false,
     error: null
@@ -1319,7 +1329,7 @@ if (!/^QRY\d{12}$/.test(normalized)) {
     setQueryResult(response.data);
     setQueryErrors({});
     
-    setSubmitStatus({
+    setCheckQueryStatus({
       loading: false,
       success: true,
       error: null
@@ -1330,7 +1340,7 @@ if (!/^QRY\d{12}$/.test(normalized)) {
     setQueryResult(null);
     setQueryErrors({ ticketId: errorMessage });
     
-    setSubmitStatus({
+    setCheckQueryStatus({
       loading: false,
       success: false,
       error: errorMessage
@@ -1353,7 +1363,7 @@ const renderQuerySection = () => (
           setQueryResult(null);
         }}
       >
-        {querySection ? 'Hide Query Form' : 'Raise Query'}
+        {querySection ? 'Hide Query Form' : 'Raise Quick Query'}
       </button>
       
       <button 
@@ -1369,7 +1379,7 @@ const renderQuerySection = () => (
 
     {querySection && (
       <div className="cnt-form-container" style={{ marginTop: '20px' }}>
-        <h3 className="cnt-card-title">Raise a Query</h3>
+        <h3 className="cnt-card-title">Raise a Quick Query</h3>
         <form className="cnt-form" onSubmit={handleQuerySubmit}>
           <div className="cnt-form-group">
             <label htmlFor="name" className="cnt-form-label">Name *</label>
@@ -1415,7 +1425,7 @@ const renderQuerySection = () => (
             className="cnt-btn-primary submit-query"
             disabled={submitStatus.loading}
           >
-            {submitStatus.loading ? 'Submitting...' : 'Submit Query'}
+            {submitQueryStatus.loading ? 'Submitting...' : 'Submit Query'}
           </button>
         </form>
       </div>
@@ -1449,7 +1459,7 @@ const renderQuerySection = () => (
             className="cnt-btn-primary submit-query"
             disabled={submitStatus.loading}
           >
-            {submitStatus.loading ? 'Checking...' : 'Check Status'}
+            {checkQueryStatus.loading ? 'Checking...' : 'Check Status'}
           </button>
         </form>
 
