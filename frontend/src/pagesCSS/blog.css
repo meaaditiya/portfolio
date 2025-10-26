@@ -814,3 +814,449 @@ body {
   font-size: clamp(12px, 2.5vw, 14px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
+/* Blog Header with Filter Button */
+
+
+
+
+/* Blog Header with Filter Button */
+
+
+/* Filter Toggle Button */
+.filter-toggle-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  color: #ffffff;
+  background-color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-toggle-btn:hover {
+  background-color: #000000;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.filter-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.filter-toggle-btn svg {
+  transition: var(--transition);
+}
+
+.filter-toggle-btn:hover svg {
+  transform: scale(1.1);
+}
+
+/* Filter Badge (Active Indicator) */
+.filter-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+/* Filter Popup Overlay */
+.filter-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Filter Popup */
+.filter-popup {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 420px;
+  max-height: 85vh;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Filter Popup Header */
+.filter-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #ffffff;
+}
+
+.filter-popup-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.filter-popup-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #666666;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+.filter-popup-header .close-btn:hover {
+  background-color: #f0f0f0;
+  color: #000000;
+}
+
+/* Filter Popup Content */
+.filter-popup-content {
+  padding: 24px;
+  max-height: calc(85vh - 140px);
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+
+.filter-popup-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-popup-content::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.filter-popup-content::-webkit-scrollbar-thumb {
+  background: #999999;
+  border-radius: 3px;
+}
+
+.filter-popup-content::-webkit-scrollbar-thumb:hover {
+  background: #666666;
+}
+
+/* Filter Group */
+.filter-group {
+  margin-bottom: 24px;
+}
+
+.filter-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Filter Search Input */
+.filter-search-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: #000000;
+  background-color: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.filter-search-input::placeholder {
+  color: #999999;
+}
+
+.filter-search-input:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Filter Select */
+.filter-select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: #000000;
+  background-color: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000000' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.filter-select:hover {
+  border-color: #666666;
+}
+
+.filter-select:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Style dropdown options */
+.filter-select option {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.filter-select option:hover {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+.filter-select option:checked {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+/* Filter Tags */
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tag-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: #ffffff;
+  background-color: #0f172a;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.filter-tag-btn:hover {
+  background-color: #1a2332;
+  transform: translateY(-1px);
+}
+
+.filter-tag-btn.active {
+  background-color: #000000;
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-tag-btn.active:hover {
+  background-color: #000000;
+  box-shadow: var(--shadow-md);
+}
+
+/* Filter Footer */
+.filter-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.filter-results {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666666;
+}
+
+/* Clear Filters Button */
+.clear-filters-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  color: #ffffff;
+  background-color: #0f172a;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.clear-filters-btn:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+}
+
+.clear-filters-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .blog-header {
+    margin-bottom: 24px;
+  }
+
+  .filter-toggle-btn {
+    padding: 9px 16px;
+    font-size: 13px;
+  }
+
+  .filter-popup {
+    width: 95%;
+    max-width: none;
+  }
+
+  .filter-popup-header {
+    padding: 16px 20px;
+  }
+
+  .filter-popup-header h3 {
+    font-size: 16px;
+  }
+
+  .filter-popup-content {
+    padding: 20px;
+  }
+
+  .filter-group {
+    margin-bottom: 20px;
+  }
+
+  .filter-tag-btn {
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .filter-toggle-btn {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .filter-popup {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .filter-popup-content {
+    max-height: calc(100vh - 140px);
+  }
+
+  .filter-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .clear-filters-btn {
+    width: 100%;
+    padding: 10px 16px;
+  }
+}
+
+/* Focus States for Accessibility */
+.filter-toggle-btn:focus-visible,
+.filter-search-input:focus-visible,
+.filter-select:focus-visible,
+.filter-tag-btn:focus-visible,
+.clear-filters-btn:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+/* Style dropdown options */
+.filter-select option {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.filter-select option:hover,
+.filter-select option:focus {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  background-image: none !important;
+}
+
+.filter-select option:checked,
+.filter-select option:active {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  background-image: none !important;
+}
+
+/* Remove default browser blue highlight */
+.filter-select:focus option:checked {
+  background: linear-gradient(#0f172a, #0f172a) !important;
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
