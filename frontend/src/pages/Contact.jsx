@@ -673,14 +673,14 @@ const copyTicketId = () => {
     <>
       <div className="cnt-actions">
         <button 
-          className="cnt-action-btn-project"
+          className="cnt-action-btn-project generate-summary-btn"
           onClick={() => setActiveSection('project')}
         >
           <FaProjectDiagram className="cnt-action-icon" />
           Request a Project 
         </button>
         <button 
-          className="cnt-action-btn-project2"
+          className="cnt-action-btn-project2 generate-summary-btn"
           onClick={() => setActiveSection('audio')}
         >
           <FaMicrophone className="cnt-action-icon" />
@@ -1356,7 +1356,7 @@ const renderQuerySection = () => (
     
 
       <button 
-        className="cnt-action-btn-project query-btn"
+        className="cnt-btn-otp query-btn generate-summary-btn"
         onClick={() => {
           setQuerySection(!querySection);
           setCheckQuerySection(false);
@@ -1367,7 +1367,7 @@ const renderQuerySection = () => (
       </button>
       
       <button 
-        className="cnt-action-btn-project query-btn"
+        className="cnt-btn-otp query-btn generate-summary-btn"
         onClick={() => {
           setCheckQuerySection(!checkQuerySection);
           setQuerySection(false);
