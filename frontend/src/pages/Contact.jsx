@@ -1356,7 +1356,7 @@ const renderQuerySection = () => (
     
 
       <button 
-        className="cnt-btn-otp query-btn generate-summary-btn"
+        className="btn-1024 cnt-btn-otp query-btn generate-summary-btn"
         onClick={() => {
           setQuerySection(!querySection);
           setCheckQuerySection(false);
@@ -1367,7 +1367,7 @@ const renderQuerySection = () => (
       </button>
       
       <button 
-        className="cnt-btn-otp query-btn generate-summary-btn"
+        className="btn-1024 cnt-btn-otp query-btn generate-summary-btn"
         onClick={() => {
           setCheckQuerySection(!checkQuerySection);
           setQuerySection(false);

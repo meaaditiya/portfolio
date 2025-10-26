@@ -298,6 +298,7 @@ body {
 }
 
 .cnt-btn-primary {
+  
   background: var(--primary-black);
   color: var(--primary-white);
   border: none;
@@ -989,6 +990,10 @@ body {
     font-size: 14px;
     padding: 10px 20px;
   }
+}
+
+.btn-1024{
+  height: 35px;
 }
 
 /* Dark Mode Support (Optional) */
