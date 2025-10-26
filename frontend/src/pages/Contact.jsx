@@ -344,7 +344,7 @@ const copyTicketId = () => {
         [sectionKey]: true
       }));
       
-      setOtpTimer(60); // 60 seconds cooldown
+      setOtpTimer(120); // 60 seconds cooldown
       setCanResendOtp(false);
       
       showFullScreenPopup(
@@ -795,7 +795,7 @@ const copyTicketId = () => {
             
             <button 
               type="submit" 
-              className="cnt-btn-primary"
+              className="cnt-btn-primary "
               disabled={submitStatus.loading || !otpSent.contact}
             >
               {submitStatus.loading ? 'Sending...' : 'Send Message'}
@@ -935,10 +935,11 @@ const copyTicketId = () => {
 
           <button 
             type="submit" 
-            className="cnt-btn-primary cnt-btn-large"
+            className="cnt-btn-primary"
             disabled={submitStatus.loading || !audioBlob || !otpSent.audio}
           >
-            {submitStatus.loading ? 'Sending Audio...' : 'Send Audio Message'}
+            <FaMicrophone className="cnt-action-icon2" />
+            {submitStatus.loading ? 'Sending Audio...' : 'Send Audio'}
           </button>
         </form>
       </div>
@@ -1121,7 +1122,7 @@ const copyTicketId = () => {
 
           <button 
             type="submit" 
-            className="cnt-btn-primary cnt-btn-large"
+            className="cnt-btn-primary"
             disabled={submitStatus.loading || !otpSent.project}
           >
             {submitStatus.loading ? 'Sending Request...' : 'Submit Project Request'}
