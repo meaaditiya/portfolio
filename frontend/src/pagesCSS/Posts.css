@@ -612,15 +612,15 @@
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-md) var(--spacing-lg);
-  border: 2px solid var(--border-light);
-  background: var(--bg-primary);
+ border:none;
+  background: none;
   border-radius: var(--border-radius-md);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 900;
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: var(--shadow-light);
+
 }
 
 .pst-like-button:hover,
@@ -631,13 +631,13 @@
 }
 
 .pst-like-button.pst-liked {
-  background: var(--secondary-color);
-  color: white;
-  border-color: var(--secondary-color);
+ 
+  color: red;
+ 
 }
 
 .pst-like-button.pst-liked:hover {
-  background: var(--secondary-hover);
+ 
   border-color: var(--secondary-hover);
 }
 
@@ -2045,4 +2045,258 @@
 
 .pst-platform-buttons {
    background: var(--color-white);
+}
+/* Share Panel Styles */
+.pst-share-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-out;
+  z-index: 10;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Share Header */
+.pst-share-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #efefef;
+  position: relative;
+}
+
+.pst-share-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.pst-share-close {
+  position: absolute;
+  left: 12px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #262626;
+  transition: opacity 0.2s;
+}
+
+.pst-share-close:hover {
+  opacity: 0.6;
+}
+
+/* Share Content */
+.pst-share-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px;
+}
+
+/* Share Link Section */
+.pst-share-link-section {
+  margin-bottom: 32px;
+}
+
+.pst-share-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 12px;
+}
+
+.pst-share-link-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pst-share-link-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #262626;
+  background: #fafafa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pst-share-link-input:focus {
+  border-color: #a8a8a8;
+  background: #ffffff;
+}
+
+.pst-copy-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: #0095f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.pst-copy-button:hover {
+  background: #1877f2;
+}
+
+.pst-copy-button:active {
+  transform: scale(0.98);
+}
+
+/* Share Social Section */
+.pst-share-social-section {
+  margin-bottom: 20px;
+}
+
+.pst-share-social-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pst-share-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #262626;
+}
+
+.pst-share-social-btn:hover {
+  background: #fafafa;
+  border-color: #b4b4b4;
+}
+
+.pst-share-social-btn:active {
+  transform: scale(0.98);
+}
+
+/* Individual Platform Styles */
+.pst-share-twitter:hover {
+  background: #e8f5fe;
+  border-color: #1da1f2;
+  color: #1da1f2;
+}
+
+.pst-share-facebook:hover {
+  background: #e7f3ff;
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+.pst-share-linkedin:hover {
+  background: #e8f4f8;
+  border-color: #0077b5;
+  color: #0077b5;
+}
+
+.pst-share-whatsapp:hover {
+  background: #e7f8f0;
+  border-color: #25d366;
+  color: #25d366;
+}
+
+/* Share Button in Modal Actions */
+.pst-share-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #262626;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pst-share-button:hover {
+  background: #fafafa;
+  border-color: #b4b4b4;
+}
+
+.pst-share-button:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pst-share-content {
+    padding: 20px 16px;
+  }
+
+  .pst-share-social-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .pst-share-link-container {
+    flex-direction: column;
+  }
+
+  .pst-copy-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pst-share-social-btn {
+    width: 100%;
+  }
+}
+
+/* Icon adjustments for share buttons */
+.pst-share-button .pst-icon-sm,
+.pst-copy-button .pst-icon-sm,
+.pst-share-social-btn .pst-icon-sm {
+  width: 18px;
+  height: 18px;
+}
+
+/* Success state for copy button */
+.pst-copy-button:has(.pst-icon-sm:first-child) {
+  background: #00ba7c;
+}
+
+.pst-copy-button:has(.pst-icon-sm:first-child):hover {
+  background: #00a86b;
 }

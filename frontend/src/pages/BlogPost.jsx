@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest } from 'react-icons/fa';
+import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import Dots from './DotsLoader';
@@ -62,7 +62,12 @@ const BlogPost = () => {
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
-
+  // Report state
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportForm, setReportForm] = useState({ email: '', reason: '' });
+  const [reportError, setReportError] = useState(null);
+  const [reportSuccess, setReportSuccess] = useState(null);
+  const [reportLoading, setReportLoading] = useState(false);
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -1021,6 +1026,69 @@ Read the full article here 👇`
       setCommentsLoading(false);
     }
   };
+
+  // Handle report form change
+const handleReportFormChange = (e) => {
+  const { name, value } = e.target;
+  setReportForm(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
+
+// Handle report form submit
+const handleReportSubmit = async (e) => {
+  e.preventDefault();
+  setReportError(null);
+  setReportSuccess(null);
+  setReportLoading(true);
+  
+  if (!blogPost || !blogPost._id) return;
+  
+  if (reportForm.email.trim() === '' || reportForm.reason.trim() === '') {
+    setReportError('Email and reason are required');
+    setReportLoading(false);
+    return;
+  }
+  
+  if (reportForm.reason.trim().length < 10) {
+    setReportError('Reason must be at least 10 characters');
+    setReportLoading(false);
+    return;
+  }
+  
+  if (reportForm.reason.trim().length > 500) {
+    setReportError('Reason must not exceed 500 characters');
+    setReportLoading(false);
+    return;
+  }
+  
+  try {
+    await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/report`,
+      {
+        userEmail: reportForm.email,
+        reason: reportForm.reason
+      }
+    );
+    
+    setReportSuccess('Thank you for your report. We will review it shortly.');
+    
+    // Reset form
+    setReportForm({ email: '', reason: '' });
+    
+    // Close modal after 2 seconds
+    setTimeout(() => {
+      setShowReportModal(false);
+      setReportSuccess(null);
+    }, 2000);
+  } catch (err) {
+    console.error('Error submitting report:', err);
+    setReportError(err.response?.data?.message || 'Failed to submit report');
+  } finally {
+    setReportLoading(false);
+  }
+};
 const handleGenerateSummary = async (blog, event) => {
   event.stopPropagation(); // Prevent any parent click handlers
   setSelectedBlog(blog);
@@ -1288,14 +1356,19 @@ const showDeleteConfirmation = (commentId, email) => {
           )}
           <h1 className="blog-post-title">{blogPost.title}</h1>
           <div className="blog-post-meta">
-            <span className="blog-post-date">
-              {formatBlogDate(blogPost.publishedAt)}
-            </span>
-            <span className="meta-divider">•</span>
-            <span className="blog-post-author">
-              {blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
-            </span>
-          </div>
+  <span className="blog-post-date">
+    {formatBlogDate(blogPost.publishedAt)}
+  </span>
+  <span className="meta-divider">•</span>
+  <span className="blog-post-author">
+    {blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
+  </span>
+  <span className="meta-divider">•</span>
+  <span className="blog-post-reads">
+   {Math.floor(blogPost.totalReads / 2) || 0} {Math.floor(blogPost.totalReads / 2) === 1 ? 'read' : 'reads'}
+
+  </span>
+</div>
           
           {/* Display tags exactly as they are in the blog post */}
           <div className="blog-post-tags">
@@ -1365,7 +1438,24 @@ const showDeleteConfirmation = (commentId, email) => {
             >
               <FaShare />
               Share
-            </button></div>
+            </button>
+             <button 
+    className="btn share-btn"
+    onClick={() => {
+      // Pre-fill email if user info exists
+      if (storedUserInfo && storedUserInfo.email) {
+        setReportForm(prev => ({
+          ...prev,
+          email: storedUserInfo.email
+        }));
+      }
+      setShowReportModal(true);
+    }}
+  >
+    <FaFlag />
+    Report
+  </button>
+            </div>
            
           
           {/* Comments section */}
@@ -1941,6 +2031,179 @@ const showDeleteConfirmation = (commentId, email) => {
       Close
     </button>
   </div>
+    </div>
+  </div>
+)}
+{showReportModal && (
+  <div className="report-overlay-bg" onClick={() => setShowReportModal(false)}>
+    <div className="report-dialog-box" onClick={(e) => e.stopPropagation()}>
+      <h3 className="report-dialog-title">Report This Article</h3>
+      <p className="report-dialog-subtitle">Please let us know why you're reporting this content</p>
+      
+      {reportError && <div className="report-error-msg">{reportError}</div>}
+      {reportSuccess && <div className="report-success-msg">{reportSuccess}</div>}
+      
+      <form onSubmit={handleReportSubmit} className="report-form-container">
+        <div className="report-field-group">
+          <label htmlFor="report-email" className="report-field-label">Your Email *</label>
+          <input
+            type="email"
+            id="report-email"
+            name="email"
+            value={reportForm.email}
+            onChange={handleReportFormChange}
+            required
+            disabled={reportLoading}
+            className="report-email-input"
+          />
+        </div>
+        
+        <div className="report-field-group">
+          <label className="report-field-label">Select a reason *</label>
+          <div className="report-reason-list">
+            <div 
+              className={`report-reason-item ${reportForm.reason === 'Spam or misleading content' ? 'report-reason-selected' : ''}`}
+              onClick={() => setReportForm(prev => ({ ...prev, reason: 'Spam or misleading content' }))}
+            >
+              <input 
+                type="radio" 
+                name="report-reason" 
+                value="Spam or misleading content"
+                checked={reportForm.reason === 'Spam or misleading content'}
+                onChange={() => {}}
+                disabled={reportLoading}
+                className="report-radio-input"
+              />
+              <label className="report-radio-label">Spam or misleading content</label>
+            </div>
+            
+            <div 
+              className={`report-reason-item ${reportForm.reason === 'Inappropriate or offensive content' ? 'report-reason-selected' : ''}`}
+              onClick={() => setReportForm(prev => ({ ...prev, reason: 'Inappropriate or offensive content' }))}
+            >
+              <input 
+                type="radio" 
+                name="report-reason" 
+                value="Inappropriate or offensive content"
+                checked={reportForm.reason === 'Inappropriate or offensive content'}
+                onChange={() => {}}
+                disabled={reportLoading}
+                className="report-radio-input"
+              />
+              <label className="report-radio-label">Inappropriate or offensive content</label>
+            </div>
+            
+            <div 
+              className={`report-reason-item ${reportForm.reason === 'Copyright or plagiarism issue' ? 'report-reason-selected' : ''}`}
+              onClick={() => setReportForm(prev => ({ ...prev, reason: 'Copyright or plagiarism issue' }))}
+            >
+              <input 
+                type="radio" 
+                name="report-reason" 
+                value="Copyright or plagiarism issue"
+                checked={reportForm.reason === 'Copyright or plagiarism issue'}
+                onChange={() => {}}
+                disabled={reportLoading}
+                className="report-radio-input"
+              />
+              <label className="report-radio-label">Copyright or plagiarism issue</label>
+            </div>
+            
+            <div 
+              className={`report-reason-item ${reportForm.reason === 'Factually incorrect information' ? 'report-reason-selected' : ''}`}
+              onClick={() => setReportForm(prev => ({ ...prev, reason: 'Factually incorrect information' }))}
+            >
+              <input 
+                type="radio" 
+                name="report-reason" 
+                value="Factually incorrect information"
+                checked={reportForm.reason === 'Factually incorrect information'}
+                onChange={() => {}}
+                disabled={reportLoading}
+                className="report-radio-input"
+              />
+              <label className="report-radio-label">Factually incorrect information</label>
+            </div>
+            
+            <div 
+              className={`report-reason-item ${reportForm.reason === 'Hate speech or discrimination' ? 'report-reason-selected' : ''}`}
+              onClick={() => setReportForm(prev => ({ ...prev, reason: 'Hate speech or discrimination' }))}
+            >
+              <input 
+                type="radio" 
+                name="report-reason" 
+                value="Hate speech or discrimination"
+                checked={reportForm.reason === 'Hate speech or discrimination'}
+                onChange={() => {}}
+                disabled={reportLoading}
+                className="report-radio-input"
+              />
+              <label className="report-radio-label">Hate speech or discrimination</label>
+            </div>
+            
+            <div 
+              className={`report-reason-item ${(reportForm.reason && !['Spam or misleading content', 'Inappropriate or offensive content', 'Copyright or plagiarism issue', 'Factually incorrect information', 'Hate speech or discrimination'].includes(reportForm.reason)) ? 'report-reason-selected' : ''}`}
+              onClick={() => setReportForm(prev => ({ ...prev, reason: 'custom' }))}
+            >
+              <input 
+                type="radio" 
+                name="report-reason" 
+                value="custom"
+                checked={reportForm.reason === 'custom' || (reportForm.reason && !['Spam or misleading content', 'Inappropriate or offensive content', 'Copyright or plagiarism issue', 'Factually incorrect information', 'Hate speech or discrimination'].includes(reportForm.reason))}
+                onChange={() => {}}
+                disabled={reportLoading}
+                className="report-radio-input"
+              />
+              <label className="report-radio-label">Other (please specify)</label>
+            </div>
+          </div>
+        </div>
+        
+        {(reportForm.reason === 'custom' || (reportForm.reason && !['Spam or misleading content', 'Inappropriate or offensive content', 'Copyright or plagiarism issue', 'Factually incorrect information', 'Hate speech or discrimination'].includes(reportForm.reason))) && (
+          <div className="report-field-group report-custom-textarea">
+            <label htmlFor="report-custom-reason" className="report-field-label">Please describe the issue *</label>
+            <textarea
+              id="report-custom-reason"
+              name="customReason"
+              value={reportForm.reason === 'custom' ? '' : reportForm.reason}
+              onChange={(e) => setReportForm(prev => ({ ...prev, reason: e.target.value }))}
+              rows="4"
+              required
+              minLength="10"
+              maxLength="500"
+              placeholder="Please describe the issue (10-500 characters)"
+              disabled={reportLoading}
+              className="report-textarea-input"
+            ></textarea>
+            <span className="report-char-counter">
+              {(reportForm.reason === 'custom' ? 0 : reportForm.reason.length)}/500 (minimum 10 characters)
+            </span>
+          </div>
+        )}
+        
+        <div className="report-dialog-actions">
+          <button 
+            type="button" 
+            onClick={() => {
+              setShowReportModal(false);
+              setReportError(null);
+              setReportSuccess(null);
+              setReportForm({ email: '', reason: '' });
+            }}
+            className="report-btn report-btn-cancel"
+            disabled={reportLoading}
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit"
+            className="report-btn report-btn-submit"
+            disabled={reportLoading || !reportForm.reason || reportForm.reason === 'custom'}
+          >
+            {reportLoading ? 'Submitting...' : 'Submit Report'}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 )}

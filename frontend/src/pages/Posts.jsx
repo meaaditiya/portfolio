@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ArrowLeft,MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin } from 'lucide-react';
+import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check } from 'lucide-react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../pagesCSS/Posts.css';
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
 import Error from './Error.jsx';
+
 const Posts = () => {
+  const { postId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const [posts, setPosts] = useState([]);
   const [socialEmbeds, setSocialEmbeds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,10 +29,12 @@ const Posts = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showComments, setShowComments] = useState(false);
   const [imageLoadStates, setImageLoadStates] = useState({});
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   
   // New state for social media functionality
   const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'posts');
-  const [selectedPlatform, setSelectedPlatform] = useState('all'); // 'all', 'twitter', 'facebook', 'linkedin'
+  const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
 
   const platforms = [
@@ -36,11 +44,18 @@ const Posts = () => {
     { id: 'linkedin', name: 'LinkedIn', icon: Linkedin }
   ];
 
+  // Load post from URL parameter
   useEffect(() => {
-    if (activeTab === 'posts') {
+    if (postId && activeTab === 'posts') {
+      fetchSinglePost(postId);
+    }
+  }, [postId, activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'posts' && !postId) {
       fetchPosts();
     }
-  }, [currentPage, activeTab]);
+  }, [currentPage, activeTab, postId]);
 
   useEffect(() => {
     if (activeTab === 'social') {
@@ -60,16 +75,10 @@ const Posts = () => {
       document.body.appendChild(script);
     };
 
-    // Load Twitter embed script
     loadEmbedScript('https://platform.twitter.com/widgets.js', 'twitter-embed');
-    
-    // Load Facebook SDK
     loadEmbedScript('https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0', 'facebook-jssdk');
-    
-    // Load LinkedIn embed script
     loadEmbedScript('https://platform.linkedin.com/in.js', 'linkedin-embed');
     
-    // Initialize LinkedIn when script loads
     const checkLinkedIn = () => {
       if (window.IN && window.IN.parse) {
         window.IN.parse();
@@ -81,27 +90,54 @@ const Posts = () => {
     setTimeout(checkLinkedIn, 1000);
   }, []);
 
-  // Re-parse embeds when social embeds change
   useEffect(() => {
     if (activeTab === 'social' && socialEmbeds.length > 0) {
       setTimeout(() => {
-        // Re-parse Twitter widgets
         if (window.twttr && window.twttr.widgets) {
           window.twttr.widgets.load();
         }
-        
-        // Re-parse Facebook posts
         if (window.FB && window.FB.XFBML) {
           window.FB.XFBML.parse();
         }
-        
-        // Re-parse LinkedIn posts
         if (window.IN && window.IN.parse) {
           window.IN.parse();
         }
       }, 100);
     }
   }, [socialEmbeds, activeTab]);
+
+  const fetchSinglePost = async (id) => {
+    try {
+      setLoading(true);
+      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${id}`);
+      
+      if (!detailResponse.ok) {
+        throw new Error('Post not found');
+      }
+      
+      const detailData = await detailResponse.json();
+      
+      const reactionResponse = await fetch(
+        `https://connectwithaaditiyamg.onrender.com/api/image-posts/${id}/has-reacted?email=${encodeURIComponent(userInfo.email)}`
+      );
+      const reactionData = await reactionResponse.json();
+      
+      const post = {
+        ...detailData.post,
+        comments: detailData.comments,
+        hasReacted: reactionData.hasReacted,
+      };
+      
+      setSelectedPost(post);
+      document.body.style.overflow = 'hidden';
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch post. Please try again later.');
+      setLoading(false);
+      console.error('Error fetching post:', err);
+      navigate('/posts');
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -151,7 +187,6 @@ const Posts = () => {
     }
   };
 
-  // Extract post ID from URL for native embedding
   const extractPostId = (url, platform) => {
     try {
       switch (platform) {
@@ -161,11 +196,9 @@ const Posts = () => {
           return twitterMatch ? twitterMatch[1] : null;
         
         case 'facebook':
-          // Facebook post URLs can be complex, return the full URL for iframe
           return url;
         
         case 'linkedin':
-          // LinkedIn post URLs, return the full URL
           return url;
         
         default:
@@ -177,7 +210,6 @@ const Posts = () => {
     }
   };
 
-  // Render native embed based on platform
   const renderNativeEmbed = (embed) => {
     const postId = extractPostId(embed.embedUrl, embed.platform);
     
@@ -403,9 +435,8 @@ const Posts = () => {
   };
 
   const openPostModal = (post) => {
-    setSelectedPost(post);
-    setShowComments(false);
-    document.body.style.overflow = 'hidden';
+    // Navigate to the post's unique URL
+    navigate(`/posts/${post.id}`);
   };
 
   const openCommentsModal = (e) => {
@@ -417,7 +448,6 @@ const Posts = () => {
     setSelectedSocialEmbed(embed);
     document.body.style.overflow = 'hidden';
     
-    // Re-parse embeds in modal after a short delay
     setTimeout(() => {
       if (embed.platform === 'twitter' && window.twttr && window.twttr.widgets) {
         window.twttr.widgets.load();
@@ -433,7 +463,14 @@ const Posts = () => {
     setSelectedPost(null);
     setSelectedSocialEmbed(null);
     setShowComments(false);
+    setShowShareModal(false);
+    setCopySuccess(false);
     document.body.style.overflow = '';
+    
+    // Navigate back to posts list if on a post URL
+    if (postId) {
+      navigate('/posts');
+    }
   };
 
   const handleTabChange = (tab) => {
@@ -451,6 +488,58 @@ const Posts = () => {
     setSocialCurrentPage(1);
   };
 
+  const handleShareClick = (e) => {
+    e.stopPropagation();
+    setShowShareModal(true);
+    setShowComments(false);
+  };
+
+  const handleCopyLink = async () => {
+    const postUrl = `${window.location.origin}/posts/${selectedPost.id}`;
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = postUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
+  };
+
+  const handleSocialShare = (platform) => {
+    const postUrl = `${window.location.origin}/posts/${selectedPost.id}`;
+    const text = selectedPost.caption || 'Check out this post!';
+    
+    let shareUrl = '';
+    
+    switch(platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(text)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + postUrl)}`;
+        break;
+      default:
+        return;
+    }
+    
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -460,7 +549,7 @@ const Posts = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [postId]);
 
   const renderPostsContent = () => {
     if (loading && posts.length === 0) {
@@ -677,9 +766,11 @@ const Posts = () => {
       </div>
     );
   };
- if (error) {
+
+  if (error) {
     return <Error />;
   }
+
   return (
     <div className="pst-main">
       {showUserForm && (
@@ -720,7 +811,6 @@ const Posts = () => {
         </div>
       )}
 
-      {/* Tab Navigation - Always visible */}
       <div className="pst-tab-navigation">
         <div className="pst-tab-buttons">
           <button
@@ -747,7 +837,6 @@ const Posts = () => {
         </div>
       </div>
 
-      {/* Platform Filter for Social Tab - Always visible when social tab is active */}
       {activeTab === 'social' && (
         <div className="pst-platform-filter">
           <div className="pst-platform-buttons">
@@ -768,12 +857,10 @@ const Posts = () => {
         </div>
       )}
 
-      {/* Content based on active tab */}
       {activeTab === 'posts' && renderPostsContent()}
       {activeTab === 'social' && renderSocialContent()}
       {activeTab === 'community' && <Community />}
 
-      {/* Existing Post Modal */}
       {selectedPost && (
         <div className="pst-post-modal" onClick={closeModals}>
           <div className="pst-post-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -824,8 +911,96 @@ const Posts = () => {
                     <MessageCircle className="pst-icon-sm" />
                     <span className="pst-stat-count">{selectedPost.commentCount || 0}</span>
                   </button>
+                  <button 
+                    className="pst-share-button"
+                    onClick={handleShareClick}
+                  >
+                    <Share2 className="pst-icon-sm" />
+                    <span className="pst-stat-count">Share</span>
+                  </button>
                 </div>
               </div>
+              {showShareModal && (
+                <div className="pst-share-panel">
+                  <div className="pst-share-header">
+                    <h3 className="pst-share-title">Share this post</h3>
+                    <button 
+                      className="pst-share-close"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowShareModal(false);
+                        setCopySuccess(false);
+                      }}
+                    >
+                      <ArrowLeft className="pst-icon-sm" />
+                    </button>
+                  </div>
+                  
+                  <div className="pst-share-content">
+                    <div className="pst-share-link-section">
+                      <label className="pst-share-label">Post Link</label>
+                      <div className="pst-share-link-container">
+                        <input 
+                          type="text" 
+                          value={`${window.location.origin}/posts/${selectedPost.id}`}
+                          readOnly
+                          className="pst-share-link-input"
+                        />
+                        <button 
+                          className="pst-copy-button"
+                          onClick={handleCopyLink}
+                        >
+                          {copySuccess ? (
+                            <>
+                              <Check className="pst-icon-sm" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="pst-icon-sm" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pst-share-social-section">
+                      <label className="pst-share-label">Share on Social Media</label>
+                      <div className="pst-share-social-buttons">
+                        <button 
+                          className="pst-share-social-btn pst-share-twitter"
+                          onClick={() => handleSocialShare('twitter')}
+                        >
+                          <Twitter className="pst-icon-sm" />
+                          <span>Twitter</span>
+                        </button>
+                        <button 
+                          className="pst-share-social-btn pst-share-facebook"
+                          onClick={() => handleSocialShare('facebook')}
+                        >
+                          <Facebook className="pst-icon-sm" />
+                          <span>Facebook</span>
+                        </button>
+                        <button 
+                          className="pst-share-social-btn pst-share-linkedin"
+                          onClick={() => handleSocialShare('linkedin')}
+                        >
+                          <Linkedin className="pst-icon-sm" />
+                          <span>LinkedIn</span>
+                        </button>
+                        <button 
+                          className="pst-share-social-btn pst-share-whatsapp"
+                          onClick={() => handleSocialShare('whatsapp')}
+                        >
+                          <MessageCircle className="pst-icon-sm" />
+                          <span>WhatsApp</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               {showComments && (
                 <div className="pst-comments-panel">
                    <h3 className="pst-comments-title">Comments</h3>
@@ -899,7 +1074,6 @@ const Posts = () => {
         </div>
       )}
 
-      {/* Social Media Embed Modal */}
       {selectedSocialEmbed && (
         <div className="pst-post-modal" onClick={closeModals}>
           <div className="pst-social-modal-content" onClick={(e) => e.stopPropagation()}>

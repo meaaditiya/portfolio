@@ -31,7 +31,7 @@ const App = () => {
             <Route path="/posts" element={<Posts />} />
             <Route path="/stream" element={<Stream/>}/>
             <Route path="/streampost/:id" element={<StreamPost/>}/>
-          
+            <Route path="/posts/:postId" element={<Posts />} />
           </Routes>
         </main>
         
