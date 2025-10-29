@@ -1363,19 +1363,24 @@ const showDeleteConfirmation = (commentId, email) => {
   <span className="blog-post-author">
     {blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
   </span>
-  <span className="meta-divider">•</span>
-  <span className="blog-post-reads">
+</div>
+
+          
+          {/* Display tags exactly as they are in the blog post */}
+          <div className="blog-post-tags">
+               <div className="blog-post-meta2">
+   <span className="meta-divider2">•</span>
+  <span className="blog-post-reads2">
    {Math.floor(blogPost.totalReads / 2) || 0} {Math.floor(blogPost.totalReads / 2) === 1 ? 'read' : 'reads'}
 
   </span>
 </div>
-          
-          {/* Display tags exactly as they are in the blog post */}
-          <div className="blog-post-tags">
             {blogPost.tags && blogPost.tags.map((tag, index) => (
-              <span key={index} className="tag">{tag}</span>
+              <span key={index} className="tag"># {tag}</span>
             ))}
+         
           </div>
+          
           <div>
             <button
   className="generate-summary-btn summarybtn"
@@ -1401,7 +1406,7 @@ const showDeleteConfirmation = (commentId, email) => {
       d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
     />
   </svg>
-  Generate Summary
+  AI Summary
 </button>
           </div>
           
@@ -1440,7 +1445,7 @@ const showDeleteConfirmation = (commentId, email) => {
               Share
             </button>
              <button 
-    className="btn share-btn"
+    className="rpt-btn btn share-btn"
     onClick={() => {
       // Pre-fill email if user info exists
       if (storedUserInfo && storedUserInfo.email) {

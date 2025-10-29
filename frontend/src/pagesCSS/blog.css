@@ -832,17 +832,17 @@ body {
   font-size: 14px;
   font-weight: 600;
   font-family: var(--font-sans);
-  color: #ffffff;
-  background-color: #0f172a;
+  color: black;
+  background-color: none;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: var(--shadow-sm);
+  
 }
 
 .filter-toggle-btn:hover {
-  background-color: #000000;
+ 
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }

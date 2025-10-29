@@ -892,7 +892,7 @@ const Posts = () => {
                   <p className="pst-modal-caption-text">
                     {selectedPost.caption}
                   </p>
-                  <p className="pst-modal-date">
+                  <p className="pst-modal-date specific-date">
                     {formatDate(selectedPost.createdAt)}
                   </p>
                 </div>

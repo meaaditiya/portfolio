@@ -487,10 +487,11 @@
 
 .pst-close-button {
   position: fixed;
+  left:10px;
   top: var(--spacing-xl);
   right: var(--spacing-xl);
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
+  background: white;
+  color: black;
   border: none;
   border-radius: 50%;
   width: 48px;
@@ -506,7 +507,7 @@
 }
 
 .pst-close-button:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background-color: grey;
   transform: scale(1.1);
 }
 
@@ -599,6 +600,10 @@
   left:-1px;
   top:-5px;
  
+}
+.specific-date{
+  position: relative;
+  left:-37px;
 }
 .pst-modal-actions {
   display: flex;

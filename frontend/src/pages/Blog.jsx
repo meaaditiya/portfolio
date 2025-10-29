@@ -387,7 +387,7 @@ const Blog = () => {
                     d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
                   />
                 </svg>
-                Generate Summary
+                AI Summary
               </button>
             </div>
           </div>
