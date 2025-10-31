@@ -1371,7 +1371,7 @@ const showDeleteConfirmation = (commentId, email) => {
                <div className="blog-post-meta2">
    <span className="meta-divider2">•</span>
   <span className="blog-post-reads2">
-   {Math.floor(blogPost.totalReads / 2) || 0} {Math.floor(blogPost.totalReads / 2) === 1 ? 'read' : 'reads'}
+   {Math.floor(blogPost.totalReads) || 0} {Math.floor(blogPost.totalReads / 2) === 1 ? 'read' : 'reads'}
 
   </span>
 </div>
