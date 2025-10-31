@@ -83,7 +83,7 @@ const Blog = () => {
         result.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
         break;
       case 'mostViewed':
-        result.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+        result.sort((a, b) => (b.totalReads || 0) - (a.totalReads || 0));
         break;
       case 'mostLiked':
         result.sort((a, b) => (b.reactionCounts?.likes || 0) - (a.reactionCounts?.likes || 0));
