@@ -68,6 +68,10 @@ const BlogPost = () => {
   const [reportError, setReportError] = useState(null);
   const [reportSuccess, setReportSuccess] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
+  // Author modal state
+  const [showAuthorModal, setShowAuthorModal] = useState(false);
+  const [authorData, setAuthorData] = useState(null);
+  const [authorLoading, setAuthorLoading] = useState(false);
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -1329,6 +1333,38 @@ const showDeleteConfirmation = (commentId, email) => {
     setCommentToDelete({ id: commentId, email });
     setShowDeleteModal(true);
   };
+
+// Fetch author profile
+const fetchAuthorProfile = async (authorId) => {
+  setAuthorLoading(true);
+  setShowAuthorModal(true);
+  try {
+    const response = await axios.get(
+      `https://connectwithaaditiyamg.onrender.com/api/admins/${authorId}/public`
+    );
+    setAuthorData(response.data.admin);
+  } catch (err) {
+    console.error('Error fetching author profile:', err);
+    setAuthorData(null);
+  } finally {
+    setAuthorLoading(false);
+  }
+};
+
+// Get social media icon and URL
+const getSocialIcon = (platform) => {
+  const icons = {
+    twitter: 'https://cdn.cdnlogo.com/logos/t/96/twitter-icon.svg',
+    linkedin: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAYFBMVEUCdLP///8AbK+WuNaivtoAb7HJ2ukAaq9MkMGIsdKeu9jb5/Epe7YAcrIAaK6vy+Hy9/u/0uXT4e0AYau4zeJOir6DrNDo8PY9g7pyosphmsYmf7inxt5XjsAidLP3+/wVij8FAAAEJ0lEQVR4nO2ci3KrIBCGEUWSKhgvMZfG+P5veaSxJ8bsGp3RhXOGf5qJNdR+wQV2F4QFDx2KKrKsvDj0MOzxFh6Fllxybl6PHy6fJ4ZH41Kjo/71PJoqPzwptTiGA6icacUckNIs/4WquBNIRopXD6hMOsPUUcnKQLXCIaaOSrQdVM1tc7yK1wE7nZ2qqK6qzicWO1ZRXVXFrNK2IcbSFYvcq6mIhe5BhR5qnjzUXHmoufpHoYTg1F7ENJTipdpdLtfvktQxnYJS8rw/9VHFrSF0Tqeg9C+SUVspMtvDocS9CF7UXqmocKh7HIzUNtIulNLJmKmj2gmrUDJ8ZwqChMYfRKDU8QBBBXuSG4hAyQhkChIKJgyqbGGo4EJhVTCUOiNMAYlDD0N14SCiwiIU2PaMThSWDkNhdt5BUXQKS2uKpKeCocQFg8rt2ZRiGBSJm4r1U8DIZ3RoKLwqBArrE0h6BHTsu8NVReMmYF6CuEJMGY2bhzp5+vbOlNxp/HTc8+RvHWhyp/HxJqBU+fXKlKdETJPRDE/jp6uXXOlirMlgVMljaLja5HahC7A+hu2KSzONJGkj9zkJDvI0+z+adbEgDzVXJFBqYVPZFkoJYaaHRWrygZJzMa9nQaG6qwEa/TGgwVCktLruq6SPa9tTfKsbpmeMVWjW5bKH9PJFv0OgxPX3nwqeRsk40G6TbPe5I0b9qVHGrNewqNhBJfqJOqWbHLxCN4rW4kNtoVBvKbMfDa8GQ2U/0apgNywbYbB202a8DZRuTtBnT31NBtqbQPEazm4NVE3dwS2gNBpfDxRPZOY3gOL7GUyTQcj6UCUYBwHCl0OsD3X/YONPoaPP6lA3IDRDVGFNcHWoj+3uqbZBmuDqUEuUI8kuq1ABMgrahULmCuxCFXADtAt1ODoIhUxgWIa6gUa1GVRbhDumy1LsIiR/apSUlFBxI+SjwQutatzhI4Rq63JgwYoLdDxMIUvfBuoyMhVxxqiukKVvAhW+3RSJ+TOg/7IFVHJ/vx40T24UQc1vCyjo2wtktgBcOrkBVAutRFaIVeVENQWvG5VwdBsTGTo8dOgMLAwOyetDtcggCxtVAWVU14dKUogJK00EFcM+kvqGoaAufX0oZEJXCbB0QgOFBE4oFFB2fajMRShw4LANhaSePJSH8lAeynUo5iKUkzXloTyUh/JQHspDeSgP5aE8lIfyUB7qP4HaML2oohhQMYRS5wIqg61AEmDpbEnK2qwbBaQWFvlYetESAKvyUHPloebKQ82Vh5orV6Gc3OrJyU2xCnBQtClRMGQJoT2p44EFoWP3T4dmR0H6h+WmZB4XZ0QPrM8Wzx8bQububAgpDNNj68w41Uuf4tpESqc/EcvLJqO83/qzl/z7y/BoUAI6mn9y9PF4k9HAbMeau7Md6x9Q0FFyBTsovgAAAABJRU5ErkJggg==',
+    github: 'https://cdn.cdnlogo.com/logos/g/69/github-icon.svg',
+    instagram: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8lv-iEOWtRxGDqsOR-Pa1kIiqN298569zVA&s',
+    youtube: 'https://cdn.cdnlogo.com/logos/y/23/youtube-icon.svg',
+    medium: 'https://cdn.cdnlogo.com/logos/m/66/medium-icon.svg',
+    portfolio: 'https://cdn.freebiesupply.com/logos/large/2x/portfolio-logo-svg-vector.svg',
+    personalWebsite: 'https://cdn.cdnlogo.com/logos/w/90/world-wide-web.svg'
+  };
+  return icons[platform] || 'https://cdn.cdnlogo.com/logos/w/90/world-wide-web.svg';
+};
   return (
     <section className="section blog-post-section">
       <button
@@ -1359,10 +1395,14 @@ const showDeleteConfirmation = (commentId, email) => {
   <span className="blog-post-date">
     {formatBlogDate(blogPost.publishedAt)}
   </span>
-  <span className="meta-divider">•</span>
-  <span className="blog-post-author">
-    {blogPost.author ? `By ${blogPost.author.name}` : 'By Aaditiya Tyagi'}
-  </span>
+  <span className="meta-divider">• Written by</span>
+  <span 
+  className="blog-post-author clickable-author"
+  onClick={() => blogPost.author?._id && fetchAuthorProfile(blogPost.author._id)}
+  style={{ cursor: blogPost.author?._id ? 'pointer' : 'default' }}
+>
+  {blogPost.author ? `@${blogPost.author.name}` : 'By Aaditiya Tyagi'}
+</span>
 </div>
 
           
@@ -2212,6 +2252,133 @@ const showDeleteConfirmation = (commentId, email) => {
     </div>
   </div>
 )}
+{showAuthorModal && (
+  <div className="author-modal-overlay" onClick={() => setShowAuthorModal(false)}>
+    <div className="author-modal-content" onClick={(e) => e.stopPropagation()}>
+      <button 
+        className="author-modal-close"
+        onClick={() => setShowAuthorModal(false)}
+      >
+        ×
+      </button>
+      
+      {authorLoading ? (
+        <div className="author-modal-loading">
+          <div className="spinner"></div>
+          <p>Loading profile...</p>
+        </div>
+      ) : authorData ? (
+        <div className="author-profile-content">
+          {/* Profile Header */}
+          <div className="author-profile-header">
+            {authorData.profileImage?.hasImage ? (
+              <img 
+                src={`https://connectwithaaditiyamg.onrender.com/api/admins/${blogPost.author._id}/image`}
+                alt={authorData.name}
+                className="author-profile-image"
+              />
+            ) : (
+              <div className="author-profile-placeholder">
+                {authorData.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            
+            <div className="author-profile-info">
+              <h2 className="author-profile-name">{authorData.name}</h2>
+              {authorData.designation && (
+                <p className="author-profile-designation">{authorData.designation}</p>
+              )}
+              {authorData.location && (
+                <p className="author-profile-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  {authorData.location}
+                </p>
+              )}
+            </div>
+          </div>
+          
+          {/* Bio */}
+          {authorData.bio && (
+            <div className="author-profile-bio">
+              <p>{authorData.bio}</p>
+            </div>
+          )}
+          
+          {/* Expertise */}
+          {authorData.expertise && authorData.expertise.length > 0 && (
+            <div className="author-profile-section">
+              <h3 className="author-section-title">Expertise</h3>
+              <div className="author-tags">
+                {authorData.expertise.map((skill, index) => (
+                  <span key={index} className="author-tag">{skill}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Interests */}
+          {authorData.interests && authorData.interests.length > 0 && (
+            <div className="author-profile-section">
+              <h3 className="author-section-title">Interests</h3>
+              <div className="author-tags">
+                {authorData.interests.map((interest, index) => (
+                  <span key={index} className="author-tag">{interest}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {authorData.socialLinks &&
+  Object.entries(authorData.socialLinks).some(([_, url]) => url) && (
+    <div className="author-profile-section">
+      <h3 className="author-section-title">Connect</h3>
+      <div className="author-social-links">
+        {Object.entries(authorData.socialLinks).map(([platform, url]) => {
+          if (!url) return null;
+          return (
+            <a
+              key={platform}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="author-social-link"
+              title={platform.charAt(0).toUpperCase() + platform.slice(1)}
+            >
+              <img
+                src={getSocialIcon(platform)}
+                alt={platform}
+                className="author-social-icon"
+              />
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  )}
+
+       {/* Member Since */}
+          {authorData.joinedDate && (
+            <div className="author-profile-footer">
+              <p className="author-joined-date">
+                Joined {new Date(authorData.joinedDate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long'
+                })}
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="author-modal-error">
+          <p>Unable to load author profile</p>
+        </div>
+      )}
+    </div>
+  </div>
+)} 
     </section>
   );
 };
