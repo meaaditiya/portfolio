@@ -31,6 +31,7 @@ const Blog = () => {
   
   const [selectedAuthor, setSelectedAuthor] = useState(null);
   const location = useLocation();
+  
   // Function to extract domain from URL
   const getImageSource = (imageUrl) => {
     if (!imageUrl) return null;
@@ -55,25 +56,25 @@ const Blog = () => {
     }
   }, [blogs]);
 
-useEffect(() => {
-  let result = [...blogs];
+  useEffect(() => {
+    let result = [...blogs];
 
-  // Search filter
-  if (searchQuery.trim()) {
-    const query = searchQuery.toLowerCase();
-    result = result.filter(blog => 
-      blog.title.toLowerCase().includes(query) ||
-      blog.summary.toLowerCase().includes(query) ||
-      (blog.tags && blog.tags.some(tag => tag.toLowerCase().includes(query)))
-    );
-  }
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(blog => 
+        blog.title.toLowerCase().includes(query) ||
+        blog.summary.toLowerCase().includes(query) ||
+        (blog.tags && blog.tags.some(tag => tag.toLowerCase().includes(query)))
+      );
+    }
 
-  // Author filter - ADD THIS
-  if (selectedAuthor) {
-    result = result.filter(blog => 
-      blog.author && blog.author._id === selectedAuthor.id
-    );
-  }
+    // Author filter
+    if (selectedAuthor) {
+      result = result.filter(blog => 
+        blog.author && blog.author._id === selectedAuthor.id
+      );
+    }
 
     // Tag filter
     if (selectedTags.length > 0) {
@@ -104,7 +105,7 @@ useEffect(() => {
     }
 
     setFilteredBlogs(result);
-  }, [blogs, searchQuery, selectedTags, sortOption]);
+  }, [blogs, searchQuery, selectedTags, sortOption, selectedAuthor]);
 
   // Fetch blogs from API (initial load only)
   useEffect(() => {
@@ -130,18 +131,14 @@ useEffect(() => {
       fetchBlogs();
     }
   }, []);
-useEffect(() => {
-  if (location.state?.filterAuthor) {
-    setSelectedAuthor(location.state.filterAuthor);
-    localStorage.setItem('blogAuthorFilter', JSON.stringify(location.state.filterAuthor));
-    window.history.replaceState({}, document.title);
-  } else {
-    const savedAuthorFilter = localStorage.getItem('blogAuthorFilter');
-    if (savedAuthorFilter) {
-      setSelectedAuthor(JSON.parse(savedAuthorFilter));
+
+  useEffect(() => {
+    if (location.state?.filterAuthor) {
+      setSelectedAuthor(location.state.filterAuthor);
+      window.history.replaceState({}, document.title);
     }
-  }
-}, [location]);
+  }, [location]);
+
   // Handle Load More button click
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
@@ -175,12 +172,12 @@ useEffect(() => {
 
   // Clear all filters
   const clearFilters = () => {
-  setSearchQuery('');
-  setSelectedTags([]);
-  setSortOption('newest');
-  setSelectedAuthor(null);
-  localStorage.removeItem('blogAuthorFilter');
-};
+    setSearchQuery('');
+    setSelectedTags([]);
+    setSortOption('newest');
+    setSelectedAuthor(null);
+  };
+
   // Check if filters are active
   const hasActiveFilters = searchQuery || selectedTags.length > 0 || sortOption !== 'newest' || selectedAuthor;
 
@@ -288,30 +285,29 @@ useEffect(() => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-                   {selectedAuthor && (
-  <div className="filter-group">
-    <label>Author</label>
-    <div className="selected-author-filter">
-      <span className="author-filter-name">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-        {selectedAuthor.name}
-      </span>
-      <button 
-        className="remove-author-filter"
-        onClick={() => {
-          setSelectedAuthor(null);
-          localStorage.removeItem('blogAuthorFilter'); // Add this line
-        }}
-        title="Remove author filter"
-      >
-        ×
-      </button>
-    </div>
-  </div>
-)}
+
+              {selectedAuthor && (
+                <div className="filter-group">
+                  <label>Author</label>
+                  <div className="selected-author-filter">
+                    <span className="author-filter-name">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                      {selectedAuthor.name}
+                    </span>
+                    <button 
+                      className="remove-author-filter"
+                      onClick={() => setSelectedAuthor(null)}
+                      title="Remove author filter"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Sort */}
               <div className="filter-group">
                 <label>Sort By</label>
@@ -345,7 +341,6 @@ useEffect(() => {
                   </div>
                 </div>
               )}
-
 
               {/* Results & Actions */}
               <div className="filter-footer">
