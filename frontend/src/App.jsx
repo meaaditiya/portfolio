@@ -32,6 +32,8 @@ const App = () => {
             <Route path="/stream" element={<Stream/>}/>
             <Route path="/streampost/:id" element={<StreamPost/>}/>
             <Route path="/posts/:postId" element={<Posts />} />
+            <Route path="/social" element={<Posts />} />
+            <Route path="/community" element={<Posts />} />
           </Routes>
         </main>
         

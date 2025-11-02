@@ -33,9 +33,12 @@ const Posts = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
   
-  const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'posts');
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
+
+  // Determine active tab based on current route
+  const activeTab = location.pathname.includes('/social') ? 'social' : 
+                    location.pathname.includes('/community') ? 'community' : 'posts';
 
   const platforms = [
     { id: 'all', name: 'All Platforms', icon: Globe },
@@ -260,6 +263,11 @@ const Posts = () => {
     }
   };
 
+  const handleUserFormClose = () => {
+    setShowUserForm(false);
+    navigate('/');
+  };
+
   const handleUserInfoChange = (e) => {
     const { name, value } = e.target;
     setUserInfo((prev) => ({ ...prev, [name]: value }));
@@ -470,12 +478,12 @@ const Posts = () => {
   };
 
   const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    localStorage.setItem('activeTab', tab);
-    if (tab === 'social') {
-      setSocialCurrentPage(1);
-    } else if (tab === 'posts') {
-      setCurrentPage(1);
+    if (tab === 'posts') {
+      navigate('/posts');
+    } else if (tab === 'social') {
+      navigate('/social');
+    } else if (tab === 'community') {
+      navigate('/community');
     }
   };
 
@@ -771,6 +779,13 @@ const Posts = () => {
       {showUserForm && (
         <div className="pst-user-modal">
           <div className="pst-user-form">
+            <button 
+              className="pst-close-button pst-user-close-button"
+              onClick={handleUserFormClose}
+              style={{ position: 'absolute', top: '1rem', right: '1rem' }}
+            >
+              <X className="pst-icon" />
+            </button>
             <div className="pst-user-header">
               <div className="pst-user-icon">
                 <User className="pst-icon" />
@@ -1115,4 +1130,4 @@ const Posts = () => {
   );
 };
 
-export default Posts;
+export default Posts
