@@ -31,8 +31,8 @@ const Posts = () => {
   const [imageLoadStates, setImageLoadStates] = useState({});
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [postLoading, setPostLoading] = useState(false);
   
-  // New state for social media functionality
   const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'posts');
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
@@ -44,7 +44,6 @@ const Posts = () => {
     { id: 'linkedin', name: 'LinkedIn', icon: Linkedin }
   ];
 
-  // Load post from URL parameter
   useEffect(() => {
     if (postId && activeTab === 'posts') {
       fetchSinglePost(postId);
@@ -63,7 +62,6 @@ const Posts = () => {
     }
   }, [activeTab, selectedPlatform, socialCurrentPage]);
 
-  // Load social media embed scripts
   useEffect(() => {
     const loadEmbedScript = (src, id) => {
       if (document.getElementById(id)) return;
@@ -108,7 +106,7 @@ const Posts = () => {
 
   const fetchSinglePost = async (id) => {
     try {
-      setLoading(true);
+      setPostLoading(true);
       const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${id}`);
       
       if (!detailResponse.ok) {
@@ -130,10 +128,10 @@ const Posts = () => {
       
       setSelectedPost(post);
       document.body.style.overflow = 'hidden';
-      setLoading(false);
+      setPostLoading(false);
     } catch (err) {
       setError('Failed to fetch post. Please try again later.');
-      setLoading(false);
+      setPostLoading(false);
       console.error('Error fetching post:', err);
       navigate('/posts');
     }
@@ -435,7 +433,6 @@ const Posts = () => {
   };
 
   const openPostModal = (post) => {
-    // Navigate to the post's unique URL
     navigate(`/posts/${post.id}`);
   };
 
@@ -467,7 +464,6 @@ const Posts = () => {
     setCopySuccess(false);
     document.body.style.overflow = '';
     
-    // Navigate back to posts list if on a post URL
     if (postId) {
       navigate('/posts');
     }
@@ -502,7 +498,6 @@ const Posts = () => {
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = postUrl;
       document.body.appendChild(textArea);
@@ -861,7 +856,16 @@ const Posts = () => {
       {activeTab === 'social' && renderSocialContent()}
       {activeTab === 'community' && <Community />}
 
-      {selectedPost && (
+      {postLoading && (
+        <div className="pst-post-modal">
+          <div className="pst-loading-container">
+            <div className="pst-loading-spinner"></div>
+            <p className="pst-loading-text">Loading post...</p>
+          </div>
+        </div>
+      )}
+
+      {selectedPost && !postLoading && (
         <div className="pst-post-modal" onClick={closeModals}>
           <div className="pst-post-modal-content" onClick={(e) => e.stopPropagation()}>
             <button 
