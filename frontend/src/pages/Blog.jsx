@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import BlogSkeletonLoader from './BlogSkeletonLoader';
 import Error from './Error.jsx';
 import '../pagesCSS/blog.css';
@@ -28,7 +28,9 @@ const Blog = () => {
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
- 
+  
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
+  const location = useLocation();
   // Function to extract domain from URL
   const getImageSource = (imageUrl) => {
     if (!imageUrl) return null;
@@ -53,19 +55,25 @@ const Blog = () => {
     }
   }, [blogs]);
 
-  // Apply filters and sorting
-  useEffect(() => {
-    let result = [...blogs];
+useEffect(() => {
+  let result = [...blogs];
 
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(blog => 
-        blog.title.toLowerCase().includes(query) ||
-        blog.summary.toLowerCase().includes(query) ||
-        (blog.tags && blog.tags.some(tag => tag.toLowerCase().includes(query)))
-      );
-    }
+  // Search filter
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    result = result.filter(blog => 
+      blog.title.toLowerCase().includes(query) ||
+      blog.summary.toLowerCase().includes(query) ||
+      (blog.tags && blog.tags.some(tag => tag.toLowerCase().includes(query)))
+    );
+  }
+
+  // Author filter - ADD THIS
+  if (selectedAuthor) {
+    result = result.filter(blog => 
+      blog.author && blog.author._id === selectedAuthor.id
+    );
+  }
 
     // Tag filter
     if (selectedTags.length > 0) {
@@ -122,7 +130,18 @@ const Blog = () => {
       fetchBlogs();
     }
   }, []);
-
+useEffect(() => {
+  if (location.state?.filterAuthor) {
+    setSelectedAuthor(location.state.filterAuthor);
+    localStorage.setItem('blogAuthorFilter', JSON.stringify(location.state.filterAuthor));
+    window.history.replaceState({}, document.title);
+  } else {
+    const savedAuthorFilter = localStorage.getItem('blogAuthorFilter');
+    if (savedAuthorFilter) {
+      setSelectedAuthor(JSON.parse(savedAuthorFilter));
+    }
+  }
+}, [location]);
   // Handle Load More button click
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
@@ -156,13 +175,14 @@ const Blog = () => {
 
   // Clear all filters
   const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedTags([]);
-    setSortOption('newest');
-  };
-
+  setSearchQuery('');
+  setSelectedTags([]);
+  setSortOption('newest');
+  setSelectedAuthor(null);
+  localStorage.removeItem('blogAuthorFilter');
+};
   // Check if filters are active
-  const hasActiveFilters = searchQuery || selectedTags.length > 0 || sortOption !== 'newest';
+  const hasActiveFilters = searchQuery || selectedTags.length > 0 || sortOption !== 'newest' || selectedAuthor;
 
   // Handle Generate Summary button click
   const handleGenerateSummary = async (blog, event) => {
@@ -268,7 +288,30 @@ const Blog = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-
+                   {selectedAuthor && (
+  <div className="filter-group">
+    <label>Author</label>
+    <div className="selected-author-filter">
+      <span className="author-filter-name">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        {selectedAuthor.name}
+      </span>
+      <button 
+        className="remove-author-filter"
+        onClick={() => {
+          setSelectedAuthor(null);
+          localStorage.removeItem('blogAuthorFilter'); // Add this line
+        }}
+        title="Remove author filter"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
               {/* Sort */}
               <div className="filter-group">
                 <label>Sort By</label>
@@ -302,6 +345,7 @@ const Blog = () => {
                   </div>
                 </div>
               )}
+
 
               {/* Results & Actions */}
               <div className="filter-footer">

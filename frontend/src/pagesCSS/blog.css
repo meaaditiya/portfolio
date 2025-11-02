@@ -1260,3 +1260,47 @@ body {
   background-color: #0f172a !important;
   color: #ffffff !important;
 }
+.selected-author-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.author-filter-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.author-filter-name svg {
+  color: #667eea;
+}
+
+.remove-author-filter {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.remove-author-filter:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.1);
+}

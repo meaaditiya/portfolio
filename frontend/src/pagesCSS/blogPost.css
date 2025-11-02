@@ -2542,3 +2542,38 @@ body.modal-open {
     border-radius: 16px 16px 0 0;
   }
 }
+.author-blogs-btn {
+  padding: 8px 16px;
+  margin-top: 16px;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #404040;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  width: auto;
+  max-width: fit-content;
+}
+
+.author-blogs-btn:hover {
+  background: #353535;
+  border-color: #505050;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.author-blogs-btn:active {
+  background: #1f1f1f;
+  transform: scale(0.98);
+}
+
+.author-blogs-btn svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.9;
+}
