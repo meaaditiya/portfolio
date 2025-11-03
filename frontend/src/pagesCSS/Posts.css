@@ -191,6 +191,7 @@
   border: 2px solid var(--border-light);
   border-radius: var(--border-radius-md);
   font-size: 14px;
+  margin-bottom: 10px;
   background: var(--bg-secondary);
   transition: all var(--transition-fast);
   font-family: inherit;
@@ -2720,4 +2721,31 @@
 
 .pst-delete-modal-confirm:disabled:hover {
   background: #dc2626;
+}
+.pst-identity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pst-identity-field {
+  text-align: left;
+}
+
+.pst-identity-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.pst-identity-value {
+  font-size: 1rem;
+  color: #111827;
+  font-weight: 500;
+  padding: 0.75rem;
+  background: #f3f4f6;
+  border-radius: 0.5rem;
 }
