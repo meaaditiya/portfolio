@@ -1,41 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, Shield } from 'lucide-react';
+import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../pagesCSS/Posts.css';
 
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
 import Error from './Error.jsx';
-
-// Device fingerprinting utility
-const generateDeviceFingerprint = () => {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.textBaseline = 'top';
-  ctx.font = '14px Arial';
-  ctx.fillText('fingerprint', 2, 2);
-  
-  const fingerprint = {
-    userAgent: navigator.userAgent,
-    language: navigator.language,
-    platform: navigator.platform,
-    screenResolution: `${screen.width}x${screen.height}`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    canvas: canvas.toDataURL(),
-    timestamp: Date.now()
-  };
-  
-  return btoa(JSON.stringify(fingerprint));
-};
-
-const getDeviceId = () => {
-  let deviceId = localStorage.getItem('deviceId');
-  if (!deviceId) {
-    deviceId = generateDeviceFingerprint();
-    localStorage.setItem('deviceId', deviceId);
-  }
-  return deviceId;
-};
 
 const Posts = () => {
   const { postId } = useParams();
@@ -53,23 +23,21 @@ const Posts = () => {
   const [socialTotalPages, setSocialTotalPages] = useState(1);
   const [commentInput, setCommentInput] = useState('');
   const [userInfo, setUserInfo] = useState({
-    name: '',
-    email: '',
+    name: localStorage.getItem('userName') || '',
+    email: localStorage.getItem('userEmail') || '',
   });
-  const [showUserForm, setShowUserForm] = useState(false);
-  const [showIdentityConfirm, setShowIdentityConfirm] = useState(false);
+  const [showUserForm, setShowUserForm] = useState(!userInfo.name || !userInfo.email);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showComments, setShowComments] = useState(false);
   const [imageLoadStates, setImageLoadStates] = useState({});
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
-  const [visitCount, setVisitCount] = useState(0);
-  const [isEditingIdentity, setIsEditingIdentity] = useState(false);
   
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
 
+  // New states for replies
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyInput, setReplyInput] = useState('');
   const [expandedReplies, setExpandedReplies] = useState({});
@@ -78,6 +46,7 @@ const Posts = () => {
   const [commentReactions, setCommentReactions] = useState({});
   const [deleteModal, setDeleteModal] = useState({ show: false, commentId: null, isReply: false, deleting: false });
 
+  // Determine active tab based on current route
   const activeTab = location.pathname.includes('/social') ? 'social' : 
                     location.pathname.includes('/community') ? 'community' : 'posts';
 
@@ -87,54 +56,6 @@ const Posts = () => {
     { id: 'facebook', name: 'Facebook', icon: Facebook },
     { id: 'linkedin', name: 'LinkedIn', icon: Linkedin }
   ];
-
-  // Initialize user identity with device verification
-  useEffect(() => {
-    const deviceId = getDeviceId();
-    const storedDeviceId = localStorage.getItem('userDeviceId');
-    const storedName = localStorage.getItem('userName');
-    const storedEmail = localStorage.getItem('userEmail');
-    const lastVisit = localStorage.getItem('lastVisitTimestamp');
-    const currentTime = Date.now();
-    
-    // Check if device matches
-    if (storedDeviceId && storedDeviceId !== deviceId) {
-      // Different device detected - clear old data and show form
-      localStorage.removeItem('userName');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('userDeviceId');
-      localStorage.removeItem('postVisitCount');
-      localStorage.setItem('userDeviceId', deviceId);
-      setShowUserForm(true);
-      return;
-    }
-    
-    // First time user or no stored data
-    if (!storedName || !storedEmail) {
-      localStorage.setItem('userDeviceId', deviceId);
-      setShowUserForm(true);
-      return;
-    }
-    
-    // Existing user - load their data
-    setUserInfo({ name: storedName, email: storedEmail });
-    
-    // Track visit count for posts page
-    if (activeTab === 'posts') {
-      const visitCountKey = `postVisitCount_${deviceId}`;
-      const storedCount = parseInt(localStorage.getItem(visitCountKey) || '0');
-      const newCount = storedCount + 1;
-      setVisitCount(newCount);
-      localStorage.setItem(visitCountKey, newCount.toString());
-      
-      // Show identity confirmation every 3 visits
-      if (newCount % 3 === 0) {
-        setShowIdentityConfirm(true);
-      }
-    }
-    
-    localStorage.setItem('lastVisitTimestamp', currentTime.toString());
-  }, [activeTab]);
 
   useEffect(() => {
     if (postId && activeTab === 'posts') {
@@ -196,12 +117,6 @@ const Posts = () => {
     }
   }, [socialEmbeds, activeTab]);
 
-useEffect(() => {
-  if (showIdentityConfirm && !userInfo.name && !userInfo.email) {
-    // If somehow the modal is shown without user info, redirect
-    navigate('/');
-  }
-}, [showIdentityConfirm, userInfo, navigate]);
   const fetchSinglePost = async (id) => {
     try {
       setPostLoading(true);
@@ -226,6 +141,7 @@ useEffect(() => {
       
       setSelectedPost(post);
       
+      // Fetch reactions for all comments
       if (post.comments) {
         await fetchCommentReactions(post.comments);
       }
@@ -258,7 +174,7 @@ useEffect(() => {
 
   const fetchReplies = async (commentId) => {
     if (replies[commentId]) {
-      return;
+      return; // Already loaded
     }
     
     try {
@@ -270,6 +186,7 @@ useEffect(() => {
       
       setReplies(prev => ({ ...prev, [commentId]: data.replies }));
       
+      // Fetch reactions for all replies
       await fetchCommentReactions(data.replies);
       
       setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
@@ -401,10 +318,8 @@ useEffect(() => {
   const handleUserInfoSubmit = (e) => {
     e.preventDefault();
     if (userInfo.name && userInfo.email) {
-      const deviceId = getDeviceId();
       localStorage.setItem('userName', userInfo.name);
       localStorage.setItem('userEmail', userInfo.email);
-      localStorage.setItem('userDeviceId', deviceId);
       setShowUserForm(false);
     } else {
       alert('Please provide both name and email.');
@@ -419,34 +334,6 @@ useEffect(() => {
   const handleUserInfoChange = (e) => {
     const { name, value } = e.target;
     setUserInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleIdentityConfirm = () => {
-    setShowIdentityConfirm(false);
-    setIsEditingIdentity(false);
-  };
-
-  const handleIdentityEdit = () => {
-    setIsEditingIdentity(true);
-  };
-
-  const handleIdentityUpdate = (e) => {
-    e.preventDefault();
-    if (userInfo.name && userInfo.email) {
-      const deviceId = getDeviceId();
-      localStorage.setItem('userName', userInfo.name);
-      localStorage.setItem('userEmail', userInfo.email);
-      localStorage.setItem('userDeviceId', deviceId);
-      setShowIdentityConfirm(false);
-      setIsEditingIdentity(false);
-      
-      // Refresh posts with new identity
-      if (activeTab === 'posts') {
-        fetchPosts();
-      }
-    } else {
-      alert('Please provide both name and email.');
-    }
   };
 
   const handleCommentChange = (e) => {
@@ -534,9 +421,11 @@ useEffect(() => {
       setReplyInput('');
       setReplyingTo(null);
       
+      // Refresh replies for this comment
       setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
       await fetchReplies(parentCommentId);
       
+      // Update comment count in parent comment
       setSelectedPost(prev => ({
         ...prev,
         comments: prev.comments.map(c => 
@@ -652,85 +541,93 @@ useEffect(() => {
     }
   };
 
-  const handleDeleteComment = async (commentId, isReply = false) => {
-    if (!userInfo.email) {
-      alert('Please provide your email to delete your comment.');
-      return;
-    }
-    
-    setDeleteModal({ show: true, commentId, isReply });
-  };
+ const handleDeleteComment = async (commentId, isReply = false) => {
+  if (!userInfo.email) {
+    alert('Please provide your email to delete your comment.');
+    return;
+  }
+  
+  // Show delete confirmation modal
+  setDeleteModal({ show: true, commentId, isReply });
+};
 
-  const confirmDeleteComment = async () => {
-    const { commentId, isReply } = deleteModal;
+const confirmDeleteComment = async () => {
+  const { commentId, isReply } = deleteModal;
+  
+  // Add deleting state
+  setDeleteModal(prev => ({ ...prev, deleting: true }));
+  
+  try {
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: userInfo.email }),
+    });
     
-    setDeleteModal(prev => ({ ...prev, deleting: true }));
+    if (!response.ok) throw new Error('Failed to delete comment');
     
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: userInfo.email }),
+    // Close modal
+    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+    
+    if (isReply) {
+      // If it's a reply, find its parent and refresh replies
+      const parentCommentId = selectedPost.comments.find(c => 
+        replies[c._id]?.some(r => r._id === commentId)
+      )?._id;
+      
+      if (parentCommentId) {
+        // Clear and refetch replies
+        setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
+        await fetchReplies(parentCommentId);
+        
+        // Update parent comment reply count
+        setSelectedPost(prev => ({
+          ...prev,
+          comments: prev.comments.map(c => 
+            c._id === parentCommentId 
+              ? { ...c, replyCount: Math.max(0, (c.replyCount || 0) - 1) }
+              : c
+          )
+        }));
+      }
+    } else {
+      // If it's a top-level comment, refresh the entire post
+      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
+      const detailData = await detailResponse.json();
+      
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === selectedPost.id
+            ? {
+                ...post,
+                comments: detailData.comments,
+                commentCount: detailData.post.commentCount,
+              }
+            : post
+        )
+      );
+      
+      setSelectedPost({
+        ...selectedPost,
+        comments: detailData.comments,
+        commentCount: detailData.post.commentCount,
       });
       
-      if (!response.ok) throw new Error('Failed to delete comment');
+      // Clear all replies cache
+      setReplies({});
+      setExpandedReplies({});
       
-      setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
-      
-      if (isReply) {
-        const parentCommentId = selectedPost.comments.find(c => 
-          replies[c._id]?.some(r => r._id === commentId)
-        )?._id;
-        
-        if (parentCommentId) {
-          setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
-          await fetchReplies(parentCommentId);
-          
-          setSelectedPost(prev => ({
-            ...prev,
-            comments: prev.comments.map(c => 
-              c._id === parentCommentId 
-                ? { ...c, replyCount: Math.max(0, (c.replyCount || 0) - 1) }
-                : c
-            )
-          }));
-        }
-      } else {
-        const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
-        const detailData = await detailResponse.json();
-        
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.id === selectedPost.id
-              ? {
-                  ...post,
-                  comments: detailData.comments,
-                  commentCount: detailData.post.commentCount,
-                }
-              : post
-          )
-        );
-        
-        setSelectedPost({
-          ...selectedPost,
-          comments: detailData.comments,
-          commentCount: detailData.post.commentCount,
-        });
-        
-        setReplies({});
-        setExpandedReplies({});
-        
-        await fetchCommentReactions(detailData.comments);
-      }
-      
-    } catch (err) {
-      alert('Failed to delete comment. You can only delete your own comments.');
-      console.error('Error deleting comment:', err);
-      setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+      await fetchCommentReactions(detailData.comments);
     }
-  };
+    
+  } catch (err) {
+    alert('Failed to delete comment. You can only delete your own comments.');
+    console.error('Error deleting comment:', err);
+    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+  }
+};
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -854,127 +751,127 @@ useEffect(() => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [postId]);
 
-  const renderComment = (comment, isReply = false) => {
-    const reaction = commentReactions[comment._id] || {};
-    
-    return (
-      <div key={comment._id} className={`pst-comment ${isReply ? 'pst-comment-reply' : ''}`}>
-        <div className="pst-comment-icon">
-          <User className="pst-icon-sm" />
-        </div>
-        <div className="pst-comment-content">
-          <div className="pst-comment-header">
-            <span className="pst-comment-name">{comment.user.name}</span>
-            {comment.isAuthorComment && (
-              <span className="pst-author-badge">Author</span>
-            )}
-            <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
-          </div>
-          <p className="pst-comment-text">{comment.content}</p>
-          
-          <div className="pst-comment-actions">
-            <button
-              className={`pst-comment-reaction-btn ${reaction.userLiked ? 'pst-reaction-active' : ''}`}
-              onClick={() => handleCommentReaction(comment._id, 'like')}
-            >
-              <ThumbsUp className="pst-icon-xs" />
-              <span>{reaction.likeCount || 0}</span>
-            </button>
-            
-            <button
-              className={`pst-comment-reaction-btn ${reaction.userDisliked ? 'pst-reaction-active' : ''}`}
-              onClick={() => handleCommentReaction(comment._id, 'dislike')}
-            >
-              <ThumbsDown className="pst-icon-xs" />
-              <span>{reaction.dislikeCount || 0}</span>
-            </button>
-            
-            {!isReply && (
-              <button
-                className="pst-comment-reply-btn"
-                onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
-              >
-                <MessageCircle className="pst-icon-xs" />
-                <span>Reply</span>
-              </button>
-            )}
-            
-            {comment.user.email === userInfo.email && (
-              <button
-                className="pst-delete-comment"
-                onClick={() => handleDeleteComment(comment._id, isReply)}
-              >
-                <Trash2 className="pst-icon-xs" />
-                <span>Delete</span>
-              </button>
-            )}
-          </div>
-          
-          {replyingTo === comment._id && (
-            <div className="pst-reply-form">
-              <textarea
-                placeholder={`Reply to ${comment.user.name}...`}
-                value={replyInput}
-                onChange={handleReplyChange}
-                className="pst-textarea pst-reply-textarea"
-                rows="2"
-              />
-              <div className="pst-reply-form-actions">
-                <button
-                  className="pst-cancel-reply-btn"
-                  onClick={() => {
-                    setReplyingTo(null);
-                    setReplyInput('');
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="pst-submit-reply-btn"
-                  onClick={() => handleReplySubmit(comment._id)}
-                  disabled={!replyInput.trim()}
-                >
-                  <Send className="pst-icon-xs" />
-                  Reply
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {!isReply && comment.replyCount > 0 && (
-            <button
-              className="pst-show-replies-btn"
-              onClick={() => toggleReplies(comment._id)}
-            >
-              {expandedReplies[comment._id] ? (
-                <>
-                  <ChevronUp className="pst-icon-xs" />
-                  <span>Hide {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="pst-icon-xs" />
-                  <span>Show {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
-                </>
-              )}
-            </button>
-          )}
-          
-          {expandedReplies[comment._id] && (
-            <div className="pst-replies-container">
-              {loadingReplies[comment._id] ? (
-                <div className="pst-replies-loading">Loading replies...</div>
-              ) : replies[comment._id]?.length > 0 ? (
-                replies[comment._id].map(reply => renderComment(reply, true))
-              ) : (
-                <div className="pst-no-replies">No replies yet</div>
-              )}
-            </div>
-          )}
-        </div>
+const renderComment = (comment, isReply = false) => {
+  const reaction = commentReactions[comment._id] || {};
+  
+  return (
+    <div key={comment._id} className={`pst-comment ${isReply ? 'pst-comment-reply' : ''}`}>
+      <div className="pst-comment-icon">
+        <User className="pst-icon-sm" />
       </div>
-    );
-  };
+      <div className="pst-comment-content">
+        <div className="pst-comment-header">
+          <span className="pst-comment-name">{comment.user.name}</span>
+          {comment.isAuthorComment && (
+            <span className="pst-author-badge">Author</span>
+          )}
+          <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
+        </div>
+        <p className="pst-comment-text">{comment.content}</p>
+        
+        <div className="pst-comment-actions">
+          <button
+            className={`pst-comment-reaction-btn ${reaction.userLiked ? 'pst-reaction-active' : ''}`}
+            onClick={() => handleCommentReaction(comment._id, 'like')}
+          >
+            <ThumbsUp className="pst-icon-xs" />
+            <span>{reaction.likeCount || 0}</span>
+          </button>
+          
+          <button
+            className={`pst-comment-reaction-btn ${reaction.userDisliked ? 'pst-reaction-active' : ''}`}
+            onClick={() => handleCommentReaction(comment._id, 'dislike')}
+          >
+            <ThumbsDown className="pst-icon-xs" />
+            <span>{reaction.dislikeCount || 0}</span>
+          </button>
+          
+          {!isReply && (
+            <button
+              className="pst-comment-reply-btn"
+              onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
+            >
+              <MessageCircle className="pst-icon-xs" />
+              <span>Reply</span>
+            </button>
+          )}
+          
+          {comment.user.email === userInfo.email && (
+            <button
+              className="pst-delete-comment"
+              onClick={() => handleDeleteComment(comment._id, isReply)}
+            >
+              <Trash2 className="pst-icon-xs" />
+              <span>Delete</span>
+            </button>
+          )}
+        </div>
+        
+        {replyingTo === comment._id && (
+          <div className="pst-reply-form">
+            <textarea
+              placeholder={`Reply to ${comment.user.name}...`}
+              value={replyInput}
+              onChange={handleReplyChange}
+              className="pst-textarea pst-reply-textarea"
+              rows="2"
+            />
+            <div className="pst-reply-form-actions">
+              <button
+                className="pst-cancel-reply-btn"
+                onClick={() => {
+                  setReplyingTo(null);
+                  setReplyInput('');
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="pst-submit-reply-btn"
+                onClick={() => handleReplySubmit(comment._id)}
+                disabled={!replyInput.trim()}
+              >
+                <Send className="pst-icon-xs" />
+                Reply
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {!isReply && comment.replyCount > 0 && (
+          <button
+            className="pst-show-replies-btn"
+            onClick={() => toggleReplies(comment._id)}
+          >
+            {expandedReplies[comment._id] ? (
+              <>
+                <ChevronUp className="pst-icon-xs" />
+                <span>Hide {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+              </>
+            ) : (
+              <>
+                <ChevronDown className="pst-icon-xs" />
+                <span>Show {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+              </>
+            )}
+          </button>
+        )}
+        
+        {expandedReplies[comment._id] && (
+          <div className="pst-replies-container">
+            {loadingReplies[comment._id] ? (
+              <div className="pst-replies-loading">Loading replies...</div>
+            ) : replies[comment._id]?.length > 0 ? (
+              replies[comment._id].map(reply => renderComment(reply, true))
+            ) : (
+              <div className="pst-no-replies">No replies yet</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
   const renderPostsContent = () => {
     if (loading && posts.length === 0) {
@@ -1238,107 +1135,6 @@ useEffect(() => {
               >
                 Continue
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showIdentityConfirm && (
-        <div className="pst-user-modal">
-          <div className="pst-user-form">
-           <button 
-  className="pst-close-button pst-user-close-button"
-  onClick={() => {
-    setShowIdentityConfirm(false);
-    navigate('/');  // Navigate to home when closed
-  }}
-  style={{ position: 'absolute', top: '1rem', right: '1rem' }}
->
-              <X className="pst-icon" />
-            </button>
-            <div className="pst-user-header">
-              <div className="pst-user-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <Shield className="pst-icon" />
-              </div>
-              <h3 className="pst-user-title">Confirm Your Identity</h3>
-              <p className="pst-user-subtitle">
-                {isEditingIdentity ? 'Update your information' : 'Please verify your details to continue'}
-              </p>
-            </div>
-            <div className="pst-user-inputs">
-              {isEditingIdentity ? (
-                <form onSubmit={handleIdentityUpdate}>
-                  <input
-                    type="text"
-                    name="name"
-                    value={userInfo.name}
-                    onChange={handleUserInfoChange}
-                    placeholder="Your Name"
-                    className="pst-input"
-                    required
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    value={userInfo.email}
-                    onChange={handleUserInfoChange}
-                    placeholder="Your Email"
-                    className="pst-input"
-                    required
-                  />
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        setIsEditingIdentity(false);
-                        const storedName = localStorage.getItem('userName');
-                        const storedEmail = localStorage.getItem('userEmail');
-                        setUserInfo({ name: storedName, email: storedEmail });
-                      }}
-                      className="pst-user-submit"
-                      style={{ background: '#6b7280', flex: 1 }}
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      type="submit"
-                      className="pst-user-submit"
-                      style={{ flex: 1 }}
-                    >
-                      Save Changes
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <>
-                  <div className="pst-identity-info">
-                    <div className="pst-identity-field">
-                      <label className="pst-identity-label">Name</label>
-                      <p className="pst-identity-value">{userInfo.name}</p>
-                    </div>
-                    <div className="pst-identity-field">
-                      <label className="pst-identity-label">Email</label>
-                      <p className="pst-identity-value">{userInfo.email}</p>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button 
-                      onClick={handleIdentityEdit}
-                      className="pst-user-submit"
-                      style={{ background: '#6b7280', flex: 1 ,height: 40 }}
-                    >
-                      Change Info
-                    </button>
-                    <button 
-                      onClick={handleIdentityConfirm}
-                      className="pst-user-submit"
-                      style={{ flex: 1 , height:40}}
-                    >
-                      Confirm
-                    </button>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -1627,57 +1423,56 @@ useEffect(() => {
           </div>
         </div>
       )}
-
       {deleteModal.show && (
-        <div className="pst-delete-modal" onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}>
-          <div className="pst-delete-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="pst-delete-modal-header">
-              <h3 className="pst-delete-modal-title">Delete Comment</h3>
-              <button 
-                className="pst-delete-modal-close"
-                onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
-              >
-                <X className="pst-icon-sm" />
-              </button>
-            </div>
-            <div className="pst-delete-modal-body">
-              <p className="pst-delete-modal-text">
-                Are you sure you want to delete this comment? This action cannot be undone.
-              </p>
-              {!deleteModal.isReply && (
-                <p className="pst-delete-modal-warning">
-                  All replies to this comment will also be deleted.
-                </p>
-              )}
-            </div>
-            <div className="pst-delete-modal-actions">
-              <button 
-                className="pst-delete-modal-cancel"
-                onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
-              >
-                Cancel
-              </button>
-              <button 
-                className="pst-delete-modal-confirm"
-                onClick={confirmDeleteComment}
-                disabled={deleteModal.deleting}
-              >
-                {deleteModal.deleting ? (
-                  <>
-                    <div className="pst-delete-spinner"></div>
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="pst-icon-xs" />
-                    Delete
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="pst-delete-modal" onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}>
+    <div className="pst-delete-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="pst-delete-modal-header">
+        <h3 className="pst-delete-modal-title">Delete Comment</h3>
+        <button 
+          className="pst-delete-modal-close"
+          onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
+        >
+          <X className="pst-icon-sm" />
+        </button>
+      </div>
+      <div className="pst-delete-modal-body">
+        <p className="pst-delete-modal-text">
+          Are you sure you want to delete this comment? This action cannot be undone.
+        </p>
+        {!deleteModal.isReply && (
+          <p className="pst-delete-modal-warning">
+            All replies to this comment will also be deleted.
+          </p>
+        )}
+      </div>
+      <div className="pst-delete-modal-actions">
+        <button 
+          className="pst-delete-modal-cancel"
+          onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
+        >
+          Cancel
+        </button>
+        <button 
+  className="pst-delete-modal-confirm"
+  onClick={confirmDeleteComment}
+  disabled={deleteModal.deleting}
+>
+  {deleteModal.deleting ? (
+    <>
+      <div className="pst-delete-spinner"></div>
+      Deleting...
+    </>
+  ) : (
+    <>
+      <Trash2 className="pst-icon-xs" />
+      Delete
+    </>
+  )}
+</button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
