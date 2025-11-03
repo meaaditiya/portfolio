@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check } from 'lucide-react';
+import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../pagesCSS/Posts.css';
+
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
 import Error from './Error.jsx';
@@ -35,6 +36,15 @@ const Posts = () => {
   
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
+
+  // New states for replies
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyInput, setReplyInput] = useState('');
+  const [expandedReplies, setExpandedReplies] = useState({});
+  const [replies, setReplies] = useState({});
+  const [loadingReplies, setLoadingReplies] = useState({});
+  const [commentReactions, setCommentReactions] = useState({});
+  const [deleteModal, setDeleteModal] = useState({ show: false, commentId: null, isReply: false, deleting: false });
 
   // Determine active tab based on current route
   const activeTab = location.pathname.includes('/social') ? 'social' : 
@@ -130,6 +140,12 @@ const Posts = () => {
       };
       
       setSelectedPost(post);
+      
+      // Fetch reactions for all comments
+      if (post.comments) {
+        await fetchCommentReactions(post.comments);
+      }
+      
       document.body.style.overflow = 'hidden';
       setPostLoading(false);
     } catch (err) {
@@ -138,6 +154,53 @@ const Posts = () => {
       console.error('Error fetching post:', err);
       navigate('/posts');
     }
+  };
+
+  const fetchCommentReactions = async (comments) => {
+    const reactions = {};
+    for (const comment of comments) {
+      try {
+        const response = await fetch(
+          `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${comment._id}/user-reaction?email=${encodeURIComponent(userInfo.email)}`
+        );
+        const data = await response.json();
+        reactions[comment._id] = data;
+      } catch (err) {
+        console.error('Error fetching comment reaction:', err);
+      }
+    }
+    setCommentReactions(reactions);
+  };
+
+  const fetchReplies = async (commentId) => {
+    if (replies[commentId]) {
+      return; // Already loaded
+    }
+    
+    try {
+      setLoadingReplies(prev => ({ ...prev, [commentId]: true }));
+      const response = await fetch(
+        `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/replies`
+      );
+      const data = await response.json();
+      
+      setReplies(prev => ({ ...prev, [commentId]: data.replies }));
+      
+      // Fetch reactions for all replies
+      await fetchCommentReactions(data.replies);
+      
+      setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
+    } catch (err) {
+      console.error('Error fetching replies:', err);
+      setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
+    }
+  };
+
+  const toggleReplies = async (commentId) => {
+    if (!expandedReplies[commentId]) {
+      await fetchReplies(commentId);
+    }
+    setExpandedReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
   };
 
   const fetchPosts = async () => {
@@ -277,6 +340,10 @@ const Posts = () => {
     setCommentInput(e.target.value);
   };
 
+  const handleReplyChange = (e) => {
+    setReplyInput(e.target.value);
+  };
+
   const handleCommentSubmit = async () => {
     if (!commentInput.trim() || !userInfo.name || !userInfo.email || !selectedPost) {
       alert('Please provide your name, email, and a comment.');
@@ -321,9 +388,96 @@ const Posts = () => {
         commentCount: detailData.post.commentCount,
       });
       
+      await fetchCommentReactions(detailData.comments);
+      
     } catch (err) {
       alert('Failed to post comment. Please try again.');
       console.error('Error posting comment:', err);
+    }
+  };
+
+  const handleReplySubmit = async (parentCommentId) => {
+    if (!replyInput.trim() || !userInfo.name || !userInfo.email || !selectedPost) {
+      alert('Please provide your name, email, and a reply.');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userInfo.name,
+          email: userInfo.email,
+          content: replyInput,
+          parentCommentId: parentCommentId,
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to post reply');
+      
+      setReplyInput('');
+      setReplyingTo(null);
+      
+      // Refresh replies for this comment
+      setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
+      await fetchReplies(parentCommentId);
+      
+      // Update comment count in parent comment
+      setSelectedPost(prev => ({
+        ...prev,
+        comments: prev.comments.map(c => 
+          c._id === parentCommentId 
+            ? { ...c, replyCount: (c.replyCount || 0) + 1 }
+            : c
+        )
+      }));
+      
+    } catch (err) {
+      alert('Failed to post reply. Please try again.');
+      console.error('Error posting reply:', err);
+    }
+  };
+
+  const handleCommentReaction = async (commentId, reactionType) => {
+    if (!userInfo.email) {
+      alert('Please provide your email to react to comments.');
+      return;
+    }
+    
+    try {
+      const endpoint = reactionType === 'like' 
+        ? `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/like`
+        : `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/dislike`;
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userInfo.email,
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to react to comment');
+      const data = await response.json();
+      
+      setCommentReactions(prev => ({
+        ...prev,
+        [commentId]: {
+          userLiked: data.userLiked,
+          userDisliked: data.userDisliked,
+          likeCount: data.likeCount,
+          dislikeCount: data.dislikeCount,
+        }
+      }));
+      
+    } catch (err) {
+      alert('Failed to react to comment. Please try again.');
+      console.error('Error reacting to comment:', err);
     }
   };
 
@@ -387,27 +541,59 @@ const Posts = () => {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    if (!userInfo.email) {
-      alert('Please provide your email to delete your comment.');
-      return;
-    }
+ const handleDeleteComment = async (commentId, isReply = false) => {
+  if (!userInfo.email) {
+    alert('Please provide your email to delete your comment.');
+    return;
+  }
+  
+  // Show delete confirmation modal
+  setDeleteModal({ show: true, commentId, isReply });
+};
+
+const confirmDeleteComment = async () => {
+  const { commentId, isReply } = deleteModal;
+  
+  // Add deleting state
+  setDeleteModal(prev => ({ ...prev, deleting: true }));
+  
+  try {
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: userInfo.email }),
+    });
     
-    if (!window.confirm('Are you sure you want to delete this comment?')) {
-      return;
-    }
+    if (!response.ok) throw new Error('Failed to delete comment');
     
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: userInfo.email }),
-      });
+    // Close modal
+    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+    
+    if (isReply) {
+      // If it's a reply, find its parent and refresh replies
+      const parentCommentId = selectedPost.comments.find(c => 
+        replies[c._id]?.some(r => r._id === commentId)
+      )?._id;
       
-      if (!response.ok) throw new Error('Failed to delete comment');
-      
+      if (parentCommentId) {
+        // Clear and refetch replies
+        setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
+        await fetchReplies(parentCommentId);
+        
+        // Update parent comment reply count
+        setSelectedPost(prev => ({
+          ...prev,
+          comments: prev.comments.map(c => 
+            c._id === parentCommentId 
+              ? { ...c, replyCount: Math.max(0, (c.replyCount || 0) - 1) }
+              : c
+          )
+        }));
+      }
+    } else {
+      // If it's a top-level comment, refresh the entire post
       const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
       const detailData = await detailResponse.json();
       
@@ -429,11 +615,19 @@ const Posts = () => {
         commentCount: detailData.post.commentCount,
       });
       
-    } catch (err) {
-      alert('Failed to delete comment. You can only delete your own comments.');
-      console.error('Error deleting comment:', err);
+      // Clear all replies cache
+      setReplies({});
+      setExpandedReplies({});
+      
+      await fetchCommentReactions(detailData.comments);
     }
-  };
+    
+  } catch (err) {
+    alert('Failed to delete comment. You can only delete your own comments.');
+    console.error('Error deleting comment:', err);
+    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+  }
+};
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -470,6 +664,9 @@ const Posts = () => {
     setShowComments(false);
     setShowShareModal(false);
     setCopySuccess(false);
+    setReplyingTo(null);
+    setReplyInput('');
+    setExpandedReplies({});
     document.body.style.overflow = '';
     
     if (postId) {
@@ -553,6 +750,128 @@ const Posts = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [postId]);
+
+const renderComment = (comment, isReply = false) => {
+  const reaction = commentReactions[comment._id] || {};
+  
+  return (
+    <div key={comment._id} className={`pst-comment ${isReply ? 'pst-comment-reply' : ''}`}>
+      <div className="pst-comment-icon">
+        <User className="pst-icon-sm" />
+      </div>
+      <div className="pst-comment-content">
+        <div className="pst-comment-header">
+          <span className="pst-comment-name">{comment.user.name}</span>
+          {comment.isAuthorComment && (
+            <span className="pst-author-badge">Author</span>
+          )}
+          <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
+        </div>
+        <p className="pst-comment-text">{comment.content}</p>
+        
+        <div className="pst-comment-actions">
+          <button
+            className={`pst-comment-reaction-btn ${reaction.userLiked ? 'pst-reaction-active' : ''}`}
+            onClick={() => handleCommentReaction(comment._id, 'like')}
+          >
+            <ThumbsUp className="pst-icon-xs" />
+            <span>{reaction.likeCount || 0}</span>
+          </button>
+          
+          <button
+            className={`pst-comment-reaction-btn ${reaction.userDisliked ? 'pst-reaction-active' : ''}`}
+            onClick={() => handleCommentReaction(comment._id, 'dislike')}
+          >
+            <ThumbsDown className="pst-icon-xs" />
+            <span>{reaction.dislikeCount || 0}</span>
+          </button>
+          
+          {!isReply && (
+            <button
+              className="pst-comment-reply-btn"
+              onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
+            >
+              <MessageCircle className="pst-icon-xs" />
+              <span>Reply</span>
+            </button>
+          )}
+          
+          {comment.user.email === userInfo.email && (
+            <button
+              className="pst-delete-comment"
+              onClick={() => handleDeleteComment(comment._id, isReply)}
+            >
+              <Trash2 className="pst-icon-xs" />
+              <span>Delete</span>
+            </button>
+          )}
+        </div>
+        
+        {replyingTo === comment._id && (
+          <div className="pst-reply-form">
+            <textarea
+              placeholder={`Reply to ${comment.user.name}...`}
+              value={replyInput}
+              onChange={handleReplyChange}
+              className="pst-textarea pst-reply-textarea"
+              rows="2"
+            />
+            <div className="pst-reply-form-actions">
+              <button
+                className="pst-cancel-reply-btn"
+                onClick={() => {
+                  setReplyingTo(null);
+                  setReplyInput('');
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="pst-submit-reply-btn"
+                onClick={() => handleReplySubmit(comment._id)}
+                disabled={!replyInput.trim()}
+              >
+                <Send className="pst-icon-xs" />
+                Reply
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {!isReply && comment.replyCount > 0 && (
+          <button
+            className="pst-show-replies-btn"
+            onClick={() => toggleReplies(comment._id)}
+          >
+            {expandedReplies[comment._id] ? (
+              <>
+                <ChevronUp className="pst-icon-xs" />
+                <span>Hide {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+              </>
+            ) : (
+              <>
+                <ChevronDown className="pst-icon-xs" />
+                <span>Show {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+              </>
+            )}
+          </button>
+        )}
+        
+        {expandedReplies[comment._id] && (
+          <div className="pst-replies-container">
+            {loadingReplies[comment._id] ? (
+              <div className="pst-replies-loading">Loading replies...</div>
+            ) : replies[comment._id]?.length > 0 ? (
+              replies[comment._id].map(reply => renderComment(reply, true))
+            ) : (
+              <div className="pst-no-replies">No replies yet</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
   const renderPostsContent = () => {
     if (loading && posts.length === 0) {
@@ -1037,29 +1356,7 @@ const Posts = () => {
                   </div>
                   <div className="pst-comments-list">
                     {selectedPost.comments && selectedPost.comments.length > 0 ? (
-                      selectedPost.comments.map((comment) => (
-                        <div key={comment._id} className="pst-comment">
-                          <div className="pst-comment-icon">
-                            <User className="pst-icon-sm" />
-                          </div>
-                          <div className="pst-comment-content">
-                            <div className="pst-comment-header">
-                              <span className="pst-comment-name">{comment.user.name}</span>
-                              <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
-                            </div>
-                            <p className="pst-comment-text">{comment.content}</p>
-                            {comment.user.email === userInfo.email && (
-                                <button
-                                className="pst-delete-comment"
-                                onClick={() => handleDeleteComment(comment._id)}
-                              >
-                                <Trash2 className="pst-icon-xs" />
-                                <span>Delete</span>
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))
+                      selectedPost.comments.map((comment) => renderComment(comment))
                     ) : (
                       <div className="pst-no-comments">
                         <MessageCircle className="pst-icon-lg" />
@@ -1126,8 +1423,58 @@ const Posts = () => {
           </div>
         </div>
       )}
+      {deleteModal.show && (
+  <div className="pst-delete-modal" onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}>
+    <div className="pst-delete-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="pst-delete-modal-header">
+        <h3 className="pst-delete-modal-title">Delete Comment</h3>
+        <button 
+          className="pst-delete-modal-close"
+          onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
+        >
+          <X className="pst-icon-sm" />
+        </button>
+      </div>
+      <div className="pst-delete-modal-body">
+        <p className="pst-delete-modal-text">
+          Are you sure you want to delete this comment? This action cannot be undone.
+        </p>
+        {!deleteModal.isReply && (
+          <p className="pst-delete-modal-warning">
+            All replies to this comment will also be deleted.
+          </p>
+        )}
+      </div>
+      <div className="pst-delete-modal-actions">
+        <button 
+          className="pst-delete-modal-cancel"
+          onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
+        >
+          Cancel
+        </button>
+        <button 
+  className="pst-delete-modal-confirm"
+  onClick={confirmDeleteComment}
+  disabled={deleteModal.deleting}
+>
+  {deleteModal.deleting ? (
+    <>
+      <div className="pst-delete-spinner"></div>
+      Deleting...
+    </>
+  ) : (
+    <>
+      <Trash2 className="pst-icon-xs" />
+      Delete
+    </>
+  )}
+</button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
 
-export default Posts
+export default Posts;

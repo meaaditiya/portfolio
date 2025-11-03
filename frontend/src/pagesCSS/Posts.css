@@ -756,6 +756,7 @@
 }
 
 .pst-comment-name {
+  white-space: nowrap;
   font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
@@ -766,6 +767,10 @@
   color: var(--text-secondary);
   font-weight: 500;
 }
+.pst-comment-date {
+  white-space: nowrap;
+}
+
 
 .pst-comment-text {
   color: var(--text-primary);
@@ -2330,4 +2335,389 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+/* Author Badge */
+.pst-author-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+  box-shadow: 0 2px 6px rgba(240, 148, 51, 0.3);
+}
+
+/* Comment Actions */
+.pst-comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.pst-comment-reaction-btn,
+.pst-comment-reply-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #8e8e8e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.pst-comment-reaction-btn:hover,
+.pst-comment-reply-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #262626;
+}
+
+.pst-comment-reaction-btn.pst-reaction-active {
+  color: #ed4956;
+}
+
+.pst-comment-reaction-btn.pst-reaction-active:hover {
+  color: #c13584;
+}
+
+.pst-icon-xs {
+  width: 16px;
+  height: 16px;
+}
+
+/* Reply Form */
+.pst-reply-form {
+  margin-top: 12px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #efefef;
+}
+
+.pst-reply-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  background: white;
+  margin-bottom: 8px;
+}
+
+.pst-reply-textarea:focus {
+  outline: none;
+  border-color: #0095f6;
+}
+
+.pst-reply-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pst-cancel-reply-btn,
+.pst-submit-reply-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+}
+
+.pst-cancel-reply-btn {
+  background: transparent;
+  color: #262626;
+}
+
+.pst-cancel-reply-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.pst-submit-reply-btn {
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: white;
+}
+
+.pst-submit-reply-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(240, 148, 51, 0.4);
+}
+
+.pst-submit-reply-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Show/Hide Replies Button */
+.pst-show-replies-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 12px 0;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+  text-transform: capitalize;
+}
+
+.pst-show-replies-btn:hover {
+  color: #00376b;
+}
+
+/* Replies Container - Single Subtle Thread */
+.pst-replies-container {
+  position: relative;
+  left:-85px;
+  margin-top: 16px;
+  margin-left: 48px;
+  padding-left: -10px;
+  border-left: 2px solid #e8e8e8;
+}
+
+.pst-comment-reply {
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 16px;
+  border: none;
+  padding-top: 0;
+}
+
+.pst-comment-reply:hover {
+  background: transparent;
+  border-left-color: transparent;
+}
+
+.pst-comment-reply:last-child {
+  margin-bottom: 0;
+}
+
+.pst-comment-reply .pst-comment-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.pst-replies-loading {
+  padding: 16px;
+  text-align: center;
+  color: #8e8e8e;
+  font-size: 14px;
+}
+
+.pst-no-replies {
+  padding: 16px;
+  text-align: center;
+  color: #8e8e8e;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .pst-comment-actions {
+    gap: 8px;
+  }
+  
+  .pst-comment-reaction-btn,
+  .pst-comment-reply-btn {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+  
+  .pst-author-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .pst-replies-container {
+    margin-left: 36px;
+    padding-left: 12px;
+    border-left-width: 2px;
+  }
+  
+  .pst-reply-textarea {
+    min-height: 50px;
+    font-size: 13px;
+  }
+  
+  .pst-cancel-reply-btn,
+  .pst-submit-reply-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .pst-comment-reply .pst-comment-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Animation for replies expanding */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pst-replies-container {
+  animation: slideDown 0.3s ease-out;
+}
+.pst-delete-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.pst-delete-modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.pst-delete-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pst-delete-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.pst-delete-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.pst-delete-modal-close:hover {
+  color: #111827;
+}
+
+.pst-delete-modal-body {
+  padding: 1.5rem;
+}
+
+.pst-delete-modal-text {
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 0.75rem 0;
+}
+
+.pst-delete-modal-warning {
+  color: #dc2626;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 500;
+}
+
+.pst-delete-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.5rem;
+  justify-content: flex-end;
+}
+
+.pst-delete-modal-cancel,
+.pst-delete-modal-confirm {
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pst-delete-modal-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.pst-delete-modal-cancel:hover {
+  background: #e5e7eb;
+}
+
+.pst-delete-modal-confirm {
+  background: #dc2626;
+  color: white;
+}
+
+.pst-delete-modal-confirm:hover {
+  background: #b91c1c;
+}
+.pst-delete-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: pst-spin 0.6s linear infinite;
+}
+
+@keyframes pst-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pst-delete-modal-confirm:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.pst-delete-modal-confirm:disabled:hover {
+  background: #dc2626;
 }
