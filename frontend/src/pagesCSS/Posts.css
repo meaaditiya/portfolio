@@ -2843,6 +2843,16 @@ border: 1px solid rgba(255, 255, 255, 0.2);
     height: calc(80vh - 80px);
     overflow-y: auto;
   }
+   .pst-tab-buttons {
+    gap: 0.4rem;
+    max-width: 95%;
+    padding: 4px;
+  }
+
+  .pst-tab-button {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -2916,5 +2926,14 @@ border: 1px solid rgba(255, 255, 255, 0.2);
     height: 75vh; /* Half screen */
  
   }
+ .pst-tab-buttons {
+    gap: 0.3rem;
+    max-width: 100%;
+    padding: 3px;
+  }
 
+  .pst-tab-button {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
 }
