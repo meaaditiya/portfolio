@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../pagesCSS/Posts.css';
+
 
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
@@ -37,7 +38,13 @@ const Posts = () => {
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
 
-  // New states for replies
+  // Video states
+  const [videoStates, setVideoStates] = useState({});
+  const [hoveredVideo, setHoveredVideo] = useState(null);
+  const videoRefs = useRef({});
+  const modalVideoRef = useRef(null);
+
+  // Reply states
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyInput, setReplyInput] = useState('');
   const [expandedReplies, setExpandedReplies] = useState({});
@@ -46,7 +53,6 @@ const Posts = () => {
   const [commentReactions, setCommentReactions] = useState({});
   const [deleteModal, setDeleteModal] = useState({ show: false, commentId: null, isReply: false, deleting: false });
 
-  // Determine active tab based on current route
   const activeTab = location.pathname.includes('/social') ? 'social' : 
                     location.pathname.includes('/community') ? 'community' : 'posts';
 
@@ -75,6 +81,7 @@ const Posts = () => {
     }
   }, [activeTab, selectedPlatform, socialCurrentPage]);
 
+  // Remaining social embed loading code stays the same
   useEffect(() => {
     const loadEmbedScript = (src, id) => {
       if (document.getElementById(id)) return;
@@ -141,9 +148,29 @@ const Posts = () => {
       
       setSelectedPost(post);
       
-      // Fetch reactions for all comments
       if (post.comments) {
         await fetchCommentReactions(post.comments);
+      }
+      
+      // Initialize video state for modal
+      if (post.mediaType === 'video') {
+        setVideoStates(prev => ({
+          ...prev,
+          [post.id]: { playing: false, muted: false, currentTime: 0, duration: 0 }
+        }));
+        
+        // Auto-play video when modal opens
+        setTimeout(() => {
+          if (modalVideoRef.current) {
+            modalVideoRef.current.play().catch(err => {
+              console.log('Auto-play prevented:', err);
+            });
+            setVideoStates(prev => ({
+              ...prev,
+              [post.id]: { ...prev[post.id], playing: true }
+            }));
+          }
+        }, 100);
       }
       
       document.body.style.overflow = 'hidden';
@@ -174,7 +201,7 @@ const Posts = () => {
 
   const fetchReplies = async (commentId) => {
     if (replies[commentId]) {
-      return; // Already loaded
+      return;
     }
     
     try {
@@ -185,8 +212,6 @@ const Posts = () => {
       const data = await response.json();
       
       setReplies(prev => ({ ...prev, [commentId]: data.replies }));
-      
-      // Fetch reactions for all replies
       await fetchCommentReactions(data.replies);
       
       setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
@@ -226,6 +251,17 @@ const Posts = () => {
           };
         })
       );
+      
+      // Initialize video states
+      postsWithDetails.forEach(post => {
+        if (post.mediaType === 'video') {
+          setVideoStates(prev => ({
+            ...prev,
+            [post.id]: { playing: false, muted: true, currentTime: 0, duration: 0 }
+          }));
+        }
+      });
+      
       setPosts(postsWithDetails);
       setTotalPages(data.pagination.pages);
       setLoading(false);
@@ -250,7 +286,90 @@ const Posts = () => {
       setSocialLoading(false);
     }
   };
+// Video control functions - REPLACE EXISTING ONES
+const toggleVideoPlayPause = (postId, e) => {
+  if (e) e.stopPropagation();
+  
+  // Check if we're in modal view or grid view
+  const video = selectedPost?.id === postId ? modalVideoRef.current : videoRefs.current[postId];
+  if (!video) return;
+  
+  if (video.paused) {
+    video.play().catch(err => console.log('Play error:', err));
+    setVideoStates(prev => ({
+      ...prev,
+      [postId]: { ...prev[postId], playing: true }
+    }));
+  } else {
+    video.pause();
+    setVideoStates(prev => ({
+      ...prev,
+      [postId]: { ...prev[postId], playing: false }
+    }));
+  }
+};
 
+const toggleVideoMute = (postId, e) => {
+  if (e) e.stopPropagation();
+  
+  // Check if we're in modal view or grid view
+  const video = selectedPost?.id === postId ? modalVideoRef.current : videoRefs.current[postId];
+  if (!video) return;
+  
+  video.muted = !video.muted;
+  setVideoStates(prev => ({
+    ...prev,
+    [postId]: { ...prev[postId], muted: video.muted }
+  }));
+};
+
+const handleVideoTimeUpdate = (postId) => {
+  // Check if we're in modal view or grid view
+  const video = selectedPost?.id === postId ? modalVideoRef.current : videoRefs.current[postId];
+  if (!video) return;
+  
+  setVideoStates(prev => ({
+    ...prev,
+    [postId]: { 
+      ...prev[postId], 
+      currentTime: video.currentTime,
+      duration: video.duration 
+    }
+  }));
+};
+
+const handleVideoEnded = (postId) => {
+  setVideoStates(prev => ({
+    ...prev,
+    [postId]: { ...prev[postId], playing: false }
+  }));
+};
+const handleVideoSeek = (postId, e) => {
+  e.stopPropagation();
+  const video = selectedPost?.id === postId ? modalVideoRef.current : videoRefs.current[postId];
+  if (!video) return;
+  
+  const progressBar = e.currentTarget;
+  const rect = progressBar.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const percentage = clickX / rect.width;
+  const newTime = percentage * video.duration;
+  
+  video.currentTime = newTime;
+  setVideoStates(prev => ({
+    ...prev,
+    [postId]: { ...prev[postId], currentTime: newTime }
+  }));
+};
+
+  const formatVideoDuration = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Remaining social embed functions stay the same
   const extractPostId = (url, platform) => {
     try {
       switch (platform) {
@@ -421,11 +540,9 @@ const Posts = () => {
       setReplyInput('');
       setReplyingTo(null);
       
-      // Refresh replies for this comment
       setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
       await fetchReplies(parentCommentId);
       
-      // Update comment count in parent comment
       setSelectedPost(prev => ({
         ...prev,
         comments: prev.comments.map(c => 
@@ -541,93 +658,85 @@ const Posts = () => {
     }
   };
 
- const handleDeleteComment = async (commentId, isReply = false) => {
-  if (!userInfo.email) {
-    alert('Please provide your email to delete your comment.');
-    return;
-  }
-  
-  // Show delete confirmation modal
-  setDeleteModal({ show: true, commentId, isReply });
-};
-
-const confirmDeleteComment = async () => {
-  const { commentId, isReply } = deleteModal;
-  
-  // Add deleting state
-  setDeleteModal(prev => ({ ...prev, deleting: true }));
-  
-  try {
-    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: userInfo.email }),
-    });
-    
-    if (!response.ok) throw new Error('Failed to delete comment');
-    
-    // Close modal
-    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
-    
-    if (isReply) {
-      // If it's a reply, find its parent and refresh replies
-      const parentCommentId = selectedPost.comments.find(c => 
-        replies[c._id]?.some(r => r._id === commentId)
-      )?._id;
-      
-      if (parentCommentId) {
-        // Clear and refetch replies
-        setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
-        await fetchReplies(parentCommentId);
-        
-        // Update parent comment reply count
-        setSelectedPost(prev => ({
-          ...prev,
-          comments: prev.comments.map(c => 
-            c._id === parentCommentId 
-              ? { ...c, replyCount: Math.max(0, (c.replyCount || 0) - 1) }
-              : c
-          )
-        }));
-      }
-    } else {
-      // If it's a top-level comment, refresh the entire post
-      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
-      const detailData = await detailResponse.json();
-      
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === selectedPost.id
-            ? {
-                ...post,
-                comments: detailData.comments,
-                commentCount: detailData.post.commentCount,
-              }
-            : post
-        )
-      );
-      
-      setSelectedPost({
-        ...selectedPost,
-        comments: detailData.comments,
-        commentCount: detailData.post.commentCount,
-      });
-      
-      // Clear all replies cache
-      setReplies({});
-      setExpandedReplies({});
-      
-      await fetchCommentReactions(detailData.comments);
+  const handleDeleteComment = async (commentId, isReply = false) => {
+    if (!userInfo.email) {
+      alert('Please provide your email to delete your comment.');
+      return;
     }
     
-  } catch (err) {
-    alert('Failed to delete comment. You can only delete your own comments.');
-    console.error('Error deleting comment:', err);
-    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
-  }
-};
+    setDeleteModal({ show: true, commentId, isReply });
+  };
+
+  const confirmDeleteComment = async () => {
+    const { commentId, isReply } = deleteModal;
+    
+    setDeleteModal(prev => ({ ...prev, deleting: true }));
+    
+    try {
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: userInfo.email }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to delete comment');
+      
+      setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+      
+      if (isReply) {
+        const parentCommentId = selectedPost.comments.find(c => 
+          replies[c._id]?.some(r => r._id === commentId)
+        )?._id;
+        
+        if (parentCommentId) {
+          setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
+          await fetchReplies(parentCommentId);
+          
+          setSelectedPost(prev => ({
+            ...prev,
+            comments: prev.comments.map(c => 
+              c._id === parentCommentId 
+                ? { ...c, replyCount: Math.max(0, (c.replyCount || 0) - 1) }
+                : c
+            )
+          }));
+        }
+      } else {
+        const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
+        const detailData = await detailResponse.json();
+        
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === selectedPost.id
+              ? {
+                  ...post,
+                  comments: detailData.comments,
+                  commentCount: detailData.post.commentCount,
+                }
+              : post
+          )
+        );
+        
+        setSelectedPost({
+          ...selectedPost,
+          comments: detailData.comments,
+          commentCount: detailData.post.commentCount,
+        });
+        
+        setReplies({});
+        setExpandedReplies({});
+        
+        await fetchCommentReactions(detailData.comments);
+      }
+      
+    } catch (err) {
+      alert('Failed to delete comment. You can only delete your own comments.');
+      console.error('Error deleting comment:', err);
+      setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+    }
+  };
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -659,6 +768,14 @@ const confirmDeleteComment = async () => {
   };
 
   const closeModals = () => {
+    // Pause any playing videos
+    Object.keys(videoRefs.current).forEach(postId => {
+      const video = videoRefs.current[postId];
+      if (video && !video.paused) {
+        video.pause();
+      }
+    });
+    
     setSelectedPost(null);
     setSelectedSocialEmbed(null);
     setShowComments(false);
@@ -751,127 +868,127 @@ const confirmDeleteComment = async () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [postId]);
 
-const renderComment = (comment, isReply = false) => {
-  const reaction = commentReactions[comment._id] || {};
-  
-  return (
-    <div key={comment._id} className={`pst-comment ${isReply ? 'pst-comment-reply' : ''}`}>
-      <div className="pst-comment-icon">
-        <User className="pst-icon-sm" />
-      </div>
-      <div className="pst-comment-content">
-        <div className="pst-comment-header">
-          <span className="pst-comment-name">{comment.user.name}</span>
-          {comment.isAuthorComment && (
-            <span className="pst-author-badge">Author</span>
-          )}
-          <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
+  const renderComment = (comment, isReply = false) => {
+    const reaction = commentReactions[comment._id] || {};
+    
+    return (
+      <div key={comment._id} className={`pst-comment ${isReply ? 'pst-comment-reply' : ''}`}>
+        <div className="pst-comment-icon">
+          <User className="pst-icon-sm" />
         </div>
-        <p className="pst-comment-text">{comment.content}</p>
-        
-        <div className="pst-comment-actions">
-          <button
-            className={`pst-comment-reaction-btn ${reaction.userLiked ? 'pst-reaction-active' : ''}`}
-            onClick={() => handleCommentReaction(comment._id, 'like')}
-          >
-            <ThumbsUp className="pst-icon-xs" />
-            <span>{reaction.likeCount || 0}</span>
-          </button>
+        <div className="pst-comment-content">
+          <div className="pst-comment-header">
+            <span className="pst-comment-name">{comment.user.name}</span>
+            {comment.isAuthorComment && (
+              <span className="pst-author-badge">Author</span>
+            )}
+            <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
+          </div>
+          <p className="pst-comment-text">{comment.content}</p>
           
-          <button
-            className={`pst-comment-reaction-btn ${reaction.userDisliked ? 'pst-reaction-active' : ''}`}
-            onClick={() => handleCommentReaction(comment._id, 'dislike')}
-          >
-            <ThumbsDown className="pst-icon-xs" />
-            <span>{reaction.dislikeCount || 0}</span>
-          </button>
-          
-          {!isReply && (
+          <div className="pst-comment-actions">
             <button
-              className="pst-comment-reply-btn"
-              onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
+              className={`pst-comment-reaction-btn ${reaction.userLiked ? 'pst-reaction-active' : ''}`}
+              onClick={() => handleCommentReaction(comment._id, 'like')}
             >
-              <MessageCircle className="pst-icon-xs" />
-              <span>Reply</span>
+              <ThumbsUp className="pst-icon-xs" />
+              <span>{reaction.likeCount || 0}</span>
             </button>
-          )}
-          
-          {comment.user.email === userInfo.email && (
+            
             <button
-              className="pst-delete-comment"
-              onClick={() => handleDeleteComment(comment._id, isReply)}
+              className={`pst-comment-reaction-btn ${reaction.userDisliked ? 'pst-reaction-active' : ''}`}
+              onClick={() => handleCommentReaction(comment._id, 'dislike')}
             >
-              <Trash2 className="pst-icon-xs" />
-              <span>Delete</span>
+              <ThumbsDown className="pst-icon-xs" />
+              <span>{reaction.dislikeCount || 0}</span>
             </button>
-          )}
-        </div>
-        
-        {replyingTo === comment._id && (
-          <div className="pst-reply-form">
-            <textarea
-              placeholder={`Reply to ${comment.user.name}...`}
-              value={replyInput}
-              onChange={handleReplyChange}
-              className="pst-textarea pst-reply-textarea"
-              rows="2"
-            />
-            <div className="pst-reply-form-actions">
+            
+            {!isReply && (
               <button
-                className="pst-cancel-reply-btn"
-                onClick={() => {
-                  setReplyingTo(null);
-                  setReplyInput('');
-                }}
+                className="pst-comment-reply-btn"
+                onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
               >
-                Cancel
+                <MessageCircle className="pst-icon-xs" />
+                <span>Reply</span>
               </button>
+            )}
+            
+            {comment.user.email === userInfo.email && (
               <button
-                className="pst-submit-reply-btn"
-                onClick={() => handleReplySubmit(comment._id)}
-                disabled={!replyInput.trim()}
+                className="pst-delete-comment"
+                onClick={() => handleDeleteComment(comment._id, isReply)}
               >
-                <Send className="pst-icon-xs" />
-                Reply
+                <Trash2 className="pst-icon-xs" />
+                <span>Delete</span>
               </button>
+            )}
+          </div>
+          
+          {replyingTo === comment._id && (
+            <div className="pst-reply-form">
+              <textarea
+                placeholder={`Reply to ${comment.user.name}...`}
+                value={replyInput}
+                onChange={handleReplyChange}
+                className="pst-textarea pst-reply-textarea"
+                rows="2"
+              />
+              <div className="pst-reply-form-actions">
+                <button
+                  className="pst-cancel-reply-btn"
+                  onClick={() => {
+                    setReplyingTo(null);
+                    setReplyInput('');
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="pst-submit-reply-btn"
+                  onClick={() => handleReplySubmit(comment._id)}
+                  disabled={!replyInput.trim()}
+                >
+                  <Send className="pst-icon-xs" />
+                  Reply
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-        
-        {!isReply && comment.replyCount > 0 && (
-          <button
-            className="pst-show-replies-btn"
-            onClick={() => toggleReplies(comment._id)}
-          >
-            {expandedReplies[comment._id] ? (
-              <>
-                <ChevronUp className="pst-icon-xs" />
-                <span>Hide {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
-              </>
-            ) : (
-              <>
-                <ChevronDown className="pst-icon-xs" />
-                <span>Show {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
-              </>
-            )}
-          </button>
-        )}
-        
-        {expandedReplies[comment._id] && (
-          <div className="pst-replies-container">
-            {loadingReplies[comment._id] ? (
-              <div className="pst-replies-loading">Loading replies...</div>
-            ) : replies[comment._id]?.length > 0 ? (
-              replies[comment._id].map(reply => renderComment(reply, true))
-            ) : (
-              <div className="pst-no-replies">No replies yet</div>
-            )}
-          </div>
-        )}
+          )}
+          
+          {!isReply && comment.replyCount > 0 && (
+            <button
+              className="pst-show-replies-btn"
+              onClick={() => toggleReplies(comment._id)}
+            >
+              {expandedReplies[comment._id] ? (
+                <>
+                  <ChevronUp className="pst-icon-xs" />
+                  <span>Hide {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="pst-icon-xs" />
+                  <span>Show {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+                </>
+              )}
+            </button>
+          )}
+          
+          {expandedReplies[comment._id] && (
+            <div className="pst-replies-container">
+              {loadingReplies[comment._id] ? (
+                <div className="pst-replies-loading">Loading replies...</div>
+              ) : replies[comment._id]?.length > 0 ? (
+                replies[comment._id].map(reply => renderComment(reply, true))
+              ) : (
+                <div className="pst-no-replies">No replies yet</div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   const renderPostsContent = () => {
     if (loading && posts.length === 0) {
@@ -922,29 +1039,92 @@ const renderComment = (comment, isReply = false) => {
               key={post.id} 
               className="pst-post"
               onClick={() => openPostModal(post)}
+              onMouseEnter={() => setHoveredVideo(post.id)}
+              onMouseLeave={() => setHoveredVideo(null)}
             >
               <div className="pst-post-card">
                 <div className="pst-post-image">
-                  {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
-                    <div className="pst-image-loading">
-                      <div className="pst-image-spinner"></div>
-                    </div>
-                  )}
-                  {imageLoadStates[post.id] === 'error' ? (
-                    <div className="pst-image-error">
-                      <div className="pst-image-error-content">
-                        <div className="pst-image-error-icon">🖼️</div>
-                        <p className="pst-image-error-text">Image unavailable</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <img 
-                      src={post.image} 
-                      alt={post.caption || 'Post image'} 
-                      className="pst-image"
-                      onLoad={() => handleImageLoad(post.id)}
-                      onError={() => handleImageError(post.id)}
-                    />
+ {post.mediaType === 'video' ? (
+  <div className="pst-video-container">
+    <video
+      ref={el => videoRefs.current[post.id] = el}
+      src={post.media}
+      poster={post.thumbnail || ''}  // 👈 show thumbnail if available
+      className="pst-video"
+      loop
+      muted
+      playsInline
+      onLoadedMetadata={(e) => {
+        setVideoStates(prev => ({
+          ...prev,
+          [post.id]: { 
+            ...prev[post.id], 
+            duration: e.target.duration 
+          }
+        }));
+      }}
+      onPlay={() => {
+        setVideoStates(prev => ({
+          ...prev,
+          [post.id]: { ...prev[post.id], playing: true }
+        }));
+      }}
+      onPause={() => {
+        setVideoStates(prev => ({
+          ...prev,
+          [post.id]: { ...prev[post.id], playing: false }
+        }));
+      }}
+      onTimeUpdate={() => handleVideoTimeUpdate(post.id)}
+      onEnded={() => handleVideoEnded(post.id)}
+    />
+
+    {hoveredVideo === post.id && (
+      <div className="pst-video-overlay-controls">
+        <button
+          className="pst-video-play-btn"
+          onClick={(e) => toggleVideoPlayPause(post.id, e)}
+        >
+          {videoStates[post.id]?.playing ? (
+            <Pause className="pst-icon-md" />
+          ) : (
+            <Play className="pst-icon-md" />
+          )}
+        </button>
+      </div>
+    )}
+
+    <div className="pst-video-duration-badge">
+      video post {formatVideoDuration(post.videoDuration)}
+    </div>
+  </div>
+) : (
+ 
+
+
+                    <>
+                      {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
+                        <div className="pst-image-loading">
+                          <div className="pst-image-spinner"></div>
+                        </div>
+                      )}
+                      {imageLoadStates[post.id] === 'error' ? (
+                        <div className="pst-image-error">
+                          <div className="pst-image-error-content">
+                            <div className="pst-image-error-icon">🖼️</div>
+                            <p className="pst-image-error-text">Image unavailable</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <img 
+                          src={post.media} 
+                          alt={post.caption || 'Post image'} 
+                          className="pst-image"
+                          onLoad={() => handleImageLoad(post.id)}
+                          onError={() => handleImageError(post.id)}
+                        />
+                      )}
+                    </>
                   )}
                   <div className="pst-post-overlay">
                     <div className="pst-post-stats">
@@ -1002,6 +1182,7 @@ const renderComment = (comment, isReply = false) => {
   };
 
   const renderSocialContent = () => {
+    // Social content rendering remains the same as original
     if (socialLoading) {
       return (
         <div className="pst-container">
@@ -1209,14 +1390,87 @@ const renderComment = (comment, isReply = false) => {
               <X className="pst-icon" />
             </button>
             <div className="pst-modal-image">
-              {imageLoadStates[selectedPost.id] === 'error' ? (
+{selectedPost.mediaType === 'video' ? (
+  <div className="pst-modal-video-container">
+    <video
+      ref={modalVideoRef}
+      src={selectedPost.media}
+      className="pst-modal-video"
+      loop
+      playsInline
+      onLoadedMetadata={(e) => {
+        setVideoStates(prev => ({
+          ...prev,
+          [selectedPost.id]: { 
+            ...prev[selectedPost.id], 
+            duration: e.target.duration 
+          }
+        }));
+      }}
+      onPlay={() => {
+        setVideoStates(prev => ({
+          ...prev,
+          [selectedPost.id]: { ...prev[selectedPost.id], playing: true }
+        }));
+      }}
+      onPause={() => {
+        setVideoStates(prev => ({
+          ...prev,
+          [selectedPost.id]: { ...prev[selectedPost.id], playing: false }
+        }));
+      }}
+      onTimeUpdate={() => handleVideoTimeUpdate(selectedPost.id)}
+      onEnded={() => handleVideoEnded(selectedPost.id)}
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleVideoPlayPause(selectedPost.id);
+      }}
+    />
+    <div className="pst-modal-video-controls">
+      <button
+        className="pst-modal-video-play-btn"
+        onClick={(e) => toggleVideoPlayPause(selectedPost.id, e)}
+      >
+        {videoStates[selectedPost.id]?.playing ? (
+          <Pause className="pst-icon-md" />
+        ) : (
+          <Play className="pst-icon-md" />
+        )}
+      </button>
+      
+   <div className="pst-modal-video-progress" onClick={(e) => handleVideoSeek(selectedPost.id, e)}>
+  <div 
+    className="pst-modal-video-progress-bar"
+    style={{ 
+      width: `${((videoStates[selectedPost.id]?.currentTime || 0) / (videoStates[selectedPost.id]?.duration || 1)) * 100}%` 
+    }}
+  />
+</div>
+      
+      <div className="pst-modal-video-time">
+        {formatVideoDuration(videoStates[selectedPost.id]?.currentTime || 0)} / {formatVideoDuration(videoStates[selectedPost.id]?.duration || 0)}
+      </div>
+      
+      <button
+        className="pst-modal-video-mute-btn"
+        onClick={(e) => toggleVideoMute(selectedPost.id, e)}
+      >
+        {videoStates[selectedPost.id]?.muted ? (
+          <VolumeX className="pst-icon-sm" />
+        ) : (
+          <Volume2 className="pst-icon-sm" />
+        )}
+      </button>
+    </div>
+  </div>
+              ) : imageLoadStates[selectedPost.id] === 'error' ? (
                 <div className="pst-modal-image-error">
                   <div className="pst-modal-image-error-icon">🖼️</div>
                   <p className="pst-modal-image-error-text">Image unavailable</p>
                 </div>
               ) : (
                 <img
-                  src={selectedPost.image}
+                  src={selectedPost.media}
                   alt={selectedPost.caption || 'Post image'}
                   className="pst-modal-image-content"
                   onLoad={() => handleImageLoad(selectedPost.id)}
@@ -1341,19 +1595,17 @@ const renderComment = (comment, isReply = false) => {
               )}
               {showComments && (
                 <div className="pst-comments-panel">
-                   <h3 className="pst-comments-title">Comments</h3>
-                    <button 
-                      className="pst-comments-close"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowComments(false);
-                      }}
-                    >
-                      <ArrowLeft className="pst-icon-sm" />
-                    </button>
-                  <div className="pst-comments-header">
-                   
-                  </div>
+                  <h3 className="pst-comments-title">Comments</h3>
+                  <button 
+                    className="pst-comments-close"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowComments(false);
+                    }}
+                  >
+                    <ArrowLeft className="pst-icon-sm" />
+                  </button>
+                  <div className="pst-comments-header"></div>
                   <div className="pst-comments-list">
                     {selectedPost.comments && selectedPost.comments.length > 0 ? (
                       selectedPost.comments.map((comment) => renderComment(comment))
@@ -1390,6 +1642,7 @@ const renderComment = (comment, isReply = false) => {
         </div>
       )}
 
+      {/* Social embed modal remains the same */}
       {selectedSocialEmbed && (
         <div className="pst-post-modal" onClick={closeModals}>
           <div className="pst-social-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -1423,56 +1676,57 @@ const renderComment = (comment, isReply = false) => {
           </div>
         </div>
       )}
+      
       {deleteModal.show && (
-  <div className="pst-delete-modal" onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}>
-    <div className="pst-delete-modal-content" onClick={(e) => e.stopPropagation()}>
-      <div className="pst-delete-modal-header">
-        <h3 className="pst-delete-modal-title">Delete Comment</h3>
-        <button 
-          className="pst-delete-modal-close"
-          onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
-        >
-          <X className="pst-icon-sm" />
-        </button>
-      </div>
-      <div className="pst-delete-modal-body">
-        <p className="pst-delete-modal-text">
-          Are you sure you want to delete this comment? This action cannot be undone.
-        </p>
-        {!deleteModal.isReply && (
-          <p className="pst-delete-modal-warning">
-            All replies to this comment will also be deleted.
-          </p>
-        )}
-      </div>
-      <div className="pst-delete-modal-actions">
-        <button 
-          className="pst-delete-modal-cancel"
-          onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
-        >
-          Cancel
-        </button>
-        <button 
-  className="pst-delete-modal-confirm"
-  onClick={confirmDeleteComment}
-  disabled={deleteModal.deleting}
->
-  {deleteModal.deleting ? (
-    <>
-      <div className="pst-delete-spinner"></div>
-      Deleting...
-    </>
-  ) : (
-    <>
-      <Trash2 className="pst-icon-xs" />
-      Delete
-    </>
-  )}
-</button>
-      </div>
-    </div>
-  </div>
-)}
+        <div className="pst-delete-modal" onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}>
+          <div className="pst-delete-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="pst-delete-modal-header">
+              <h3 className="pst-delete-modal-title">Delete Comment</h3>
+              <button 
+                className="pst-delete-modal-close"
+                onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
+              >
+                <X className="pst-icon-sm" />
+              </button>
+            </div>
+            <div className="pst-delete-modal-body">
+              <p className="pst-delete-modal-text">
+                Are you sure you want to delete this comment? This action cannot be undone.
+              </p>
+              {!deleteModal.isReply && (
+                <p className="pst-delete-modal-warning">
+                  All replies to this comment will also be deleted.
+                </p>
+              )}
+            </div>
+            <div className="pst-delete-modal-actions">
+              <button 
+                className="pst-delete-modal-cancel"
+                onClick={() => setDeleteModal({ show: false, commentId: null, isReply: false })}
+              >
+                Cancel
+              </button>
+              <button 
+                className="pst-delete-modal-confirm"
+                onClick={confirmDeleteComment}
+                disabled={deleteModal.deleting}
+              >
+                {deleteModal.deleting ? (
+                  <>
+                    <div className="pst-delete-spinner"></div>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="pst-icon-xs" />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

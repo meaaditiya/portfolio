@@ -2749,3 +2749,256 @@
   background: #f3f4f6;
   border-radius: 0.5rem;
 }
+/* Video Container in Grid */
+.pst-video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+/* Video Element */
+.pst-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Video Overlay Controls (shown on hover in grid) */
+.pst-video-overlay-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.pst-video-container:hover .pst-video-overlay-controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Video Play Button */
+.pst-video-play-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.pst-video-play-btn:hover {
+  background: #fff;
+  transform: scale(1.1);
+}
+
+.pst-video-play-btn svg {
+  color: #000;
+}
+
+/* Video Duration Badge */
+.pst-video-duration-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Modal Video Container */
+.pst-modal-video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal Video Element */
+.pst-modal-video {
+  width: 100%;
+  height: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+/* Modal Video Controls */
+.pst-modal-video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pst-modal-video-container:hover .pst-modal-video-controls {
+  opacity: 1;
+}
+
+/* Modal Video Play Button */
+.pst-modal-video-play-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.pst-modal-video-play-btn:hover {
+  background: #fff;
+  transform: scale(1.05);
+}
+
+.pst-modal-video-play-btn svg {
+  color: #000;
+}
+
+/* Modal Video Progress Bar */
+.pst-modal-video-progress {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.pst-modal-video-progress-bar {
+  height: 100%;
+  background: #fff;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+/* Modal Video Time Display */
+.pst-modal-video-time {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Modal Video Mute Button */
+.pst-modal-video-mute-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.pst-modal-video-mute-btn:hover {
+  background: #fff;
+  transform: scale(1.05);
+}
+
+.pst-modal-video-mute-btn svg {
+  color: #000;
+}
+
+/* Video Loading State */
+.pst-video-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #f0f0f0 25%, #e0e0e0 25%, #e0e0e0 50%, #f0f0f0 50%, #f0f0f0 75%, #e0e0e0 75%, #e0e0e0);
+  background-size: 40px 40px;
+  animation: videoLoadingBg 1s linear infinite;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pst-video-container.loading::before {
+  opacity: 1;
+}
+
+@keyframes videoLoadingBg {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 40px;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pst-video-play-btn {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .pst-modal-video-play-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .pst-modal-video-mute-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .pst-video-duration-badge {
+    font-size: 11px;
+    padding: 3px 6px;
+    bottom: 8px;
+    right: 8px;
+  }
+  
+  .pst-modal-video-controls {
+    padding: 12px;
+    gap: 8px;
+  }
+  
+  .pst-modal-video-time {
+    font-size: 12px;
+    min-width: 70px;
+  }
+}
