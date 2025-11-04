@@ -289,7 +289,7 @@ const Home = () => {
                       onClick={() => navigateToPage('/contact')}
                       className="primary-cta"
                     >
-                      Get in Touch
+                      Get in Touch <ArrowUpRight size={16}/>
                     </button>
                   </div>
                 </div>

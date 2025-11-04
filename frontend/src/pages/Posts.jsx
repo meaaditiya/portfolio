@@ -52,6 +52,7 @@ const Posts = () => {
   const [loadingReplies, setLoadingReplies] = useState({});
   const [commentReactions, setCommentReactions] = useState({});
   const [deleteModal, setDeleteModal] = useState({ show: false, commentId: null, isReply: false, deleting: false });
+const [showFullCaption, setShowFullCaption] = useState(false);
 
   const activeTab = location.pathname.includes('/social') ? 'social' : 
                     location.pathname.includes('/community') ? 'community' : 'posts';
@@ -1095,7 +1096,7 @@ const handleVideoSeek = (postId, e) => {
     )}
 
     <div className="pst-video-duration-badge">
-      video post {formatVideoDuration(post.videoDuration)}
+      video post : {formatVideoDuration(post.videoDuration)}
     </div>
   </div>
 ) : (
@@ -1128,6 +1129,11 @@ const handleVideoSeek = (postId, e) => {
                   )}
                   <div className="pst-post-overlay">
                     <div className="pst-post-stats">
+                      {post.mediaType === 'video' && (
+    <div className="pst-video-duration-badge">
+      video post : {formatVideoDuration(post.videoDuration)}
+    </div>
+)}
                       <div className="pst-stat">
                         <Heart className="pst-icon-sm" />
                         <span className="pst-stat-count">{post.reactionCount || 0}</span>
@@ -1389,6 +1395,31 @@ const handleVideoSeek = (postId, e) => {
             >
               <X className="pst-icon" />
             </button>
+              <p className="pst-close-button2">
+  {selectedPost.caption.split(" ").length > 8 ? (
+    <>
+      {showFullCaption
+        ? selectedPost.caption
+        : selectedPost.caption.split(" ").slice(0, 8).join(" ") + "... "}
+      <span
+        style={{
+          color: "#0095f6",
+          cursor: "pointer",
+          fontWeight: "500",
+          display: "inline",   // ensures it stays in the same line
+        }}
+        onClick={() => setShowFullCaption(!showFullCaption)}
+      >
+        {showFullCaption ? "See less" : "See more"}
+      </span>
+    </>
+  ) : (
+    selectedPost.caption
+  )}
+</p>
+
+                
+              
             <div className="pst-modal-image">
 {selectedPost.mediaType === 'video' ? (
   <div className="pst-modal-video-container">
@@ -1489,6 +1520,7 @@ const handleVideoSeek = (postId, e) => {
                   </p>
                 </div>
                 <div className="pst-modal-actions">
+                  
                   <button
                     className={`pst-like-button ${selectedPost.hasReacted ? 'pst-liked' : ''}`}
                     onClick={(e) => handleReaction(selectedPost.id, e)}
@@ -1594,10 +1626,11 @@ const handleVideoSeek = (postId, e) => {
                 </div>
               )}
               {showComments && (
-                <div className="pst-comments-panel">
-                  <h3 className="pst-comments-title">Comments</h3>
+                <div className="pst-share-panel">
+                  <div className="pst-share-header">
+                  <h3 className="pst-share-title">Comments</h3>
                   <button 
-                    className="pst-comments-close"
+                    className="pst-share-close"
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowComments(false);
@@ -1605,7 +1638,8 @@ const handleVideoSeek = (postId, e) => {
                   >
                     <ArrowLeft className="pst-icon-sm" />
                   </button>
-                  <div className="pst-comments-header"></div>
+                  </div>
+                  
                   <div className="pst-comments-list">
                     {selectedPost.comments && selectedPost.comments.length > 0 ? (
                       selectedPost.comments.map((comment) => renderComment(comment))
@@ -1652,6 +1686,7 @@ const handleVideoSeek = (postId, e) => {
             >
               <X className="pst-icon" />
             </button>
+              
             <div className="pst-social-modal-header">
               <div className="pst-platform-badge">
                 {(() => {

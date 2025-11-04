@@ -506,6 +506,34 @@
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
+.pst-close-button2 {
+  position: fixed;
+  width:auto;
+  left:60px;
+  top: var(--spacing-xl);
+  right: var(--spacing-xl);
+  background: transparent;
+  color: white;
+  border: none;
+   white-space: normal;
+  
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10001;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: inline-block; /* instead of flex */
+  text-align: left;
+}
+@media (min-width: 768px) {
+  .pst-close-button2 {
+    display: none;
+  }
+}
 
 .pst-close-button:hover {
   background-color: grey;
@@ -924,101 +952,6 @@
   }
 }
 
-@media (max-width: 768px) {
-  .pst-container {
-    padding: 0 var(--spacing-lg);
-  }
-
-  .pst-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--spacing-xl);
-  }
-
-  /* Mobile Modal - Full Screen */
-  .pst-post-modal-content {
-    flex-direction: column;
-  }
-
-  .pst-modal-image {
-    height: 60vh;
-    max-height: none;
-  }
-
-  .pst-modal-details {
-    width: 100%;
-    height: 40vh;
-    border-left: none;
-    border-top: 1px solid var(--border-light);
-  }
-
-  .pst-close-button {
-    top: var(--spacing-lg);
-    right: var(--spacing-lg);
-    width: 40px;
-    height: 40px;
-  }
-
-  .pst-user-form {
-    padding: var(--spacing-2xl);
-    margin: var(--spacing-lg);
-    max-width: calc(100vw - 32px);
-  }
-
-  .pst-pagination {
-    gap: var(--spacing-lg);
-  }
-
-  .pst-button-text {
-    display: none;
-  }
-
-  .pst-modal-info {
-    padding: var(--spacing-lg);
-  }
-
-  .pst-comments-header {
-    padding: var(--spacing-lg);
-  }
-
-  .pst-comment {
-    padding: var(--spacing-lg);
-  }
-
-  .pst-comment-form {
-    padding: var(--spacing-lg);
-  }
-}
-
-@media (max-width: 480px) {
-  .pst-main {
-    padding: var(--spacing-lg) 0;
-  }
-
-  .pst-container {
-    padding: 0 var(--spacing-md);
-  }
-
-  .pst-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-
-  .pst-post-image {
-    height: 280px;
-  }
-
-  .pst-modal-image {
-    height: 50vh;
-  }
-
-  .pst-modal-details {
-    height: 50vh;
-  }
-
-  .pst-post-caption {
-    padding: var(--spacing-md);
-  }}
-/* Additional CSS to continue/enhance the Posts component */
 
 /* Dark Mode Support */
 
@@ -1615,7 +1548,7 @@
   border-radius: 20px;
   max-width: 900px;
   width: 90vw;
-  max-height: 85vh; /* Changed from 900vh to 85vh */
+  max-height: 75vh; /* Changed from 900vh to 85vh */
   overflow: hidden;
   position: relative;
   box-shadow: 0 32px 64px rgba(0, 0, 0, 0.25), 0 16px 32px rgba(0, 0, 0, 0.15);
@@ -1702,79 +1635,6 @@
   min-height: 400px;
   border: none;
   border-radius: 12px;
-}
-
-/* Responsive Design for Mobile */
-@media (max-width: 768px) {
-  .pst-social-modal-content {
-    width: 95vw;
-    max-height: 90vh;
-    border-radius: 16px;
-    margin: 1vh auto;
-  }
-  
-  .pst-social-modal-header {
-    padding: 20px;
-  }
-  
-  .pst-social-modal-title {
-    font-size: 18px;
-    margin: 12px 0 6px 0;
-  }
-  
-  .pst-social-modal-description {
-    font-size: 14px;
-    margin: 6px 0;
-  }
-  
-  .pst-social-embed-container {
-    padding: 16px;
-  }
-  
-  .pst-social-embed-content {
-    min-height: 300px;
-  }
-  
-  .pst-social-embed-content iframe {
-    min-height: 300px;
-  }
-}
-
-@media (max-width: 480px) {
-  .pst-social-modal-content {
-    width: 98vw;
-    max-height: 95vh;
-    border-radius: 12px;
-    margin: 0.5vh auto;
-  }
-  
-  .pst-social-modal-header {
-    padding: 16px;
-  }
-  
-  .pst-social-modal-title {
-    font-size: 16px;
-    margin: 10px 0 6px 0;
-  }
-  
-  .pst-social-modal-description {
-    font-size: 13px;
-    margin: 6px 0;
-    line-height: 1.5;
-  }
-  
-  .pst-social-embed-container {
-    padding: 12px;
-  }
-  
-  .pst-social-embed-content {
-    min-height: 250px;
-    border-radius: 8px;
-  }
-  
-  .pst-social-embed-content iframe {
-    min-height: 250px;
-  }
 }
 
 /* Platform Colors - Enhanced */
@@ -1886,149 +1746,8 @@
   animation: shimmer 1.5s infinite;
 }
 
-/* Mobile Responsive - Enhanced */
-@media (max-width: 768px) {
-  .pst-tab-navigation {
-    margin-bottom: 1.5rem;
-    padding: 0 0.5rem;
-  }
-  
-  .pst-tab-buttons {
-    max-width: 100%;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  }
-  
-  .pst-tab-button {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-  
-  .pst-platform-filter {
-    margin-bottom: 1.5rem;
-    padding: 0 0.5rem;
-  }
-  
-  .pst-platform-buttons {
-    padding: 6px;
-    gap: 6px;
-  }
-  
-  .pst-platform-button {
-    padding: 8px 12px;
-    font-size: 12px;
-  }
-  
-  .pst-social-modal-content {
-    width: 95vw;
-    max-height: 95vh;
-    border-radius: 16px;
-  }
-  
-  .pst-social-modal-header {
-    padding: 20px;
-  }
-  
-  .pst-social-modal-title {
-    font-size: 18px;
-  }
-  
-  .pst-social-modal-description {
-    font-size: 14px;
-  }
-  
-  .pst-social-embed-container {
-    padding: 20px;
-  }
-  
-  .pst-social-embed-content iframe {
-    min-height: 300px;
-  }
-  
-  /* On mobile, social preview takes natural height */
-  .pst-social-preview {
-    height: auto !important;
-    max-height: none !important;
-  }
-  
-  .pst-social-preview::after {
-    display: none !important;
-  }
-  
-  .pst-grid .pst-social-embed {
-    height: auto !important;
-  }
-}
 
-@media (max-width: 480px) {
-  .pst-tab-button {
-    padding: 8px 10px;
-    font-size: 12px;
-    gap: 4px;
-  }
-  
-  .pst-tab-button .pst-icon-sm {
-    width: 14px;
-    height: 14px;
-  }
-  
-  .pst-platform-button {
-    padding: 6px 10px;
-    font-size: 11px;
-    gap: 4px;
-  }
-  
-  .pst-platform-button .pst-icon-sm {
-    width: 12px;
-    height: 12px;
-  }
-  
-  .pst-social-header {
-    padding: 12px 12px 6px;
-  }
-  
-  .pst-social-content {
-    padding: 6px 12px 12px;
-  }
-  
-  .pst-social-title {
-    font-size: 14px;
-  }
-  
-  .pst-social-description {
-    font-size: 12px;
-  }
-  
-  .pst-platform-badge {
-    padding: 4px 8px;
-    font-size: 11px;
-    gap: 4px;
-  }
-  
-  .pst-social-modal-header {
-    padding: 16px;
-  }
-  
-  .pst-social-modal-title {
-    font-size: 16px;
-    margin: 12px 0 6px 0;
-  }
-  
-  .pst-social-modal-description {
-    font-size: 13px;
-  }
-  
-  .pst-social-embed-container {
-    padding: 16px;
-  }
-  
-  .pst-social-embed-content {
-    min-height: 300px;
-  }
-  
-  .pst-social-embed-content iframe {
-    min-height: 250px;
-  }
-}
+
 
 /* Performance Optimizations */
 .pst-tab-button,
@@ -2271,29 +1990,7 @@
   transform: scale(0.98);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .pst-share-content {
-    padding: 20px 16px;
-  }
 
-  .pst-share-social-buttons {
-    grid-template-columns: 1fr;
-  }
-
-  .pst-share-link-container {
-    flex-direction: column;
-  }
-
-  .pst-copy-button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .pst-share-social-btn {
-    width: 100%;
-  }
-}
 
 /* Icon adjustments for share buttons */
 .pst-share-button .pst-icon-sm,
@@ -2537,45 +2234,7 @@
   font-style: italic;
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .pst-comment-actions {
-    gap: 8px;
-  }
-  
-  .pst-comment-reaction-btn,
-  .pst-comment-reply-btn {
-    font-size: 12px;
-    padding: 3px 6px;
-  }
-  
-  .pst-author-badge {
-    font-size: 10px;
-    padding: 2px 6px;
-  }
-  
-  .pst-replies-container {
-    margin-left: 36px;
-    padding-left: 12px;
-    border-left-width: 2px;
-  }
-  
-  .pst-reply-textarea {
-    min-height: 50px;
-    font-size: 13px;
-  }
-  
-  .pst-cancel-reply-btn,
-  .pst-submit-reply-btn {
-    padding: 6px 12px;
-    font-size: 13px;
-  }
 
-  .pst-comment-reply .pst-comment-icon {
-    width: 28px;
-    height: 28px;
-  }
-}
 
 /* Animation for replies expanding */
 @keyframes slideDown {
@@ -2968,37 +2627,294 @@
   }
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 768px) {
-  .pst-video-play-btn {
-    width: 50px;
-    height: 50px;
+  .pst-container {
+    padding: 0 var(--spacing-lg);
   }
-  
-  .pst-modal-video-play-btn {
-    width: 36px;
-    height: 36px;
+
+  .pst-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--spacing-xl);
   }
-  
-  .pst-modal-video-mute-btn {
-    width: 32px;
-    height: 32px;
+
+  /* Mobile Modal - Full Screen */
+  .pst-post-modal-content {
+    flex-direction: column;
   }
-  
-  .pst-video-duration-badge {
-    font-size: 11px;
-    padding: 3px 6px;
-    bottom: 8px;
-    right: 8px;
+
+  /* CHANGE: Image takes almost full screen */
+  .pst-modal-image {
+    height: calc(100vh - 80px); /* Full height minus button strip */
+    max-height: none;
+    flex-shrink: 0;
   }
-  
-  .pst-modal-video-controls {
-    padding: 12px;
-    gap: 8px;
+
+  /* CHANGE: Details section is just a thin strip at bottom */
+  .pst-modal-details {
+    width: 100%;
+    height: 80px; /* Thin strip for buttons */
+    min-height: 50px;
+    max-height: 20px;
+    border-left: none;
+    border-top: 1px solid var(--border-light);
+    background-color: #fff;
+    position: relative;
+    overflow: visible; /* Allow modals to overlay */
+background: linear-gradient(
+  135deg,
+  rgba(0, 255, 150, 0.15),
+  rgba(0, 180, 255, 0.15)
+);
+backdrop-filter: blur(18px);
+-webkit-backdrop-filter: blur(18px);
+box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.12),
+            inset 0 0 30px rgba(255, 255, 255, 0.18);
+border: 1px solid rgba(255, 255, 255, 0.2);
+
+
   }
-  
-  .pst-modal-video-time {
-    font-size: 12px;
-    min-width: 70px;
+
+  /* CHANGE: Info section just shows buttons, no caption */
+  .pst-modal-info {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
+
+  /* CHANGE: Hide caption in the bottom strip */
+  .pst-modal-caption {
+    display: none;
+  }
+
+  /* CHANGE: Action buttons horizontal in center */
+  .pst-modal-actions {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-2xl);
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pst-like-button,
+  .pst-comment-button,
+  .pst-share-button {
+    background: transparent;
+    border: none;
+    padding: var(--spacing-md);
+  }
+
+  /* CHANGE: Comments panel takes half screen and overlays */
+  .pst-comments-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80vh; /* Half screen */
+    border-radius: 20px 20px 0 0;
+    background: rgba(255, 255, 255, 0.98);
+    animation: slideUpFromBottom 0.3s ease-out;
+    z-index: 100;
+  }
+
+
+
+  @keyframes slideUpFromBottom {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  /* CHANGE: Share panel also takes half screen */
+  .pst-share-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 85vh; /* Half screen */
+    border-radius: 20px 20px 0 0;
+    background: white;
+    animation: slideUpFromBottom 0.3s ease-out;
+    z-index: 100;
+  }
+
+  /* Adjust comments header for bottom sheet style */
+  .pst-comments-header {
+    padding: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* Add handle bar at top of bottom sheets */
+  .pst-comments-panel::before,
+  .pst-share-panel::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: #dbdbdb;
+    border-radius: 2px;
+  }
+
+  .pst-comments-title {
+    position: static;
+    left: 0;
+    top: 0;
+    font-size: 16px;
+  }
+
+  .pst-comments-close {
+    position: absolute;
+    left: var(--spacing-lg);
+  }
+
+  /* Share header adjustments */
+  .pst-share-header {
+    padding: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .pst-share-title {
+    position: static;
+    font-size: 16px;
+  }
+
+  .pst-share-close {
+    position: absolute;
+    left: var(--spacing-lg);
+  }
+
+  .pst-close-button {
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    width: 40px;
+    height: 40px;
+  }
+
+  .pst-user-form {
+    padding: var(--spacing-2xl);
+    margin: var(--spacing-lg);
+    max-width: calc(100vw - 32px);
+  }
+
+  .pst-pagination {
+    gap: var(--spacing-lg);
+  }
+
+  .pst-button-text {
+    display: none;
+  }
+
+  .pst-comment {
+    padding: var(--spacing-lg);
+  }
+
+  .pst-comment-form {
+    padding: var(--spacing-lg);
+  }
+
+  /* Adjust comments list to account for header and form */
+  .pst-comments-list {
+    height: calc(80vh - 140px);
+    overflow-y: auto;
+  }
+
+  /* Share content adjustments */
+  .pst-share-content {
+    height: calc(80vh - 80px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .pst-main {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .pst-container {
+    padding: 0 var(--spacing-md);
+  }
+
+  .pst-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .pst-post-image {
+    height: 280px;
+  }
+
+  /* CHANGE: Even more space for image on small screens */
+  .pst-modal-image {
+    height: calc(100vh - 70px);
+  }
+
+  .pst-modal-details {
+    height: 70px;
+    min-height: 70px;
+    max-height: 70px;
+  }
+
+  /* Slightly smaller buttons */
+  .pst-modal-actions {
+    gap: var(--spacing-xl);
+  }
+
+  .pst-like-button,
+  .pst-comment-button,
+  .pst-share-button {
+    padding: var(--spacing-sm);
+  }
+
+  .pst-modal-actions .pst-icon-sm {
+    width: 22px;
+    height: 22px;
+  }
+
+  .pst-modal-actions .pst-stat-count {
+    font-size: 13px;
+  }
+
+  /* Bottom sheets slightly larger on small screens */
+  .pst-comments-panel,
+  .pst-share-panel {
+    height: 55vh;
+  }
+
+  .pst-comments-list {
+    height: calc(55vh - 140px);
+  }
+
+  .pst-share-content {
+    height: calc(55vh - 80px);
+  }
+
+  .pst-post-caption {
+    padding: var(--spacing-md);
+  }
+   .pst-share-panel {
+   
+    height: 75vh; /* Half screen */
+ 
+  }
+
 }
