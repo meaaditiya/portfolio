@@ -283,13 +283,13 @@ const Home = () => {
                       onClick={() => navigateToPage('/projects')}
                       className="primary-cta"
                     >
-                      View Projects <ArrowUpRight size={16} />
+                    Projects <ArrowUpRight size={16} />
                     </button>
                     <button
                       onClick={() => navigateToPage('/contact')}
                       className="primary-cta"
                     >
-                      Get in Touch <ArrowUpRight size={16}/>
+                      Contact<ArrowUpRight size={16}/>
                     </button>
                   </div>
                 </div>

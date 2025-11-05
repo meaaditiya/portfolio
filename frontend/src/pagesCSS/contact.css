@@ -612,184 +612,155 @@ body {
 /* ========================================
    Audio Recording Section
 ======================================== */
+/* Audio Recorder */
+
 .cnt-audio-recorder {
-  padding: var(--spacing-xl);
-  background: var(--color-off-white);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  /* Add microphone illustration here:
-     background-image: url('microphone-icon.svg');
-     background-repeat: no-repeat;
-     background-position: top right;
-     background-size: 100px;
-  */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--primary-white);
+  border: 1px solid var(--accent-gray);
+  border-radius: var(--border-radius);
 }
 
 .cnt-record-section {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   align-items: center;
-  gap: var(--spacing-lg);
 }
 
 .cnt-record-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-lg) var(--spacing-xl);
-  background: var(--color-error);
-  color: var(--color-white);
+  gap: 0.5rem;
+  background: var(--primary-black);
+  color: var(--primary-white);
   border: none;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-lg);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-md);
+  transition: var(--transition);
 }
 
 .cnt-record-btn:hover {
-  background: #c0392b;
-  box-shadow: var(--shadow-lg);
+  background: #333333;
 }
 
 .cnt-record-btn.recording {
-  background: var(--color-error);
-  animation: pulse 1.5s ease-in-out infinite;
+  background: var(--error-color);
 }
 
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
-  }
-  50% {
-    box-shadow: 0 0 0 15px rgba(231, 76, 60, 0);
-  }
+.cnt-record-btn.recording:hover {
+  background: #c0392b;
 }
 
 .cnt-recording-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
 }
 
 .cnt-recording-indicator {
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  color: var(--color-error);
-  animation: blink 1s ease-in-out infinite;
+  color: var(--error-color);
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+.cnt-recording-duration, .cnt-audio-duration {
+  font-size: 0.875rem;
+  color: var(--secondary-gray);
 }
 
-.cnt-recording-duration {
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  color: var(--color-primary);
-  font-family: 'Courier New', monospace;
-}
-
+/* Audio Wave Animation */
 .cnt-audio-waves {
   display: flex;
   align-items: center;
-  gap: 4px;
-  height: 40px;
+  gap: 0.25rem;
+  height: 2rem;
+  margin-top: 0.5rem;
 }
 
 .cnt-wave-bar {
-  width: 4px;
-  background: var(--color-accent);
-  border-radius: var(--radius-full);
-  animation: wave 1.2s ease-in-out infinite;
+  width: 0.25rem;
+  height: 100%;
+  background: var(--primary-black);
+  border-radius: 2px;
+  animation: wave 1.2s infinite ease-in-out;
 }
 
-.cnt-wave-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
-.cnt-wave-bar:nth-child(2) { animation-delay: 0.1s; height: 30px; }
-.cnt-wave-bar:nth-child(3) { animation-delay: 0.2s; height: 40px; }
-.cnt-wave-bar:nth-child(4) { animation-delay: 0.3s; height: 30px; }
-.cnt-wave-bar:nth-child(5) { animation-delay: 0.4s; height: 20px; }
+.cnt-wave-bar:nth-child(1) { animation-delay: 0s; }
+.cnt-wave-bar:nth-child(2) { animation-delay: 0.2s; }
+.cnt-wave-bar:nth-child(3) { animation-delay: 0.4s; }
+.cnt-wave-bar:nth-child(4) { animation-delay: 0.6s; }
+.cnt-wave-bar:nth-child(5) { animation-delay: 0.8s; }
 
 @keyframes wave {
-  0%, 100% { height: 20px; }
-  50% { height: 40px; }
+  0%, 100% {
+    transform: scaleY(0.2);
+  }
+  50% {
+    transform: scaleY(1);
+  }
 }
 
+/* Static waves for audio preview */
 .cnt-audio-waves.static .cnt-wave-bar {
   animation: none;
-  opacity: 0.5;
+  transform: scaleY(0.5);
 }
 
-/* Audio Preview */
-.cnt-audio-preview {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  width: 100%;
-}
-
+/* Audio Controls */
 .cnt-audio-controls {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background: var(--color-white);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .cnt-play-btn {
-  width: 48px;
-  height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--color-accent);
-  color: var(--color-white);
+  gap: 0.5rem;
+  background: var(--primary-black);
+  color: var(--primary-white);
   border: none;
-  border-radius: var(--radius-full);
+  padding: 0.5rem;
+  border-radius: 50%;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all var(--transition-base);
-  flex-shrink: 0;
+  transition: var(--transition);
 }
 
 .cnt-play-btn:hover {
-  background: var(--color-accent-hover);
+  background: #333333;
 }
 
 .cnt-play-btn:disabled {
-  background: var(--color-medium-gray);
+  background: #999999;
   cursor: not-allowed;
 }
-
-.cnt-audio-duration {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-light);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
 .cnt-reset-btn {
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: transparent;
-  color: var(--color-error);
-  border: 2px solid var(--color-error);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
+  background: none;
+  color: var(--primary-black);
+  border: 1px solid var(--accent-gray);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
-  white-space: nowrap;
+  transition: var(--transition);
 }
 
 .cnt-reset-btn:hover {
-  background: var(--color-error);
-  color: var(--color-white);
+  border-color: var(--primary-black);
+  color: #333333;
 }
-
 /* ========================================
    Query Section
 ======================================== */
@@ -1139,7 +1110,7 @@ body {
 
   .cnt-actions {
     padding: var(--spacing-md);
-    flex-direction: column;
+  
   }
 
   .cnt-action-btn-project,
@@ -1197,7 +1168,7 @@ body {
   }
 
   .cnt-query-buttons {
-    flex-direction: column;
+   
   }
 
   .query-btn {
@@ -1381,3 +1352,32 @@ html {
 /* ========================================
    END OF CSS
 ======================================== */
+.cnt-btn-otp {
+  width: 35%;
+  padding: 10px 20px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cnt-btn-otp:hover:not(:disabled) {
+  
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.cnt-btn-otp:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}

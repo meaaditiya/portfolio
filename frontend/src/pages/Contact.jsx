@@ -862,7 +862,7 @@ const copyTicketId = () => {
             />
           </div>
 
-          <div className="cnt-form-group">
+          <div className="cnt-form-group audio-form">
             <label className="cnt-form-label">Audio Message *</label>
             <div className="cnt-audio-recorder">
               {!audioBlob ? (
@@ -1357,7 +1357,7 @@ const renderQuerySection = () => (
     
 
       <button 
-        className="generate-summary-btn"
+        className="btn-1024 cnt-btn-otp query-btn generate-summary-btn"
         onClick={() => {
           setQuerySection(!querySection);
           setCheckQuerySection(false);
@@ -1368,7 +1368,7 @@ const renderQuerySection = () => (
       </button>
       
       <button 
-        className="generate-summary-btn"
+        className="btn-1024 cnt-btn-otp query-btn generate-summary-btn"
         onClick={() => {
           setCheckQuerySection(!checkQuerySection);
           setQuerySection(false);
