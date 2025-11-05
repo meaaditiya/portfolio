@@ -10,7 +10,7 @@ const Blog = () => {
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [limit, setLimit] = useState(6);
+  const [limit, setLimit] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
@@ -127,7 +127,7 @@ const Blog = () => {
       }
     };
         
-    if (limit === 6) {
+    if (limit === 10) {
       fetchBlogs();
     }
   }, []);
@@ -231,7 +231,7 @@ const Blog = () => {
     return (
       <section className="section">
         <h2 className="section-title">Blogs</h2>
-        <BlogSkeletonLoader count={6} />
+        <BlogSkeletonLoader count={10} />
       </section>
     );
   }
