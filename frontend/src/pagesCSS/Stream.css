@@ -1,4 +1,4 @@
-/* Stream.css - Responsive styles for Stream Hub */
+/* Stream.css - Modern Responsive Styles for Stream Hub */
 
 :root {
   --color-black: #0f172a;
@@ -18,20 +18,196 @@
 /* Base App Styles */
 .tyagi-app {
   min-height: 100vh;
-  background-color: var(--color-gray-50);
+   margin-top:10px;
   color: var(--color-black);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+.tyagi-app2 {
+  min-height: 100vh;
+   margin-top:100px;
+  color: var(--color-black);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+/* ===== NEW HERO SECTION ===== */
+.tyagi-hero {
+  position: relative;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 4rem 0;
 
 }
+
+.tyagi-hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  z-index: 1;
+}
+
+.tyagi-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.tyagi-hero-text {
+  color: black;
+}
+
+.tyagi-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.tyagi-hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.tyagi-hero-gradient {
+  background: linear-gradient(to right, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tyagi-hero-description {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin: 0 0 2.5rem 0;
+  opacity: 0.95;
+  max-width: 540px;
+}
+
+.tyagi-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tyagi-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tyagi-stat-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.tyagi-stat-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  line-height: 1;
+}
+
+.tyagi-stat-divider {
+  width: 1px;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.tyagi-hero-image {
+  position: relative;
+}
+
+.tyagi-hero-image-wrapper {
+  position: relative;
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transform: perspective(1000px) rotateY(-5deg);
+  transition: transform 0.3s ease;
+}
+
+.tyagi-hero-image-wrapper:hover {
+  transform: perspective(1000px) rotateY(0deg);
+}
+
+.tyagi-hero-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: brightness(1.1);
+}
+
+.tyagi-hero-image-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: -1;
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+/* ===== END HERO SECTION ===== */
 
 .tyagi-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
-  margin-top:70px;
+  padding: 4rem 2rem;
+  background: var(--color-gray-50);
+  border-radius: 2rem 2rem 0 0;
+  margin-top: -2rem;
+  position: relative;
+  z-index: 10;
 }
 
-/* Header Styles */
+/* Section Header - NEW */
+.tyagi-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+.tyagi-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-gray-900);
+}
+
+.tyagi-section-subtitle {
+  font-size: 1rem;
+  color: var(--color-gray-600);
+  margin: 0;
+}
+
+/* Header Styles - KEPT FOR BACKWARD COMPATIBILITY */
 .tyagi-header {
   color:black;
   padding: 2rem 0;
@@ -67,14 +243,15 @@
   margin: 0;
 }
 
-/* Tab Navigation */
+/* Tab Navigation - UPDATED */
 .tyagi-tabs {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  background-color: var(--color-gray-100);
+  gap: 1rem;
+  margin-bottom: 3rem;
+  background: var(--color-white);
   padding: 0.5rem;
-  border-radius: 0.75rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .tyagi-tab {
@@ -82,31 +259,39 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
   background: none;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-gray-600);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tyagi-tab span {
+  position: relative;
+  z-index: 1;
 }
 
 .tyagi-tab:hover {
-  background-color: var(--color-gray-200);
-  color: var(--color-gray-700);
+  color: var(--color-gray-900);
+  background: var(--color-gray-100);
 }
 
 .tyagi-tab-active {
-  background-color: var(--color-gray-800);
+  background: black;
   color: var(--color-white);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .tyagi-tab-active:hover {
-  background-color: var(--color-gray-700);
-  color: var(--color-white);
+  
+  
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
 }
 
 /* Content Area */
@@ -114,7 +299,7 @@
   min-height: 400px;
 }
 
-/* Loading State */
+/* Loading State - UPDATED */
 .tyagi-loading {
   display: flex;
   flex-direction: column;
@@ -125,12 +310,12 @@
 }
 
 .tyagi-loading-spinner {
-  width: 2rem;
-  height: 2rem;
-  border: 3px solid var(--color-gray-300);
-  border-top: 3px solid var(--color-gray-600);
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid var(--color-gray-200);
+  border-top: 4px solid black;
   border-radius: 50%;
-  animation: tyagi-spin 1s linear infinite;
+  animation: tyagi-spin 0.8s linear infinite;
   margin-bottom: 1rem;
 }
 
@@ -139,7 +324,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Empty State */
+/* Empty State - UPDATED */
 .tyagi-empty-state {
   display: flex;
   flex-direction: column;
@@ -148,17 +333,32 @@
   padding: 4rem 2rem;
   text-align: center;
   color: var(--color-gray-500);
+  background: var(--color-white);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tyagi-empty-icon-wrapper {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
 .tyagi-empty-icon {
-  margin-bottom: 1rem;
+  color: var(--color-gray-400);
   opacity: 0.5;
 }
 
 .tyagi-empty-state h3 {
   font-size: 1.5rem;
   margin: 0 0 0.5rem 0;
-  color: var(--color-gray-600);
+  color: var(--color-gray-700);
+  font-weight: 600;
 }
 
 .tyagi-empty-state p {
@@ -166,25 +366,27 @@
   font-size: 1rem;
 }
 
-/* Streams Grid */
+/* Streams Grid - UPDATED */
 .tyagi-streams-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
 }
 
-/* Stream Card */
+/* Stream Card - UPDATED */
 .tyagi-stream-card {
   background-color: var(--color-white);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--color-gray-200);
 }
 
 .tyagi-stream-card:hover {
- 
+  transform: translateY(-1px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+ 
 }
 
 /* Stream Thumbnail */
@@ -198,17 +400,17 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tyagi-stream-card:hover .tyagi-thumbnail-img {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .tyagi-thumbnail-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,23 +423,23 @@
 }
 
 .tyagi-play-btn {
-  width: 4rem;
-  height: 4rem;
+  width: 4.5rem;
+  height: 4.5rem;
   border-radius: 50%;
-  background-color: var(--color-white);
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-gray-100) 100%);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-gray-800);
+
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .tyagi-play-btn:hover {
-  transform: scale(1.1);
-  background-color: var(--color-gray-100);
+  transform: scale(1.15);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* Status Badge */
@@ -326,19 +528,21 @@
 .tyagi-watch-btn {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: var(--color-gray-800);
+  background: black;
   color: var(--color-white);
   border: none;
   border-radius: 0.5rem;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .tyagi-watch-btn:hover {
-  background-color: var(--color-gray-700);
  
+  transform: translateY(-0.9px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
 }
 
 /* Back Button */
@@ -459,138 +663,54 @@
   background-color: var(--color-gray-50);
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .tyagi-stream-viewer {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .tyagi-chat-container {
-    height: 400px;
-  }
+/* Protected Stream Indicators */
+.tyagi-protected-indicator {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (max-width: 768px) {
-  .tyagi-container {
-    padding: 0.75rem;
-  }
-  
-  .tyagi-header {
-    margin: -0.75rem -0.75rem 1.5rem -0.75rem;
-    padding: 1.5rem 0;
-  }
-  
-  .tyagi-header-title {
-    font-size: 2rem;
-  }
-  
-  .tyagi-header-subtitle {
-    font-size: 1rem;
-  }
-  
-  .tyagi-tabs {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  
-  .tyagi-tab {
-    justify-content: flex-start;
-  }
-  
-  .tyagi-streams-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .tyagi-video-info {
-    padding: 1rem;
-  }
-  
-  .tyagi-video-title {
-    font-size: 1.25rem;
-  }
-  
-  .tyagi-video-meta {
-    gap: 0.75rem;
-  }
-  
-  .tyagi-chat-container {
-    height: 300px;
-  }
+.tyagi-protected-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
-@media (max-width: 480px) {
-  .tyagi-container {
-    padding: 0.5rem;
-  }
-  
-  .tyagi-header {
-    margin: -0.5rem -0.5rem 1rem -0.5rem;
-    padding: 1rem 0;
-  }
-  
-  .tyagi-header-title {
-    font-size: 1.75rem;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .tyagi-stream-info {
-    padding: 1rem;
-  }
-  
-  .tyagi-stream-title {
-    font-size: 1.125rem;
-  }
-  
-  .tyagi-video-info {
-    padding: 0.75rem;
-  }
-  
-  .tyagi-video-title {
-    font-size: 1.125rem;
-  }
-  
-  .tyagi-chat-header {
-    padding: 0.75rem 1rem;
-  }
-  
-  .tyagi-chat-container {
-    height: 250px;
-  }
-  
-  .tyagi-meta-item {
-    font-size: 0.8rem;
-  }
+.tyagi-video-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-/* High DPI Display Support */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .tyagi-thumbnail-img {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-  }
+.tyagi-stream-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
-/* Print Styles */
-@media print {
-  .tyagi-header,
-  .tyagi-tabs,
-  .tyagi-chat-section,
-  .tyagi-back-btn,
-  .tyagi-play-btn,
-  .tyagi-watch-btn {
-    display: none;
-  }
-  
-  .tyagi-stream-viewer {
-    grid-template-columns: 1fr;
-  }
-  
-  .tyagi-video-container {
-    display: none;
-  }
+
+.tyagi-lock-icon {
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+  margin-top: 0.125rem;
 }
+
 /* Password Modal Styles */
 .tyagi-modal-overlay {
   position: fixed;
@@ -792,96 +912,839 @@
   font-size: 0.875rem;
   margin-top: 0.5rem;
 }
+/* ===== RESPONSIVE MEDIA QUERIES ===== */
 
-/* Protected Stream Indicators */
-.tyagi-protected-indicator {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  background-color: var(--color-gray-800);
-  color: var(--color-white);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tyagi-protected-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background-color: var(--color-gray-100);
-  color: var(--color-gray-700);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.tyagi-video-title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.tyagi-stream-title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.tyagi-lock-icon {
-  color: var(--color-gray-500);
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-}
-
-/* Responsive adjustments for modal */
-@media (max-width: 768px) {
-  .tyagi-modal {
-    margin: 1rem;
-    max-width: none;
+/* Extra Large Screens (1440px and up) */
+@media (min-width: 1440px) {
+  .tyagi-hero-content {
+    max-width: 1400px;
   }
   
-  .tyagi-modal-header {
-    padding: 1rem;
+  .tyagi-container {
+    max-width: 1400px;
   }
   
-  .tyagi-modal-body {
-    padding: 1rem;
+  .tyagi-streams-grid {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  }
+}
+
+/* Large Screens (1024px - 1439px) */
+@media (max-width: 1439px) {
+  .tyagi-hero-title {
+    font-size: 3rem;
   }
   
-  .tyagi-modal-actions {
+  .tyagi-hero-description {
+    font-size: 1.125rem;
+  }
+}
+
+/* Medium-Large Screens (1024px - 1199px) */
+@media (max-width: 1199px) {
+  .tyagi-hero-content {
+    gap: 3rem;
+  }
+  
+  .tyagi-stream-viewer {
+    grid-template-columns: 1fr 350px;
+  }
+  
+  .tyagi-streams-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+/* Tablet Landscape (768px - 1023px) */
+@media (max-width: 1023px) {
+  .tyagi-hero {
+    min-height: 500px;
+    padding: 3rem 0;
+  }
+  
+  .tyagi-hero-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+  
+  .tyagi-hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .tyagi-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .tyagi-hero-description {
+    font-size: 1rem;
+    max-width: 600px;
+  }
+  
+  .tyagi-hero-stats {
+    flex-direction: row;
+    justify-content: center;
+    max-width: 100%;
+  }
+  
+  .tyagi-hero-image {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .tyagi-hero-image-wrapper {
+    transform: perspective(1000px) rotateY(0deg);
+  }
+  
+  .tyagi-container {
+    padding: 3rem 1.5rem;
+    margin-top: -1.5rem;
+  }
+  
+  .tyagi-section-header {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .tyagi-section-title {
+    font-size: 1.75rem;
+  }
+  
+  .tyagi-tabs {
     flex-direction: column;
     gap: 0.5rem;
   }
   
-  .tyagi-btn {
-    width: 100%;
+  .tyagi-tab {
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .tyagi-streams-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .tyagi-stream-viewer {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .tyagi-chat-section {
+    order: 2;
+  }
+  
+  .tyagi-video-section {
+    order: 1;
   }
 }
 
-@media (max-width: 480px) {
-  .tyagi-chat-placeholder {
+/* Tablet Portrait (600px - 767px) */
+@media (max-width: 767px) {
+  .tyagi-hero {
+    min-height: auto;
+    padding: 2.5rem 0;
+  }
+  
+  .tyagi-hero-content {
+    padding: 0 1.5rem;
+    gap: 2rem;
+  }
+  
+  .tyagi-hero-badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.875rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tyagi-hero-title {
+    font-size: 2rem;
+    margin: 0 0 1rem 0;
+  }
+  
+  .tyagi-hero-description {
+    font-size: 0.9375rem;
+    margin: 0 0 2rem 0;
+  }
+  
+  .tyagi-hero-stats {
+    flex-direction: column;
+    gap: 1.5rem;
     padding: 1.5rem;
   }
   
-  .tyagi-chat-placeholder h4 {
+  .tyagi-stat-divider {
+    display: none;
+  }
+  
+  .tyagi-stat-item {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .tyagi-stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .tyagi-container {
+    padding: 2.5rem 1rem;
+    border-radius: 1.5rem 1.5rem 0 0;
+  }
+  
+  .tyagi-section-title {
+    font-size: 1.5rem;
+  }
+  
+  .tyagi-section-subtitle {
+    font-size: 0.9375rem;
+  }
+  
+  .tyagi-header-title {
+    font-size: 2rem;
+    gap: 0.5rem;
+  }
+  
+  .tyagi-header-subtitle {
+    font-size: 1rem;
+  }
+  
+  .tyagi-tabs {
+    gap: 0.5rem;
+  }
+  
+  .tyagi-tab {
+    font-size: 0.9375rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .tyagi-streams-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .tyagi-stream-card {
+    border-radius: 1.25rem;
+  }
+  
+  .tyagi-stream-title {
     font-size: 1.125rem;
   }
   
-  .tyagi-chat-placeholder p {
+  .tyagi-stream-description {
+    font-size: 0.9375rem;
+  }
+  
+  .tyagi-video-title {
+    font-size: 1.25rem;
+  }
+  
+  .tyagi-video-meta {
+    gap: 0.75rem;
+  }
+  
+  .tyagi-chat-container {
+    height: 400px;
+  }
+  
+  .tyagi-modal {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}
+
+/* Mobile Landscape (480px - 599px) */
+@media (max-width: 599px) {
+  .tyagi-hero {
+    padding: 2rem 0;
+  }
+  
+  .tyagi-hero-content {
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+  
+  .tyagi-hero-title {
+    font-size: 1.75rem;
+  }
+  
+  .tyagi-hero-description {
     font-size: 0.875rem;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  .tyagi-hero-stats {
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+  
+  .tyagi-stat-number {
+    font-size: 1.375rem;
+  }
+  
+  .tyagi-stat-label {
+    font-size: 0.8125rem;
+  }
+  
+  .tyagi-container {
+    padding: 2rem 1rem;
+    border-radius: 1.25rem 1.25rem 0 0;
+  }
+  
+  .tyagi-section-header {
+    margin-bottom: 1.5rem;
+  }
+  
+  .tyagi-section-title {
+    font-size: 1.375rem;
+  }
+  
+  .tyagi-section-subtitle {
+    font-size: 0.875rem;
+  }
+  
+  .tyagi-tabs {
+    padding: 0.375rem;
+    gap: 0.375rem;
+  }
+  
+  .tyagi-tab {
+    font-size: 0.875rem;
+    padding: 0.625rem 0.875rem;
+    gap: 0.5rem;
+  }
+  
+  .tyagi-tab svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .tyagi-play-btn {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  .tyagi-play-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .tyagi-stream-info {
+    padding: 1.25rem;
+  }
+  
+  .tyagi-stream-title {
+    font-size: 1rem;
+  }
+  
+  .tyagi-stream-description {
+    font-size: 0.875rem;
+    margin: 0 0 0.875rem 0;
+  }
+  
+  .tyagi-meta-row {
+    font-size: 0.8125rem;
+  }
+  
+  .tyagi-watch-btn {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+  }
+  
+  .tyagi-video-info {
+    padding: 1.25rem;
+  }
+  
+  .tyagi-video-title {
+    font-size: 1.125rem;
+  }
+  
+  .tyagi-video-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .tyagi-meta-item {
+    font-size: 0.8125rem;
+  }
+  
+  .tyagi-chat-header {
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .tyagi-chat-header h3 {
+    font-size: 1rem;
+  }
+  
+  .tyagi-chat-container {
+    height: 350px;
+  }
+  
+  .tyagi-modal-header {
+    padding: 1.25rem;
+  }
+  
+  .tyagi-modal-title h3 {
+    font-size: 1.125rem;
+  }
+  
+  .tyagi-modal-body {
+    padding: 1.25rem;
+  }
+}
+
+/* Mobile Portrait (320px - 479px) */
+@media (max-width: 479px) {
+  .tyagi-hero {
+    padding: 1.5rem 0;
+    min-height: auto;
+  }
+  
+  .tyagi-hero-content {
+    padding: 0 1rem;
+    gap: 1.25rem;
+  }
+  
+  .tyagi-hero-badge {
+    font-size: 0.6875rem;
+    padding: 0.3125rem 0.75rem;
+  }
+  
+  .tyagi-hero-badge svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .tyagi-hero-title {
+    font-size: 1.5rem;
+    margin: 0 0 0.875rem 0;
+  }
+  
+  .tyagi-hero-description {
+    font-size: 0.8125rem;
+    margin: 0 0 1.25rem 0;
+  }
+  
+  .tyagi-hero-stats {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .tyagi-stat-item {
+    gap: 0.75rem;
+  }
+  
+  .tyagi-stat-item svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .tyagi-stat-number {
+    font-size: 1.25rem;
+  }
+  
+  .tyagi-stat-label {
+    font-size: 0.75rem;
+  }
+  
+  .tyagi-hero-image-wrapper {
+    border-radius: 1.5rem;
+  }
+  
+  .tyagi-container {
+    padding: 1.5rem 0.875rem;
+    border-radius: 1rem 1rem 0 0;
+    margin-top: -1rem;
+  }
+  
+  .tyagi-section-header {
+    margin-bottom: 1.25rem;
+  }
+  
+  .tyagi-section-title {
+    font-size: 1.25rem;
+    margin: 0 0 0.375rem 0;
+  }
+  
+  .tyagi-section-subtitle {
+    font-size: 0.8125rem;
+  }
+  
+  .tyagi-header-title {
+    font-size: 1.5rem;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  
+  .tyagi-header-subtitle {
+    font-size: 0.9375rem;
+  }
+  
+  .tyagi-tabs {
+    padding: 0.3125rem;
+    gap: 0.3125rem;
+  }
+  
+  .tyagi-tab {
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.75rem;
+    gap: 0.375rem;
+    flex-direction: column;
+  }
+  
+  .tyagi-tab svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .tyagi-loading {
+    padding: 3rem 1rem;
+  }
+  
+  .tyagi-loading-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .tyagi-empty-state {
+    padding: 3rem 1rem;
+  }
+  
+  .tyagi-empty-icon-wrapper {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tyagi-empty-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .tyagi-empty-state h3 {
+    font-size: 1.25rem;
+  }
+  
+  .tyagi-empty-state p {
+    font-size: 0.875rem;
+  }
+  
+  .tyagi-stream-card {
+    border-radius: 1rem;
+  }
+  
+  .tyagi-status-badge {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.1875rem 0.625rem;
+    font-size: 0.6875rem;
   }
   
   .tyagi-protected-indicator {
     top: 0.5rem;
     left: 0.5rem;
     padding: 0.375rem;
+  }
+  
+  .tyagi-protected-indicator svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .tyagi-play-btn {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  
+  .tyagi-play-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .tyagi-stream-info {
+    padding: 1rem;
+  }
+  
+  .tyagi-stream-title {
+    font-size: 0.9375rem;
+  }
+  
+  .tyagi-stream-title-row {
+    gap: 0.375rem;
+  }
+  
+  .tyagi-lock-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .tyagi-stream-description {
+    font-size: 0.8125rem;
+    margin: 0 0 0.75rem 0;
+    -webkit-line-clamp: 2;
+  }
+  
+  .tyagi-stream-meta {
+    margin-bottom: 1rem;
+  }
+  
+  .tyagi-meta-row {
+    font-size: 0.75rem;
+    gap: 0.375rem;
+  }
+  
+  .tyagi-meta-row svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .tyagi-watch-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .tyagi-back-btn {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .tyagi-video-info {
+    padding: 1rem;
+  }
+  
+  .tyagi-video-title-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .tyagi-video-title {
+    font-size: 1rem;
+  }
+  
+  .tyagi-protected-badge {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+  
+  .tyagi-video-meta {
+    gap: 0.5rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  .tyagi-meta-item {
+    font-size: 0.75rem;
+  }
+  
+  .tyagi-video-description {
+    font-size: 0.875rem;
+  }
+  
+  .tyagi-chat-header {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+  
+  .tyagi-chat-header svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .tyagi-chat-header h3 {
+    font-size: 0.9375rem;
+  }
+  
+  .tyagi-chat-container {
+    height: 300px;
+  }
+  
+  .tyagi-chat-placeholder {
+    padding: 1.5rem;
+  }
+  
+  .tyagi-chat-placeholder-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .tyagi-chat-placeholder h4 {
+    font-size: 1rem;
+  }
+  
+  .tyagi-chat-placeholder p {
+    font-size: 0.8125rem;
+  }
+  
+  .tyagi-chat-schedule {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+  
+  .tyagi-modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .tyagi-modal {
+    margin: 0;
+    max-width: 100%;
+    border-radius: 0.75rem;
+  }
+  
+  .tyagi-modal-header {
+    padding: 1rem;
+  }
+  
+  .tyagi-modal-title {
+    gap: 0.5rem;
+  }
+  
+  .tyagi-modal-title h3 {
+    font-size: 1rem;
+  }
+  
+  .tyagi-modal-close {
+    padding: 0.375rem;
+  }
+  
+  .tyagi-modal-body {
+    padding: 1rem;
+  }
+  
+  .tyagi-modal-body p {
+    font-size: 0.875rem;
+    margin: 0 0 0.875rem 0;
+  }
+  
+  .tyagi-modal-stream-title {
+    padding: 0.625rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .tyagi-form-group {
+    margin-bottom: 0.875rem;
+  }
+  
+  .tyagi-form-group label {
+    font-size: 0.875rem;
+    margin-bottom: 0.375rem;
+  }
+  
+  .tyagi-form-input {
+    padding: 0.625rem;
+    font-size: 0.9375rem;
+  }
+  
+  .tyagi-error-message {
+    padding: 0.625rem;
+    font-size: 0.8125rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  .tyagi-modal-actions {
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    flex-direction: column-reverse;
+  }
+  
+  .tyagi-btn {
+    width: 100%;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+}
+
+/* Extra Small Devices (max-width: 359px) */
+@media (max-width: 359px) {
+  .tyagi-hero-title {
+    font-size: 1.375rem;
+  }
+  
+  .tyagi-hero-stats {
+    padding: 0.875rem;
+  }
+  
+  .tyagi-stat-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .tyagi-container {
+    padding: 1.25rem 0.75rem;
+  }
+  
+  .tyagi-section-title {
+    font-size: 1.125rem;
+  }
+  
+  .tyagi-tab span {
+    display: none;
+  }
+  
+  .tyagi-tab {
+    padding: 0.625rem;
+  }
+}
+
+/* Landscape Orientation for Mobile Devices */
+@media (max-height: 500px) and (orientation: landscape) {
+  .tyagi-hero {
+    min-height: auto;
+    padding: 1.5rem 0;
+  }
+  
+  .tyagi-hero-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  
+  .tyagi-hero-stats {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .tyagi-stat-divider {
+    display: block;
+  }
+  
+  .tyagi-container {
+    padding: 2rem 1rem;
+  }
+  
+  .tyagi-chat-container {
+    height: 250px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .tyagi-hero-overlay,
+  .tyagi-hero-image-glow,
+  .tyagi-tabs,
+  .tyagi-watch-btn,
+  .tyagi-play-btn,
+  .tyagi-back-btn,
+  .tyagi-modal-overlay {
+    display: none !important;
+  }
+  
+  .tyagi-app {
+    background: white;
+  }
+  
+  .tyagi-stream-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .tyagi-streams-grid {
+    display: block;
+  }
+  
+  .tyagi-stream-card {
+    margin-bottom: 2rem;
   }
 }

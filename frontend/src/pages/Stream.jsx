@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Play, Tv, Lock } from 'lucide-react';
+import { Calendar, Clock, Play, Tv, Lock, Radio, Users, Video } from 'lucide-react';
 import '../pagesCSS/Stream.css';
 import profileImage from '../images/livestream.png';
 
@@ -42,7 +42,6 @@ const StreamApp = () => {
   };
 
   const selectStream = (stream) => {
-    // Navigate to StreamPost component with stream ID
     window.location.href = `/streampost/${stream._id}`;
   };
 
@@ -92,16 +91,70 @@ const StreamApp = () => {
 
   return (
     <div className="tyagi-app">
-      <div className="tyagi-container">
-        <header className="tyagi-header">
-          <div className="tyagi-header-content">
-            <h1 className="tyagi-header-title">
-              <Tv className="tyagi-header-icon" />
-             
+      {/* Hero Section - NEW */}
+      <div className="tyagi-hero">
+        <div className="tyagi-hero-overlay"></div>
+        <div className="tyagi-hero-content">
+          <div className="tyagi-hero-text">
+            <div className="tyagi-hero-badge">
+              <Radio size={16} />
+              <span>LIVE STREAMING</span>
+            </div>
+            <h1 className="tyagi-hero-title">
+              Connect Through
+              <span className="tyagi-hero-gradient"> Live Streams</span>
             </h1>
-            <p className="tyagi-header-subtitle">Watch live streams and upcoming events</p>
+            <p className="tyagi-hero-description">
+              Join our community for live sessions, workshops, and interactive discussions. 
+              Experience real-time engagement with content that matters.
+            </p>
+            <div className="tyagi-hero-stats">
+              <div className="tyagi-stat-item">
+                <Users size={20} />
+                <div>
+                  <div className="tyagi-stat-number">100+</div>
+                  <div className="tyagi-stat-label">Active Viewers</div>
+                </div>
+              </div>
+              <div className="tyagi-stat-divider"></div>
+              <div className="tyagi-stat-item">
+                <Video size={20} />
+                <div>
+                  <div className="tyagi-stat-number">10+</div>
+                  <div className="tyagi-stat-label">Streams Hosted</div>
+                </div>
+              </div>
+              <div className="tyagi-stat-divider"></div>
+              <div className="tyagi-stat-item">
+                <Clock size={20} />
+                <div>
+                  <div className="tyagi-stat-number">10+</div>
+                  <div className="tyagi-stat-label">Hours of Content</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </header>
+          <div className="tyagi-hero-image">
+            <div className="tyagi-hero-image-wrapper">
+              <img 
+                src={profileImage}
+                alt="Live streaming" 
+                className="tyagi-hero-img"
+              />
+              <div className="tyagi-hero-image-glow"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Original Content with Updated Section Header */}
+      <div className="tyagi-container">
+        <div className="tyagi-section-header">
+          <div>
+            <h2 className="tyagi-section-title">Explore Streams</h2>
+            <p className="tyagi-section-subtitle">Discover upcoming events and watch live content</p>
+          </div>
+        </div>
 
         <div className="tyagi-tabs">
           <button
@@ -109,21 +162,21 @@ const StreamApp = () => {
             onClick={() => setActiveTab('upcoming')}
           >
             <Calendar size={20} />
-            Upcoming Streams
+            <span>Upcoming Streams</span>
           </button>
           <button
             className={`tyagi-tab ${activeTab === 'live' ? 'tyagi-tab-active' : ''}`}
             onClick={() => setActiveTab('live')}
           >
             <Play size={20} />
-            Live Now
+            <span>Live Now</span>
           </button>
           <button
             className={`tyagi-tab ${activeTab === 'ended' ? 'tyagi-tab-active' : ''}`}
             onClick={() => setActiveTab('ended')}
           >
             <Tv size={20} />
-            Ended Streams
+            <span>Ended Streams</span>
           </button>
         </div>
 
@@ -135,7 +188,9 @@ const StreamApp = () => {
             </div>
           ) : streams.length === 0 ? (
             <div className="tyagi-empty-state">
-              <Tv size={64} className="tyagi-empty-icon" />
+              <div className="tyagi-empty-icon-wrapper">
+                <Tv size={48} className="tyagi-empty-icon" />
+              </div>
               <h3>No {activeTab} streams</h3>
               <p>Check back later for new content!</p>
             </div>

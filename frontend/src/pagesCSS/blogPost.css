@@ -97,8 +97,8 @@
 .tag {
   background-color: black;
   color: white;
-  padding: 0.1rem 0.8rem;
-  
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 500;
 }

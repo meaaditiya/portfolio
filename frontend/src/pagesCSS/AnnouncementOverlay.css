@@ -126,7 +126,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 9px 20px;
   background-color: #f5f5f5;
   color: #333;
   border: 1px solid #e0e0e0;
@@ -137,6 +137,8 @@
   transition: all 0.2s ease;
   margin-top: 12px;
   margin-left: 12px;
+  position: relative;
+  top:2px;
 }
 
 .announcement_document_link_unique_2024:hover {

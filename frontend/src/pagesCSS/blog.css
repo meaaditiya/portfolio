@@ -75,16 +75,16 @@ body {
   font-size: 14px;
   font-weight: 600;
   font-family: var(--font-sans);
-  color: var(--color-black);
-  background-color: transparent;
-  border: 1px solid var(--color-gray-300);
+  color: white;
+  background-color: black;
+  border: 1px solid black;
   border-radius: 6px;
   cursor: pointer;
   transition: var(--transition);
 }
 
 .filter-toggle-btn:hover {
-  background-color: #000000;
+  background-color: #1a1a1a;
   color: #ffffff;
   border-color: #000000;
   transform: translateY(-1px);
@@ -443,7 +443,7 @@ body {
   cursor: pointer;
   transition: none;
   padding-bottom: 2rem;
-  border-bottom: 1px solid var(--color-gray-200);
+  border-bottom: 1px solid ;
   align-items: start;
 }
 
@@ -452,7 +452,7 @@ body {
   height: 450px;
   overflow: hidden;
   border-radius: 0;
-  border: 1px solid var(--color-gray-200);
+  border: .5px solid black;
   position: relative;
 }
 
@@ -508,7 +508,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--color-gray-600);
+  color: black;
 }
 
 .featured-author {
@@ -521,7 +521,7 @@ body {
 }
 
 .featured-date {
-  color: var(--color-gray-600);
+  color: black;
 }
 
 .featured-title {
@@ -545,7 +545,7 @@ body {
 .featured-summary {
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--color-gray-700);
+  color: black;
   margin: 0.5rem 0;
 }
 
@@ -565,8 +565,8 @@ body {
 .featured-tag {
   padding: 0.35rem 0.75rem;
   background-color: transparent;
-  color: var(--color-gray-700);
-  border: 1px solid var(--color-gray-300);
+  color: black;
+  border: 1px solid black;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
@@ -581,9 +581,9 @@ body {
 
 .generate-summary-btn-new {
   padding: 0.5rem 1rem;
-  background-color: transparent;
-  color: var(--color-black);
-  border: 1px solid var(--color-gray-300);
+  background-color: black;
+  color: white;
+  border: 1px solid black;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.875rem;
@@ -593,7 +593,7 @@ body {
 }
 
 .generate-summary-btn-new:hover {
-  background-color: var(--color-black);
+  background-color: #1a1a1a;
   color: var(--color-white);
   border-color: var(--color-black);
 }
@@ -673,7 +673,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: var(--color-gray-600);
+  color: black;
 }
 
 .small-author {
@@ -682,7 +682,7 @@ body {
 }
 
 .small-date {
-  color: var(--color-gray-600);
+  color: black;
 }
 
 .small-title {
@@ -710,7 +710,7 @@ body {
 .small-summary {
   font-size: 0.9rem;
   line-height: 1.5;
-  color: var(--color-gray-700);
+  color: black;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -731,8 +731,8 @@ body {
 .small-tag {
   padding: 0.3rem 0.65rem;
   background-color: transparent;
-  color: var(--color-gray-700);
-  border: 1px solid var(--color-gray-300);
+  color: black;
+  border: 1px solid black;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -754,9 +754,9 @@ body {
 
 .load-more-button {
   padding: 12px 32px;
-  background-color: transparent;
-  color: var(--color-black);
-  border: 1px solid var(--color-gray-300);
+  background-color: black;
+  color: white;
+  border: 1px solid black;
   border-radius: 6px;
   cursor: pointer;
   font-size: 15px;
@@ -769,7 +769,7 @@ body {
   background-color: #000000;
   color: #ffffff;
   border-color: #000000;
-  transform: translateY(-2px);
+  transform: translateY(-0.5px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 

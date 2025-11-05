@@ -287,7 +287,7 @@ const StreamPost = () => {
   // Main stream view
   if (stream && embedData) {
     return (
-      <div className="tyagi-app">
+      <div className="tyagi-app2">
         <div className="tyagi-container">
           <button 
             className="tyagi-back-btn"
