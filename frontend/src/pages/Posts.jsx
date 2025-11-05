@@ -1714,7 +1714,7 @@ useEffect(() => {
         <div className="pst-post-modal" onClick={closeModals}>
           <div className="pst-social-modal-content" onClick={(e) => e.stopPropagation()}>
             <button 
-              className="pst-close-button2"
+              className="pst-close-button3"
               onClick={closeModals}
             >
               <X className="pst-icon" />

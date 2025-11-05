@@ -343,7 +343,7 @@
 /* Post Overlay */
 .pst-post-overlay {
   position: absolute;
-  inset: 0;
+ inset: 0;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
   display: flex;
   align-items: center;
@@ -509,6 +509,29 @@
 
 .pst-close-button2 {
  position: fixed;
+  width:auto;
+  left:60px;
+  top: var(--spacing-xl);
+  right: var(--spacing-xl);
+  background: transparent;
+  color: white;
+  border: none;
+   white-space: normal;
+  
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10001;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: inline-block; /* instead of flex */
+  text-align: left;
+}
+.pst-close-button3{
+   position: fixed;
   right: 10px;
   top: var(--spacing-xl);
   right: var(--spacing-xl);
