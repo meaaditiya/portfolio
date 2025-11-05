@@ -238,30 +238,32 @@ const Blog = () => {
 
   return (
     <section className="section">
-      <div className="blog-header">
-        <h2 className="section-title">Blogs</h2>
-        
-        {/* Filter Button */}
-        <button 
-          className="filter-toggle-btn"
-          onClick={() => setShowFilterPopup(!showFilterPopup)}
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="18" 
-            height="18" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
+      <div className="blog-header-new">
+        <div className="blog-header-content">
+          <h2 className="section-title-new">Recent blog posts</h2>
+          
+          {/* Filter Button */}
+          <button 
+            className="filter-toggle-btn"
+            onClick={() => setShowFilterPopup(!showFilterPopup)}
           >
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-          </svg>
-          Filter
-          {hasActiveFilters && <span className="filter-badge"></span>}
-        </button>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="18" 
+              height="18" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            Filter
+            {hasActiveFilters && <span className="filter-badge"></span>}
+          </button>
+        </div>
       </div>
 
       {/* Filter Popup */}
@@ -359,78 +361,100 @@ const Blog = () => {
       )}
 
       {filteredBlogs.length === 0 && (
-        <div className="empty-state">
+        <div className="empty-state-new">
           <p>No blog posts match your filters.</p>
         </div>
       )}
 
-      <div className="grid">
-        {filteredBlogs.map((blog) => (
+      <div className="blog-grid-new">
+        {/* Featured Large Card (First Blog) */}
+        {filteredBlogs.length > 0 && (
           <div
-            key={blog._id}
-            className="blog-card1"
-            onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
+            className="blog-card-featured"
+            onClick={() => navigate(`/blog/${filteredBlogs[0].slug || filteredBlogs[0]._id}`)}
           >
-            {blog.featuredImage ? (
-              <div className="blog-image-container">
-                <img src={blog.featuredImage} alt={blog.title} className="blog-image" />
-                <div className="image-source">
-                  Photo: {getImageSource(blog.featuredImage)}
+            <div className="featured-image-wrapper">
+              {filteredBlogs[0].featuredImage ? (
+                <img src={filteredBlogs[0].featuredImage} alt={filteredBlogs[0].title} className="featured-image" />
+              ) : (
+                <div className="featured-placeholder">
+                  <div className="placeholder-title">AT</div>
                 </div>
+              )}
+            </div>
+            <div className="featured-content">
+              <div className="featured-meta">
+                <span className="featured-author">{filteredBlogs[0].author?.name || 'Anonymous'}</span>
+                <span className="meta-divider">•</span>
+                <span className="featured-date">
+                  {new Date(filteredBlogs[0].publishedAt).toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
-            ) : (
-              <div className="blog-placeholder">
-                <div className="placeholder-title">AT</div>
-                <div className="placeholder-text">
-                  Photo: Default<br />
-                  Placeholder Image
+              <h3 className="featured-title">{filteredBlogs[0].title}</h3>
+              <p className="featured-summary">{filteredBlogs[0].summary}</p>
+              <div className="featured-footer">
+                <div className="featured-tags">
+                  {filteredBlogs[0].tags && filteredBlogs[0].tags.slice(0, 3).map((tag, index) => (
+                    <span key={index} className="featured-tag">{tag}</span>
+                  ))}
                 </div>
-              </div>
-            )}
-            <div className="blog-content">
-              <h3 className="blog-title">{blog.title}</h3>
-              <p className="blog-date">
-                {new Date(blog.publishedAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </p>
-              <p className="blog-summary">{blog.summary}</p>
-              <div className="blog-tags">
-                {blog.tags && blog.tags.map((tag, index) => (
-                  <span key={index} className="tag">{tag}</span>
-                ))}
-              </div>
-              <button
-                className="generate-summary-btn"
-                onClick={(e) => handleGenerateSummary(blog, e)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.8"
-                  stroke="url(#starGradient)"
-                  style={{ width: '18px', height: '18px', verticalAlign: 'middle', marginRight: '8px' }}
+                <button
+                  className="generate-summary-btn-new"
+                  onClick={(e) => handleGenerateSummary(filteredBlogs[0], e)}
                 >
-                  <defs>
-                    <linearGradient id="starGradient" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#00C4CC" />
-                      <stop offset="100%" stopColor="#0072FF" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
-                  />
-                </svg>
-                AI Summary
-              </button>
+                  AI Summary
+                </button>
+              </div>
             </div>
           </div>
-        ))}
+        )}
+
+        {/* Smaller Cards (Remaining Blogs) */}
+        <div className="blog-cards-grid">
+          {filteredBlogs.slice(1).map((blog) => (
+            <div
+              key={blog._id}
+              className="blog-card-small"
+              onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
+            >
+              <div className="small-image-wrapper">
+                {blog.featuredImage ? (
+                  <img src={blog.featuredImage} alt={blog.title} className="small-image" />
+                ) : (
+                  <div className="small-placeholder">
+                    <span className="placeholder-text">AT</span>
+                  </div>
+                )}
+              </div>
+              <div className="small-content">
+                <div className="small-meta">
+                  <span className="small-author">{blog.author?.name || 'Anonymous'}</span>
+                  <span className="meta-divider">•</span>
+                  <span className="small-date">
+                    {new Date(blog.publishedAt).toLocaleDateString('en-US', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+                <h3 className="small-title">{blog.title}</h3>
+                <p className="small-summary">{blog.summary}</p>
+                <div className="small-footer">
+                  <div className="small-tags">
+                    {blog.tags && blog.tags.slice(0, 2).map((tag, index) => (
+                      <span key={index} className="small-tag">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {hasMore && !searchQuery && selectedTags.length === 0 && (

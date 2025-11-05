@@ -1,24 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Mail, Phone, MapPin, User, GraduationCap, Code, Award, Calendar,
-  Globe, Database, Server, Smartphone, GitBranch, Layers, FileCode, Palette, Download
+  Globe, Database, Server, Smartphone, GitBranch, Layers, FileCode, Palette, Download,
+  ChevronLeft, ChevronRight, Cloud
 } from 'lucide-react';
 import '../pagesCSS/about.css';
 import profileImage from '../images/aadiprofile.png';
 
 const About = () => {
-  const handleConnectClick = () => {
-    // Navigate to contact section or show contact modal
-    console.log('Navigate to contact');
-  };
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const handleDownloadResume = () => {
-    // Open resume in new popup window
     window.open('/resume.pdf', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
     
-    // Also trigger download
     const link = document.createElement('a');
-    link.href = '/resume.pdf'; // Assuming resume.pdf is in the public folder
+    link.href = '/resume.pdf';
     link.download = 'Aaditiya_Tyagi_Resume.pdf';
     document.body.appendChild(link);
     link.click();
@@ -26,18 +22,18 @@ const About = () => {
   };
 
   const skills = [
-    { name: "React.js", icon: <Globe size={18} /> },
-    { name: "Node.js", icon: <Server size={18} /> },
-    { name: "Java", icon: <Code size={18} /> },
-    { name: "Javascript", icon: <FileCode size={18} /> },
-    { name: "MongoDB", icon: <Database size={18} /> },
-    { name: "SQL", icon: <Database size={18} /> },
-    { name: "NoSQL", icon: <Database size={18} /> },
-    { name: "Express.js", icon: <Server size={18} /> },
-    { name: "HTML", icon: <FileCode size={18} /> },
-    { name: "CSS", icon: <Palette size={18} /> },
-    { name: "Git", icon: <GitBranch size={18} /> },
-    { name: "REST APIs", icon: <Layers size={18} /> }
+    { name: "React.js", icon: <Globe size={20} />, color: "#61DAFB" },
+    { name: "Node.js", icon: <Server size={20} />, color: "#339933" },
+    { name: "Java", icon: <Code size={20} />, color: "#007396" },
+    { name: "Spring Boot", icon: <Layers size={20} />, color: "#6DB33F" },
+    { name: "Javascript", icon: <FileCode size={20} />, color: "#F7DF1E" },
+    { name: "MongoDB", icon: <Database size={20} />, color: "#47A248" },
+    { name: "SQL", icon: <Database size={20} />, color: "#4479A1" },
+    { name: "Express.js", icon: <Server size={20} />, color: "#000000" },
+    { name: "AWS", icon: <Cloud size={20} />, color: "#FF9900" },
+    { name: "HTML", icon: <FileCode size={20} />, color: "#E34F26" },
+    { name: "CSS", icon: <Palette size={20} />, color: "#1572B6" },
+    { name: "Git", icon: <GitBranch size={20} />, color: "#F05032" }
   ];
 
   const educationData = [
@@ -63,7 +59,15 @@ const About = () => {
       icon: <Award className="education-icon" />
     }
   ];
- 
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % skills.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + skills.length) % skills.length);
+  };
+
   return (
     <section className="about-section">
       <div className="about-container">
@@ -75,15 +79,12 @@ const About = () => {
                 <User size={16} />
                 <span>About Me</span>
               </div>
-              <h1 className="about-title">
-                Full-Stack Developer
-              </h1>
+              <h1 className="about-title">Full-Stack Developer</h1>
               <p className="about-description">
                 Full-stack developer with a strong command of React.js, Node.js, and modern web technologies, 
                 dedicated to building scalable, high-performance, and user-focused digital solutions. 
                 Passionate about innovation, clean code, and crafting seamless web experiences that drive real-world impact.
               </p>
-             
             </div>
             <div className="about-image-wrapper">
               <div className="about-image-container">
@@ -151,32 +152,70 @@ const About = () => {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Technical Skills */}
-          <div className="about-card about-skills-card">
-            <div className="card-header">
-              <div className="card-icon">
-                <Code size={20} />
-              </div>
-              <h3 className="card-title">Technical Expertise</h3>
-            </div>
-            <div className="card-content">
-              <div className="skills-scroll-container">
-                <div className="skills-grid">
-                  {skills.map((skill, index) => (
-                    <div key={index} className="skill-item">
-                      <div className="skill-icon">
-                        {skill.icon}
+        {/* Technical Skills Slider Section */}
+        <div className="expertise-section">
+          <h2 className="section-heading">
+            <Code size={28} />
+            Technical Expertise
+          </h2>
+          
+          <div className="slider-container">
+            <button className="slider-nav prev" onClick={prevSlide} aria-label="Previous slide">
+              <ChevronLeft size={24} />
+            </button>
+
+            <div className="slider-wrapper">
+              {skills.map((skill, index) => {
+                const offset = index - currentSlide;
+                const isActive = offset === 0;
+                const absOffset = Math.abs(offset);
+                
+                return (
+                  <div
+                    key={index}
+                    className={`expertise-card-small ${isActive ? 'active' : ''}`}
+                    style={{
+                      transform: `translateX(${offset * 35}%) translateZ(${-absOffset * 100}px) scale(${1 - absOffset * 0.15})`,
+                      opacity: absOffset > 2 ? 0 : 1 - absOffset * 0.3,
+                      zIndex: 20 - absOffset,
+                      pointerEvents: isActive ? 'auto' : 'none'
+                    }}
+                  >
+                    <div className="card-gradient-small" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}></div>
+                    <div className="card-glass-small">
+                      <div className="skill-card-content">
+                        <div className="skill-icon-large" style={{ color: skill.color }}>
+                          {skill.icon}
+                        </div>
+                        <h3 className="skill-name-large">{skill.name}</h3>
                       </div>
-                      <span className="skill-name">{skill.name}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                );
+              })}
             </div>
+
+            <button className="slider-nav next" onClick={nextSlide} aria-label="Next slide">
+              <ChevronRight size={24} />
+            </button>
+          </div>
+
+          {/* Slider Dots */}
+          <div className="slider-dots">
+            {skills.map((_, index) => (
+              <button
+                key={index}
+                className={`dot ${currentSlide === index ? 'active' : ''}`}
+                onClick={() => setCurrentSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
-         {/* Download Resume Button */}
+
+        {/* Download Resume Button */}
         <div className="about-resume-row">
           <button 
             className="download-resume-btn" 
@@ -187,7 +226,8 @@ const About = () => {
             <span>Download Resume</span>
           </button>
         </div>
-        {/* Contact Information - Separate Row */}
+
+        {/* Contact Information */}
         <div className="about-contact-row">
           <div className="about-card about-contact-card">
             <div className="card-header">
@@ -233,8 +273,6 @@ const About = () => {
             </div>
           </div>
         </div>
-
-       
       </div>
     </section>
   );

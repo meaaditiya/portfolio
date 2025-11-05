@@ -3,46 +3,90 @@ import '../pagesCSS/BlogSkeletonLoader.css';
 
 const BlogSkeletonLoader = ({ count = 6 }) => {
   return (
-    <div className="grid">
-      {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="blog-card1 skeleton-card">
-          {/* Image/Placeholder Skeleton */}
-          <div className="blog-image-container skeleton-image-container">
+    <>
+      <div className="blog-grid-new">
+        {/* Featured Large Card Skeleton (First Item) */}
+        <div className="blog-card-featured skeleton-card">
+          {/* Image Skeleton */}
+          <div className="featured-image-wrapper skeleton-image-wrapper">
             <div className="skeleton-image"></div>
           </div>
           
           {/* Content Skeleton */}
-          <div className="blog-content skeleton-content">
-            {/* Title Skeleton */}
-            <div className="skeleton-title">
-              <div className="skeleton-line skeleton-line-title"></div>
-              <div className="skeleton-line skeleton-line-title-short"></div>
+          <div className="featured-content skeleton-content">
+            {/* Meta Skeleton */}
+            <div className="skeleton-meta">
+              <div className="skeleton-line skeleton-author"></div>
+              <div className="skeleton-line skeleton-divider"></div>
+              <div className="skeleton-line skeleton-date"></div>
             </div>
             
-            {/* Date Skeleton */}
-            <div className="skeleton-date">
-              <div className="skeleton-line skeleton-line-date"></div>
+            {/* Title Skeleton */}
+            <div className="skeleton-title-wrapper">
+              <div className="skeleton-line skeleton-featured-title"></div>
+              <div className="skeleton-line skeleton-featured-title-short"></div>
             </div>
             
             {/* Summary Skeleton */}
             <div className="skeleton-summary">
-              <div className="skeleton-line skeleton-line-summary"></div>
-              <div className="skeleton-line skeleton-line-summary"></div>
+              <div className="skeleton-line skeleton-summary-line"></div>
+              <div className="skeleton-line skeleton-summary-line"></div>
+              <div className="skeleton-line skeleton-summary-line-short"></div>
             </div>
             
-            {/* Tags Skeleton */}
-            <div className="skeleton-tags">
-              <div className="skeleton-tag"></div>
-              <div className="skeleton-tag"></div>
-              <div className="skeleton-tag skeleton-tag-small"></div>
+            {/* Footer Skeleton */}
+            <div className="skeleton-footer">
+              <div className="skeleton-tags-wrapper">
+                <div className="skeleton-tag"></div>
+                <div className="skeleton-tag"></div>
+                <div className="skeleton-tag skeleton-tag-small"></div>
+              </div>
+              <div className="skeleton-ai-btn"></div>
             </div>
-            
-            {/* Generate Summary Button Skeleton */}
-            <div className="skeleton-generate-btn"></div>
           </div>
         </div>
-      ))}
-    </div>
+
+        {/* Small Cards Grid Skeleton (Remaining Items) */}
+        <div className="blog-cards-grid">
+          {Array.from({ length: count - 1 }).map((_, index) => (
+            <div key={index} className="blog-card-small skeleton-card">
+              {/* Image Skeleton */}
+              <div className="small-image-wrapper skeleton-small-image-wrapper">
+                <div className="skeleton-image"></div>
+              </div>
+              
+              {/* Content Skeleton */}
+              <div className="small-content skeleton-small-content">
+                {/* Meta Skeleton */}
+                <div className="skeleton-meta">
+                  <div className="skeleton-line skeleton-small-author"></div>
+                  <div className="skeleton-line skeleton-divider"></div>
+                  <div className="skeleton-line skeleton-small-date"></div>
+                </div>
+                
+                {/* Title Skeleton */}
+                <div className="skeleton-small-title-wrapper">
+                  <div className="skeleton-line skeleton-small-title"></div>
+                  <div className="skeleton-line skeleton-small-title-short"></div>
+                </div>
+                
+                {/* Summary Skeleton */}
+                <div className="skeleton-small-summary">
+                  <div className="skeleton-line skeleton-small-summary-line"></div>
+                  <div className="skeleton-line skeleton-small-summary-line-short"></div>
+                </div>
+                
+                {/* Tags Skeleton */}
+                <div className="skeleton-small-tags">
+                  <div className="skeleton-small-tag"></div>
+                  <div className="skeleton-small-tag"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 
