@@ -356,12 +356,7 @@ const Home = () => {
             <div className="section-content"  style={{ cursor: 'pointer' }}>
               <About />
             </div>
-            <button
-              onClick={() => navigateToPage('/about')}
-              className="section-nav-btn"
-            >
-              Read More About Me <ArrowUpRight size={16} />
-            </button>
+          
           </div>
         </section>
 
@@ -371,12 +366,7 @@ const Home = () => {
             <div className="section-content" style={{ cursor: 'pointer' }}>
               <Projects />
             </div>
-            <button
-              onClick={() => navigateToPage('/projects')}
-              className="section-nav-btn"
-            >
-              View All Projects <ArrowUpRight size={16} />
-            </button>
+       
           </div>
         </section>
 
@@ -425,12 +415,7 @@ const Home = () => {
             <div className="section-content" style={{ cursor: 'pointer' }}>
               <Contact />
             </div>
-            <button
-              onClick={() => navigateToPage('/contact')}
-              className="section-nav-btn"
-            >
-              Get in Touch <ArrowUpRight size={16} />
-            </button>
+          
           </div>
         </section>
       </main>

@@ -241,7 +241,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem 1.5rem;
-  color: var(--color-gray-600);
+  color: black;
   text-decoration: none;
   border-radius: 2rem;
   transition: var(--transition-bounce);
@@ -279,7 +279,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-gray-600);
+  color: black;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -417,7 +417,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem 1.5rem;
-  color: var(--color-gray-600);
+  color: black;
   text-decoration: none;
   border-radius: 2rem;
   transition: var(--transition-bounce);

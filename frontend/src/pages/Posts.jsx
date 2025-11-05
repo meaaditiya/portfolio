@@ -747,6 +747,21 @@ const handleVideoSeek = (postId, e) => {
   const openPostModal = (post) => {
     navigate(`/posts/${post.id}`);
   };
+  const navigateToNextPost = () => {
+  const currentIndex = posts.findIndex(p => p.id === selectedPost.id);
+  if (currentIndex < posts.length - 1) {
+    const nextPost = posts[currentIndex + 1];
+    navigate(`/posts/${nextPost.id}`);
+  }
+};
+
+const navigateToPreviousPost = () => {
+  const currentIndex = posts.findIndex(p => p.id === selectedPost.id);
+  if (currentIndex > 0) {
+    const prevPost = posts[currentIndex - 1];
+    navigate(`/posts/${prevPost.id}`);
+  }
+};
 
   const openCommentsModal = (e) => {
     e.stopPropagation();
@@ -857,17 +872,20 @@ const handleVideoSeek = (postId, e) => {
     
     window.open(shareUrl, '_blank', 'width=600,height=400');
   };
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      closeModals();
+    } else if (selectedPost && e.key === 'ArrowRight') {
+      navigateToNextPost();
+    } else if (selectedPost && e.key === 'ArrowLeft') {
+      navigateToPreviousPost();
+    }
+  };
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        closeModals();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [postId]);
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, [postId, selectedPost, posts]);
 
   const renderComment = (comment, isReply = false) => {
     const reaction = commentReactions[comment._id] || {};
@@ -1519,30 +1537,45 @@ const handleVideoSeek = (postId, e) => {
                     {formatDate(selectedPost.createdAt)}
                   </p>
                 </div>
-                <div className="pst-modal-actions">
-                  
-                  <button
-                    className={`pst-like-button ${selectedPost.hasReacted ? 'pst-liked' : ''}`}
-                    onClick={(e) => handleReaction(selectedPost.id, e)}
-                  >
-                    <Heart className={`pst-icon-sm ${selectedPost.hasReacted ? 'pst-icon-filled' : ''}`} />
-                    <span className="pst-stat-count">{selectedPost.reactionCount || 0}</span>
-                  </button>
-                  <button 
-                    className="pst-comment-button"
-                    onClick={openCommentsModal}
-                  >
-                    <MessageCircle className="pst-icon-sm" />
-                    <span className="pst-stat-count">{selectedPost.commentCount || 0}</span>
-                  </button>
-                  <button 
-                    className="pst-share-button"
-                    onClick={handleShareClick}
-                  >
-                    <Share2 className="pst-icon-sm" />
-                    <span className="pst-stat-count">Share</span>
-                  </button>
-                </div>
+               <div className="pst-modal-actions">
+  <button className={`pst-like-button ${selectedPost.hasReacted ? 'pst-liked' : ''}`}
+    onClick={(e) => handleReaction(selectedPost.id, e)}>
+    <Heart className={`pst-icon-sm ${selectedPost.hasReacted ? 'pst-icon-filled' : ''}`} />
+    <span className="pst-stat-count">{selectedPost.reactionCount || 0}</span>
+  </button>
+  <button className="pst-comment-button" onClick={openCommentsModal}>
+    <MessageCircle className="pst-icon-sm" />
+    <span className="pst-stat-count">{selectedPost.commentCount || 0}</span>
+  </button>
+  <button className="pst-share-button" onClick={handleShareClick}>
+    <Share2 className="pst-icon-sm" />
+    <span className="pst-stat-count">Share</span>
+  </button>
+  
+  {/* ADD THIS DIV HERE: */}
+  <div className="pst-nav-buttons">
+    <button
+      className="pst-nav-button pst-nav-prev"
+      onClick={(e) => {
+        e.stopPropagation();
+        navigateToPreviousPost();
+      }}
+      disabled={posts.findIndex(p => p.id === selectedPost.id) === 0}
+    >
+      <ChevronLeft className="pst-icon-sm" />
+    </button>
+    <button
+      className="pst-nav-button pst-nav-next"
+      onClick={(e) => {
+        e.stopPropagation();
+        navigateToNextPost();
+      }}
+      disabled={posts.findIndex(p => p.id === selectedPost.id) === posts.length - 1}
+    >
+      <ChevronRight className="pst-icon-sm" />
+    </button>
+  </div>
+</div>
               </div>
               {showShareModal && (
                 <div className="pst-share-panel">
@@ -1681,7 +1714,7 @@ const handleVideoSeek = (postId, e) => {
         <div className="pst-post-modal" onClick={closeModals}>
           <div className="pst-social-modal-content" onClick={(e) => e.stopPropagation()}>
             <button 
-              className="pst-close-button"
+              className="pst-close-button2"
               onClick={closeModals}
             >
               <X className="pst-icon" />

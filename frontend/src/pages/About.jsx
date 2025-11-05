@@ -8,7 +8,7 @@ import '../pagesCSS/about.css';
 import profileImage from '../images/aadiprofile.png';
 
 const About = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(5);
 
   const handleDownloadResume = () => {
     window.open('/resume.pdf', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
@@ -24,10 +24,10 @@ const About = () => {
   const skills = [
     { name: "React.js", icon: <Globe size={20} />, color: "#61DAFB" },
     { name: "Node.js", icon: <Server size={20} />, color: "#339933" },
-    { name: "Java", icon: <Code size={20} />, color: "#007396" },
     { name: "Spring Boot", icon: <Layers size={20} />, color: "#6DB33F" },
     { name: "Javascript", icon: <FileCode size={20} />, color: "#F7DF1E" },
     { name: "MongoDB", icon: <Database size={20} />, color: "#47A248" },
+     { name: "Java", icon: <Code size={20} />, color: "#007396" },
     { name: "SQL", icon: <Database size={20} />, color: "#4479A1" },
     { name: "Express.js", icon: <Server size={20} />, color: "#000000" },
     { name: "AWS", icon: <Cloud size={20} />, color: "#FF9900" },
@@ -227,52 +227,7 @@ const About = () => {
           </button>
         </div>
 
-        {/* Contact Information */}
-        <div className="about-contact-row">
-          <div className="about-card about-contact-card">
-            <div className="card-header">
-              <div className="card-icon">
-                <Mail size={20} />
-              </div>
-              <h3 className="card-title">Contact Information</h3>
-            </div>
-            <div className="card-content">
-              <div className="contact-items">
-                <div className="contact-item">
-                  <div className="contact-icon">
-                    <Mail size={18} />
-                  </div>
-                  <div className="contact-content">
-                    <span className="contact-label">Email</span>
-                    <a href="mailto:aaditiyatyagi123@gmail.com" className="contact-value">
-                      aaditiyatyagi123@gmail.com
-                    </a>
-                  </div>
-                </div>
-                <div className="contact-item">
-                  <div className="contact-icon">
-                    <Phone size={18} />
-                  </div>
-                  <div className="contact-content">
-                    <span className="contact-label">Phone</span>
-                    <a href="tel:+917351102036" className="contact-value">
-                      +91 7351102036
-                    </a>
-                  </div>
-                </div>
-                <div className="contact-item">
-                  <div className="contact-icon">
-                    <MapPin size={18} />
-                  </div>
-                  <div className="contact-content">
-                    <span className="contact-label">Location</span>
-                    <span className="contact-value">Ghaziabad, Uttar Pradesh</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      
       </div>
     </section>
   );

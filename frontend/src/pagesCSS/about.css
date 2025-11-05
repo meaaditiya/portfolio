@@ -137,7 +137,7 @@ body {
 
 .about-image-overlay {
   position: absolute;
-  inset: 0;
+  
   background: linear-gradient(45deg, transparent 50%, rgba(15, 23, 42, 0.1));
   transition: var(--transition);
 }
@@ -170,10 +170,10 @@ body {
 .about-card::before {
   content: '';
   position: absolute;
-  inset: 0;
+  
   background: linear-gradient(to left, rgba(255, 255, 255, 0.2) 0%, rgba(230, 230, 255, 0.05) 100%);
-  z-index: 0;
-  transition: var(--transition);
+ 
+  
 }
 
 .about-card > * {
@@ -360,7 +360,7 @@ body {
 
 .card-gradient-small {
   position: absolute;
-  inset: 0;
+  
   opacity: 0.12;
   z-index: 1;
 }
@@ -949,11 +949,7 @@ body {
     height: 2.75rem;
   }
 
-  .slider-nav.prev,
-  .slider-nav.next {
-    display: none;
-  }
-
+ 
   .card-glass-small {
     padding: 1.75rem;
   }

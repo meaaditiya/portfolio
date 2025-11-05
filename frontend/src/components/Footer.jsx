@@ -74,14 +74,7 @@ const Footer = () => {
         </div>
           {/*download section*/}
          <div className="about-resume-row1">
-          <button 
-            className="download-resume-btn1" 
-            onClick={handleDownloadResume}
-            aria-label="Download Resume1"
-          >
-            <Download size={20} />
-            <span>Download Resume</span>
-          </button>
+          
         </div>
       </div>
       

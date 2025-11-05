@@ -85,7 +85,7 @@ html {
   padding: 1rem 0;
   transition: var(--transition-smooth);
   width: 100%;
-  padding:-20px;
+  padding-bottom:20px;
 }
 
 .header-content {
@@ -186,12 +186,19 @@ html {
   background: rgba(255, 255, 255, 0.8);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--shadow-subtle);
+  
+ 
+  border: 1px solid #000;
+  border-radius: 20px;
 }
 
 .nav-item-active {
   color: var(--primary-white);
   background: var(--primary-black);
   box-shadow: 0 4px 16px var(--shadow-medium);
+   
+  border: 1px ;
+  border-radius: 20px;
 }
 
 .nav-item-active:hover {

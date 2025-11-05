@@ -119,12 +119,18 @@ const Header = () => {
           
           }
         }
-        
+        @media(max-width:829px){
+         .at-subtext {
+          display: none;
+            font-size: 18px;
+            letter-spacing: 0.2px;
+          }}
         @media (max-width: 768px) {
           .at-logo-text {
             font-size: 32px;
           }
           .at-subtext {
+          display: none;
             font-size: 18px;
             letter-spacing: 0.2px;
           }
@@ -203,10 +209,9 @@ const Header = () => {
       <header className="portfolio-header">
         <div className="header-content">
           <div className="logo-section">
-            <span className="logo-initials">AT</span>
-            <div className="logo-text">
-              <span className="logo-name">Aaditiya Tyagi</span>
-              <span className="logo-role">keep Learning</span>
+           <div className="stylish-at-logo">
+              <div className="at-logo-text">AT</div>
+              
             </div>
           </div>
 
@@ -227,7 +232,6 @@ const Header = () => {
           <div className="header-controls">
             {/* Stylish AT Logo */}
             <div className="stylish-at-logo">
-              <div className="at-logo-text">AT</div>
               <div className="at-subtext">Aaditiya Tyagi</div>
             </div>
             
