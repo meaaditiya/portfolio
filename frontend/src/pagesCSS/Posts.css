@@ -508,7 +508,7 @@
 }
 
 .pst-close-button2 {
- position: fixed;
+  position: fixed;
   width:auto;
   left:60px;
   top: var(--spacing-xl);
@@ -529,6 +529,11 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   display: inline-block; /* instead of flex */
   text-align: left;
+}
+@media (min-width: 768px) {
+  .pst-close-button2 {
+    display: none;
+  }
 }
 .pst-close-button3{
    position: fixed;
