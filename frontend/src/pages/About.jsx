@@ -75,10 +75,7 @@ const About = () => {
         <div className="about-hero">
           <div className="about-hero-content">
             <div className="about-text-content">
-              <div className="about-badge">
-                <User size={16} />
-                <span>About Me</span>
-              </div>
+             
               <h1 className="about-title">Full-Stack Developer</h1>
               <p className="about-description">
                 Full-stack developer with a strong command of React.js, Node.js, and modern web technologies, 
