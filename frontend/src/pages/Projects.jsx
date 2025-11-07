@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import '../pagesCSS/Projects.css';
-import aadiImage10 from '../images/aadiimage10.jpg';
+import aadiImage10 from '../images/court.avif';
 import aadiImage1 from '../images/aadiimage01.jpeg';
 import weatherImage from '../images/weather.jpg';
-import castwave from '../images/Castwave.png';
+import castwave from '../images/Castwave.jpeg';
 import React from 'react';
 import { Search, Folder, File, GitBranch, Star, Eye, AlertCircle, Loader2, FolderOpen, FileText, Code } from 'lucide-react';
 

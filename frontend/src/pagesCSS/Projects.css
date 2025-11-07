@@ -108,6 +108,19 @@
   min-height: auto;
 }
 
+/* Alternate layout for even-numbered projects */
+.tyagi-project-card:nth-child(even) .tyagi-project-header {
+  grid-template-columns: 1fr 1fr;
+}
+
+.tyagi-project-card:nth-child(even) .tyagi-project-image-container {
+  order: 2;
+}
+
+.tyagi-project-card:nth-child(even) .tyagi-project-summary {
+  order: 1;
+}
+
 /* Image Container - Blog Style - SMALLER */
 .tyagi-project-image-container {
   position: relative;
@@ -116,7 +129,7 @@
   border-radius: 0;
   overflow: hidden;
   box-shadow: none;
-  border: 0.5px solid black;
+  border: 0.px solid black;
   background: var(--color-gray-100);
 }
 
@@ -820,7 +833,10 @@
   .tyagi-project-header {
     grid-template-columns: 1fr;
   }
-
+.tyagi-project-card:nth-child(even) .tyagi-project-image-container,
+  .tyagi-project-card:nth-child(even) .tyagi-project-summary {
+    order: 0;
+  }
   .tyagi-project-image-container {
     height: 280px;
   }

@@ -377,17 +377,20 @@ const Home = () => {
               <div className="section-info">
                 <h1 className="tyagi-hero-title">
               
-              <span className="tyagi-hero-gradient">Writing</span>
+              <span className="tyagi-hero-gradient">Blogs and writings</span>
             </h1>
                 <p className="section-subtitle">Thoughts on development and technology</p>
               </div>
+             
+            </div>
+             <div>
               <button
                 onClick={handleBlogRedirect}
                 className="section-nav-btn"
               >
                 Visit Blog <ExternalLink size={16} />
               </button>
-            </div>
+              </div>
             <div
               className="blog-intro"
               onClick={handleBlogRedirect}
