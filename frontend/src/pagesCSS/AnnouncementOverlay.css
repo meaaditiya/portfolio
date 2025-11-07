@@ -326,7 +326,7 @@
 .announcement_label_trigger {
   position: fixed;
   left: 0;
-  bottom: 50%;
+  bottom: 30px;;
   transform: translateY(50%);
   background: linear-gradient(135deg, #e91e63 0%, #d81b60 100%);
   color: white;
