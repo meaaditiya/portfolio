@@ -481,7 +481,10 @@ const Projects = () => {
     <>
       <section className="tyagi-project-section" id="projects">
         <div className="tyagi-project-container">
-          <h2 className="tyagi-project-section-heading">Featured Projects</h2>
+        <h1 className="tyagi-hero-title">
+              Featured
+              <span className="tyagi-hero-gradient"> Projects</span>
+            </h1>
           
           <div className="tyagi-project-layout">
             {projects.map((project) => {

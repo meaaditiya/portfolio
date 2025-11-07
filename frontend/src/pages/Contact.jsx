@@ -1497,9 +1497,11 @@ const renderQuerySection = () => (
   return (
     <>
       <section className="cnt-main-section">
-        <h2 className="cnt-section-title">
-          {activeSection === 'contact' ? 'Contact Me' : activeSection === 'project' ? 'Project Request' : 'Send Audio Message'}
-        </h2>
+       <h1 className="cnt-section-title tyagi-hero-title">
+                {activeSection === 'contact' ? 'Contact' : activeSection === 'project' ? 'Project' : 'Send Audio'}
+              <span className="tyagi-hero-gradient">{activeSection === 'contact' ? ' Me' : activeSection === 'project' ? ' Request' : ' Message'}</span>
+            </h1>
+            
         <div className="cnt-card">
           {activeSection === 'contact' && renderContactSection()}
           {activeSection === 'project' && renderProjectSection()}

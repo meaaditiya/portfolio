@@ -375,7 +375,10 @@ const Home = () => {
           <div className="section-container">
             <div className="section-header">
               <div className="section-info">
-                <h2 className="section-title">Writing</h2>
+                <h1 className="tyagi-hero-title">
+              
+              <span className="tyagi-hero-gradient">Writing</span>
+            </h1>
                 <p className="section-subtitle">Thoughts on development and technology</p>
               </div>
               <button

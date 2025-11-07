@@ -76,7 +76,10 @@ const About = () => {
           <div className="about-hero-content">
             <div className="about-text-content">
              
-              <h1 className="about-title">Full-Stack Developer</h1>
+<h1 className="tyagi-hero-title">
+              Full-Stack
+              <span className="tyagi-hero-gradient"> Developer</span>
+            </h1>
               <p className="about-description">
                 Full-stack developer with a strong command of React.js, Node.js, and modern web technologies, 
                 dedicated to building scalable, high-performance, and user-focused digital solutions. 
@@ -153,10 +156,10 @@ const About = () => {
 
         {/* Technical Skills Slider Section */}
         <div className="expertise-section">
-          <h2 className="section-heading">
-            <Code size={28} />
-            Technical Expertise
-          </h2>
+         <h1 className="section-heading tyagi-hero-title">
+          Technical
+              <span className="tyagi-hero-gradient"> Expertise</span>
+            </h1>
           
           <div className="slider-container">
             <button className="slider-nav prev" onClick={prevSlide} aria-label="Previous slide">
