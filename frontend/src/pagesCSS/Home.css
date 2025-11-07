@@ -96,7 +96,7 @@ body {
    ======================================== */
 
 .hero-section {
-  background-image: url('../images/home.png');
+  background-image: url('../images/home.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -322,7 +322,7 @@ body {
   width: 290px;
   height: 290px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-black), var(--color-gray-800));
+ 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -407,8 +407,8 @@ body {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin-top: 4rem;
-  padding-top: 3rem;
+  margin-top: 0rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--color-gray-200);
  
 }
@@ -427,6 +427,7 @@ body {
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-gray-200);
   position: relative;
+  top:10px;
   overflow: hidden;
 }
 
@@ -1248,6 +1249,7 @@ a:focus-visible {
   justify-content: center;
   padding: 2rem;
   overflow: hidden;
+  
 }
 
 /* Decorative Paint Stroke Background */
@@ -1255,16 +1257,6 @@ a:focus-visible {
 
 
 /* Bottom right green fade strip */
-.hero-section::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 600px;
-  height: 125px;
-  background: linear-gradient(90deg, transparent 0%, rgba(72, 126, 121, 0.6) 100%);
-  z-index: 1;
-}
 
 
 

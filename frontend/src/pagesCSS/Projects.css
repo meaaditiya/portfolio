@@ -1,293 +1,210 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* ========== PROJECTS - BLOG STYLE CSS ========== */
 
-:root {
-  /* Color System */
-  --color-black: #0f172a;
-  --color-white: #f5f3f0;
-  --color-gray-50: #f5f3f0;
-  --color-gray-100: #ede8e3;
-  --color-gray-200: #e2d9d0;
-  --color-gray-300: #d4c7b8;
-  --color-gray-400: #b8a894;
-  --color-gray-500: #9c8a70;
-  --color-gray-600: #7d6b53;
-  --color-gray-700: #5e4d3a;
-  --color-gray-800: #453629;
-  --color-gray-900: #2d201a;
-  
-  /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  
-  /* Transitions & Effects */
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --shadow-sm: 0 2px 8px 0 rgb(15 23 42 / 0.08);
-  --shadow-md: 0 8px 25px -5px rgb(15 23 42 / 0.1), 0 4px 6px -2px rgb(15 23 42 / 0.05);
-  
-  /* Semantic Colors */
-  --bg-primary: var(--color-white);
-  --bg-secondary: var(--color-gray-50);
-  --bg-card: var(--color-white);
-  --border-color: var(--color-gray-200);
-  --text-primary: var(--color-black);
-  --text-secondary: var(--color-gray-700);
-  --text-muted: var(--color-gray-500);
-  --accent-primary: var(--color-gray-800);
-  --accent-secondary: var(--color-gray-600);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Override existing project styles to match blog layout */
 
 .tyagi-project-section {
+  background: var(--color-white);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
   min-height: 100vh;
-  padding: 60px 0;
-  background: var(--bg-card);
-  position: relative;
   margin-top: 50px;
-  max-width: 2000px;
 }
 
 .tyagi-project-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px;
-  position: relative;
-}
-
-.tyagi-project-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 40px;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.tyagi-project-search-bar input {
-  flex: 1;
-  padding: 10px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  font-size: 14px;
-  outline: none;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-weight: 400;
-}
-
-.tyagi-project-search-bar input:focus {
-  border-color: var(--accent-primary);
-}
-
-.tyagi-project-search-bar input::placeholder {
-  color: var(--text-muted);
-}
-
-.tyagi-project-search-bar button {
-  padding: 10px 20px;
-  background: var(--accent-primary);
-  color: var(--color-white);
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: var(--font-sans);
-}
-
-.tyagi-project-search-bar button:hover {
-  background: var(--color-black);
+  padding: 0;
 }
 
 .tyagi-project-section-heading {
-  font-family: var(--font-sans);
-  font-size: 32px;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
   font-weight: 600;
-  text-align: center;
-  margin-bottom: 60px;
-  color: var(--text-primary);
-  letter-spacing: -0.025em;
-  position: relative;
+  color: var(--color-black);
+  letter-spacing: -0.02em;
+  margin: 0 0 3rem 0;
+  text-align: left;
 }
 
-.tyagi-project-section-heading::after {
-  content: '';
-  position: absolute;
-  bottom: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 1px;
-  background: var(--accent-primary);
-}
-
+/* Project Layout - Blog Style Grid */
 .tyagi-project-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
 }
 
+/* Project Card - Blog Style */
 .tyagi-project-card {
-  background: var(--bg-card);
- border: 2px solid var(--color-gray-200);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--color-gray-200);
   position: relative;
-  min-height: 280px;
+  min-height: auto;
 }
 
-.tyagi-project-card:hover {
-  box-shadow: var(--shadow-md);
+.tyagi-project-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
-
-
-
-.tyagi-project-card.pink-accent::before {
-  background: var(--color-gray-700);
+.tyagi-project-card::before {
+  display: none;
 }
 
-.tyagi-project-card.orange-accent::before {
-  background: var(--color-gray-600);
-}
-
+/* Project Header - Blog Layout */
 .tyagi-project-header {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 32px;
-  padding: 32px;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 0;
   cursor: pointer;
-  align-items: center;
-  min-height: 280px;
+  align-items: start;
+  min-height: auto;
 }
 
+/* Image Container - Blog Style - SMALLER */
 .tyagi-project-image-container {
   position: relative;
   width: 100%;
-  height: 220px;
-  border-radius: 6px;
+  height: 320px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
+  border: 0.5px solid black;
+  background: var(--color-gray-100);
+}
+
+.tyagi-project-image-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0);
+  transition: background-color 0.3s ease;
+  pointer-events: none;
+}
+
+.tyagi-project-card:hover .tyagi-project-image-container::after {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .tyagi-project-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(0.2);
+  filter: none;
+  transition: none;
 }
 
+/* Tech Badges - Repositioned */
 .tyagi-project-tech-badges {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-width: 80px;
+  max-width: 75px;
 }
 
 .tyagi-project-tech-badge1 {
   background: rgba(255, 255, 255, 0.95);
   color: var(--text-primary);
-  padding: 4px 8px;
+  padding: 3px 7px;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   font-family: var(--font-sans);
   backdrop-filter: blur(8px);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-gray-300);
   text-align: center;
 }
 
-.tyagi-project-more-badge1 {
-  background: var(--color-gray-100) !important;
-  color: var(--accent-primary) !important;
-  border-color: var(--accent-primary) !important;
-}
-
+/* Summary Section - Blog Style */
 .tyagi-project-summary {
-  color: var(--text-primary);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  height: 100%;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  padding-top: 0;
 }
 
 .tyagi-project-title {
-  font-family: var(--font-sans);
-  font-size: 24px;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
   font-weight: 600;
-  margin-bottom: 8px;
-  line-height: 1.2;
-  color: var(--text-primary);
-  letter-spacing: -0.015em;
+  color: var(--color-black);
+  line-height: 1.3;
+  margin: 0;
+  letter-spacing: -0.02em;
+  transition: all 0.3s ease;
+}
+
+.tyagi-project-card:hover .tyagi-project-title {
+  color: #000000;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .tyagi-project-period {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+  color: black;
+  margin: 0;
+  font-weight: 500;
 }
 
 .tyagi-project-team {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: black;
+  margin: 0;
   font-weight: 400;
 }
 
 .tyagi-project-detail-label {
   font-weight: 500;
-  color: var(--accent-primary);
+  color: var(--color-black);
 }
 
 .tyagi-project-brief {
-  font-size: 14px;
+  font-size: 0.9rem;
   line-height: 1.5;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-  font-family: var(--font-sans);
-  font-weight: 400;
-  max-width: 95%;
+  color: black;
+  margin: 0.5rem 0;
+  max-width: 100%;
 }
 
+/* Toggle Button - Blog Style */
 .tyagi-project-toggle {
   display: flex;
   justify-content: flex-start;
+  margin-top: 0.75rem;
 }
 
 .tyagi-project-toggle-button {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 12px;
+  background: black;
+  border: 1px solid black;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 6px;
   font-family: var(--font-sans);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .tyagi-project-toggle-button:hover {
-  background: var(--color-gray-50);
-  border-color: var(--accent-primary);
+  background: #1a1a1a;
+  transform: translateY(-1px);
 }
 
 .tyagi-project-arrow-icon {
@@ -307,27 +224,31 @@
   transform: rotate(180deg);
 }
 
-.tyagi-project-card.tyagi-project-expanded {
-  box-shadow: var(--shadow-md);
-}
-
+/* Details Section - Blog Style */
 .tyagi-project-details {
   max-height: 0;
   overflow: hidden;
   transition: all 0.4s ease;
+  border-top: none;
+}
+
+.tyagi-project-card.tyagi-project-expanded {
+  box-shadow: none;
 }
 
 .tyagi-project-card.tyagi-project-expanded .tyagi-project-details {
-  max-height: 1200px;
-  border-top: 1px solid var(--border-color);
+  max-height: 2000px;
+  border-top: 1px solid var(--color-gray-200);
+  margin-top: 1.5rem;
 }
 
 .tyagi-project-details-content {
-  padding: 32px;
-  background: var(--color-gray-50);
+  padding: 1.5rem 0 0 0;
+  background: transparent;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 32px;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  column-gap: 3rem;
 }
 
 .tyagi-project-details-section {
@@ -335,11 +256,10 @@
 }
 
 .tyagi-project-details-heading {
-  font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--accent-primary);
-  margin-bottom: 16px;
+  color: var(--color-gray-700);
+  margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -352,69 +272,78 @@
 
 .tyagi-project-details-list li {
   position: relative;
-  padding: 8px 0;
-  color: var(--text-secondary);
-  line-height: 1.4;
+  padding: 0.4rem 0;
+  color: var(--color-gray-800);
+  line-height: 1.5;
   font-family: var(--font-sans);
   font-weight: 400;
-  font-size: 13px;
-  border-bottom: 1px solid var(--color-gray-200);
+  font-size: 0.85rem;
+  padding-left: 1.25rem;
 }
 
-.tyagi-project-details-list li:last-child {
-  border-bottom: none;
+.tyagi-project-details-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-black);
+  font-weight: bold;
 }
 
+/* Tech Tags - Blog Style */
 .tyagi-project-tech-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .tyagi-project-tech-tag {
-  background: var(--color-white);
-  color: var(--text-secondary);
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 11px;
+  background: transparent;
+  color: black;
+  padding: 0.3rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 500;
   font-family: var(--font-sans);
-  border: 1px solid var(--border-color);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  border: 1px solid black;
+  transition: all 0.2s ease;
 }
 
+.tyagi-project-tech-tag:hover {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
+}
+
+/* Actions Section - Blog Style WITH BUTTONS */
 .tyagi-project-details-actions {
   grid-column: 1 / -1;
   text-align: center;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border-color);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-gray-200);
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  flex-wrap: nowrap;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .tyagi-project-action-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--accent-primary);
-  color: var(--color-white);
+  background: black;
+  color: white;
   text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 12px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
   font-weight: 500;
   font-family: var(--font-sans);
-  transition: var(--transition);
-  border: none;
+  transition: all 0.2s ease;
+  border: 1px solid black;
   position: relative;
   overflow: hidden;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   margin: 0;
   flex-shrink: 0;
   white-space: nowrap;
@@ -422,32 +351,43 @@
 }
 
 .tyagi-project-action-button:hover {
-  background: var(--color-black);
+  background: #1a1a1a;
+  transform: translateY(-1px);
 }
 
 .tyagi-project-action-button::after {
   content: '→';
-  font-size: 12px;
+  margin-left: 4px;
 }
 
 .tyagi-project-github-button {
-  background: var(--accent-secondary);
+  background: transparent;
+  color: black;
+  border: 1px solid black;
 }
 
 .tyagi-project-github-button:hover {
-  background: var(--color-gray-700);
+  background: black;
+  color: white;
 }
 
+.tyagi-project-github-button::after {
+  content: '';
+  margin-left: 0;
+}
+
+/* Link inside button */
 .link {
-  color: var(--color-white);
+  color: inherit;
   text-decoration: none;
 }
 
 .link:hover {
-  color: var(--color-white);
+  color: inherit;
 }
 
-/* GitHub Explorer Styles */
+/* ========== GITHUB EXPLORER MODAL - EXACT SAME CSS ========== */
+
 .github-explorer-overlay {
   position: fixed;
   top: 0;
@@ -833,94 +773,72 @@
   animation: none;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 1024px) {
   .tyagi-project-header {
-    grid-template-columns: 280px 1fr;
-    gap: 24px;
+    grid-template-columns: 1fr;
   }
-  
+
+  .tyagi-project-image-container {
+    height: 280px;
+  }
+
   .tyagi-project-details-content {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 1.5rem;
   }
-  
+
   .github-explorer-modal {
     max-width: 95vw;
   }
 }
 
-@media (max-width: 768px) {  
+@media (max-width: 768px) {
   .tyagi-project-section {
-    padding: 40px 0;
+    padding: 2rem 1.5rem;
   }
-  
-  .tyagi-project-container {
-    padding: 0 16px;
-  }
-  
-  .tyagi-project-section-heading {
-    font-size: 28px;
-    margin-bottom: 40px;
-  }
-  
-  .tyagi-project-header {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 24px;
-    min-height: auto;
-  }
-  
+
   .tyagi-project-image-container {
-    height: 200px;
+    height: 240px;
   }
-  
+
   .tyagi-project-title {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
-  
+
   .tyagi-project-details-content {
-    padding: 20px;
-    grid-template-columns: 1fr;
-  }
-  
-  .tyagi-project-tech-tags {
-    gap: 6px;
-  }
-  
-  .tyagi-project-tech-tag {
-    padding: 6px 10px;
-    font-size: 10px;
+    padding: 1.25rem 0 0 0;
   }
 
-  .tyagi-project-search-bar {
-    flex-direction: column;
-    max-width: 100%;
+  .tyagi-project-details-actions {
+    flex-direction: row;
+    justify-content: center;
   }
 
-  .tyagi-project-search-bar input,
-  .tyagi-project-search-bar button {
-    width: 100%;
+  .tyagi-project-action-button {
+    flex: 1;
+    max-width: 200px;
+    justify-content: center;
   }
-  
+
   .github-explorer-content {
     padding: 16px;
   }
-  
+
   .github-explorer-header {
     padding: 16px;
   }
-  
+
   .github-search-input-group {
     flex-direction: column;
   }
-  
+
   .github-repo-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .github-repo-meta {
     flex-direction: column;
     gap: 6px;
@@ -928,91 +846,105 @@
 }
 
 @media (max-width: 480px) {
-  .tyagi-project-header {
-    padding: 16px;
+  .tyagi-project-section {
+    padding: 1.5rem 1rem;
   }
-  
+
   .tyagi-project-image-container {
-    height: 160px;
+    height: 200px;
   }
-  
+
   .tyagi-project-title {
-    font-size: 18px;
-  }
-  
-  .tyagi-project-details-content {
-    padding: 16px;
+    font-size: 1.1rem;
   }
 
   .tyagi-project-brief {
-    font-size: 13px;
+    font-size: 0.85rem;
   }
 
-  .tyagi-project-search-bar input,
-  .tyagi-project-search-bar button {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  
-  .github-explorer-content {
-    padding: 12px;
-  }
-  
-  .github-explorer-header {
-    padding: 12px;
-  }
-  
-  .github-explorer-title {
-    font-size: 16px;
-  }
-  
-  .github-tree-view {
-    max-height: 300px;
+  .tyagi-project-details-actions {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .tyagi-project-action-button {
-    padding: 8px 16px;
-    font-size: 11px;
+    width: 100%;
+    max-width: 100%;
   }
-  
-  .tyagi-project-details-actions {
-    gap: 8px;
+
+  .github-explorer-content {
+    padding: 12px;
+  }
+
+  .github-explorer-header {
+    padding: 12px;
+  }
+
+  .github-explorer-title {
+    font-size: 16px;
+  }
+
+  .github-tree-view {
+    max-height: 300px;
   }
 }
 
-/* Focus states for accessibility */
-.tyagi-project-toggle-button:focus,
-.tyagi-project-action-button:focus,
-.github-search-button:focus,
-.github-explorer-close:focus {
-  outline: 2px solid var(--accent-primary);
+@media (max-width: 360px) {
+  .tyagi-project-section {
+    padding: 1rem 0.75rem;
+  }
+
+  .tyagi-project-image-container {
+    height: 180px;
+  }
+
+  .tyagi-project-tech-tag {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* ========== FOCUS STATES ========== */
+.tyagi-project-toggle-button:focus-visible,
+.tyagi-project-action-button:focus-visible {
+  outline: 2px solid var(--color-black);
   outline-offset: 2px;
 }
 
-/* Print styles */
-@media print {
-  .tyagi-project-section {
-    background: var(--color-white);
-    color: var(--text-primary);
+/* ========== REDUCED MOTION ========== */
+@media (prefers-reduced-motion: reduce) {
+  .tyagi-project-card,
+  .tyagi-project-toggle-button,
+  .tyagi-project-action-button,
+  .tyagi-project-image-container::after,
+  .tyagi-project-arrow-icon {
+    animation: none;
+    transition: none;
   }
-  
+
+  .tyagi-project-toggle-button:hover,
+  .tyagi-project-action-button:hover {
+    transform: none;
+  }
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
   .tyagi-project-card {
     break-inside: avoid;
     box-shadow: none;
-    border: 1px solid var(--border-color);
   }
-  
+
+  .tyagi-project-section {
+    padding: 1rem;
+  }
+
+  .tyagi-project-image-container {
+    height: auto;
+    max-height: 300px;
+  }
+
   .github-explorer-overlay {
     display: none;
   }
-}
-.summary-btn{
-  position: relative;
-  left:20px;
-}
-.submit-query{
- 
-  align-items: center;
-  width:300px;
-
 }
