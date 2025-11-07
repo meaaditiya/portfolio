@@ -145,9 +145,6 @@
   pointer-events: none;
 }
 
-.tyagi-project-card:hover .tyagi-project-image-container::after {
-  background-color: rgba(255, 255, 255, 0.3);
-}
 
 .tyagi-project-image {
   width: 100%;
@@ -833,10 +830,11 @@
   .tyagi-project-header {
     grid-template-columns: 1fr;
   }
-.tyagi-project-card:nth-child(even) .tyagi-project-image-container,
+ .tyagi-project-card:nth-child(even) .tyagi-project-image-container,
   .tyagi-project-card:nth-child(even) .tyagi-project-summary {
     order: 0;
   }
+
   .tyagi-project-image-container {
     height: 280px;
   }
@@ -856,8 +854,33 @@
     padding: 2rem 1.5rem;
   }
 
+  /* Force single column layout with full-width images */
+  .tyagi-project-header {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+  
+  /* Stack image on top, content below */
   .tyagi-project-image-container {
+    order: 1 !important;
     height: 240px;
+  }
+  
+  .tyagi-project-summary {
+    order: 2 !important;
+  }
+  
+  /* Override alternating layout for even cards */
+  .tyagi-project-card:nth-child(even) .tyagi-project-header {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .tyagi-project-card:nth-child(even) .tyagi-project-image-container {
+    order: 1 !important;
+  }
+  
+  .tyagi-project-card:nth-child(even) .tyagi-project-summary {
+    order: 2 !important;
   }
 
   .tyagi-project-title {
