@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Github, Linkedin, Mail, ArrowUpRight, Code, Database, Globe, FileText, ExternalLink, X, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowRight,ArrowUpRight, Code, Database, Globe, FileText, ExternalLink, X, ChevronLeft, ChevronRight, Bell,Radio,Video,Clock,Users } from 'lucide-react';
 import About from './About';
 import Projects from './Projects';
 import Contact from './Contact';
 import profileImage from '../images/aadiprofile.png';
+import profileImage2 from '../images/livestream.png';
+import blogImage from '../images/blogimage.jpeg';
 import weatherBackground from '../images/home.png';
 import '../pagesCSS/Home.css';
 import '../pagesCSS/AnnouncementOverlay.css';
@@ -332,14 +334,17 @@ fetchFirstBlog(); // Add this line
                   <div className="profile-glow"></div>
                 </div>
 
-                <div className="quote-section">
-                  {quote && (
-                    <div className="quote-container">
-                      <p className="quote-text">"{quote.content}"</p>
-                      <p className="quote-author">— {quote.author}</p>
-                    </div>
-                  )}
-                </div>
+               <div className="quote-section">
+  <div className="quote-container">
+    <p className="quote-text">
+      "{quote?.content || 'A project is like a piece of art for the developer, crafted with passion and love.'}"
+    </p>
+    <p className="quote-author">
+      — {quote?.author || "Etched by my soul’s ink"}
+    </p>
+  </div>
+</div>
+
               </div>
             </div>
 
@@ -390,9 +395,9 @@ fetchFirstBlog(); // Add this line
           </div>
         </section>
 
-     {/* Blog Section */}
-<section className="content-section blog-section">
-    <h1 className="tyagi-hero-title">
+   {/* Blog Section */}
+<section className="content-section contact-section">
+    <h1 className="pos-blog tyagi-hero-title">
                  Writings and 
               <span className="tyagi-hero-gradient"> Blogs</span>
             </h1>
@@ -400,20 +405,24 @@ fetchFirstBlog(); // Add this line
     <div className="minimal-blog-layout">
       {/* Left - Image */}
       <div className="minimal-blog-image">
-        {isBlogLoading ? (
-          <div className="minimal-blog-placeholder">
-            <span className="minimal-placeholder-text">Loading...</span>
-          </div>
-        ) : firstBlog && firstBlog.featuredImage ? (
+        {(isBlogLoading || !firstBlog) ? (
+          <img 
+            src={blogImage}
+            alt="Blog placeholder"
+            className="minimal-blog-img"
+          />
+        ) : firstBlog.featuredImage ? (
           <img 
             src={firstBlog.featuredImage} 
             alt={firstBlog.title}
             className="minimal-blog-img"
           />
         ) : (
-          <div className="minimal-blog-placeholder">
-            <span className="minimal-placeholder-text">AT</span>
-          </div>
+          <img 
+            src={blogImage}
+            alt="Blog placeholder"
+            className="minimal-blog-img"
+          />
         )}
       </div>
 
@@ -421,9 +430,24 @@ fetchFirstBlog(); // Add this line
       <div className="minimal-blog-content">
         <p className="minimal-blog-label">Writing with Passion</p>
         
-        {isBlogLoading ? (
-          <p className="minimal-blog-title">Loading blog...</p>
-        ) : firstBlog ? (
+        {(isBlogLoading || !firstBlog) ? (
+          <>
+            <h3 className="minimal-blog-title">Explore My Thoughts</h3>
+            
+            <p className="minimal-blog-excerpt">
+              Welcome to my blog section where I share insights, experiences, and knowledge about web development, coding practices, and technology trends. Stay tuned for exciting content coming soon!
+            </p>
+            
+            <div className="minimal-blog-actions">
+              <button 
+                onClick={handleBlogRedirect}
+                className="minimal-all-btn"
+              >
+                Visit Blog
+              </button>
+            </div>
+          </>
+        ) : (
           <>
             <h3 className="minimal-blog-title">{firstBlog.title}</h3>
             
@@ -447,14 +471,87 @@ fetchFirstBlog(); // Add this line
               </button>
             </div>
           </>
-        ) : (
-          <p className="minimal-blog-title">No blogs available</p>
         )}
       </div>
     </div>
   </div>
 </section>
-
+<section className="stream-section content-section">
+    <div className="tyagi-hero">
+        <div className="tyagi-hero-overlay"></div>
+        <div className="tyagi-hero-content">
+          <div className="tyagi-hero-text">
+            <div className="tyagi-hero-badge">
+              <Radio size={16} />
+              <span>LIVE STREAMING</span>
+            </div>
+            <h1 className="tyagi-hero-title">
+              Connect Through
+              <span className="tyagi-hero-gradient"> Live Streams</span>
+            </h1>
+            <p className="tyagi-hero-description">
+              Join our community for live sessions, workshops, and interactive discussions. 
+              Experience real-time engagement with content that matters.
+            </p>
+            <div className="tyagi-hero-stats">
+              <div className="tyagi-stat-item">
+                <Users size={20} />
+                <div>
+                  <div className="tyagi-stat-number">100+</div>
+                  <div className="tyagi-stat-label">Active Viewers</div>
+                </div>
+              </div>
+              <div className="tyagi-stat-divider"></div>
+              <div className="tyagi-stat-item">
+                <Video size={20} />
+                <div>
+                  <div className="tyagi-stat-number">10+</div>
+                  <div className="tyagi-stat-label">Streams Hosted</div>
+                </div>
+              </div>
+              <div className="tyagi-stat-divider"></div>
+              <div className="tyagi-stat-item">
+                <Clock size={20} />
+                <div>
+                  <div className="tyagi-stat-number">10+</div>
+                  <div className="tyagi-stat-label">Hours of Content</div>
+                </div>
+              </div>
+              <button 
+  onClick={() => navigate('/stream')}
+  style={{
+    padding: '6px 12px',
+    fontSize: '12px',
+    backgroundColor: '#000',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    transition: 'opacity 0.2s'
+  }}
+  onMouseEnter={(e) => e.target.style.opacity = '0.8'}
+  onMouseLeave={(e) => e.target.style.opacity = '1'}
+>
+  Go <ArrowRight size={14} />
+</button>
+            </div>
+          </div>
+          <div className="tyagi-hero-image">
+            <div className="tyagi-hero-image-wrapper">
+              <img 
+                src={profileImage2}
+                alt="Live streaming" 
+                className="tyagi-hero-img"
+              />
+              <div className="tyagi-hero-image-glow"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+</section>
         {/* Contact Section */}
         <section className="content-section contact-section">
           <div className="section-container">

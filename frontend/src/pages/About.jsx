@@ -27,7 +27,7 @@ const About = () => {
     { name: "Spring Boot", icon: <Layers size={20} />, color: "#6DB33F" },
     { name: "Javascript", icon: <FileCode size={20} />, color: "#F7DF1E" },
     { name: "MongoDB", icon: <Database size={20} />, color: "#47A248" },
-     { name: "Java", icon: <Code size={20} />, color: "#007396" },
+    { name: "Java", icon: <Code size={20} />, color: "#007396" },
     { name: "SQL", icon: <Database size={20} />, color: "#4479A1" },
     { name: "Express.js", icon: <Server size={20} />, color: "#000000" },
     { name: "AWS", icon: <Cloud size={20} />, color: "#FF9900" },
@@ -41,7 +41,7 @@ const About = () => {
       degree: "B.Tech. - Computer Science & Engineering",
       school: "KIET Group of Institutions",
       duration: "2022 - 2026",
-      grade: "CGPA: 8.8 | 85.10%",
+      grade: "CGPA: 8.73 | 84.95%",
       icon: <GraduationCap className="education-icon" />
     },
     {

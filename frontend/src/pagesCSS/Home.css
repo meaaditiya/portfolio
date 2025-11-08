@@ -89,6 +89,7 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
+  
 }
 
 /* ========================================
@@ -187,10 +188,21 @@ body {
 .hero-name {
   font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 800;
-  line-height: 0.9;
+  line-height: 2.9;
   letter-spacing: -0.03em;
   color: var(--color-black);
   margin-bottom: 2rem;
+background: linear-gradient(
+  to right,
+  #000000 0%,
+  #1a1a1a 25%,
+  #3b2f1d 50%,
+  #c6a24d 75%,
+  #ffde75 100%
+);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
 }
 
 .role-rotator {
@@ -460,12 +472,13 @@ body {
 
 .content-section {
   
-  padding: 8rem 3rem;
+  padding: 2rem 3rem;
   position: relative;
   margin: 0;
   max-width: 2000px;
   margin-right:-26px;
   margin-left:-18px;
+  margin-top: -90px;
 }
 
 .content-section:nth-child(even) {
@@ -572,7 +585,7 @@ body {
   }
   
   .content-section {
-    padding: 6rem 2rem;
+    padding: 2rem 2rem;
   }
   
   .hero-text {
@@ -604,14 +617,14 @@ body {
 
 .contact-section{
   position:relative;
-  top:150px;
+  top:10px;
 }
   .hero-section {
     padding: 4rem 1rem 2rem;
   }
   
   .content-section {
-    padding: 4rem 1rem;
+    padding: 2rem 1rem;
   }
   
   .hero-actions {
@@ -930,20 +943,41 @@ a:focus-visible {
 .content-section {
   margin-top: 50px;
 }
-.quote-container {
-
-  background-color: rgba(255, 255, 255, 0.2); /* Whitish transparent */
-  backdrop-filter: blur(5px); /* Blurry background */
-  -webkit-backdrop-filter: blur(10px); /* Safari support */
-  padding: 1rem;
-  border-radius: 10px;
+.quote-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2rem;
+  text-align: center;
 }
-.quote-text,
+
+.quote-container {
+  max-width: 700px;
+}
+
+.quote-text {
+  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111; /* Deep black */
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.3px;
+}
+
 .quote-author {
-  font-size: 16px;
-  font-weight: bold;
-  color: black;
- 
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.4rem;
+  color: #000;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
+}
+.stream-section{
+  position: relative;
+  top:-100px;
+  
 }
 /* Increase width of sections and containers to cover more of the screen */
 
@@ -1019,7 +1053,7 @@ a:focus-visible {
 .hero-name {
   font-size: clamp(3rem, 7vw, 5.5rem);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.4;
   color: #1a1a1a;
   margin-bottom: 2rem;
   letter-spacing: -0.02em;
@@ -1557,6 +1591,10 @@ a:focus-visible {
   .minimal-placeholder-text {
     font-size: 2.5rem;
   }
+  .pos-blog{
+  position: relative;
+  left:10px;
+}
 }
 
 /* Small Mobile (320px - 479px) */
@@ -1566,7 +1604,10 @@ a:focus-visible {
     gap: 1.25rem;
     padding: 1rem 0.5rem;
   }
-
+.pos-blog{
+  position: relative;
+  left:0px;
+}
   .minimal-blog-image {
     height: 220px;
   }
