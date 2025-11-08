@@ -22,7 +22,8 @@ const Home = () => {
   const [hasAnnouncements, setHasAnnouncements] = useState(false);
   const roles = ["Full-Stack Developer", "React Specialist", "Node.js Expert", "UI/UX Enthusiast"];
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
-
+const [firstBlog, setFirstBlog] = useState(null);
+const [isBlogLoading, setIsBlogLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100);
 
@@ -91,8 +92,27 @@ const Home = () => {
         console.error('Error fetching announcements:', error);
       }
     };
-    fetchQuote();
-    fetchAnnouncements();
+    // Fetch first blog
+const fetchFirstBlog = async () => {
+  try {
+    const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=1');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.blogs && data.blogs.length > 0) {
+        setFirstBlog(data.blogs[0]);
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching first blog:', error);
+  } finally {
+    setIsBlogLoading(false);
+  }
+};
+
+fetchQuote();
+fetchAnnouncements();
+fetchFirstBlog(); // Add this line
+    
 
     window.addEventListener('mousemove', handleMouseMove);
 
@@ -370,50 +390,70 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Blog Section */}
-        <section className="content-section blog-section">
-          <div className="section-container">
-            <div className="section-header">
-              <div className="section-info">
-                <h1 className="tyagi-hero-title">
-              
-              <span className="tyagi-hero-gradient">Blogs and writings</span>
+     {/* Blog Section */}
+<section className="content-section blog-section">
+    <h1 className="tyagi-hero-title">
+                 Writings and 
+              <span className="tyagi-hero-gradient"> Blogs</span>
             </h1>
-                <p className="section-subtitle">Thoughts on development and technology</p>
-              </div>
-             
-            </div>
-             <div>
-              <button
-                onClick={handleBlogRedirect}
-                className="section-nav-btn"
-              >
-                Visit Blog <ExternalLink size={16} />
-              </button>
-              </div>
-            <div
-              className="blog-intro"
-              onClick={handleBlogRedirect}
-              style={{ cursor: 'pointer' }}
-            >
-              <p className="blog-description">
-                Discover insights, tutorials, and reflections on coding and innovation.
-              </p>
-            </div>
-            <div
-              className="featured-topics"
-              onClick={handleBlogRedirect}
-              style={{ cursor: 'pointer' }}
-            >
-              <h3 className="topics-title">Featured Topics</h3>
-              <div className="topics-list">
-                <span className="topic-item">React Development</span>
-                <span className="topic-item">Node.js Best Practices</span>
-                <span className="topic-item">UI/UX Design Trends</span>
-              </div>
-            </div>
+  <div className="section-container">
+    <div className="minimal-blog-layout">
+      {/* Left - Image */}
+      <div className="minimal-blog-image">
+        {isBlogLoading ? (
+          <div className="minimal-blog-placeholder">
+            <span className="minimal-placeholder-text">Loading...</span>
           </div>
-        </section>
+        ) : firstBlog && firstBlog.featuredImage ? (
+          <img 
+            src={firstBlog.featuredImage} 
+            alt={firstBlog.title}
+            className="minimal-blog-img"
+          />
+        ) : (
+          <div className="minimal-blog-placeholder">
+            <span className="minimal-placeholder-text">AT</span>
+          </div>
+        )}
+      </div>
+
+      {/* Right - Content */}
+      <div className="minimal-blog-content">
+        <p className="minimal-blog-label">Writing with Passion</p>
+        
+        {isBlogLoading ? (
+          <p className="minimal-blog-title">Loading blog...</p>
+        ) : firstBlog ? (
+          <>
+            <h3 className="minimal-blog-title">{firstBlog.title}</h3>
+            
+            <p className="minimal-blog-excerpt">
+              {firstBlog.summary}
+            </p>
+            
+            <div className="minimal-blog-actions">
+              <button 
+                onClick={() => navigate(`/blog/${firstBlog.slug || firstBlog._id}`)}
+                className="minimal-read-btn"
+              >
+                Read Article
+              </button>
+              
+              <button 
+                onClick={handleBlogRedirect}
+                className="minimal-all-btn"
+              >
+                All Blogs
+              </button>
+            </div>
+          </>
+        ) : (
+          <p className="minimal-blog-title">No blogs available</p>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* Contact Section */}
         <section className="content-section contact-section">

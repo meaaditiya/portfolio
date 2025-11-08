@@ -628,7 +628,7 @@ const copyTicketId = () => {
             onClick={() => sendOtp(isProject, isAudio)}
             disabled={otpLoading || !data.email}
           >
-            {otpLoading ? 'Sending OTP...' : 'Send OTP'}
+            {otpLoading ? 'Sending OTP...' : 'Get OTP'}
           </button>
         ) : (
           <>
@@ -1484,7 +1484,7 @@ const renderQuerySection = () => (
             ) : (
               <>
                 <hr style={{ margin: '15px 0' }} />
-                <p style={{ color: 'orange' }}>{queryResult.message}</p>
+                <p style={{ color: 'orange' }}>{queryResult.message}, don't worry the admin will definitely reply to it.</p>
               </>
             )}
           </div>

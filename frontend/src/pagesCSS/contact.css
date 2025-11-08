@@ -91,7 +91,7 @@ body {
   justify-content: center;
   align-items: center;
   
- 
+ margin-top:30px;
    background: var(--color-white);
   
 }
@@ -1090,33 +1090,149 @@ body {
 /* ========================================
    Responsive Utilities
 ======================================== */
-@media (max-width: 1024px) {
-  .btn-1024 {
-    width: 100%;
-    justify-content: center;
+/* ========================================
+   Responsive Utilities
+======================================== */
+
+/* Large Desktop: 1440px and above */
+@media (min-width: 1440px) {
+  .cnt-action-btn-project,
+  .cnt-action-btn-project2 {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-base);
+  }
+  
+  .cnt-query-buttons .query-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-sm);
   }
 }
 
-@media (max-width: 768px) {
+/* Desktop: 1024px to 1439px */
+@media (max-width: 1439px) and (min-width: 1024px) {
+  .cnt-action-btn-project,
+  .cnt-action-btn-project2 {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+  
+  .cnt-query-buttons .query-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Tablet Landscape: 769px to 1023px */
+@media (max-width: 1023px) and (min-width: 769px) {
   .cnt-main-section {
-    padding: var(--spacing-lg) var(--spacing-sm);
-    margin-top: 60px;
+    padding: 3rem 1.5rem;
+    margin-top: 40px;
   }
 
   .cnt-section-title {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--spacing-lg);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .cnt-actions {
-    padding: var(--spacing-md);
-  
+    padding: 1.5rem;
+    gap: 1rem;
+    flex-direction: row;
+    justify-content: center;
   }
 
   .cnt-action-btn-project,
   .cnt-action-btn-project2 {
-    width: 100%;
+    width: auto;
+    min-width: 180px;
+    padding: 10px 20px;
+    font-size: 14px;
+    flex: 0 1 auto;
+  }
+
+  .cnt-query-buttons {
+    gap: 1rem;
+    flex-direction: row;
     justify-content: center;
+  }
+
+  .cnt-query-buttons .query-btn {
+    width: auto;
+    min-width: 160px;
+    padding: 10px 18px;
+    font-size: 13px;
+    flex: 0 1 auto;
+  }
+
+  .cnt-btn-otp,
+  .cnt-btn-resend {
+    width: auto;
+    min-width: 140px;
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .cnt-btn-primary {
+    padding: 12px 40px;
+    font-size: 14px;
+  }
+}
+
+/* Tablet Portrait: 481px to 768px */
+@media (max-width: 768px) and (min-width: 481px) {
+  .cnt-main-section {
+    padding: 2rem 1rem;
+    margin-top: 50px;
+  }
+
+  .cnt-section-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cnt-actions {
+    padding: 1.25rem;
+    gap: 0.875rem;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .cnt-action-btn-project,
+  .cnt-action-btn-project2 {
+    width: auto;
+    min-width: 150px;
+    max-width: 200px;
+    padding: 9px 16px;
+    font-size: 13px;
+    flex: 0 1 auto;
+  }
+
+  .cnt-query-buttons {
+    gap: 0.875rem;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .cnt-query-buttons .query-btn {
+    width: auto;
+    min-width: 140px;
+    max-width: 180px;
+    padding: 9px 16px;
+    font-size: 12px;
+    flex: 0 1 auto;
+  }
+
+  .cnt-btn-otp,
+  .cnt-btn-resend {
+    width: auto;
+    min-width: 130px;
+    padding: 9px 16px;
+    font-size: 13px;
+  }
+
+  .cnt-btn-primary {
+    padding: 11px 32px;
+    font-size: 13px;
   }
 
   .cnt-info,
@@ -1130,8 +1246,8 @@ body {
   }
 
   .cnt-otp-input {
-    width: 40px;
-    height: 48px;
+    width: 42px;
+    height: 50px;
     font-size: var(--font-size-lg);
   }
 
@@ -1151,35 +1267,234 @@ body {
     width: 48px;
     height: 48px;
   }
+
+  .cnt-section-header,
+  .cnt-section-headers {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cnt-back-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .cnt-section-subtitle {
+    font-size: 1.5rem;
+  }
 }
 
+/* Mobile: 320px to 480px */
 @media (max-width: 480px) {
+  .cnt-main-section {
+    padding: 1.5rem 0.75rem;
+    margin-top: 60px;
+  }
+
+  .cnt-section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0 0.5rem;
+  }
+
+  .cnt-actions {
+    padding: 1rem;
+    gap: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cnt-action-btn-project,
+  .cnt-action-btn-project2 {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
+    justify-content: center;
+  }
+
+  .cnt-query-buttons {
+    gap: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cnt-query-buttons .query-btn {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .cnt-btn-otp,
+  .cnt-btn-resend {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .cnt-btn-primary {
+    padding: 11px 24px;
+    font-size: 13px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .cnt-info,
+  .cnt-form-container,
+  .cnt-project-form-container {
+    padding: 1rem;
+  }
+
   .cnt-form-row {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .cnt-audio-controls {
     flex-wrap: wrap;
     justify-content: center;
+    gap: 0.75rem;
   }
 
   .cnt-recording-duration {
-    font-size: var(--font-size-xl);
-  }
-
-  .cnt-query-buttons {
-   
-  }
-
-  .query-btn {
-    width: 100%;
+    font-size: var(--font-size-lg);
   }
 
   .cnt-ticket-id {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
+    word-break: break-all;
+  }
+
+  .cnt-otp-container {
+    gap: 0.375rem;
+  }
+
+  .cnt-otp-input {
+    width: 38px;
+    height: 46px;
+    font-size: 1rem;
+  }
+
+  .cnt-section-header,
+  .cnt-section-headers {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .cnt-back-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .cnt-section-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .cnt-popup-content,
+  .cnt-query-popup-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .cnt-popup-icon,
+  .cnt-query-popup-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .cnt-popup-icon svg,
+  .cnt-query-popup-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cnt-popup-title,
+  .cnt-query-popup-title {
+    font-size: 1.25rem;
+  }
+
+  .cnt-popup-message,
+  .cnt-query-popup-message {
+    font-size: 0.875rem;
+  }
+
+  .cnt-popup-btn,
+  .cnt-query-popup-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+    min-width: 100px;
+  }
+
+  .cnt-copy-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .cnt-ticket-note {
+    font-size: 0.8rem;
+  }
+
+  .cnt-record-btn {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .cnt-play-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cnt-reset-btn {
+    padding: 8px 14px;
+    font-size: 12px;
   }
 }
 
+/* Extra Small Mobile: below 375px */
+@media (max-width: 374px) {
+  .cnt-section-title {
+    font-size: 1.35rem;
+  }
+
+  .cnt-action-btn-project,
+  .cnt-action-btn-project2 {
+    padding: 9px 14px;
+    font-size: 12px;
+  }
+
+  .cnt-query-buttons .query-btn {
+    padding: 9px 14px;
+    font-size: 11px;
+  }
+
+  .cnt-btn-otp,
+  .cnt-btn-resend {
+    padding: 9px 14px;
+    font-size: 12px;
+  }
+
+  .cnt-btn-primary {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+
+  .cnt-otp-input {
+    width: 34px;
+    height: 42px;
+    font-size: 0.95rem;
+  }
+
+  .cnt-form-input,
+  .cnt-form-textarea,
+  .cnt-form-select {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
 /* ========================================
    Loading States
 ======================================== */
