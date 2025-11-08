@@ -40,7 +40,7 @@ const [isBlogLoading, setIsBlogLoading] = useState(true);
     // Fetch quote
     const fetchQuote = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/quote');
+        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/quote');
         if (response.ok) {
           const data = await response.json();
           setQuote(data.quote);
@@ -108,7 +108,7 @@ const [isBlogLoading, setIsBlogLoading] = useState(true);
     // Fetch first blog
 const fetchFirstBlog = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/blogs?status=published&limit=1');
+    const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=1');
     if (response.ok) {
       const data = await response.json();
       if (data.blogs && data.blogs.length > 0) {
