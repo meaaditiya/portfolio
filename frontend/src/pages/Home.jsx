@@ -10,7 +10,7 @@ import blogImage from '../images/blogimage.jpeg';
 import weatherBackground from '../images/home.png';
 import '../pagesCSS/Home.css';
 import '../pagesCSS/AnnouncementOverlay.css';
-
+import DOMPurify from 'dompurify';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ const [isBlogLoading, setIsBlogLoading] = useState(true);
     // Fetch quote
     const fetchQuote = async () => {
       try {
-        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/quote');
+        const response = await fetch('http://localhost:5000/api/quote');
         if (response.ok) {
           const data = await response.json();
           setQuote(data.quote);
@@ -52,52 +52,63 @@ const [isBlogLoading, setIsBlogLoading] = useState(true);
       }
     };
 
-     const fetchAnnouncements = async () => {
-      try {
-        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/announcement/active');
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Announcements data:', data);
-          
-          if (data.announcements && data.announcements.length > 0) {
-            // Sort announcements by priority (ascending: 1, 2, 3...)
-            const sortedAnnouncements = [...data.announcements].sort((a, b) => {
-              const priorityA = a.priority || 999;
-              const priorityB = b.priority || 999;
-              return priorityA - priorityB;
-            });
-            
-            setAnnouncements(sortedAnnouncements);
-            setHasAnnouncements(true);
-            
-            // Create direct image URLs instead of blobs
-            const imageMap = {};
-            sortedAnnouncements.forEach(announcement => {
-              if (announcement.hasImage) {
-                imageMap[announcement._id] = `https://connectwithaaditiyamg.onrender.com/api/announcement/${announcement._id}/image`;
-                console.log(`Image URL set for ${announcement._id}:`, imageMap[announcement._id]);
-              }
-            });
-            
-            console.log('Final image map:', imageMap);
-            setAnnouncementImages(imageMap);
-            setShowAnnouncementOverlay(true);
-            setCurrentAnnouncementIndex(0);
-            
-            // Auto-hide after 30 seconds
-            setTimeout(() => {
-              setShowAnnouncementOverlay(false);
-            }, 30000);
+  const fetchAnnouncements = async (isManualOpen = false) => {
+  try {
+    const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/announcement/active');
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Announcements data:', data);
+      
+      if (data.announcements && data.announcements.length > 0) {
+        // Sort announcements by priority
+        const sortedAnnouncements = [...data.announcements].sort((a, b) => {
+          const priorityA = a.priority || 999;
+          const priorityB = b.priority || 999;
+          return priorityA - priorityB;
+        });
+        
+        // Store announcements WITH renderedCaption
+        setAnnouncements(sortedAnnouncements);
+        setHasAnnouncements(true);
+        
+        // Create direct image URLs
+        const imageMap = {};
+        sortedAnnouncements.forEach(announcement => {
+          if (announcement.hasImage) {
+            imageMap[announcement._id] = `https://connectwithaaditiyamg.onrender.com/api/announcement/${announcement._id}/image`;
+            console.log(`Image URL set for ${announcement._id}:`, imageMap[announcement._id]);
           }
+        });
+        
+        console.log('Final image map:', imageMap);
+        setAnnouncementImages(imageMap);
+        
+        // Only auto-show if NOT manually opened AND not blocked by snooze
+        if (!isManualOpen && !isAutoPopupBlocked()) {
+          setShowAnnouncementOverlay(true);
+          setCurrentAnnouncementIndex(0);
+          
+          // Auto-hide after 30 seconds
+          setTimeout(() => {
+            setShowAnnouncementOverlay(false);
+          }, 30000);
+        } else if (isManualOpen) {
+          // Manual open - always show
+          setShowAnnouncementOverlay(true);
+          setCurrentAnnouncementIndex(0);
+        } else {
+          console.log('Auto-popup blocked by snooze');
         }
-      } catch (error) {
-        console.error('Error fetching announcements:', error);
       }
-    };
+    }
+  } catch (error) {
+    console.error('Error fetching announcements:', error);
+  }
+};
     // Fetch first blog
 const fetchFirstBlog = async () => {
   try {
-    const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=1');
+    const response = await fetch('http://localhost:5000/api/blogs?status=published&limit=1');
     if (response.ok) {
       const data = await response.json();
       if (data.blogs && data.blogs.length > 0) {
@@ -133,141 +144,228 @@ fetchFirstBlog(); // Add this line
     window.open('/blog', '_blank');
   };
 
-  const handleCloseAnnouncement = () => {
-    setShowAnnouncementOverlay(false);
-    // Cleanup blob URLs
-    Object.values(announcementImages).forEach(url => {
-      if (url) URL.revokeObjectURL(url);
-    });
-  };
 
+const isAnnouncementSnoozed = (announcementId) => {
+  const snoozeData = localStorage.getItem(`announcement_snooze_${announcementId}`);
+  if (!snoozeData) return false;
+  
+  const snoozeUntil = parseInt(snoozeData, 10);
+  const now = Date.now();
+  
+  if (now < snoozeUntil) {
+    return true;
+  } else {
+    localStorage.removeItem(`announcement_snooze_${announcementId}`);
+    return false;
+  }
+};
+
+const isAutoPopupBlocked = () => {
+  const blockData = localStorage.getItem('announcement_auto_popup_blocked');
+  if (!blockData) return false;
+  
+  const blockUntil = parseInt(blockData, 10);
+  const now = Date.now();
+  
+  if (now < blockUntil) {
+    return true;
+  } else {
+    localStorage.removeItem('announcement_auto_popup_blocked');
+    return false;
+  }
+};
   const handleOpenAnnouncement = () => {
     setShowAnnouncementOverlay(true);
     setCurrentAnnouncementIndex(0);
   };
 
-  const handleNextAnnouncement = () => {
-    setCurrentAnnouncementIndex((prev) => 
-      prev < announcements.length - 1 ? prev + 1 : prev
-    );
-  };
+const handleSnoozeAnnouncement = () => {
+  if (currentAnnouncement) {
+    const oneHourFromNow = Date.now() + (60 * 60 * 1000);
+    localStorage.setItem('announcement_auto_popup_blocked', oneHourFromNow.toString());
+    setShowAnnouncementOverlay(false);
+    console.log('Auto-popup snoozed for 1 hour - can still open manually via bell button');
+  }
+};
 
-  const handlePrevAnnouncement = () => {
-    setCurrentAnnouncementIndex((prev) => 
-      prev > 0 ? prev - 1 : prev
-    );
-  };
+// Bell button handler - always shows announcements
+const handleBellButtonClick = () => {
+  if (announcements.length > 0) {
+    setShowAnnouncementOverlay(true);
+    setCurrentAnnouncementIndex(0);
+  } else {
+    fetchAnnouncements(true); // Manual open
+  }
+};
 
+// Close handler
+const handleCloseAnnouncement = () => {
+  setShowAnnouncementOverlay(false);
+};
+
+// Navigation handlers
+const handlePrevAnnouncement = () => {
+  setCurrentAnnouncementIndex(prev => Math.max(0, prev - 1));
+};
+
+const handleNextAnnouncement = () => {
+  setCurrentAnnouncementIndex(prev => Math.min(announcements.length - 1, prev + 1));
+};
   const currentAnnouncement = announcements[currentAnnouncementIndex];
 
   return (
     <div className="portfolio-container">
       {/* Announcement Label - Shows when there are announcements */}
-      {hasAnnouncements && !showAnnouncementOverlay && (
-        <button 
-          className="announcement_label_trigger"
-          onClick={handleOpenAnnouncement}
-          aria-label="View announcements"
-        >
-          <Bell size={16} className="announcement_label_icon" />
-          <span className="announcement_label_text">NEW</span>
-          <span className="announcement_label_pulse"></span>
-        </button>
-      )}
+    {hasAnnouncements && (
+      <button 
+        className="announcement_label_trigger" 
+        onClick={handleBellButtonClick}
+        aria-label="View announcements"
+      >
+        <div className="announcement_label_pulse"></div>
+        <Bell className="announcement_label_icon" size={16} />
+        <span className="announcement_label_text">News</span>
+      </button>
+    )}
 
-      {/* Announcement Overlay */}
-      {showAnnouncementOverlay && announcements.length > 0 && currentAnnouncement && (
-        <div className="announcement_overlay_wrapper_unique_2024">
-          <div className="announcement_overlay_backdrop_unique_2024" onClick={handleCloseAnnouncement}></div>
-          <div className="announcement_overlay_content_unique_2024">
-            <button 
-              className="announcement_overlay_close_btn_unique_2024"
-              onClick={handleCloseAnnouncement}
-              aria-label="Close announcement"
-            >
-              <X size={20} />
-            </button>
-            
-            <div className="announcement_overlay_container_unique_2024">
-              <div className="announcement_card_unique_2024">
-                <h2 className="announcement_title_unique_2024">{currentAnnouncement.title}</h2>
-                
-                {currentAnnouncement.caption && (
-                  <p className="announcement_caption_unique_2024">{currentAnnouncement.caption}</p>
-                )}
-                
-                {currentAnnouncement.hasImage && announcementImages[currentAnnouncement._id] && (
-                  <div className="announcement_image_wrapper_unique_2024">
-                    <img 
-                      src={announcementImages[currentAnnouncement._id]}
-                      alt={currentAnnouncement.title}
-                      className="announcement_image_unique_2024"
-                    />
-                  </div>
-                )}
-                
-                {currentAnnouncement.link && (
-                  <a 
-                    href={currentAnnouncement.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="announcement_link_unique_2024"
-                  >
-                    Visit <ArrowUpRight size={16} />
-                  </a>
-                )}
-                
-                {currentAnnouncement.hasDocument && (
-                  <a 
-                    href={`https://connectwithaaditiyamg.onrender.com/api/announcement/${currentAnnouncement._id}/document`}
-                    download
-                    className="announcement_document_link_unique_2024"
-                  >
-                    <FileText size={16} />
-                    Download Document
-                  </a>
-                )}
+    {/* Announcement Overlay */}
+    {showAnnouncementOverlay && announcements.length > 0 && currentAnnouncement && (
+      <div className="announcement_overlay_wrapper_unique_2024">
+        <div 
+          className="announcement_overlay_backdrop_unique_2024" 
+          onClick={handleCloseAnnouncement}
+        ></div>
+        
+        <div className="announcement_overlay_content_unique_2024">
+          
+          
+          {/* Close Button */}
+          <button 
+            className="announcement_overlay_close_btn_unique_2024"
+            onClick={handleCloseAnnouncement}
+            aria-label="Close announcement"
+          >
+            <X size={20} />
+          </button>
+          
+          {/* Content Container */}
+      <div className="announcement_overlay_container_unique_2024">
+  <div className="announcement_card_unique_2024">
+    {/* Title with dynamic color */}
+    <h2 
+      className="announcement_title_unique_2024"
+      style={{ 
+        color: currentAnnouncement.titleColor || '#1a1a1a' 
+      }}
+    >
+      {currentAnnouncement.title}
+    </h2>
+    
+    {/* Caption - Render as HTML if markdown, otherwise plain text */}
+    {currentAnnouncement.renderedCaption ? (
+      <div 
+        className="announcement_caption_unique_2024 announcement_caption_markdown"
+        dangerouslySetInnerHTML={{ 
+          __html: DOMPurify.sanitize(currentAnnouncement.renderedCaption, {
+            ALLOWED_TAGS: [
+              'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
+              'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+              'ul', 'ol', 'li',
+              'blockquote', 'pre', 'code',
+              'a', 'span', 'div',
+              'table', 'thead', 'tbody', 'tr', 'th', 'td',
+              'mark', 'small', 'sub', 'sup'
+            ],
+            ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
+          })
+        }}
+      />
+    ) : currentAnnouncement.caption ? (
+      <p className="announcement_caption_unique_2024">
+        {currentAnnouncement.caption}
+      </p>
+    ) : null}
+    
+    {currentAnnouncement.hasImage && announcementImages[currentAnnouncement._id] && (
+      <div className="announcement_image_wrapper_unique_2024">
+        <img 
+          src={announcementImages[currentAnnouncement._id]}
+          alt={currentAnnouncement.title}
+          className="announcement_image_unique_2024"
+        />
+      </div>
+    )}
+    
+    {currentAnnouncement.link && (
+      <a 
+        href={currentAnnouncement.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="announcement_link_unique_2024"
+      >
+        Visit <ArrowUpRight size={16} />
+      </a>
+    )}
+    
+    {currentAnnouncement.hasDocument && (
+      <a 
+        href={`https://connectwithaaditiyamg.onrender.com/api/announcement/${currentAnnouncement._id}/document`}
+        download
+        className="announcement_document_link_unique_2024"
+      >
+        <FileText size={16} />
+        Download Document
+      </a>
+    )}
+  </div>
+</div>
+          {/* Slider Controls */}
+          {announcements.length > 1 && (
+            <div className="announcement_slider_controls_unique_2024">
+              <button
+                className="announcement_slider_btn_unique_2024"
+                onClick={handlePrevAnnouncement}
+                disabled={currentAnnouncementIndex === 0}
+                aria-label="Previous announcement"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              
+              <div className="announcement_slider_dots_unique_2024">
+                {announcements.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`announcement_slider_dot_unique_2024 ${
+                      index === currentAnnouncementIndex ? 'active' : ''
+                    }`}
+                    onClick={() => setCurrentAnnouncementIndex(index)}
+                    aria-label={`Go to announcement ${index + 1}`}
+                  />
+                ))}
               </div>
+              
+              <button
+                className="announcement_slider_btn_unique_2024"
+                onClick={handleNextAnnouncement}
+                disabled={currentAnnouncementIndex === announcements.length - 1}
+                aria-label="Next announcement"
+              >
+                <ChevronRight size={20} />
+              </button>
+              {/* Snooze Button */}
+          <button 
+            className="announcement_overlay_snooze_btn_unique_2024"
+            onClick={handleSnoozeAnnouncement}
+            aria-label="Snooze announcements for 1 hour"
+            title="Snooze for 1 hour"
+          >
+            <Clock size={20} />
+          </button>
             </div>
-
-            {/* Slider Controls */}
-            {announcements.length > 1 && (
-              <div className="announcement_slider_controls_unique_2024">
-                <button
-                  className="announcement_slider_btn_unique_2024"
-                  onClick={handlePrevAnnouncement}
-                  disabled={currentAnnouncementIndex === 0}
-                  aria-label="Previous announcement"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                
-                <div className="announcement_slider_dots_unique_2024">
-                  {announcements.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`announcement_slider_dot_unique_2024 ${
-                        index === currentAnnouncementIndex ? 'active' : ''
-                      }`}
-                      onClick={() => setCurrentAnnouncementIndex(index)}
-                      aria-label={`Go to announcement ${index + 1}`}
-                    />
-                  ))}
-                </div>
-                
-                <button
-                  className="announcement_slider_btn_unique_2024"
-                  onClick={handleNextAnnouncement}
-                  disabled={currentAnnouncementIndex === announcements.length - 1}
-                  aria-label="Next announcement"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-            )}
-          </div>
+          )}
         </div>
-      )}
+      </div>
+    )}
 
       {/* Cursor Follower - Desktop Only */}
       <div

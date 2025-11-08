@@ -959,7 +959,7 @@ a:focus-visible {
 .quote-text {
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 1.8rem;
+  font-size:   20px;
   font-weight: 600;
   color: #111; /* Deep black */
   line-height: 1.6;
@@ -1239,7 +1239,9 @@ a:focus-visible {
     width: 320px;
     height: 320px;
   }
-  
+  .quote-text {
+    font-size: 20px;
+  }
   .profile-paint-stroke {
     width: 360px;
     height: 400px;

@@ -1,4 +1,4 @@
-/* Announcement Overlay Styles */
+/* Announcement Overlay Styles - Minimal Professional Design */
 .announcement_overlay_wrapper_unique_2024 {
   position: fixed;
   top: 0;
@@ -18,49 +18,49 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
+  background-color: rgba(25, 25, 25, 0.75);
+  backdrop-filter: blur(4px);
 }
 
 .announcement_overlay_content_unique_2024 {
   position: relative;
-  max-width: 520px;
-  width: 90%;
-  max-height: 85vh;
-  background-color: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  width: 95%;
+  max-height: 95vh;
+  height: 90vh;
+  background-color: #f5f5f0;
   overflow: hidden;
   animation: announcement_slideUp_unique_2024 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .announcement_overlay_close_btn_unique_2024 {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 32px;
-  height: 32px;
-  background-color: rgba(0, 0, 0, 0.05);
+  top: 24px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
+  background-color: #f5f5f5;
   border: none;
-  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
   transition: all 0.2s ease;
-  color: #666;
-}
-
-.announcement_overlay_close_btn_unique_2024:hover {
-  background-color: rgba(0, 0, 0, 0.08);
   color: #333;
 }
 
+.announcement_overlay_close_btn_unique_2024:hover {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
 .announcement_overlay_container_unique_2024 {
-  padding: 48px 40px 40px;
+  padding: 60px 50px 50px;
   overflow-y: auto;
-  max-height: 85vh;
+  flex: 1;
 }
 
 .announcement_card_unique_2024 {
@@ -68,31 +68,30 @@
 }
 
 .announcement_title_unique_2024 {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   line-height: 1.4;
 }
 
 .announcement_caption_unique_2024 {
-  font-size: 15px;
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 24px;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 32px;
 }
 
 .announcement_image_wrapper_unique_2024 {
   width: 100%;
   max-height: 280px;
-  margin-bottom: 24px;
-  border-radius: 12px;
+  margin-bottom: 32px;
   overflow: hidden;
-  border: 1px solid #e8e8e8;
+ 
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fafafa;
+ 
 }
 
 .announcement_image_unique_2024 {
@@ -105,45 +104,43 @@
 .announcement_link_unique_2024 {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
+  gap: 8px;
+  padding: 6px 28px;
   background-color: #1a1a1a;
   color: #ffffff;
-  border-radius: 8px;
+  border: none;
   text-decoration: none;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 15px;
   transition: all 0.2s ease;
-  margin-top: 24px;
+  margin-top: 28px;
+  cursor: pointer;
 }
 
 .announcement_link_unique_2024:hover {
   background-color: #333;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .announcement_document_link_unique_2024 {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 20px;
+  gap: 10px;
+  padding: 13px 28px;
   background-color: #f5f5f5;
   color: #333;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #d0d0d0;
   text-decoration: none;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 15px;
   transition: all 0.2s ease;
-  margin-top: 12px;
-  margin-left: 12px;
-  position: relative;
-  top:2px;
+  margin-top: 16px;
+  margin-left: 16px;
+  cursor: pointer;
 }
 
 .announcement_document_link_unique_2024:hover {
-  background-color: #ebebeb;
-  border-color: #d0d0d0;
+  background-color: #e8e8e8;
+  border-color: #b0b0b0;
 }
 
 @keyframes announcement_fadeIn_unique_2024 {
@@ -168,52 +165,63 @@
 
 /* Scrollbar styling for announcement container */
 .announcement_overlay_container_unique_2024::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
 
 .announcement_overlay_container_unique_2024::-webkit-scrollbar-track {
-  background: transparent;
+  background: #e8e8e3;
+  border-left: 1px solid #d0d0d0;
 }
 
 .announcement_overlay_container_unique_2024::-webkit-scrollbar-thumb {
-  background: #d0d0d0;
-  border-radius: 3px;
+  background: linear-gradient(180deg, #9b8b7e 0%, #8a7a6d 100%);
+  border: 2px solid #e8e8e3;
+  transition: background 0.2s ease;
 }
 
 .announcement_overlay_container_unique_2024::-webkit-scrollbar-thumb:hover {
-  background: #b0b0b0;
+  background: linear-gradient(180deg, #8a7a6d 0%, #79695c 100%);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .announcement_overlay_content_unique_2024 {
-    width: 95%;
-    max-height: 90vh;
+    width: 98%;
+    max-height: 98vh;
+    height: 95vh;
   }
 
   .announcement_overlay_container_unique_2024 {
-    padding: 40px 32px 32px;
+    padding: 50px 40px 40px;
   }
 
   .announcement_title_unique_2024 {
-    font-size: 20px;
+    font-size: 24px;
   }
 
   .announcement_caption_unique_2024 {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .announcement_overlay_close_btn_unique_2024 {
-    top: 16px;
-    right: 16px;
-    width: 30px;
-    height: 30px;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .announcement_image_wrapper_unique_2024 {
+    max-height: 350px;
+  }
+
+  .announcement_image_unique_2024 {
+    max-height: 350px;
   }
 }
 
 @media (max-width: 480px) {
   .announcement_overlay_container_unique_2024 {
-    padding: 36px 24px 24px;
+    padding: 45px 28px 28px;
   }
 
   .announcement_link_unique_2024,
@@ -224,7 +232,15 @@
   }
 
   .announcement_document_link_unique_2024 {
-    margin-top: 12px;
+    margin-top: 16px;
+  }
+
+  .announcement_image_wrapper_unique_2024 {
+    max-height: 280px;
+  }
+
+  .announcement_image_unique_2024 {
+    max-height: 280px;
   }
 }
 
@@ -233,92 +249,116 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 20px;
-  border-top: 1px solid #f0f0f0;
-  background-color: #fafafa;
+  gap: 32px;
+  padding: 28px;
+  height:10px;
+  border-top: 2px solid #d0d0d0;
+  background-color: #e8e8e3;
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .announcement_slider_btn_unique_2024 {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 2px solid #9b8b7e;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: #666;
+  transition: all 0.25s ease;
+  color: #5a4a3d;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .announcement_slider_btn_unique_2024:hover:not(:disabled) {
-  background-color: #f5f5f5;
-  border-color: #d0d0d0;
-  color: #333;
+  background-color: #9b8b7e;
+  border-color: #8a7a6d;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.announcement_slider_btn_unique_2024:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .announcement_slider_btn_unique_2024:disabled {
-  opacity: 0.3;
+  opacity: 0.25;
   cursor: not-allowed;
+  border-color: #d0d0d0;
+  color: #b0b0b0;
+
 }
 
 .announcement_slider_dots_unique_2024 {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
 }
 
 .announcement_slider_dot_unique_2024 {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #d0d0d0;
+  width: 10px;
+  height: 10px;
+  background-color: #b0b0b0;
   border: none;
+  border-radius: 100%;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
   padding: 0;
 }
 
 .announcement_slider_dot_unique_2024.active {
-  width: 20px;
-  border-radius: 3px;
-  background-color: #1a1a1a;
+  width: 32px;
+  height: 10px;
+  border-radius: 0%;
+  background-color: #5a4a3d;
 }
 
-.announcement_slider_dot_unique_2024:hover {
-  background-color: #999;
+.announcement_slider_dot_unique_2024:hover:not(.active) {
+  background-color: #8a7a6d;
+  transform: scale(1.2);
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for slider */
 @media (max-width: 768px) {
-  .announcement_image_wrapper_unique_2024 {
-    max-height: 220px;
-  }
-
-  .announcement_image_unique_2024 {
-    max-height: 220px;
-  }
-
   .announcement_slider_controls_unique_2024 {
-    gap: 16px;
-    padding: 16px;
+    gap: 24px;
+    padding: 24px;
   }
 
   .announcement_slider_btn_unique_2024 {
-    width: 30px;
-    height: 30px;
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+
+  .announcement_slider_dots_unique_2024 {
+    gap: 10px;
+  }
+
+  .announcement_slider_dot_unique_2024 {
+    width: 8px;
+    height: 8px;
+  }
+
+  .announcement_slider_dot_unique_2024.active {
+    width: 28px;
+    height: 8px;
   }
 }
 
 @media (max-width: 480px) {
-  .announcement_image_wrapper_unique_2024 {
-    max-height: 180px;
+  .announcement_slider_controls_unique_2024 {
+    gap: 20px;
+    padding: 20px;
   }
 
-  .announcement_image_unique_2024 {
-    max-height: 180px;
+  .announcement_slider_btn_unique_2024 {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
   }
 }
 
@@ -326,7 +366,7 @@
 .announcement_label_trigger {
   position: fixed;
   left: 0;
-  bottom: 30px;;
+  bottom: 30px;
   transform: translateY(50%);
   background: linear-gradient(135deg, #e91e63 0%, #d81b60 100%);
   color: white;
@@ -409,12 +449,11 @@
 .announcement_label_pulse {
   position: absolute;
   top: 50%;
-  left: 10px;
+  left: 12px;
   width: 16px;
   height: 16px;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
-  transform: translate(-50%, -50%);
   animation: pulse 2s ease-out infinite;
 }
 
@@ -501,11 +540,355 @@
 /* Small screens */
 @media (max-width: 480px) {
   .announcement_label_trigger {
-    padding: 8px 14px 8px 5px;
+    padding: 10px 18px 10px 6px;
     font-size: 11px;
   }
 
   .announcement_label_text {
     letter-spacing: 0.5px;
+  }
+}
+.announcement_overlay_snooze_btn_unique_2024 {
+ 
+  width: 40px;
+  height: 40px;
+  background-color: #fff4e6;
+  border: 1px solid #ffb347;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  color: #ff8c00;
+}
+
+.announcement_overlay_snooze_btn_unique_2024:hover {
+  background-color: #ffe4cc;
+  border-color: #ff9933;
+  color: #ff7700;
+  transform: scale(1.05);
+}
+
+.announcement_overlay_snooze_btn_unique_2024:active {
+  transform: scale(0.98);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .announcement_overlay_snooze_btn_unique_2024 {
+    top: 20px;
+    right: 66px;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcement_overlay_snooze_btn_unique_2024 {
+    top: 16px;
+    right: 60px;
+    width: 34px;
+    height: 34px;
+  }
+}
+/* ============================================
+   ADD THESE STYLES TO AnnouncementOverlay.css
+   ============================================ */
+
+/* Markdown Caption Styling */
+.announcement_caption_markdown {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+/* Markdown Typography */
+.announcement_caption_markdown h1,
+.announcement_caption_markdown h2,
+.announcement_caption_markdown h3,
+.announcement_caption_markdown h4,
+.announcement_caption_markdown h5,
+.announcement_caption_markdown h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #1a1a1a;
+}
+
+.announcement_caption_markdown h1 {
+  font-size: 28px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+.announcement_caption_markdown h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 6px;
+}
+
+.announcement_caption_markdown h3 {
+  font-size: 20px;
+}
+
+.announcement_caption_markdown h4 {
+  font-size: 18px;
+}
+
+.announcement_caption_markdown h5 {
+  font-size: 16px;
+}
+
+.announcement_caption_markdown h6 {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Paragraph spacing */
+.announcement_caption_markdown p {
+  margin-bottom: 16px;
+}
+
+.announcement_caption_markdown p:last-child {
+  margin-bottom: 0;
+}
+
+/* Strong and emphasis */
+.announcement_caption_markdown strong,
+.announcement_caption_markdown b {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.announcement_caption_markdown em,
+.announcement_caption_markdown i {
+  font-style: italic;
+}
+
+.announcement_caption_markdown u {
+  text-decoration: underline;
+}
+
+.announcement_caption_markdown s,
+.announcement_caption_markdown strike,
+.announcement_caption_markdown del {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* Lists */
+.announcement_caption_markdown ul,
+.announcement_caption_markdown ol {
+  margin: 16px 0;
+  padding-left: 32px;
+}
+
+.announcement_caption_markdown ul {
+  list-style-type: disc;
+}
+
+.announcement_caption_markdown ol {
+  list-style-type: decimal;
+}
+
+.announcement_caption_markdown li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.announcement_caption_markdown li:last-child {
+  margin-bottom: 0;
+}
+
+/* Nested lists */
+.announcement_caption_markdown ul ul,
+.announcement_caption_markdown ol ol,
+.announcement_caption_markdown ul ol,
+.announcement_caption_markdown ol ul {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* Blockquote */
+.announcement_caption_markdown blockquote {
+  margin: 20px 0;
+  padding: 12px 20px;
+  border-left: 4px solid #9b8b7e;
+  background-color: #f9f9f5;
+  font-style: italic;
+  color: #555;
+}
+
+.announcement_caption_markdown blockquote p {
+  margin-bottom: 0;
+}
+
+/* Code blocks */
+.announcement_caption_markdown pre {
+  margin: 20px 0;
+  padding: 16px;
+  background-color: #2d2d2d;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.announcement_caption_markdown code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  color: #e91e63;
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.announcement_caption_markdown pre code {
+  color: #f8f8f2;
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Links */
+.announcement_caption_markdown a {
+  color: #1a73e8;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.announcement_caption_markdown a:hover {
+  color: #1557b0;
+}
+
+/* Tables */
+.announcement_caption_markdown table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  border: 1px solid #d0d0d0;
+}
+
+.announcement_caption_markdown th,
+.announcement_caption_markdown td {
+  padding: 10px 12px;
+  text-align: left;
+  border: 1px solid #d0d0d0;
+}
+
+.announcement_caption_markdown th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.announcement_caption_markdown tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Mark/Highlight */
+.announcement_caption_markdown mark {
+  background-color: #fff59d;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+/* Small text */
+.announcement_caption_markdown small {
+  font-size: 85%;
+  opacity: 0.8;
+}
+
+/* Subscript and Superscript */
+.announcement_caption_markdown sub,
+.announcement_caption_markdown sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.announcement_caption_markdown sup {
+  top: -0.5em;
+}
+
+.announcement_caption_markdown sub {
+  bottom: -0.25em;
+}
+
+/* Horizontal Rule */
+.announcement_caption_markdown hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 2px solid #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .announcement_caption_markdown {
+    font-size: 15px;
+  }
+
+  .announcement_caption_markdown h1 {
+    font-size: 24px;
+  }
+
+  .announcement_caption_markdown h2 {
+    font-size: 20px;
+  }
+
+  .announcement_caption_markdown h3 {
+    font-size: 18px;
+  }
+
+  .announcement_caption_markdown ul,
+  .announcement_caption_markdown ol {
+    padding-left: 24px;
+  }
+
+  .announcement_caption_markdown pre {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .announcement_caption_markdown table {
+    font-size: 14px;
+  }
+
+  .announcement_caption_markdown th,
+  .announcement_caption_markdown td {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcement_caption_markdown {
+    font-size: 14px;
+  }
+
+  .announcement_caption_markdown h1 {
+    font-size: 22px;
+  }
+
+  .announcement_caption_markdown h2 {
+    font-size: 18px;
+  }
+
+  .announcement_caption_markdown h3 {
+    font-size: 16px;
+  }
+
+  .announcement_caption_markdown pre {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .announcement_caption_markdown table {
+    font-size: 13px;
+  }
+
+  .announcement_caption_markdown th,
+  .announcement_caption_markdown td {
+    padding: 6px 8px;
   }
 }

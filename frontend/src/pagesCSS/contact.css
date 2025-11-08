@@ -128,12 +128,12 @@ body {
    Card Container
 ======================================== */
 .cnt-card {
-  max-width: 1200px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  background: var(--color-white);
+ 
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
+ 
   overflow: hidden;
 }
 
@@ -144,7 +144,7 @@ body {
   display: flex;
   gap: var(--spacing-md);
   padding: var(--spacing-xl);
-  background: var(--color-off-white);
+ 
   border-bottom: 1px solid var(--color-border);
   justify-content: center;
   flex-wrap: wrap;
@@ -157,7 +157,7 @@ body {
   gap: var(--spacing-xs);
   padding: var(--spacing-md) var(--spacing-lg);
   background: var(--color-primary);
-  color: var(--color-white);
+  color: black;
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
@@ -202,8 +202,8 @@ body {
 ======================================== */
 .cnt-info {
   padding: var(--spacing-2xl);
-  background: #4e7a81;
-  color: var(--color-white);
+ 
+  color: black;
   /* Add decorative background image here:
      background-image: url('info-section-pattern.png');
      background-size: cover;
@@ -219,7 +219,7 @@ body {
 }
 
 .cnt-info .cnt-card-title {
-  color: var(--color-white);
+  color: black;
 }
 
 .cnt-card-text {
@@ -227,6 +227,7 @@ body {
   line-height: 1.7;
   margin-bottom: var(--spacing-xl);
   opacity: 0.9;
+  color: #0a0a0a;
 }
 
 .cnt-details {
@@ -234,6 +235,7 @@ body {
   flex-direction: column;
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
+  color: #0a0a0a;
 }
 
 .cnt-item {
@@ -250,21 +252,31 @@ body {
 .cnt-item:hover {
   background: rgba(255, 255, 255, 0.15);
 }
-
 .cnt-icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3),
+              0 3px 8px rgba(0, 0, 0, 0.25);
   border-radius: var(--radius-md);
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.cnt-icon-container:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
 
 .cnt-icon {
   font-size: 1.5rem;
-  color: var(--color-white);
+  color: #0e0e0e;
 }
 
 .cnt-title {
@@ -279,14 +291,15 @@ body {
 .cnt-link,
 .cnt-value {
   font-size: var(--font-size-base);
-  color: var(--color-white);
+  color: #0e0e0e;
   text-decoration: none;
-  transition: opacity var(--transition-fast);
+  transition: opacity 0.2s ease;
 }
 
 .cnt-link:hover {
-  opacity: 0.8;
+  opacity: 0.7;
 }
+
 
 /* ========================================
    Frequent Queries
@@ -306,7 +319,7 @@ body {
   font-size: var(--font-size-lg);
   font-weight: 600;
   margin-bottom: var(--spacing-md);
-  color: var(--color-white);
+  color: black;
 }
 
 .cnt-queries-icon {
@@ -322,14 +335,27 @@ body {
 .cnt-query-btn {
   padding: var(--spacing-md);
   background: rgba(255, 255, 255, 0.15);
-  color: var(--color-white);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #0e0e0e;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   text-align: left;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3),
+              0 3px 8px rgba(0, 0, 0, 0.25);
 }
+
+.cnt-query-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35),
+              inset 0 1px 3px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
 
 .cnt-query-btn:hover {
   background: rgba(255, 255, 255, 0.25);
@@ -372,7 +398,7 @@ body {
   font-family: inherit;
   color: black;
   background: var(--color-white);
-  border: 0.2px solid black;
+  border: 2px solid rgba(0, 0, 0, 0.4);
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
   outline: none;
