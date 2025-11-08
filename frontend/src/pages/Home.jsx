@@ -146,7 +146,7 @@ fetchFirstBlog(); // Add this line
 
 
 const isAnnouncementSnoozed = (announcementId) => {
-  const snoozeData = localStorage.getItem(`announcement_snooze_${announcementId}`);
+  const snoozeData = sessionStorage.getItem(`announcement_snooze_${announcementId}`);
   if (!snoozeData) return false;
   
   const snoozeUntil = parseInt(snoozeData, 10);
@@ -161,7 +161,7 @@ const isAnnouncementSnoozed = (announcementId) => {
 };
 
 const isAutoPopupBlocked = () => {
-  const blockData = localStorage.getItem('announcement_auto_popup_blocked');
+  const blockData = sessionStorage.getItem('announcement_auto_popup_blocked');
   if (!blockData) return false;
   
   const blockUntil = parseInt(blockData, 10);
@@ -170,7 +170,7 @@ const isAutoPopupBlocked = () => {
   if (now < blockUntil) {
     return true;
   } else {
-    localStorage.removeItem('announcement_auto_popup_blocked');
+    sessionStorage.removeItem('announcement_auto_popup_blocked');
     return false;
   }
 };
@@ -182,7 +182,7 @@ const isAutoPopupBlocked = () => {
 const handleSnoozeAnnouncement = () => {
   if (currentAnnouncement) {
     const oneHourFromNow = Date.now() + (60 * 60 * 1000);
-    localStorage.setItem('announcement_auto_popup_blocked', oneHourFromNow.toString());
+    sessionStorage.setItem('announcement_auto_popup_blocked', oneHourFromNow.toString());
     setShowAnnouncementOverlay(false);
     console.log('Auto-popup snoozed for 1 hour - can still open manually via bell button');
   }
