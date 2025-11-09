@@ -1367,14 +1367,7 @@ const getSocialIcon = (platform) => {
 };
   return (
     <section className="section blog-post-section">
-      <button
-        className="back-button"
-        onClick={() => navigate('/blog')}
-      >
-        <FaArrowLeft className="back-icon" />
-        Back to all posts
-      </button>
-      
+
       {isLoading && (
         <div className="loading">
           <div><Dots/></div>
@@ -1387,9 +1380,19 @@ const getSocialIcon = (platform) => {
       
       {!isLoading && blogPost && (
         <div className="card blog-post">
-          {blogPost.featuredImage && (
-            <img src={blogPost.featuredImage} alt={blogPost.title} className="blog-post-image" />
-          )}
+          <button 
+      className="back-button-overlay"
+      onClick={() => navigate('/blog')}
+    >
+      <FaArrowLeft className="back-icon" />
+      <span>Back to all posts</span>
+    </button>
+    
+    {blogPost.featuredImage && (
+      <div className="featured-image-container">
+        <img src={blogPost.featuredImage} alt={blogPost.title} className="blog-post-image" />
+      </div>
+    )}
           <h1 className="blog-post-title">{blogPost.title}</h1>
           <div className="blog-post-meta">
   <span className="blog-post-date">
