@@ -188,6 +188,111 @@ padding: 15px;
 }
 
 /* ===================================
+   Showcase Panel - Portfolio Style
+   =================================== */
+
+.aaditiya-showcase-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: flex-end;
+  padding-right: 0;
+}
+
+.aaditiya-portrait-frame {
+  width: 100%;
+  max-width: 280px;
+  overflow: visible;
+  background: transparent;
+  border: 1.5px solid rgba(80, 80, 80, 0.3);
+  border-radius: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(3px);
+  position: relative;
+  left: -80px;
+  padding: 15px;
+}
+
+.aaditiya-portrait-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.06));
+}
+
+.aaditiya-luminous-aura {
+  display: none;
+}
+
+/* Corner Accents */
+.aaditiya-corner-accent {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #1a1a1a;
+}
+
+.aaditiya-corner-top-left {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.aaditiya-corner-top-right {
+  top: -1px;
+  right: -1px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.aaditiya-corner-bottom-left {
+  bottom: -1px;
+  left: -1px;
+  border-right: none;
+  border-top: none;
+}
+
+.aaditiya-corner-bottom-right {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+/* ===================================
+   Achievement Badges
+   =================================== */
+
+.aaditiya-achievements-cluster {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.aaditiya-achievement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  border-radius: 0;
+  font-size: 0.75rem;
+  color: #1a1a1a;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.aaditiya-achievement-badge svg {
+  color: #1a1a1a;
+}
+
+/* ===================================
    Quote Block - Refined Typography
    =================================== */
 
@@ -200,7 +305,7 @@ padding: 15px;
 .aaditiya-wisdom-wrapper {
   background: transparent;
   padding: 0;
-  border-left: 3px solid #1a1a1a;
+ 
   padding-left: 2rem;
 }
 
@@ -222,6 +327,270 @@ padding: 15px;
   font-family: 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+}
+
+/* ===================================
+   Current Focus Section
+   =================================== */
+
+.aaditiya-current-focus {
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  padding: 1.5rem;
+  background: rgba(26, 26, 26, 0.02);
+  border: 1px solid #e5e5e5;
+  border-radius: 0;
+}
+
+.aaditiya-focus-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+}
+
+.aaditiya-focus-description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #777;
+  margin: 0;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 300;
+}
+
+/* ===================================
+   RESPONSIVE STYLES
+   =================================== */
+
+/* TABLETS & MEDIUM SCREENS (768px to 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .aaditiya-showcase-panel {
+    gap: 2.5rem;
+    align-items: flex-end;
+  }
+
+  .aaditiya-portrait-frame {
+    max-width: 240px;
+  }
+
+  .aaditiya-portrait-image {
+    filter: drop-shadow(0 3px 15px rgba(0, 0, 0, 0.05));
+  }
+
+  .aaditiya-wisdom-block {
+    max-width: 350px;
+  }
+
+  .aaditiya-wisdom-wrapper {
+  
+    padding-left: 1.8rem;
+  }
+
+  .aaditiya-wisdom-inscription {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}
+
+/* SMALL TABLETS & LARGE PHONES (601px to 767px) */
+@media (min-width: 601px) and (max-width: 767px) {
+  .aaditiya-portrait-frame {
+    position: relative;
+    left: 0px;
+    max-width: 200px;
+    width: 100%;
+  }
+
+  .aaditiya-showcase-panel {
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .aaditiya-portrait-enclosure {
+    justify-content: center;
+  }
+
+  .aaditiya-portrait-image {
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.04));
+  }
+
+  .aaditiya-achievements-cluster {
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .aaditiya-wisdom-block {
+    max-width: 100%;
+  }
+
+  .aaditiya-wisdom-wrapper {
+    padding-left: 1.5rem;
+  
+  }
+
+  .aaditiya-wisdom-inscription {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .aaditiya-wisdom-attribution {
+    font-size: 0.7rem;
+  }
+
+  .aaditiya-current-focus {
+    max-width: 100%;
+  }
+}
+
+/* TABLETS & MEDIUM PHONES (481px to 600px) */
+@media (min-width: 481px) and (max-width: 600px) {
+  .aaditiya-portrait-frame {
+    position: relative;
+    left: 0px;
+    max-width: 160px;
+    width: 100%;
+  }
+
+  .aaditiya-showcase-panel {
+    gap: 1.8rem;
+    align-items: center;
+  }
+
+  .aaditiya-portrait-enclosure {
+    justify-content: center;
+  }
+
+  .aaditiya-portrait-image {
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.04));
+  }
+
+  .aaditiya-achievements-cluster {
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .aaditiya-achievement-badge {
+    font-size: 0.7rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .aaditiya-wisdom-block {
+    max-width: 100%;
+  }
+
+  .aaditiya-wisdom-wrapper {
+    padding-left: 1.5rem;
+ 
+  }
+
+  .aaditiya-wisdom-inscription {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .aaditiya-wisdom-attribution {
+    font-size: 0.65rem;
+  }
+
+  .aaditiya-current-focus {
+    max-width: 100%;
+    padding: 1.2rem;
+  }
+
+  .aaditiya-focus-header {
+    font-size: 0.7rem;
+  }
+
+  .aaditiya-focus-description {
+    font-size: 0.8rem;
+  }
+}
+
+/* MOBILE PHONES (up to 480px) */
+@media (max-width: 480px) {
+  .aaditiya-portrait-frame {
+    position: relative;
+    left: 0px;
+    max-width: 140px;
+    width: 100%;
+  }
+
+  .aaditiya-showcase-panel {
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .aaditiya-portrait-image {
+    filter: drop-shadow(0 1px 8px rgba(0, 0, 0, 0.03));
+  }
+
+  .aaditiya-corner-accent {
+    width: 15px;
+    height: 15px;
+  }
+
+  .aaditiya-achievements-cluster {
+    max-width: 100%;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+
+  .aaditiya-achievement-badge {
+    font-size: 0.65rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .aaditiya-achievement-badge svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .aaditiya-wisdom-block {
+    max-width: 100%;
+  }
+
+  .aaditiya-wisdom-wrapper {
+    padding-left: 1rem;
+  
+  }
+
+  .aaditiya-wisdom-inscription {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin: 0 0 0.6rem 0;
+  }
+
+  .aaditiya-wisdom-attribution {
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+  }
+
+  .aaditiya-current-focus {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .aaditiya-focus-header {
+    font-size: 0.65rem;
+  }
+
+  .aaditiya-focus-header svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .aaditiya-focus-description {
+    font-size: 0.75rem;
+  }
 }
 
 /* ===================================
@@ -380,7 +749,7 @@ padding: 15px;
   }
 
   .aaditiya-wisdom-wrapper {
-    border-left: 3px solid #1a1a1a;
+   
     padding-left: 1.8rem;
   }
 
@@ -492,7 +861,7 @@ padding: 15px;
 
   .aaditiya-wisdom-wrapper {
     padding-left: 1.5rem;
-    border-left: 2px solid #1a1a1a;
+ 
   }
 
   .aaditiya-wisdom-inscription {
@@ -615,7 +984,7 @@ padding: 15px;
 
   .aaditiya-wisdom-wrapper {
     padding-left: 1.5rem;
-    border-left: 2px solid #1a1a1a;
+   
   }
 
   .aaditiya-wisdom-inscription {
@@ -741,7 +1110,7 @@ padding: 15px;
 
   .aaditiya-wisdom-wrapper {
     padding-left: 1rem;
-    border-left: 2px solid #1a1a1a;
+   
   }
 
   .aaditiya-wisdom-inscription {

@@ -4,17 +4,26 @@ import '../pagesCSS/Header.css';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeButton, setActiveButton] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
   const navigateToPage = (path) => {
     navigate(path);
-    setIsMobileMenuOpen(false); // Close mobile menu on navigation
+    setIsMobileMenuOpen(false);
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleNavClick = (path, index) => {
+    setActiveButton(index);
+    navigateToPage(path);
+    setTimeout(() => {
+      setActiveButton(null);
+    }, 600);
   };
 
   const navItems = [
@@ -24,7 +33,7 @@ const Header = () => {
     { name: 'Projects', path: '/projects' },
     { name: 'Blogs', path: '/blog' },
     { name: 'Contact', path: '/contact' },
-    {name:'Stream', path: '/stream'},
+    { name: 'Stream', path: '/stream' },
   ];
 
   return (
@@ -108,6 +117,65 @@ const Header = () => {
             transform: translateX(0px);
           }
         }
+
+        @keyframes checkmarkAnimation {
+          0% {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(-2px);
+          }
+        }
+        
+        /* Navigation Items - Enhanced Styles */
+        .nav-item {
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+          margin: 0;
+          position: relative;
+          transition: all 300ms ease-out;
+          box-shadow: inset 0px 0px 0px -15px #000;
+          padding: 0.5rem 1.2rem;
+          border-radius: 0.5rem;
+          font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          color: #333;
+        }
+
+        .nav-item:hover,
+        {
+          color: #000;
+          box-shadow: inset 0px -20px 0px -15px #000;
+          outline: none;
+        }
+
+        .nav-item::after {
+          content: '✔';
+          margin-left: 0.5rem;
+          display: inline-block;
+          color: #000;
+          position: absolute;
+          transform: translateY(10px);
+          opacity: 0;
+          transition: all 200ms ease-out;
+          font-weight: bold;
+        }
+
+        .nav-item-active::after,
+        .nav-item.active-feedback::after {
+          opacity: 1;
+          transform: translateY(-2px);
+          animation: checkmarkAnimation 200ms ease-out;
+        }
+
+        .nav-item-active {
+          color: #000;
+          box-shadow: inset 0px -20px 0px -18px #000;
+        }
         
         /* Responsive Design */
         @media (max-width: 1024px) {
@@ -116,21 +184,23 @@ const Header = () => {
           }
           .at-subtext {
             font-size: 18px;
-          
           }
         }
-        @media(max-width:829px){
-         .at-subtext {
-          display: none;
+
+        @media (max-width: 829px) {
+          .at-subtext {
+            display: none;
             font-size: 18px;
             letter-spacing: 0.2px;
-          }}
+          }
+        }
+
         @media (max-width: 768px) {
           .at-logo-text {
             font-size: 32px;
           }
           .at-subtext {
-          display: none;
+            display: none;
             font-size: 18px;
             letter-spacing: 0.2px;
           }
@@ -204,24 +274,50 @@ const Header = () => {
             -moz-osx-font-smoothing: grayscale;
           }
         }
+
+        /* Mobile Backdrop - Minimal & Effective */
+        .mobile-menu-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.15);
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
+          animation: fadeInBackdrop 200ms ease-out;
+          z-index: 8;
+        }
+
+        @keyframes fadeInBackdrop {
+          from {
+            opacity: 0;
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+          }
+          to {
+            opacity: 1;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+          }
+        }
       `}</style>
 
       <header className="portfolio-header">
         <div className="header-content">
           <div className="logo-section">
-           <div className="stylish-at-logo">
+            <div className="stylish-at-logo">
               <div className="at-logo-text">AT</div>
-              
             </div>
           </div>
 
           {/* Desktop Navigation - Centered */}
           <nav className="main-navigation">
-            {navItems.map((item) => (
+            {navItems.map((item, index) => (
               <button
                 key={item.path}
-                onClick={() => navigateToPage(item.path)}
-                className={`nav-item ${currentPath === item.path ? 'nav-item-active' : ''}`}
+                onClick={() => handleNavClick(item.path, index)}
+                className={`nav-item ${currentPath === item.path ? 'nav-item-active' : ''} ${activeButton === index ? 'active-feedback' : ''}`}
               >
                 <span className="nav-label">{item.name}</span>
               </button>

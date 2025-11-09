@@ -417,16 +417,21 @@ const handleNextAnnouncement = () => {
           </div>
 
           <div className="aaditiya-showcase-panel">
-            <div className="aaditiya-portrait-enclosure">
-              <div className="aaditiya-portrait-frame">
-                <img
-                  src={profileImage}
-                  alt="Aaditiya Tyagi"
-                  className="aaditiya-portrait-image"
-                />
-              </div>
-              <div className="aaditiya-luminous-aura"></div>
-            </div>
+        <div className="aaditiya-portrait-enclosure">
+          <div className="aaditiya-portrait-frame">
+            <img
+              src={profileImage}
+              alt="Aaditiya Tyagi"
+              className="aaditiya-portrait-image"
+            />
+            {/* Decorative Corner Elements */}
+            <div className="aaditiya-corner-accent aaditiya-corner-top-left"></div>
+            <div className="aaditiya-corner-accent aaditiya-corner-top-right"></div>
+            <div className="aaditiya-corner-accent aaditiya-corner-bottom-left"></div>
+            <div className="aaditiya-corner-accent aaditiya-corner-bottom-right"></div>
+          </div>
+          <div className="aaditiya-luminous-aura"></div>
+        </div>
 
             <div className="aaditiya-wisdom-block">
               <div className="aaditiya-wisdom-wrapper">
@@ -468,7 +473,7 @@ const handleNextAnnouncement = () => {
       </div>
     </section>
         {/* About Section */}
-        <section className="content-section about-section">
+        <section className="newabout-section content-section about-section">
           <div className="section-container">
             <div className="section-content"  style={{ cursor: 'pointer' }}>
               <About />
