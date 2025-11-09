@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
+import '../pagesCSS/commentmoderation.css';
 import Dots from './DotsLoader';
 
 // Import ReactMarkdown for proper markdown rendering
@@ -54,7 +55,7 @@ const BlogPost = () => {
   const [userCommentReactions, setUserCommentReactions] = useState({});
   const [commentReactionLoading, setCommentReactionLoading] = useState(null);
   const [commentReactionTarget, setCommentReactionTarget] = useState(null);
-
+  const [commentSubmitting, setCommentSubmitting] = useState(false);
   //summary State
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);
@@ -72,6 +73,9 @@ const BlogPost = () => {
   const [showAuthorModal, setShowAuthorModal] = useState(false);
   const [authorData, setAuthorData] = useState(null);
   const [authorLoading, setAuthorLoading] = useState(false);
+  // Moderation error state
+const [showModerationModal, setShowModerationModal] = useState(false);
+const [moderationError, setModerationError] = useState('');
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -268,56 +272,66 @@ const BlogPost = () => {
       [name]: value
     }));
   };
+// Handle comment form submit
+const handleCommentSubmit = async (e) => {
+  e.preventDefault();
+  setCommentError(null);
+  setCommentSuccess(null);
+  setCommentSubmitting(true);
   
-  // Handle comment form submit
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-    setCommentError(null);
-    setCommentSuccess(null);
+  if (!blogPost || !blogPost._id) return;
+  
+  if (commentForm.name.trim() === '' || 
+      commentForm.email.trim() === '' || 
+      commentForm.content.trim() === '') {
+    setCommentError('All fields are required');
+    setCommentSubmitting(false);
+    return;
+  }
+  
+  try {
+    await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/comments`,
+      commentForm
+    );
     
-    if (!blogPost || !blogPost._id) return;
+    // Store user info for future use
+    const userInfo = {
+      name: commentForm.name,
+      email: commentForm.email
+    };
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo);
     
-    if (commentForm.name.trim() === '' || 
-        commentForm.email.trim() === '' || 
-        commentForm.content.trim() === '') {
-      setCommentError('All fields are required');
-      return;
-    }
+    // Reset form and show success message
+    setCommentForm(prev => ({
+      ...prev,
+      content: ''
+    }));
+    setCommentSuccess('Comment submitted successfully! It will appear after review.');
     
-    try {
-      await axios.post(
-        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/comments`,
-        commentForm
-      );
-      
-      // Store user info for future use
-      const userInfo = {
-        name: commentForm.name,
-        email: commentForm.email
-      };
-      localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
-      setStoredUserInfo(userInfo); // Update stored user info state
-      
-      // Reset form and show success message
-      setCommentForm(prev => ({
-        ...prev,
-        content: ''
-      }));
-      setCommentSuccess('Comment submitted successfully! It will appear after review.');
-      
-      // Refresh comments with updated user info
-      fetchCommentsWithReactions(blogPost._id, 1, userInfo);
-      
-      // Close form
-      setTimeout(() => {
-        setShowCommentForm(false);
-        setCommentSuccess(null);
-      }, 3000);
-    } catch (err) {
-      console.error('Error submitting comment:', err);
+    // Refresh comments with updated user info
+    fetchCommentsWithReactions(blogPost._id, 1, userInfo);
+    
+    // Close form
+    setTimeout(() => {
+      setShowCommentForm(false);
+      setCommentSuccess(null);
+    }, 3000);
+  } catch (err) {
+    console.error('Error submitting comment:', err);
+    
+    // Check if it's a moderation error (422)
+    if (err.response?.status === 422) {
+      setModerationError(err.response?.data?.message || 'Your comment was flagged by our moderation system.');
+      setShowModerationModal(true);
+    } else {
       setCommentError(err.response?.data?.message || 'Failed to submit comment');
     }
-  };
+  } finally {
+    setCommentSubmitting(false);
+  }
+};
 
   // Add this function to handle comment deletion
   const handleDeleteComment = async () => {
@@ -783,61 +797,69 @@ Read the full article here 👇`
   };
 
   // Handle reply form submit
-  const handleReplySubmit = async (e, commentId) => {
-    e.preventDefault();
-    setReplyError(null);
-    setReplySuccess(null);
-    setReplyLoading(commentId);
+ // Handle reply form submit
+const handleReplySubmit = async (e, commentId) => {
+  e.preventDefault();
+  setReplyError(null);
+  setReplySuccess(null);
+  setReplyLoading(commentId);
+  
+  if (replyForm.name.trim() === '' || 
+      replyForm.email.trim() === '' || 
+      replyForm.content.trim() === '') {
+    setReplyError('All fields are required');
+    setReplyLoading(null);
+    return;
+  }
+  
+  try {
+    await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/replies`,
+      replyForm
+    );
     
-    if (replyForm.name.trim() === '' || 
-        replyForm.email.trim() === '' || 
-        replyForm.content.trim() === '') {
-      setReplyError('All fields are required');
-      setReplyLoading(null);
-      return;
+    // Store user info for future use
+    const userInfo = {
+      name: replyForm.name,
+      email: replyForm.email
+    };
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo);
+    
+    // Reset form and show success message
+    setReplyForm(prev => ({
+      ...prev,
+      content: ''
+    }));
+    setReplySuccess('Reply submitted successfully!');
+    
+    // Refresh replies for this comment
+    fetchReplies(commentId);
+    
+    // Also refresh main comments to update reply count
+    if (blogPost && blogPost._id) {
+      fetchCommentsWithReactions(blogPost._id, commentPagination.page, userInfo);
     }
     
-    try {
-      await axios.post(
-        `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/replies`,
-        replyForm
-      );
-      
-      // Store user info for future use
-      const userInfo = {
-        name: replyForm.name,
-        email: replyForm.email
-      };
-      localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
-      setStoredUserInfo(userInfo); // Update stored user info state
-      
-      // Reset form and show success message
-      setReplyForm(prev => ({
-        ...prev,
-        content: ''
-      }));
-      setReplySuccess('Reply submitted successfully!');
-      
-      // Refresh replies for this comment
-      fetchReplies(commentId);
-      
-      // Also refresh main comments to update reply count
-      if (blogPost && blogPost._id) {
-        fetchCommentsWithReactions(blogPost._id, commentPagination.page, userInfo);
-      }
-      
-      // Hide reply form after success
-      setTimeout(() => {
-        setShowReplyForm(prev => ({ ...prev, [commentId]: false }));
-        setReplySuccess(null);
-      }, 2000);
-    } catch (err) {
-      console.error('Error submitting reply:', err);
+    // Hide reply form after success
+    setTimeout(() => {
+      setShowReplyForm(prev => ({ ...prev, [commentId]: false }));
+      setReplySuccess(null);
+    }, 2000);
+  } catch (err) {
+    console.error('Error submitting reply:', err);
+    
+    // Check if it's a moderation error (422)
+    if (err.response?.status === 422) {
+      setModerationError(err.response?.data?.message || 'Your reply was flagged by our moderation system.');
+      setShowModerationModal(true);
+    } else {
       setReplyError(err.response?.data?.message || 'Failed to submit reply');
-    } finally {
-      setReplyLoading(null);
     }
-  };
+  } finally {
+    setReplyLoading(null);
+  }
+};
 
   // Toggle replies visibility
   const fetchReplies = async (commentId) => {
@@ -1575,9 +1597,13 @@ const getSocialIcon = (platform) => {
                   </span>
                 </div>
                 
-                <button type="submit" className="btn btn-primary">
-                  Submit Comment
-                </button>
+               <button 
+  type="submit" 
+  className="btn btn-primary"
+  disabled={commentSubmitting}
+>
+  {commentSubmitting ? 'Submitting...' : 'Submit Comment'}
+</button>
               </form>
             )}
             
@@ -2405,6 +2431,58 @@ const getSocialIcon = (platform) => {
     </div>
   </div>
 )} 
+{/* Moderation Error Modal */}
+{showModerationModal && (
+  <div className="moderation-modal-overlay">
+    <div className="moderation-modal">
+      <div className="moderation-modal-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      
+      <h3 className="moderation-modal-title">Content Moderation</h3>
+      
+      <p className="moderation-modal-message">
+        {moderationError}
+      </p>
+      
+      <div className="moderation-guidelines">
+        <p className="moderation-guidelines-title">Our Community Guidelines - Your comment must not contain:</p>
+        <div className="moderation-rules-grid">
+          <ul className="moderation-rules-column">
+            <li>Hate speech, discrimination, or prejudice</li>
+            <li>Harassment, bullying, or personal attacks</li>
+            <li>Profanity or vulgar language</li>
+            <li>Spam or promotional content</li>
+            <li>Threats, violence, or harmful content</li>
+          </ul>
+          <ul className="moderation-rules-column">
+            <li>Sexual content or inappropriate references</li>
+            <li>Misinformation or false statements</li>
+            <li>Trolling, baiting, or inflammatory remarks</li>
+            <li>Off-topic or irrelevant content</li>
+          </ul>
+        </div>
+        <div className="moderation-positive-note">
+          <strong>Remember:</strong> Comments should be respectful, constructive, and relevant to the blog topic.
+        </div>
+      </div>
+      
+      <button 
+        className="moderation-modal-btn"
+        onClick={() => {
+          setShowModerationModal(false);
+          setModerationError('');
+        }}
+      >
+        I Understand
+      </button>
+    </div>
+  </div>
+)}
     </section>
   );
 };
