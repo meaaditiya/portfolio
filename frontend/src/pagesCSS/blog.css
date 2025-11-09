@@ -695,7 +695,7 @@ body {
   margin: 0;
   letter-spacing: -0.01em;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+ 
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -715,7 +715,7 @@ body {
   color: black;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+ 
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
