@@ -157,7 +157,7 @@ body {
   gap: var(--spacing-xs);
   padding: var(--spacing-md) var(--spacing-lg);
   background: var(--color-primary);
-  color: black;
+  color: white;
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
@@ -394,21 +394,27 @@ body {
 .cnt-form-select {
   width: 100%;
   padding: var(--spacing-md);
-  font-size: var(--font-size-base);
-  font-family: inherit;
-  color: black;
-  background: var(--color-white);
-  border: 2px solid rgba(0, 0, 0, 0.4);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-base);
+   border: 2px solid transparent;
   outline: none;
+  overflow: hidden;
+  background-color: white;
+  border-radius: 10px;
+  transition: all 0.5s;
+}
+.cnt-form-input:hover,
+.cnt-form-textarea:hover,
+.cnt-form-select:hover {
+ border: 2px solid #4A9DEC;
+  box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
+  background-color: white;
 }
 
 .cnt-form-input:focus,
 .cnt-form-textarea:focus,
 .cnt-form-select:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+ border: 2px solid #4A9DEC;
+  box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
+  background-color: white;
 }
 
 .cnt-form-input::placeholder,

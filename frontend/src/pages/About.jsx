@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Cloud
 } from 'lucide-react';
 import '../pagesCSS/about.css';
-import profileImage from '../images/aadiprofile.png';
+import profileImage from '../images/java2.png';
 
 const About = () => {
   const [currentSlide, setCurrentSlide] = useState(5);
@@ -218,7 +218,7 @@ const About = () => {
         {/* Download Resume Button */}
         <div className="about-resume-row">
           <button 
-            className="download-resume-btn" 
+            className="super-button" 
             onClick={handleDownloadResume}
             aria-label="Download Resume"
           >

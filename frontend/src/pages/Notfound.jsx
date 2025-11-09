@@ -494,7 +494,7 @@ export default function RetroTVNetworkError() {
               <div className="screen_out">
                 <div className="screen_out1">
                   <div className="screen">
-                    <span className="notfound_text">Some Error! Trying to fix it</span>
+                    <span className="notfound_text">404 Not Found!</span>
                   </div>
                 </div>
               </div>

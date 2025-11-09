@@ -10,6 +10,7 @@ import blogImage from '../images/blogimage.jpeg';
 import weatherBackground from '../images/home.png';
 import '../pagesCSS/Home.css';
 import '../pagesCSS/AnnouncementOverlay.css';
+import '../pagesCSS/homepage.css';
 import DOMPurify from 'dompurify';
 
 const Home = () => {
@@ -31,7 +32,7 @@ const [isBlogLoading, setIsBlogLoading] = useState(true);
 
     const roleInterval = setInterval(() => {
       setCurrentRoleIndex((prevIndex) => (prevIndex + 1) % roles.length);
-    }, 9000);
+    }, 1000);
 
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
@@ -379,100 +380,93 @@ const handleNextAnnouncement = () => {
       {/* Main Content */}
       <main className="portfolio-main">
         {/* Hero Section with Weather Background */}
-        <section className="hero-section">
-          <div className="hero-content">
-            <div className={`hero-text ${isLoaded ? 'content-visible' : ''}`}>
-              <div className="hero-left">
-                <div className="hero-greeting">
-                  <span className="greeting-label">Hello, I'm</span>
-                  <h1 className="hero-name">Aaditiya Tyagi</h1>
+          <section className="aaditiya-hero-stage">
+      <div className="aaditiya-hero-orchestration">
+        <div className={`aaditiya-narrative-flow ${isLoaded ? 'aaditiya-reveal-animate' : ''}`}>
+          <div className="aaditiya-introduction-panel">
+            <div className="aaditiya-greeting-composition">
+              <span className="aaditiya-salutation-tag">Hello, I'm</span>
+              <h1 className="aaditiya-identity-signature">Aaditiya Tyagi</h1>
 
-                  <div className="role-rotator">
-                    <span className="role-prefix">—</span>
-                    <span className="role-text">{roles[currentRoleIndex]}</span>
-                  </div>
-
-                  <p className="hero-description">
-                    Crafting digital experiences through clean code and thoughtful design.
-                    I specialize in building scalable web applications that solve real-world
-                    problems with modern technologies and best practices.
-                  </p>
-
-                  <div className="hero-actions">
-                    <button
-                      onClick={() => navigateToPage('/projects')}
-                      className="primary-cta"
-                    >
-                    Projects <ArrowUpRight size={16} />
-                    </button>
-                    <button
-                      onClick={() => navigateToPage('/contact')}
-                      className="primary-cta"
-                    >
-                      Contact<ArrowUpRight size={16}/>
-                    </button>
-                  </div>
-                </div>
+              <div className="aaditiya-profession-carousel">
+                <span className="aaditiya-role-delimiter">—</span>
+                <span className="aaditiya-role-display">{roles[currentRoleIndex]}</span>
               </div>
 
-              <div className="hero-right">
-                <div className="profile-container">
-                  <div className="profile-avatar">
-                    <img
-                      src={profileImage}
-                      alt="Aaditiya Tyagi"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        borderRadius: '50%',
-                      }}
-                    />
-                  </div>
-                  <div className="profile-glow"></div>
-                </div>
+              <p className="aaditiya-mission-statement">
+                Crafting digital experiences through clean code and thoughtful design.
+                I specialize in building scalable web applications that solve real-world
+                problems with modern technologies and best practices.
+              </p>
 
-               <div className="quote-section">
-  <div className="quote-container">
-    <p className="quote-text">
-      "{quote?.content || 'A project is like a piece of art for the developer, crafted with passion and love.'}"
-    </p>
-    <p className="quote-author">
-      — {quote?.author || "Etched by my soul’s ink"}
-    </p>
-  </div>
-</div>
-
+              <div className="aaditiya-action-cluster">
+                <button
+                  onClick={() => navigateToPage('/projects')}
+                  className="aaditiya-primary-catalyst"
+                >
+                  Projects <ArrowUpRight size={16} />
+                </button>
+                <button
+                  onClick={() => navigateToPage('/contact')}
+                  className="aaditiya-primary-catalyst"
+                >
+                  Contact<ArrowUpRight size={16}/>
+                </button>
               </div>
-            </div>
-
-            <div className="social-links">
-              <a
-                href="https://github.com/meaaditiya"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-link"
-              >
-                <Github size={18} />
-                <span>GitHub</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/aaditiya-tyagi-babb26290/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-link"
-              >
-                <Linkedin size={18} />
-                <span>LinkedIn</span>
-              </a>
-              <a href="aaditiyatyagi123@gmail.com" className="social-link">
-                <Mail size={18} />
-                <span>Email</span>
-              </a>
             </div>
           </div>
-        </section>
 
+          <div className="aaditiya-showcase-panel">
+            <div className="aaditiya-portrait-enclosure">
+              <div className="aaditiya-portrait-frame">
+                <img
+                  src={profileImage}
+                  alt="Aaditiya Tyagi"
+                  className="aaditiya-portrait-image"
+                />
+              </div>
+              <div className="aaditiya-luminous-aura"></div>
+            </div>
+
+            <div className="aaditiya-wisdom-block">
+              <div className="aaditiya-wisdom-wrapper">
+                <p className="aaditiya-wisdom-inscription">
+                  "{quote?.content || 'A project is like a piece of art for the developer, crafted with passion and love.'}"
+                </p>
+                <p className="aaditiya-wisdom-attribution">
+                  — {quote?.author || "Etched by my soul's ink"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="aaditiya-connection-matrix">
+          <a
+            href="https://github.com/meaaditiya"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="aaditiya-connection-node"
+          >
+            <Github size={18} />
+            <span>GitHub</span>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/aaditiya-tyagi-babb26290/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="aaditiya-connection-node"
+          >
+            <Linkedin size={18} />
+            <span>LinkedIn</span>
+          </a>
+          <a href="mailto:aaditiyatyagi123@gmail.com" className="aaditiya-connection-node">
+            <Mail size={18} />
+            <span>Email</span>
+          </a>
+        </div>
+      </div>
+    </section>
         {/* About Section */}
         <section className="content-section about-section">
           <div className="section-container">
