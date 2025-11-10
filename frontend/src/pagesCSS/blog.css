@@ -647,7 +647,9 @@ body {
   object-fit: cover;
   transition: none;
 }
-
+.title2{
+  color:black;
+}
 .small-placeholder {
   width: 100%;
   height: 100%;

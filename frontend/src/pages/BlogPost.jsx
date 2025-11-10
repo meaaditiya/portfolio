@@ -76,6 +76,11 @@ const BlogPost = () => {
   // Moderation error state
 const [showModerationModal, setShowModerationModal] = useState(false);
 const [moderationError, setModerationError] = useState('');
+// Read Along state
+ // Read Along state
+const [isReadingAloud, setIsReadingAloud] = useState(false);
+  const [isPausedReading, setIsPausedReading] = useState(false);
+  
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -134,7 +139,89 @@ const [moderationError, setModerationError] = useState('');
       document.body.classList.remove('modal-open');
     };
   }, [showShareModal]);
+  // Initialize available voices
+// Cleanup speech on unmount
+  useEffect(() => {
+    return () => {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+// Get clean text to read
+  const getTextToRead = () => {
+    if (!blogPost || !blogPost.content) return '';
+    
+    let text = blogPost.content
+      .replace(/^#+\s*/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+      .replace(/\[IMAGE:.*?\]/g, '')
+      .replace(/\[VIDEO:.*?\]/g, '')
+      .replace(/\n+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    return text;
+  };
 
+  // Play reading
+  const handlePlayReading = () => {
+    if (isPausedReading) {
+      window.speechSynthesis.resume();
+      setIsPausedReading(false);
+      setIsReadingAloud(true);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const textToRead = getTextToRead();
+    if (!textToRead) return;
+
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      utterance.voice = voices[0];
+    }
+
+    utterance.onstart = () => {
+      setIsReadingAloud(true);
+      setIsPausedReading(false);
+    };
+
+    utterance.onend = () => {
+      setIsReadingAloud(false);
+      setIsPausedReading(false);
+    };
+
+    utterance.onerror = () => {
+      setIsReadingAloud(false);
+      setIsPausedReading(false);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Pause reading
+  const handlePauseReading = () => {
+    if (window.speechSynthesis.speaking && !isPausedReading) {
+      window.speechSynthesis.pause();
+      setIsPausedReading(true);
+      setIsReadingAloud(false);
+    }
+  };
+
+  // Stop reading
+  const handleStopReading = () => {
+    window.speechSynthesis.cancel();
+    setIsReadingAloud(false);
+    setIsPausedReading(false);
+  };
   // Fetch reaction counts
   const fetchReactions = async (blogId) => {
     try {
@@ -1151,6 +1238,7 @@ const closeSummaryPopup = () => {
   setGeneratedSummary('');
   setSummaryError(null);
 };
+
   // Custom component to render content with inline images and videos
   const renderContentWithMedia = (content) => {
     if (!content) return null;
@@ -1270,7 +1358,7 @@ const closeSummaryPopup = () => {
       // If no placeholders were found, render as normal markdown
       if (parts.length === 0) {
         return (
-          <div className="blog-post-content">
+          <div className="blog-post-content" id="articleContent">
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         );
@@ -1278,7 +1366,7 @@ const closeSummaryPopup = () => {
 
       // Render mixed content
       return (
-        <div className="blog-post-content">
+        <div className="blog-post-content" id="articleContent">
           {parts.map(part => {
             if (part.type === 'text') {
               return (
@@ -1445,35 +1533,64 @@ const getSocialIcon = (platform) => {
             ))}
          
           </div>
-          
-          <div>
+      
+         <div className="blog-controls-minimal">
             <button
-  className="generate-summary-btn summarybtn"
-  onClick={(e) => handleGenerateSummary(blogPost, e)}
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth="1.8"
-    stroke="url(#starGradient)"
-    style={{ width: '18px', height: '18px', verticalAlign: 'middle', marginRight: '8px' }}
-  >
-    <defs>
-      <linearGradient id="starGradient" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#00C4CC" />
-        <stop offset="100%" stopColor="#0072FF" />
-      </linearGradient>
-    </defs>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
-    />
-  </svg>
-  AI Summary
-</button>
+              className="generate-summary-btn summarybtn"
+              onClick={(e) => handleGenerateSummary(blogPost, e)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.8"
+                stroke="url(#starGradient)"
+                style={{ width: '18px', height: '18px', verticalAlign: 'middle', marginRight: '8px' }}
+              >
+                <defs>
+                  <linearGradient id="starGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#00C4CC" />
+                    <stop offset="100%" stopColor="#0072FF" />
+                  </linearGradient>
+                </defs>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
+                />
+              </svg>
+              AI Summary
+            </button>
+
+            <button
+              className={`read-along-minimal-btn ${isReadingAloud ? 'playing' : ''} ${isPausedReading ? 'paused' : ''}`}
+              onClick={() => {
+                if (isReadingAloud || isPausedReading) {
+                  if (isPausedReading) {
+                    handlePlayReading();
+                  } else {
+                    handlePauseReading();
+                  }
+                } else {
+                  handlePlayReading();
+                }
+              }}
+              title={isPausedReading ? 'Resume reading' : isReadingAloud ? 'Pause reading' : 'Start reading aloud'}
+            >
+              {isReadingAloud ? '⏸' : isPausedReading ? '▶' : '🔊'}
+            </button>
+
+            {(isReadingAloud || isPausedReading) && (
+              <button
+                className="read-along-stop-btn"
+                onClick={handleStopReading}
+                title="Stop reading"
+              >
+                ⏹
+              </button>
+            )}
           </div>
+
           
           {/* Render content with inline images and videos */}
           {renderContentWithMedia(blogPost.content)}

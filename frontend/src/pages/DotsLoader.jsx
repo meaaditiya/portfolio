@@ -14,7 +14,7 @@ const CircleLoader = () => {
             key={i}
             style={{
               position: 'absolute',
-              top: '-200px',
+              top: '-100px',
               left:'50%',
               width: '12px',
               height: '12px',

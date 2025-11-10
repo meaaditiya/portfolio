@@ -230,7 +230,7 @@ const Blog = () => {
   if (isInitialLoading) {
     return (
       <section className="section">
-        <h2 className="section-title">Blogs</h2>
+        <h2 className="section-title title2">Recent blog posts</h2>
         <BlogSkeletonLoader count={10} />
       </section>
     );

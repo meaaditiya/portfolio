@@ -217,143 +217,154 @@ const handleNextAnnouncement = () => {
   return (
     <div className="portfolio-container">
       {/* Announcement Label - Shows when there are announcements */}
-    {hasAnnouncements && (
-      <button 
-        className="announcement_label_trigger" 
-        onClick={handleBellButtonClick}
-        aria-label="View announcements"
-      >
-        <div className="announcement_label_pulse"></div>
-        <Bell className="announcement_label_icon" size={16} />
-        <span className="announcement_label_text">News</span>
-      </button>
-    )}
+ {/* Announcement Badge Trigger */}
+{!showAnnouncementOverlay && announcements.length > 0 && (
+  <button 
+    className="announcement_label_trigger"
+    onClick={() => setShowAnnouncementOverlay(true)}
+    aria-label={`${announcements.length} new announcements`}
+  >
+    <div className="announcement_bell_container">
+      <Bell size={32} className="announcement_label_icon" />
+      <div className="announcement_badge_count">
+        {announcements.length}
+      </div>
+    </div>
+  </button>
+)}
 
-    {/* Announcement Overlay */}
-    {showAnnouncementOverlay && announcements.length > 0 && currentAnnouncement && (
-      <div className="announcement_overlay_wrapper_unique_2024">
-        <div 
-          className="announcement_overlay_backdrop_unique_2024" 
-          onClick={handleCloseAnnouncement}
-        ></div>
-        
-        <div className="announcement_overlay_content_unique_2024">
-          
-          
-          {/* Close Button */}
-          <button 
-            className="announcement_overlay_close_btn_unique_2024"
-            onClick={handleCloseAnnouncement}
-            aria-label="Close announcement"
+{/* Announcement Overlay */}
+{showAnnouncementOverlay && announcements.length > 0 && currentAnnouncement && (
+  <div className="announcement_overlay_wrapper_unique_2024">
+    <div 
+      className="announcement_overlay_backdrop_unique_2024" 
+      onClick={handleCloseAnnouncement}
+    ></div>
+    
+    <div className="announcement_overlay_content_unique_2024">
+      {/* Header with "IMPORTANT ANNOUNCEMENT" */}
+      <div className="announcement_overlay_header_unique_2024">
+        <h3 className="announcement_overlay_header_title_unique_2024">
+          Important Announcement
+        </h3>
+      </div>
+      
+      {/* Close Button */}
+      <button 
+        className="announcement_overlay_close_btn_unique_2024"
+        onClick={handleCloseAnnouncement}
+        aria-label="Close announcement"
+      >
+        <X size={20} />
+      </button>
+      
+      {/* Content Container */}
+      <div className="announcement_overlay_container_unique_2024">
+        <div className="announcement_card_unique_2024">
+          {/* Title with dynamic color */}
+          <h2 
+            className="announcement_title_unique_2024"
+            style={{ 
+              color: currentAnnouncement.titleColor || '#1a1a1a' 
+            }}
           >
-            <X size={20} />
+            {currentAnnouncement.title}
+          </h2>
+          
+          {/* Caption - Render as HTML if markdown, otherwise plain text */}
+          {currentAnnouncement.renderedCaption ? (
+            <div 
+              className="announcement_caption_unique_2024 announcement_caption_markdown"
+              dangerouslySetInnerHTML={{ 
+                __html: DOMPurify.sanitize(currentAnnouncement.renderedCaption, {
+                  ALLOWED_TAGS: [
+                    'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
+                    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                    'ul', 'ol', 'li',
+                    'blockquote', 'pre', 'code',
+                    'a', 'span', 'div',
+                    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                    'mark', 'small', 'sub', 'sup'
+                  ],
+                  ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
+                })
+              }}
+            />
+          ) : currentAnnouncement.caption ? (
+            <p className="announcement_caption_unique_2024">
+              {currentAnnouncement.caption}
+            </p>
+          ) : null}
+          
+          {currentAnnouncement.hasImage && announcementImages[currentAnnouncement._id] && (
+            <div className="announcement_image_wrapper_unique_2024">
+              <img 
+                src={announcementImages[currentAnnouncement._id]}
+                alt={currentAnnouncement.title}
+                className="announcement_image_unique_2024"
+              />
+            </div>
+          )}
+          
+          {currentAnnouncement.link && (
+            <a 
+              href={currentAnnouncement.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="announcement_link_unique_2024"
+            >
+              Visit <ArrowUpRight size={16} />
+            </a>
+          )}
+          
+          {currentAnnouncement.hasDocument && (
+            <a 
+              href={`https://connectwithaaditiyamg.onrender.com/api/announcement/${currentAnnouncement._id}/document`}
+              download
+              className="announcement_document_link_unique_2024"
+            >
+              <FileText size={16} />
+              Download Document
+            </a>
+          )}
+        </div>
+      </div>
+      
+      {/* Slider Controls */}
+      {announcements.length > 1 && (
+        <div className="announcement_slider_controls_unique_2024">
+          <button
+            className="announcement_slider_btn_unique_2024"
+            onClick={handlePrevAnnouncement}
+            disabled={currentAnnouncementIndex === 0}
+            aria-label="Previous announcement"
+          >
+            <ChevronLeft size={20} />
           </button>
           
-          {/* Content Container */}
-      <div className="announcement_overlay_container_unique_2024">
-  <div className="announcement_card_unique_2024">
-    {/* Title with dynamic color */}
-    <h2 
-      className="announcement_title_unique_2024"
-      style={{ 
-        color: currentAnnouncement.titleColor || '#1a1a1a' 
-      }}
-    >
-      {currentAnnouncement.title}
-    </h2>
-    
-    {/* Caption - Render as HTML if markdown, otherwise plain text */}
-    {currentAnnouncement.renderedCaption ? (
-      <div 
-        className="announcement_caption_unique_2024 announcement_caption_markdown"
-        dangerouslySetInnerHTML={{ 
-          __html: DOMPurify.sanitize(currentAnnouncement.renderedCaption, {
-            ALLOWED_TAGS: [
-              'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
-              'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-              'ul', 'ol', 'li',
-              'blockquote', 'pre', 'code',
-              'a', 'span', 'div',
-              'table', 'thead', 'tbody', 'tr', 'th', 'td',
-              'mark', 'small', 'sub', 'sup'
-            ],
-            ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
-          })
-        }}
-      />
-    ) : currentAnnouncement.caption ? (
-      <p className="announcement_caption_unique_2024">
-        {currentAnnouncement.caption}
-      </p>
-    ) : null}
-    
-    {currentAnnouncement.hasImage && announcementImages[currentAnnouncement._id] && (
-      <div className="announcement_image_wrapper_unique_2024">
-        <img 
-          src={announcementImages[currentAnnouncement._id]}
-          alt={currentAnnouncement.title}
-          className="announcement_image_unique_2024"
-        />
-      </div>
-    )}
-    
-    {currentAnnouncement.link && (
-      <a 
-        href={currentAnnouncement.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="announcement_link_unique_2024"
-      >
-        Visit <ArrowUpRight size={16} />
-      </a>
-    )}
-    
-    {currentAnnouncement.hasDocument && (
-      <a 
-        href={`https://connectwithaaditiyamg.onrender.com/api/announcement/${currentAnnouncement._id}/document`}
-        download
-        className="announcement_document_link_unique_2024"
-      >
-        <FileText size={16} />
-        Download Document
-      </a>
-    )}
-  </div>
-</div>
-          {/* Slider Controls */}
-          {announcements.length > 1 && (
-            <div className="announcement_slider_controls_unique_2024">
+          <div className="announcement_slider_dots_unique_2024">
+            {announcements.map((_, index) => (
               <button
-                className="announcement_slider_btn_unique_2024"
-                onClick={handlePrevAnnouncement}
-                disabled={currentAnnouncementIndex === 0}
-                aria-label="Previous announcement"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              
-              <div className="announcement_slider_dots_unique_2024">
-                {announcements.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`announcement_slider_dot_unique_2024 ${
-                      index === currentAnnouncementIndex ? 'active' : ''
-                    }`}
-                    onClick={() => setCurrentAnnouncementIndex(index)}
-                    aria-label={`Go to announcement ${index + 1}`}
-                  />
-                ))}
-              </div>
-              
-              <button
-                className="announcement_slider_btn_unique_2024"
-                onClick={handleNextAnnouncement}
-                disabled={currentAnnouncementIndex === announcements.length - 1}
-                aria-label="Next announcement"
-              >
-                <ChevronRight size={20} />
-              </button>
-              {/* Snooze Button */}
+                key={index}
+                className={`announcement_slider_dot_unique_2024 ${
+                  index === currentAnnouncementIndex ? 'active' : ''
+                }`}
+                onClick={() => setCurrentAnnouncementIndex(index)}
+                aria-label={`Go to announcement ${index + 1}`}
+              />
+            ))}
+          </div>
+          
+          <button
+            className="announcement_slider_btn_unique_2024"
+            onClick={handleNextAnnouncement}
+            disabled={currentAnnouncementIndex === announcements.length - 1}
+            aria-label="Next announcement"
+          >
+            <ChevronRight size={20} />
+          </button>
+          
+          {/* Snooze Button */}
           <button 
             className="announcement_overlay_snooze_btn_unique_2024"
             onClick={handleSnoozeAnnouncement}
@@ -362,12 +373,11 @@ const handleNextAnnouncement = () => {
           >
             <Clock size={20} />
           </button>
-            </div>
-          )}
         </div>
-      </div>
-    )}
-
+      )}
+    </div>
+  </div>
+)}
       {/* Cursor Follower - Desktop Only */}
       <div
         className="cursor-follower"

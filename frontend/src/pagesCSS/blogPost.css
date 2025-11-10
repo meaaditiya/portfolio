@@ -7,7 +7,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   color: #333;
  
-  margin-top:-36px;
+
   margin-left:-8px;
   margin-right:-8px;
 }
@@ -19,7 +19,7 @@
   
   overflow: hidden;
   padding: 0 0 2rem;
-  margin-top: 1.5rem;
+  margin-top: -0.7rem;
   
 }
 
@@ -2655,8 +2655,8 @@ body.modal-open {
 /* Back Button Overlay */
 .back-button-overlay {
   position: relative;
-  top: 80px;
-  left: 20px;
+  top: 41px;
+  left: 12px;
   z-index: 10;
   
   display: flex;
@@ -2665,10 +2665,10 @@ body.modal-open {
   
   padding: 12px 20px;
   border: none;
-  border-radius: 50px;
+  border-radius: 0px;
   
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(10px);
   
   color: white;
@@ -2703,22 +2703,23 @@ body.modal-open {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .back-button-overlay {
-    top: 55px;
-    left: 35px;
+    top: 51px;
+    left: 15px;
     padding: 10px 16px;
     font-size: 13px;
+    width:100px;
   }
   
   .back-button-overlay span {
-    display: none; /* Hide text on mobile, show only icon */
+    /* Hide text on mobile, show only icon */
   }
   
   .back-button-overlay {
-    width: 44px;
-    height: 44px;
-    padding: 0;
+    width: auto;
+    height: 34px;
+  
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 0%;
   }
   
   .back-button-overlay .back-icon {
@@ -2755,4 +2756,273 @@ body.modal-open {
 
 .back-button-overlay {
   animation: slideInFromLeft 0.5s ease-out;
+}
+/* READ ALONG MINIMAL CSS */
+
+.blog-controls-minimal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 0;
+  height: auto;
+}
+
+/* READ ALONG ADVANCED ANIMATED CSS */
+
+.read-along-minimal-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: #1a1a1a;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+  position: relative;
+  left: 30px;
+  height: 34px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.read-along-minimal-btn:hover {
+  background: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.read-along-minimal-btn:active {
+  transform: scale(0.92) translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* PLAYING STATE - Advanced Animation */
+.read-along-minimal-btn.playing {
+  position: relative;
+  left: 30px;
+  height: 34px;
+  background: linear-gradient(135deg, #00C4CC, #0072FF);
+  animation: advancedPulse 1.2s ease-in-out infinite, 
+             gradientShift 3s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(0, 196, 204, 0.4),
+              0 0 40px rgba(0, 114, 255, 0.2),
+              inset 0 0 10px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.read-along-minimal-btn.playing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.read-along-minimal-btn.playing:hover {
+  box-shadow: 0 0 30px rgba(0, 196, 204, 0.6),
+              0 0 60px rgba(0, 114, 255, 0.3),
+              inset 0 0 15px rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* PAUSED STATE - Advanced Animation */
+.read-along-minimal-btn.paused {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  position: relative;
+  left: 30px;
+  height: 34px;
+  animation: pauseGlow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.3),
+              0 0 30px rgba(245, 124, 0, 0.15),
+              inset 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+.read-along-minimal-btn.paused::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 50%;
+  animation: ripple 1.5s ease-out infinite;
+  transform: translate(-50%, -50%);
+}
+
+.read-along-minimal-btn.paused:hover {
+  box-shadow: 0 0 25px rgba(255, 152, 0, 0.5),
+              0 0 50px rgba(245, 124, 0, 0.25),
+              inset 0 0 12px rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* STOP BUTTON - Advanced Animation */
+.read-along-stop-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+  position: relative;
+  left: 30px;
+  height: 34px;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+  font-weight: 600;
+}
+
+.read-along-stop-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  animation: stopShine 2s infinite;
+}
+
+.read-along-stop-btn:hover {
+  background: linear-gradient(135deg, #c82333, #a71d2a);
+  box-shadow: 0 4px 16px rgba(220, 53, 69, 0.35),
+              0 0 20px rgba(220, 53, 69, 0.2);
+  transform: translateY(-2px);
+}
+
+.read-along-stop-btn:active {
+  transform: scale(0.92) translateY(0);
+  box-shadow: 0 1px 4px rgba(220, 53, 69, 0.2);
+}
+
+/* ===== ANIMATIONS ===== */
+
+/* Advanced Pulse for Playing State */
+@keyframes advancedPulse {
+  0% {
+    box-shadow: 0 0 20px rgba(0, 196, 204, 0.4),
+                0 0 40px rgba(0, 114, 255, 0.2),
+                inset 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 196, 204, 0.6),
+                0 0 60px rgba(0, 114, 255, 0.4),
+                inset 0 0 15px rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(0, 196, 204, 0.4),
+                0 0 40px rgba(0, 114, 255, 0.2),
+                inset 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Gradient Shift Animation */
+@keyframes gradientShift {
+  0% {
+    background: linear-gradient(135deg, #00C4CC, #0072FF);
+  }
+  50% {
+    background: linear-gradient(225deg, #00C4CC, #0072FF);
+  }
+  100% {
+    background: linear-gradient(135deg, #00C4CC, #0072FF);
+  }
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Pause Glow Animation */
+@keyframes pauseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.3),
+                0 0 30px rgba(245, 124, 0, 0.15),
+                inset 0 0 8px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 152, 0, 0.5),
+                0 0 50px rgba(245, 124, 0, 0.3),
+                inset 0 0 12px rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Ripple Effect for Paused */
+@keyframes ripple {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+}
+
+/* Stop Button Shine */
+@keyframes stopShine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Blog Controls Container */
+.blog-controls-minimal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 0;
+  height: auto;
+}
+
+
+@media (max-width: 480px) {
+  .blog-controls-minimal {
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  .read-along-minimal-btn,
+  .read-along-stop-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 14px;
+  }
 }

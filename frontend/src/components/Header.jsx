@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../pagesCSS/Header.css';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -38,24 +37,59 @@ const Header = () => {
 
   return (
     <>
-      <style jsx>{`
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
         
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        .portfolio-header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+          z-index: 1000;
+          height: 55px;
+          display: flex;
+          align-items: center;
+          padding: 0 2rem;
+        }
+
+        .header-content {
+          width: 100%;
+          max-width: 1400px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 2rem;
+        }
+
+        .logo-section {
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+          z-index: 11;
+        }
+
         .stylish-at-logo {
-          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 0.1rem;
-          z-index: 10;
-          min-width: 0;
-          flex-shrink: 0;
+          cursor: pointer;
         }
         
         .at-logo-text {
           font-family: 'Great Vibes', cursive;
-          font-size: 25px;
+          font-size: 24px;
           font-weight: normal;
           background: linear-gradient(90deg, #000, #444, #000);
           background-size: 300% 100%;
@@ -63,24 +97,20 @@ const Header = () => {
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-stroke: 1px #000;
-         
           text-transform: uppercase;
-          line-height: 0.6;
-          margin: 0;
+          line-height: 1;
           transition: transform 0.3s ease;
-          
         }
         
         .at-subtext {
           font-family: 'Great Vibes', cursive;
-          font-size: 18px;
-          margin-top: 0px;
+          font-size: 14px;
+          margin-top: 2px;
           color: #000000cc;
           letter-spacing: 0.3px;
           text-align: center;
           white-space: nowrap;
           transition: opacity 0.3s ease;
-          margin-bottom:-10px;
         }
         
         .stylish-at-logo:hover .at-logo-text {
@@ -90,66 +120,36 @@ const Header = () => {
         .stylish-at-logo:hover .at-subtext {
           opacity: 0.8;
         }
-        
-        @keyframes moveGradient {
-          0% {
-            background-position: 0% 50%;
-          }
-          100% {
-            background-position: 200% 50%;
-          }
-        }
-        
-        @keyframes slideAnimation {
-          0% {
-            transform: translateX(0px);
-          }
-          25% {
-            transform: translateX(5px);
-          }
-          50% {
-            transform: translateX(0px);
-          }
-          75% {
-            transform: translateX(-5px);
-          }
-          100% {
-            transform: translateX(0px);
-          }
+
+        /* Desktop Navigation */
+        .main-navigation {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          flex: 1;
+          justify-content: center;
+          max-width: 800px;
         }
 
-        @keyframes checkmarkAnimation {
-          0% {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(-2px);
-          }
-        }
-        
-        /* Navigation Items - Enhanced Styles */
         .nav-item {
           border: none;
           background-color: transparent;
           cursor: pointer;
-          margin: 0;
           position: relative;
           transition: all 300ms ease-out;
           box-shadow: inset 0px 0px 0px -15px #000;
-          padding: 0.5rem 1.2rem;
+          padding: 0.4rem 0.9rem;
           border-radius: 0.5rem;
           font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 500;
           color: #333;
+          white-space: nowrap;
         }
 
-        .nav-item:hover,
-        {
+        .nav-item:hover {
           color: #000;
-          box-shadow: inset 0px -20px 0px -15px #000;
+          box-shadow: inset 0px -20px 0px -18.5px #000;
           outline: none;
         }
 
@@ -174,131 +174,283 @@ const Header = () => {
 
         .nav-item-active {
           color: #000;
-          box-shadow: inset 0px -20px 0px -18px #000;
+          box-shadow: inset 0px -20px 0px -19px #000;
         }
-        
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-          .at-logo-text {
-            font-size: 25px;
+
+        @keyframes checkmarkAnimation {
+          0% {
+            opacity: 0;
+            transform: translateY(10px);
           }
-          .at-subtext {
-            font-size: 18px;
+          100% {
+            opacity: 1;
+            transform: translateY(-2px);
           }
         }
 
-        @media (max-width: 829px) {
-          .at-subtext {
-            display: none;
-            font-size: 18px;
-            letter-spacing: 0.2px;
-          }
+        .header-controls {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          flex-shrink: 0;
         }
 
-        @media (max-width: 768px) {
-          .at-logo-text {
-            font-size: 32px;
-          }
-          .at-subtext {
-            display: none;
-            font-size: 18px;
-            letter-spacing: 0.2px;
-          }
-          .stylish-at-logo {
-            padding: 0.05rem;
-          }
-        }
-        
-        @media (max-width: 680px) {
-          .stylish-at-logo {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translateX(-50%) translateY(-50%);
-          }
-        }
-        
-        @media (max-width: 640px) {
-          .at-logo-text {
-            font-size: 30px;
-          }
-          .at-subtext {
-            font-size: 18px;
-          }
-        }
-        
-        @media (max-width: 560px) {
-          .at-logo-text {
-            font-size: 28px;
-          }
-          .at-subtext {
-            font-size: 18px;
-            margin-top: 0px;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .at-logo-text {
-            font-size: 26px;
-          }
-          .at-subtext {
-            font-size: 18px;
-            letter-spacing: 0px;
-          }
-          
-          @keyframes slideAnimation {
-            0%, 100% {
-              transform: translateX(0px);
-            }
-            25% {
-              transform: translateX(2px);
-            }
-            75% {
-              transform: translateX(-2px);
-            }
-          }
-        }
-        
-        /* Reduced motion for accessibility */
-        @media (prefers-reduced-motion: reduce) {
-          .at-logo-text,
-          .at-subtext {
-            animation: none;
-          }
-        }
-        
-        /* High DPI displays */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-          .at-logo-text {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-          }
+        .mobile-menu-toggle {
+          display: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0.5rem;
+          z-index: 1001;
         }
 
-        /* Mobile Backdrop - Minimal & Effective */
-        .mobile-menu-backdrop {
+        .hamburger {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          width: 24px;
+        }
+
+        .hamburger span {
+          display: block;
+          height: 2px;
+          background: #000;
+          border-radius: 2px;
+          transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active .hamburger span:nth-child(1) {
+          transform: rotate(45deg) translate(7px, 7px);
+        }
+
+        .mobile-menu-toggle.active .hamburger span:nth-child(2) {
+          opacity: 0;
+        }
+
+        .mobile-menu-toggle.active .hamburger span:nth-child(3) {
+          transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Circular Mobile Menu */
+        .circular-menu-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.15);
-          backdrop-filter: blur(2px);
-          -webkit-backdrop-filter: blur(2px);
-          animation: fadeInBackdrop 200ms ease-out;
-          z-index: 8;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 999;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
         }
 
-        @keyframes fadeInBackdrop {
-          from {
-            opacity: 0;
-            backdrop-filter: blur(0px);
-            -webkit-backdrop-filter: blur(0px);
+        .circular-menu-overlay.active {
+          opacity: 1;
+          pointer-events: all;
+        }
+
+        .circular-menu-container {
+          position: relative;
+          width: 320px;
+          height: 320px;
+          transform: scale(0.8);
+          opacity: 0;
+          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .circular-menu-overlay.active .circular-menu-container {
+          transform: scale(1);
+          opacity: 1;
+        }
+
+        .menu-center {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 60px;
+          height: 60px;
+          background: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+          cursor: pointer;
+          z-index: 10;
+        }
+
+        .close-icon {
+          font-size: 28px;
+          color: #000;
+          font-weight: 300;
+          line-height: 1;
+        }
+
+        .circular-nav-item {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 90px;
+          height: 90px;
+          margin: -45px 0 0 -45px;
+          background: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+          border: 2px solid transparent;
+        }
+
+        .circular-nav-item:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+          border-color: #000;
+        }
+
+        .circular-nav-item.active {
+          background: #000;
+          color: white;
+        }
+
+        .circular-nav-item span {
+          font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          text-align: center;
+        }
+
+        .circular-nav-item.active span {
+          color: white;
+        }
+
+        /* Position items in a circle */
+        .circular-nav-item:nth-child(1) { transform: translate(0, -130px); }
+        .circular-nav-item:nth-child(2) { transform: translate(92px, -92px); }
+        .circular-nav-item:nth-child(3) { transform: translate(130px, 0); }
+        .circular-nav-item:nth-child(4) { transform: translate(92px, 92px); }
+        .circular-nav-item:nth-child(5) { transform: translate(0, 130px); }
+        .circular-nav-item:nth-child(6) { transform: translate(-92px, 92px); }
+        .circular-nav-item:nth-child(7) { transform: translate(-130px, 0); }
+        .circular-nav-item:nth-child(8) { transform: translate(-92px, -92px); }
+
+        .circular-nav-item:nth-child(1):hover { transform: translate(0, -130px) scale(1.1); }
+        .circular-nav-item:nth-child(2):hover { transform: translate(92px, -92px) scale(1.1); }
+        .circular-nav-item:nth-child(3):hover { transform: translate(130px, 0) scale(1.1); }
+        .circular-nav-item:nth-child(4):hover { transform: translate(92px, 92px) scale(1.1); }
+        .circular-nav-item:nth-child(5):hover { transform: translate(0, 130px) scale(1.1); }
+        .circular-nav-item:nth-child(6):hover { transform: translate(-92px, 92px) scale(1.1); }
+        .circular-nav-item:nth-child(7):hover { transform: translate(-130px, 0) scale(1.1); }
+        .circular-nav-item:nth-child(8):hover { transform: translate(-92px, -92px) scale(1.1); }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+          .nav-item {
+            padding: 0.4rem 0.8rem;
+            font-size: 13px;
           }
-          to {
-            opacity: 1;
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
+        }
+
+        @media (max-width: 900px) {
+          .portfolio-header {
+            height: 52px;
+            padding: 0 1.5rem;
+          }
+
+          .at-logo-text {
+            font-size: 22px;
+          }
+
+          .at-subtext {
+            font-size: 13px;
+          }
+
+          .main-navigation {
+            gap: 0.3rem;
+          }
+
+          .nav-item {
+            padding: 0.35rem 0.7rem;
+            font-size: 12px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .portfolio-header {
+            height: 48px;
+            padding: 0 1rem;
+          }
+
+          .main-navigation {
+            display: none;
+          }
+
+          .mobile-menu-toggle {
+            display: block;
+          }
+
+          .at-subtext {
+            display: none;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .portfolio-header {
+            height: 45px;
+            padding: 0 1rem;
+          }
+
+          .at-logo-text {
+            font-size: 20px;
+          }
+
+          .circular-menu-container {
+            width: 280px;
+            height: 280px;
+          }
+
+          .circular-nav-item {
+            width: 75px;
+            height: 75px;
+            margin: -37.5px 0 0 -37.5px;
+          }
+
+          .circular-nav-item span {
+            font-size: 11px;
+          }
+
+          .circular-nav-item:nth-child(1) { transform: translate(0, -110px); }
+          .circular-nav-item:nth-child(2) { transform: translate(78px, -78px); }
+          .circular-nav-item:nth-child(3) { transform: translate(110px, 0); }
+          .circular-nav-item:nth-child(4) { transform: translate(78px, 78px); }
+          .circular-nav-item:nth-child(5) { transform: translate(0, 110px); }
+          .circular-nav-item:nth-child(6) { transform: translate(-78px, 78px); }
+          .circular-nav-item:nth-child(7) { transform: translate(-110px, 0); }
+          .circular-nav-item:nth-child(8) { transform: translate(-78px, -78px); }
+
+          .circular-nav-item:nth-child(1):hover { transform: translate(0, -110px) scale(1.1); }
+          .circular-nav-item:nth-child(2):hover { transform: translate(78px, -78px) scale(1.1); }
+          .circular-nav-item:nth-child(3):hover { transform: translate(110px, 0) scale(1.1); }
+          .circular-nav-item:nth-child(4):hover { transform: translate(78px, 78px) scale(1.1); }
+          .circular-nav-item:nth-child(5):hover { transform: translate(0, 110px) scale(1.1); }
+          .circular-nav-item:nth-child(6):hover { transform: translate(-78px, 78px) scale(1.1); }
+          .circular-nav-item:nth-child(7):hover { transform: translate(-110px, 0) scale(1.1); }
+          .circular-nav-item:nth-child(8):hover { transform: translate(-78px, -78px) scale(1.1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation: none !important;
+            transition: none !important;
           }
         }
       `}</style>
@@ -311,7 +463,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Desktop Navigation - Centered */}
+          {/* Desktop Navigation */}
           <nav className="main-navigation">
             {navItems.map((item, index) => (
               <button
@@ -324,15 +476,15 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Header Controls with Stylish AT Logo */}
           <div className="header-controls">
-            {/* Stylish AT Logo */}
             <div className="stylish-at-logo">
               <div className="at-subtext">Aaditiya Tyagi</div>
             </div>
             
-            {/* Mobile Menu Toggle */}
-            <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+            <button 
+              className={`mobile-menu-toggle ${isMobileMenuOpen ? 'active' : ''}`} 
+              onClick={toggleMobileMenu}
+            >
               <span className="hamburger">
                 <span></span>
                 <span></span>
@@ -343,44 +495,24 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Sidebar Menu */}
-      <div className={`mobile-sidebar ${isMobileMenuOpen ? 'active' : ''}`}>
-        <div className="sidebar-content">
-          <div className="sidebar-header">
-            <div className="sidebar-logo">
-              <span className="logo-initials">AT</span>
-              <div className="logo-text">
-                <span className="logo-name">Aaditiya Tyagi</span>
-                <span className="logo-role">keep Learning</span>
-              </div>
-            </div>
-            <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
-              <span className="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </button>
+      {/* Circular Mobile Menu */}
+      <div className={`circular-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`}>
+        <div className="circular-menu-container">
+          <div className="menu-center" onClick={toggleMobileMenu}>
+            <span className="close-icon">×</span>
           </div>
-
-          <nav className="sidebar-navigation">
-            {navItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => navigateToPage(item.path)}
-                className={`sidebar-nav-item ${currentPath === item.path ? 'active' : ''}`}
-              >
-                {item.name}
-              </button>
-            ))}
-          </nav>
+          
+          {navItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigateToPage(item.path)}
+              className={`circular-nav-item ${currentPath === item.path ? 'active' : ''}`}
+            >
+              <span>{item.name}</span>
+            </button>
+          ))}
         </div>
       </div>
-
-      {/* Mobile Menu Backdrop */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu-backdrop" onClick={toggleMobileMenu}></div>
-      )}
     </>
   );
 };
