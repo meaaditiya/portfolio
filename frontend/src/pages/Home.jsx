@@ -247,7 +247,6 @@ const handleNextAnnouncement = () => {
         <h3 className="announcement_overlay_header_title_unique_2024">
           Important Announcement
         </h3>
-      </div>
       
       {/* Close Button */}
       <button 
@@ -257,6 +256,7 @@ const handleNextAnnouncement = () => {
       >
         <X size={20} />
       </button>
+      </div>
       
       {/* Content Container */}
       <div className="announcement_overlay_container_unique_2024">
