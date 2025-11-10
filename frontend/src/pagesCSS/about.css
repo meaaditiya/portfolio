@@ -76,6 +76,8 @@ body {
 
 .about-text-content {
   max-width: 600px;
+  position: relative;
+  top: -40px;
 }
 
 .about-badge {

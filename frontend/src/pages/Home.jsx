@@ -389,44 +389,74 @@ const handleNextAnnouncement = () => {
 
       {/* Main Content */}
       <main className="portfolio-main">
-        {/* Hero Section with Weather Background */}
-          <section className="aaditiya-hero-stage">
-      <div className="aaditiya-hero-orchestration">
-        <div className={`aaditiya-narrative-flow ${isLoaded ? 'aaditiya-reveal-animate' : ''}`}>
-          <div className="aaditiya-introduction-panel">
-            <div className="aaditiya-greeting-composition">
-              <span className="aaditiya-salutation-tag">Hello, I'm</span>
-              <h1 className="aaditiya-identity-signature">Aaditiya Tyagi</h1>
+       {/* Fixed Social Links - Right Side */}
+<div className="aaditiya-connection-sidebar">
+  <a
+    href="https://github.com/meaaditiya"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="aaditiya-connection-node-vertical"
+    title="GitHub"
+  >
+    <Github size={20} />
+  </a>
+  <a
+    href="https://www.linkedin.com/in/aaditiya-tyagi-babb26290/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="aaditiya-connection-node-vertical"
+    title="LinkedIn"
+  >
+    <Linkedin size={20} />
+  </a>
+  <a 
+    href="mailto:aaditiyatyagi123@gmail.com" 
+    className="aaditiya-connection-node-vertical"
+    title="Email"
+  >
+    <Mail size={20} />
+  </a>
+  <div className="aaditiya-connection-line"></div>
+</div>
 
-              <div className="aaditiya-profession-carousel">
-                <span className="aaditiya-role-delimiter">—</span>
-                <span className="aaditiya-role-display">{roles[currentRoleIndex]}</span>
-              </div>
+{/* Hero Section */}
+<section className="aaditiya-hero-stage">
+  <div className="aaditiya-hero-orchestration">
+    <div className={`aaditiya-narrative-flow ${isLoaded ? 'aaditiya-reveal-animate' : ''}`}>
+      <div className="aaditiya-introduction-panel">
+        <div className="aaditiya-greeting-composition">
+          <span className="aaditiya-salutation-tag">Hello, I'm</span>
+          <h1 className="aaditiya-identity-signature">Aaditiya Tyagi</h1>
 
-              <p className="aaditiya-mission-statement">
-                Crafting digital experiences through clean code and thoughtful design.
-                I specialize in building scalable web applications that solve real-world
-                problems with modern technologies and best practices.
-              </p>
-
-              <div className="aaditiya-action-cluster">
-                <button
-                  onClick={() => navigateToPage('/projects')}
-                  className="aaditiya-primary-catalyst"
-                >
-                  Projects <ArrowUpRight size={16} />
-                </button>
-                <button
-                  onClick={() => navigateToPage('/contact')}
-                  className="aaditiya-primary-catalyst"
-                >
-                  Contact<ArrowUpRight size={16}/>
-                </button>
-              </div>
-            </div>
+          <div className="aaditiya-profession-carousel">
+            <span className="aaditiya-role-delimiter">—</span>
+            <span className="aaditiya-role-display">{roles[currentRoleIndex]}</span>
           </div>
 
-          <div className="aaditiya-showcase-panel">
+          <p className="aaditiya-mission-statement">
+            Crafting digital experiences through clean code and thoughtful design.
+            I specialize in building scalable web applications that solve real-world
+            problems with modern technologies and best practices.
+          </p>
+
+          <div className="aaditiya-action-cluster">
+            <button
+              onClick={() => navigateToPage('/projects')}
+              className="aaditiya-primary-catalyst"
+            >
+              Projects <ArrowUpRight size={16} />
+            </button>
+            <button
+              onClick={() => navigateToPage('/contact')}
+              className="aaditiya-primary-catalyst"
+            >
+              Contact<ArrowUpRight size={16}/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="aaditiya-showcase-panel">
         <div className="aaditiya-portrait-enclosure">
           <div className="aaditiya-portrait-frame">
             <img
@@ -443,45 +473,20 @@ const handleNextAnnouncement = () => {
           <div className="aaditiya-luminous-aura"></div>
         </div>
 
-            <div className="aaditiya-wisdom-block">
-              <div className="aaditiya-wisdom-wrapper">
-                <p className="aaditiya-wisdom-inscription">
-                  "{quote?.content || 'A project is like a piece of art for the developer, crafted with passion and love.'}"
-                </p>
-                <p className="aaditiya-wisdom-attribution">
-                  — {quote?.author || "Etched by my soul's ink"}
-                </p>
-              </div>
-            </div>
+        <div className="aaditiya-wisdom-block">
+          <div className="aaditiya-wisdom-wrapper">
+            <p className="aaditiya-wisdom-inscription">
+              "{quote?.content || 'A project is like a piece of art for the developer, crafted with passion and love.'}"
+            </p>
+            <p className="aaditiya-wisdom-attribution">
+              — {quote?.author || "Etched by my soul's ink"}
+            </p>
           </div>
         </div>
-
-        <div className="aaditiya-connection-matrix">
-          <a
-            href="https://github.com/meaaditiya"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="aaditiya-connection-node"
-          >
-            <Github size={18} />
-            <span>GitHub</span>
-          </a>
-          <a
-            href="https://www.linkedin.com/in/aaditiya-tyagi-babb26290/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="aaditiya-connection-node"
-          >
-            <Linkedin size={18} />
-            <span>LinkedIn</span>
-          </a>
-          <a href="mailto:aaditiyatyagi123@gmail.com" className="aaditiya-connection-node">
-            <Mail size={18} />
-            <span>Email</span>
-          </a>
-        </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
         {/* About Section */}
         <section className="newabout-section content-section about-section">
           <div className="section-container">
