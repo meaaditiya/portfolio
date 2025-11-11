@@ -881,7 +881,7 @@ const renderVideoPlayer = (post) => {
                   className="author-profile-image"                 
                 />               
               )}               
-              <span className="author-name">{post.author.username}</span>
+              <span className="author-name">{post.author.name}</span>
               <span className="post-time-ago">{formatTimeAgo(post.createdAt)}</span>
               {post.postType !== 'image' && (                 
                 <div className="post-type-badge">{post.postType}</div>               
