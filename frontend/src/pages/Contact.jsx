@@ -1133,77 +1133,67 @@ const copyTicketId = () => {
   );
 
   const renderFullScreenPopup = () => (
-    <div className="cnt-popup-overlay">
-      <div className="cnt-popup-container">
-        <button className="cnt-popup-close" onClick={closePopup}>
-          <FaTimes />
+  <div className="usersubmit-overlay" onClick={closePopup}>
+    <div className="usersubmit-modal" onClick={(e) => e.stopPropagation()}>
+   
+      
+      <div className={`usersubmit-successicon ${popupData.type}`}>
+        {popupData.type === 'success' ? (
+          <FaCheckCircle size={60} />
+        ) : (
+          <FaExclamationTriangle size={60} />
+        )}
+      </div>
+      
+      <h3 className="usersubmit-title">{popupData.title}</h3>
+      <p className="usersubmit-message">{popupData.message}</p>
+      
+      <div className="usersubmit-actions">
+        <button className="usersubmit-btn-small" onClick={closePopup}>
+          Close
         </button>
-        
-        <div className="cnt-popup-content">
-          <div className={`cnt-popup-icon ${popupData.type}`}>
-            {popupData.type === 'success' ? (
-              <FaCheckCircle size={60} />
-            ) : (
-              <FaExclamationTriangle size={60} />
-            )}
-          </div>
-          
-          <h2 className="cnt-popup-title">{popupData.title}</h2>
-          <p className="cnt-popup-message">{popupData.message}</p>
-          
-          <div className="cnt-popup-actions">
-            <button className="cnt-popup-btn" onClick={closePopup}>
-              Close
-            </button>
-          </div>
-        </div>
       </div>
     </div>
-  );
+  </div>
+);
 const renderQueryPopup = () => (
-  <div className="cnt-query-popup-overlay">
-    <div className="cnt-query-popup-container">
-      <button className="cnt-query-popup-close" onClick={closeQueryPopup}>
-        <FaTimes />
-      </button>
+  <div className="usersubmit-overlay" onClick={closeQueryPopup}>
+    <div className="usersubmit-modal" onClick={(e) => e.stopPropagation()}>
+    
+      <div className="usersubmit-successicon success">
+        <FaCheckCircle size={60} />
+      </div>
       
-      <div className="cnt-query-popup-content">
-        <div className="cnt-query-popup-icon success">
-          <FaCheckCircle size={60} />
+      <h3 className="usersubmit-title">Query Submitted Successfully!</h3>
+      <p className="usersubmit-message">{queryPopupData.message}</p>
+      
+      <div className="cnt-ticket-id-section">
+        <label className="cnt-ticket-label">Your Ticket Reference ID:</label>
+        <div className="cnt-ticket-display">
+          <span className="usersubmit-modalid">{queryPopupData.ticketId}</span>
         </div>
-        
-        <h2 className="cnt-query-popup-title">Query Submitted Successfully!</h2>
-        <p className="cnt-query-popup-message">{queryPopupData.message}</p>
-        
-        <div className="cnt-ticket-id-section">
-          <label className="cnt-ticket-label">Your Ticket Reference ID:</label>
-          <div className="cnt-ticket-display">
-            <span className="cnt-ticket-id">{queryPopupData.ticketId}</span>
-          </div>
-          <button
-  className="cnt-copy-btn"
-  onClick={(e) => {
-    copyTicketId(); // your function
-    e.target.innerText = "Copied";
-
-    setTimeout(() => {
-      e.target.innerText = "Copy";
-    }, 10000); // 10 seconds
-  }}
-  title="Copy Ticket ID"
->
-  Copy
-</button>
-          <p className="cnt-ticket-note">
-            Please save this Ticket ID. You'll need it to check your query status.
-          </p>
-        </div>
-        
-        <div className="cnt-query-popup-actions">
-          <button className="cnt-query-popup-btn" onClick={closeQueryPopup}>
-            Close
-          </button>
-        </div>
+        <button
+          className="usersubmit-btn-small"
+          onClick={(e) => {
+            copyTicketId();
+            e.target.innerText = "Copied";
+            setTimeout(() => {
+              e.target.innerText = "Copy";
+            }, 10000);
+          }}
+          title="Copy Ticket ID"
+        >
+          Copy
+        </button>
+        <p className="cnt-ticket-note">
+          Please save this Ticket ID. You'll need it to check your query status.
+        </p>
+      </div>
+      
+      <div className="usersubmit-actions">
+        <button className="usersubmit-btn-small" onClick={closeQueryPopup}>
+          Close
+        </button>
       </div>
     </div>
   </div>
