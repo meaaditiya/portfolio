@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Play, Tv, Lock, Radio, Users, Video } from 'lucide-react';
 import '../pagesCSS/Stream.css';
 import profileImage from '../images/livestream.png';
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 const StreamApp = () => {
   const [streams, setStreams] = useState([]);
@@ -136,10 +138,10 @@ const StreamApp = () => {
           </div>
           <div className="tyagi-hero-image">
             <div className="tyagi-hero-image-wrapper">
-              <img 
+              <LazyLoadImage 
                 src={profileImage}
                 alt="Live streaming" 
-                className="tyagi-hero-img"
+                className="tyagi-hero-LazyLoadImage"
               />
               <div className="tyagi-hero-image-glow"></div>
             </div>
@@ -199,10 +201,10 @@ const StreamApp = () => {
               {streams.map((stream) => (
                 <div key={stream._id} className="tyagi-stream-card">
                   <div className="tyagi-stream-thumbnail">
-                    <img
-                      src={stream.embedId ? `https://img.youtube.com/vi/${stream.embedId}/maxresdefault.jpg` : profileImage}
+                    <LazyLoadImage
+                      src={stream.embedId ? `https://LazyLoadImage.youtube.com/vi/${stream.embedId}/maxresdefault.jpg` : profileImage}
                       alt={stream.title}
-                      className="tyagi-thumbnail-img"
+                      className="tyagi-thumbnail-LazyLoadImage"
                       onError={(e) => {
                         if (stream.embedId) {
                           e.target.src = profileImage;

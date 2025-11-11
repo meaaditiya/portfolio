@@ -5,6 +5,8 @@ import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
 import Dots from './DotsLoader';
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
@@ -705,7 +707,7 @@ Read the full article here 👇`
       const htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 500px;">
           ${blogPost?.featuredImage ? 
-            `<img src="${blogPost.featuredImage}" alt="${blogPost.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; display: block;">` 
+            `<LazyLoadImage src="${blogPost.featuredImage}" alt="${blogPost.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; display: block;">` 
             : ''
           }
           <h3 style="margin: 0 0 8px 0; color: #333;">${blogPost?.title || 'Blog Post'}</h3>
@@ -1380,7 +1382,7 @@ const closeSummaryPopup = () => {
                   key={part.key} 
                   className={`blog-image blog-image-${part.media.position || 'center'}`}
                 >
-                  <img 
+                  <LazyLoadImage 
                     src={part.media.url} 
                     alt={part.media.alt || ''} 
                     loading="lazy" 
@@ -1500,7 +1502,7 @@ const getSocialIcon = (platform) => {
     
     {blogPost.featuredImage && (
       <div className="featured-image-container">
-        <img src={blogPost.featuredImage} alt={blogPost.title} className="blog-post-image" />
+        <LazyLoadImage src={blogPost.featuredImage} alt={blogPost.title} className="blog-post-image" />
       </div>
     )}
           <h1 className="blog-post-title">{blogPost.title}</h1>
@@ -2023,7 +2025,7 @@ const getSocialIcon = (platform) => {
             <h3>Share this article</h3>
             {blogPost?.featuredImage && (
               <div className="share-preview">
-                <img 
+                <LazyLoadImage 
                   src={blogPost.featuredImage} 
                   alt={blogPost.title}
                   className="share-preview-image"
@@ -2418,7 +2420,7 @@ const getSocialIcon = (platform) => {
           {/* Profile Header */}
           <div className="author-profile-header">
             {authorData.profileImage?.hasImage ? (
-              <img 
+              <LazyLoadImage 
                 src={`https://connectwithaaditiyamg.onrender.com/api/admins/${blogPost.author._id}/image`}
                 alt={authorData.name}
                 className="author-profile-image"
@@ -2493,7 +2495,7 @@ const getSocialIcon = (platform) => {
               className="author-social-link"
               title={platform.charAt(0).toUpperCase() + platform.slice(1)}
             >
-              <img
+              <LazyLoadImage
                 src={getSocialIcon(platform)}
                 alt={platform}
                 className="author-social-icon"

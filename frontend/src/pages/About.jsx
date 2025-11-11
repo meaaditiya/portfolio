@@ -6,6 +6,9 @@ import {
 } from 'lucide-react';
 import '../pagesCSS/about.css';
 import profileImage from '../images/java2.png';
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+
 
 const About = () => {
   const [currentSlide, setCurrentSlide] = useState(5);
@@ -88,7 +91,7 @@ const About = () => {
             </div>
             <div className="about-image-wrapper">
               <div className="about-image-container">
-                <img src={profileImage} alt="Aaditiya Tyagi" className="about-profile-image" />
+                <LazyLoadImage src={profileImage} alt="Aaditiya Tyagi" className="about-profile-image" />
                 <div className="about-image-overlay"></div>
               </div>
             </div>

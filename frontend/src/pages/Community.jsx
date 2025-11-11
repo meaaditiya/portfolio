@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../pagesCSS/Community.css';
 import Dots from './DotsLoader';
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 const Community = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -875,7 +877,7 @@ const renderVideoPlayer = (post) => {
           <div className="post-author-info">             
             <div className="author-profile-section">               
               {activeProfileImage && (                 
-                <img                    
+                <LazyLoadImage                    
                   src={activeProfileImage}                    
                   alt="Profile"                    
                   className="author-profile-image"                 
@@ -896,7 +898,7 @@ const renderVideoPlayer = (post) => {
           {post.postType === 'image' && post.images && (
             <div className="post-images">
               {post.images.map((image, index) => (
-                <img 
+                <LazyLoadImage 
                   key={index}
                   src={`https://connectwithaaditiyamg.onrender.com/api/community/posts/${post._id}/media/image/${index}`}
                   alt={`Post image ${index + 1}`}
@@ -1025,7 +1027,7 @@ const renderVideoPlayer = (post) => {
             <div className="post-link">
               <a href={post.linkUrl} target="_blank" rel="noopener noreferrer" className="link-preview">
                 {post.linkThumbnail && (
-                  <img src={post.linkThumbnail} alt="Link preview" className="link-thumbnail" />
+                  <LazyLoadImage src={post.linkThumbnail} alt="Link preview" className="link-thumbnail" />
                 )}
                 <div className="link-content">
                   <h4 className="link-title">{post.linkTitle}</h4>
@@ -1272,7 +1274,7 @@ const renderVideoPlayer = (post) => {
             >
               ×
             </button>
-            <img
+            <LazyLoadImage
               src={fullScreenImage}
               alt="Full screen view"
               className="fullscreen-image"
