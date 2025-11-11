@@ -71,7 +71,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 7px 20px;
   font-size: 14px;
   font-weight: 600;
   font-family: var(--font-sans);
@@ -1319,5 +1319,80 @@ body {
   .small-image-wrapper {
     height: auto;
     max-height: 300px;
+  }
+}
+.header-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.write-blog-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  background: black;
+  color: white;
+  border: 1px solid black;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.write-blog-btn:hover {
+  background-color: #1a1a1a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.write-blog-btn:active {
+  transform: translateY(0);
+}
+
+.write-blog-btn svg {
+  flex-shrink: 0;
+}
+
+/* Responsive styles for write blog button */
+@media (max-width: 768px) {
+  .header-buttons {
+    width: 100%;
+    
+    gap: 10px;
+  }
+
+  .write-blog-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 7px 16px;
+  }
+
+  .filter-toggle-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .write-blog-btn {
+    padding: 9px 14px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .write-blog-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .write-blog-btn {
+    padding: 8px 12px;
+    font-size: 12px;
   }
 }

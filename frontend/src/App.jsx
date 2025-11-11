@@ -13,6 +13,7 @@ import Posts from './pages/Posts';
 import Stream from './pages/Stream';
 import StreamPost from './pages/Streampost';
 import NotFound from './pages/Notfound.jsx';
+import UserBlogSubmission from './pages/UserBlogSubmission.jsx';
 
 
 const App = () => {
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="/social" element={<Posts />} />
             <Route path="/community" element={<Posts />} />
             <Route path="/pagenotfound" element={<NotFound/>}/>
+            <Route path ="blogsubmission" element={<UserBlogSubmission/>}/>
             {/* Catch-all route for 404 - must be last */}
             <Route path="*" element={<NotFound/>}/>
           </Routes>
