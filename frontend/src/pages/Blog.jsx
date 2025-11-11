@@ -3,8 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import BlogSkeletonLoader from './BlogSkeletonLoader';
 import Error from './Error.jsx';
 import '../pagesCSS/blog.css';
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
 
 const Blog = () => {
   const navigate = useNavigate();
@@ -403,7 +401,7 @@ const Blog = () => {
           >
             <div className="featured-image-wrapper">
               {filteredBlogs[0].featuredImage ? (
-                <LazyLoadImage src={filteredBlogs[0].featuredImage} alt={filteredBlogs[0].title} className="featured-image" />
+                <img src={filteredBlogs[0].featuredImage} alt={filteredBlogs[0].title} className="featured-image" />
               ) : (
                 <div className="featured-placeholder">
                   <div className="placeholder-title">AT</div>
@@ -451,7 +449,7 @@ const Blog = () => {
             >
               <div className="small-image-wrapper">
                 {blog.featuredImage ? (
-                  <LazyLoadImage src={blog.featuredImage} alt={blog.title} className="small-image" />
+                  <img src={blog.featuredImage} alt={blog.title} className="small-image" />
                 ) : (
                   <div className="small-placeholder">
                     <span className="placeholder-text">AT</span>

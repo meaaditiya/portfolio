@@ -6,8 +6,6 @@ import weatherImage from '../images/weather.jpg';
 import castwave from '../images/Castwave.jpeg';
 import React from 'react';
 import { Search, Folder, File, GitBranch, Star, Eye, AlertCircle, Loader2, FolderOpen, FileText, Code } from 'lucide-react';
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
 
 const GitHubRepoExplorer = ({ repoUrl: initialRepoUrl, onClose }) => {
   const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN; 
@@ -499,7 +497,7 @@ const Projects = () => {
                 >
                   <div className="tyagi-project-header">
                     <div className="tyagi-project-image-container">
-                      <LazyLoadImage 
+                      <img 
                         src={project.image} 
                         alt={project.title} 
                         className="tyagi-project-image" 

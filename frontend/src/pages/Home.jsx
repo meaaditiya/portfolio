@@ -12,9 +12,6 @@ import '../pagesCSS/Home.css';
 import '../pagesCSS/AnnouncementOverlay.css';
 import '../pagesCSS/homepage.css';
 import DOMPurify from 'dompurify';
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
-
 
 const Home = () => {
   const navigate = useNavigate();
@@ -301,7 +298,7 @@ const handleNextAnnouncement = () => {
           
           {currentAnnouncement.hasImage && announcementImages[currentAnnouncement._id] && (
             <div className="announcement_image_wrapper_unique_2024">
-              <LazyLoadImage 
+              <img 
                 src={announcementImages[currentAnnouncement._id]}
                 alt={currentAnnouncement.title}
                 className="announcement_image_unique_2024"
@@ -462,7 +459,7 @@ const handleNextAnnouncement = () => {
       <div className="aaditiya-showcase-panel">
         <div className="aaditiya-portrait-enclosure">
           <div className="aaditiya-portrait-frame">
-            <LazyLoadImage
+            <img
               src={profileImage}
               alt="Aaditiya Tyagi"
               className="aaditiya-portrait-image"
@@ -521,22 +518,22 @@ const handleNextAnnouncement = () => {
       {/* Left - Image */}
       <div className="minimal-blog-image">
         {(isBlogLoading || !firstBlog) ? (
-          <LazyLoadImage 
+          <img 
             src={blogImage}
             alt="Blog placeholder"
-            className="minimal-blog-LazyLoadImage"
+            className="minimal-blog-img"
           />
         ) : firstBlog.featuredImage ? (
-          <LazyLoadImage 
+          <img 
             src={firstBlog.featuredImage} 
             alt={firstBlog.title}
-            className="minimal-blog-LazyLoadImage"
+            className="minimal-blog-img"
           />
         ) : (
-          <LazyLoadImage 
+          <img 
             src={blogImage}
             alt="Blog placeholder"
-            className="minimal-blog-LazyLoadImage"
+            className="minimal-blog-img"
           />
         )}
       </div>
@@ -656,10 +653,10 @@ const handleNextAnnouncement = () => {
           </div>
           <div className="tyagi-hero-image">
             <div className="tyagi-hero-image-wrapper">
-              <LazyLoadImage 
+              <img 
                 src={profileImage2}
                 alt="Live streaming" 
-                className="tyagi-hero-LazyLoadImage"
+                className="tyagi-hero-img"
               />
               <div className="tyagi-hero-image-glow"></div>
             </div>

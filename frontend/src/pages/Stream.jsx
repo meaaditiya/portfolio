@@ -138,10 +138,10 @@ const StreamApp = () => {
           </div>
           <div className="tyagi-hero-image">
             <div className="tyagi-hero-image-wrapper">
-              <LazyLoadImage 
+              <img 
                 src={profileImage}
                 alt="Live streaming" 
-                className="tyagi-hero-LazyLoadImage"
+                className="tyagi-hero-img"
               />
               <div className="tyagi-hero-image-glow"></div>
             </div>
@@ -201,10 +201,10 @@ const StreamApp = () => {
               {streams.map((stream) => (
                 <div key={stream._id} className="tyagi-stream-card">
                   <div className="tyagi-stream-thumbnail">
-                    <LazyLoadImage
-                      src={stream.embedId ? `https://LazyLoadImage.youtube.com/vi/${stream.embedId}/maxresdefault.jpg` : profileImage}
+                    <img
+                      src={stream.embedId ? `https://img.youtube.com/vi/${stream.embedId}/maxresdefault.jpg` : profileImage}
                       alt={stream.title}
-                      className="tyagi-thumbnail-LazyLoadImage"
+                      className="tyagi-thumbnail-img"
                       onError={(e) => {
                         if (stream.embedId) {
                           e.target.src = profileImage;
