@@ -1536,7 +1536,7 @@ const getSocialIcon = (platform) => {
       
          <div className="blog-controls-minimal">
             <button
-              className="generate-summary-btn summarybtn"
+              className="generate-summary-btn2 summarybtn"
               onClick={(e) => handleGenerateSummary(blogPost, e)}
             >
               <svg

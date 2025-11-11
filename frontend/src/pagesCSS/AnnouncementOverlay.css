@@ -28,7 +28,7 @@
   width: 95%;
   max-height: 95vh;
   height: 90vh;
-  background-color: #f5f5f0;
+  background-color: white;
   overflow: hidden;
   animation: announcement_slideUp_unique_2024 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -38,7 +38,7 @@
 /* Important Announcement Header */
 .announcement_overlay_header_unique_2024 {
   padding: 4px 50px;
-  background-color: #b6ad90;
+  
 
   flex-shrink: 0;
 }
@@ -209,8 +209,8 @@
   gap: 32px;
   padding: 20px;
   height: 10px;
-  border-top: 2px solid #d0d0d0;
-  background-color: #c2c5aa;
+  
+  background-color: #F7F1DE;
   flex-shrink: 0;
   margin-top: auto;
 }
@@ -851,7 +851,7 @@
 /* Header container needs relative positioning */
 .announcement_overlay_header_unique_2024 {
   padding: 4px 50px;
-  background-color: #b6ad90;
+  background-color: #F7F1DE;
   flex-shrink: 0;
   position: relative; /* ADD THIS */
   display: flex; /* ADD THIS */

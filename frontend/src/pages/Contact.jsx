@@ -1343,7 +1343,7 @@ if (!/^QRY\d{12}$/.test(normalized)) {
 const renderQuerySection = () => (
   <div className="cnt-query-section">
    
-    <div className="cnt-query-buttons">
+    <div className="cnt-actions">
     
 
       <button 
