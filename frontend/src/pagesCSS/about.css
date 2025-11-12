@@ -1129,3 +1129,118 @@ body {
     transform: rotate(360deg);
   }
 }
+/* About Cards - Minimal Style */
+.about-card {
+  background: white;
+  border: 1px solid var(--color-gray-300);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: white;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-black);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Professional Summary */
+.card-content {
+  color: var(--color-black);
+}
+
+.summary-text {
+  margin-bottom: 1.25rem;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  color: var(--color-black);
+}
+
+.summary-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Education Timeline */
+.education-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.education-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.education-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: white;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.education-icon {
+  width: 1rem;
+  height: 1rem;
+  color:white;
+}
+
+.education-content {
+  flex: 1;
+}
+
+.education-degree {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-black);
+  margin: 0 0 0.25rem 0;
+}
+
+.education-school {
+  font-size: 0.875rem;
+  color: var(--color-black);
+  margin: 0 0 0.5rem 0;
+}
+
+.education-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.education-duration {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-black);
+}
+
+.education-grade {
+  color: var(--color-black);
+  font-weight: 500;
+}
