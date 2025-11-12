@@ -2513,6 +2513,8 @@
 @media (max-width: 768px) {
   .pst-container {
     padding: 0 var(--spacing-lg);
+    margin-left:-10px;
+    margin-right:-10px;
   }
 
   .pst-grid {
