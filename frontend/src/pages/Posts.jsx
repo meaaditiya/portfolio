@@ -1025,6 +1025,7 @@ useEffect(() => {
     if (error) {
       return (
         <div className="pst-container">
+          
           <div className="pst-error">
             <div className="pst-error-icon">⚠️</div>
             <p className="pst-error-text">{error}</p>
@@ -1052,128 +1053,155 @@ useEffect(() => {
 
     return (
       <div className="pst-container">
-        <div className="pst-grid">
-          {posts.map((post) => (
-            <div 
-              key={post.id} 
-              className="pst-post"
-              onClick={() => openPostModal(post)}
-              onMouseEnter={() => setHoveredVideo(post.id)}
-              onMouseLeave={() => setHoveredVideo(null)}
-            >
-              <div className="pst-post-card">
-                <div className="pst-post-image">
- {post.mediaType === 'video' ? (
-  <div className="pst-video-container">
-    <video
-      ref={el => videoRefs.current[post.id] = el}
-      src={post.media}
-      poster={post.thumbnail || ''}  // 👈 show thumbnail if available
-      className="pst-video"
-      loop
-      muted
-      playsInline
-      onLoadedMetadata={(e) => {
-        setVideoStates(prev => ({
-          ...prev,
-          [post.id]: { 
-            ...prev[post.id], 
-            duration: e.target.duration 
-          }
-        }));
-      }}
-      onPlay={() => {
-        setVideoStates(prev => ({
-          ...prev,
-          [post.id]: { ...prev[post.id], playing: true }
-        }));
-      }}
-      onPause={() => {
-        setVideoStates(prev => ({
-          ...prev,
-          [post.id]: { ...prev[post.id], playing: false }
-        }));
-      }}
-      onTimeUpdate={() => handleVideoTimeUpdate(post.id)}
-      onEnded={() => handleVideoEnded(post.id)}
-    />
-
-    {hoveredVideo === post.id && (
-      <div className="pst-video-overlay-controls">
-        <button
-          className="pst-video-play-btn"
-          onClick={(e) => toggleVideoPlayPause(post.id, e)}
-        >
-          {videoStates[post.id]?.playing ? (
-            <Pause className="pst-icon-md" />
-          ) : (
-            <Play className="pst-icon-md" />
-          )}
-        </button>
-      </div>
-    )}
-
-    <div className="pst-video-duration-badge">
-      video post : {formatVideoDuration(post.videoDuration)}
+        <div className="gallery-hero-container">
+  {/* Content Section */}
+  <div className="gallery-hero-content">
+    <div className="gallery-hero-welcome-tag">
+      Welcome
     </div>
+    
+    <h1 className="gallery-hero-title">
+      Explore Aaditya's visual gallery.
+    </h1>
+    
+    <p className="gallery-hero-subtitle">
+      A curated collection capturing moments through lens and creativity.
+    </p>
+    
+    <p className="gallery-hero-description">
+      Browse through stunning images and engaging videos that tell unique stories. Each post is a window into different perspectives, emotions, and artistic visions.
+    </p>
+    
+    <p className="gallery-hero-description">
+      From candid photography to cinematic videos, discover content that inspires and moves you. Every piece has been carefully selected to bring you the best visual experience.
+    </p>
+    
+    
   </div>
-) : (
- 
 
+</div>
+        <div className="pst-grid pst-posts-grid">
+         {posts.map((post) => (
+  <div 
+    key={post.id} 
+    className="pst-post pst-post2"
+    onClick={() => openPostModal(post)}
+    onMouseEnter={() => setHoveredVideo(post.id)}
+    onMouseLeave={() => setHoveredVideo(null)}
+  >
+    <div className="pst-post-card">
+      <div className="pst-post-image">
+        {post.mediaType === 'video' ? (
+          <div className="pst-video-container">
+            <video
+              ref={el => videoRefs.current[post.id] = el}
+              src={post.media}
+              poster={post.thumbnail || ''}
+              className="pst-video"
+              loop
+              muted
+              playsInline
+              onLoadedMetadata={(e) => {
+                setVideoStates(prev => ({
+                  ...prev,
+                  [post.id]: { 
+                    ...prev[post.id], 
+                    duration: e.target.duration 
+                  }
+                }));
+              }}
+              onPlay={() => {
+                setVideoStates(prev => ({
+                  ...prev,
+                  [post.id]: { ...prev[post.id], playing: true }
+                }));
+              }}
+              onPause={() => {
+                setVideoStates(prev => ({
+                  ...prev,
+                  [post.id]: { ...prev[post.id], playing: false }
+                }));
+              }}
+              onTimeUpdate={() => handleVideoTimeUpdate(post.id)}
+              onEnded={() => handleVideoEnded(post.id)}
+            />
 
-                    <>
-                      {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
-                        <div className="pst-image-loading">
-                          <div className="pst-image-spinner"></div>
-                        </div>
-                      )}
-                      {imageLoadStates[post.id] === 'error' ? (
-                        <div className="pst-image-error">
-                          <div className="pst-image-error-content">
-                            <div className="pst-image-error-icon">🖼️</div>
-                            <p className="pst-image-error-text">Image unavailable</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <img 
-                          src={post.media} 
-                          alt={post.caption || 'Post image'} 
-                          className="pst-image"
-                          onLoad={() => handleImageLoad(post.id)}
-                          onError={() => handleImageError(post.id)}
-                        />
-                      )}
-                    </>
+            {hoveredVideo === post.id && (
+              <div className="pst-video-overlay-controls">
+                <button
+                  className="pst-video-play-btn"
+                  onClick={(e) => toggleVideoPlayPause(post.id, e)}
+                >
+                  {videoStates[post.id]?.playing ? (
+                    <Pause className="pst-icon-md" />
+                  ) : (
+                    <Play className="pst-icon-md" />
                   )}
-                  <div className="pst-post-overlay">
-                    <div className="pst-post-stats">
-                      {post.mediaType === 'video' && (
-    <div className="pst-video-duration-badge">
-      video post : {formatVideoDuration(post.videoDuration)}
-    </div>
-)}
-                      <div className="pst-stat">
-                        <Heart className="pst-icon-sm" />
-                        <span className="pst-stat-count">{post.reactionCount || 0}</span>
-                      </div>
-                      <div className="pst-stat">
-                        <MessageCircle className="pst-icon-sm" />
-                        <span className="pst-stat-count">{post.commentCount || 0}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="pst-post-caption">                       
-                  <p className="pst-caption-text">                         
-                    {post.caption}
-                  </p>                        
-                  <p className="pst-modal-date">
-                    {formatDate(post.createdAt)}                                       
-                  </p>                     
+                </button>
+              </div>
+            )}
+
+            <div className="pst-video-duration-badge">
+              video post : {formatVideoDuration(post.videoDuration)}
+            </div>
+          </div>
+        ) : (
+          <>
+            {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
+              <div className="pst-image-loading">
+                <div className="pst-image-spinner"></div>
+              </div>
+            )}
+            {imageLoadStates[post.id] === 'error' ? (
+              <div className="pst-image-error">
+                <div className="pst-image-error-content">
+                  <div className="pst-image-error-icon">🖼️</div>
+                  <p className="pst-image-error-text">Image unavailable</p>
                 </div>
               </div>
+            ) : (
+              <img 
+                src={post.media} 
+                alt={post.caption || 'Post image'} 
+                className="pst-image"
+                onLoad={() => handleImageLoad(post.id)}
+                onError={() => handleImageError(post.id)}
+              />
+            )}
+          </>
+        )}
+        <div className="pst-post-overlay">
+          {/* CAPTION AND DATE AT TOP */}
+          <div className="pst-overlay-caption-section">
+            <p className="pst-overlay-caption">
+              {post.caption.length > 60 
+                ? post.caption.substring(0, 60) + '...' 
+                : post.caption}
+            </p>
+            <p className="pst-overlay-date">{formatDate(post.createdAt)}</p>
+          </div>
+
+          {/* STATS IN MIDDLE */}
+          <div className="pst-post-stats">
+            {post.mediaType === 'video' && (
+              <div className="pst-video-duration-badge">
+                video post : {formatVideoDuration(post.videoDuration)}
+              </div>
+            )}
+            <div className="pst-stat">
+              <Heart className="pst-icon-sm" />
+              <span className="pst-stat-count">{post.reactionCount || 0}</span>
             </div>
-          ))}
+            <div className="pst-stat">
+              <MessageCircle className="pst-icon-sm" />
+              <span className="pst-stat-count">{post.commentCount || 0}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+))}
         </div>
 
         {totalPages > 1 && (
@@ -1210,6 +1238,7 @@ useEffect(() => {
     if (socialLoading) {
       return (
         <div className="pst-container">
+          
           <div className="pst-grid">
             {Array.from({ length: 6 }).map((_, index) => (
               <SkeletonLoader key={index} type="social" />
@@ -1232,6 +1261,28 @@ useEffect(() => {
 
     return (
       <div className="pst-container">
+        {/* Content Section */}
+<div className="gallery-hero-content">
+  <div className="gallery-hero-welcome-tag">
+    Welcome
+  </div>
+  
+  <h1 className="gallery-hero-title">
+    Browse Aaditya's social media posts.
+  </h1>
+  
+  <p className="gallery-hero-subtitle">
+    Discover engaging content across various social media platforms.
+  </p>
+  
+  <p className="gallery-hero-description">
+    Explore posts from Instagram, Twitter, LinkedIn, and more. Each post reflects authentic moments, thoughts, and creative expressions shared across the digital world.
+  </p>
+  
+  <p className="gallery-hero-description">
+    From trending topics to personal insights, stay connected with diverse content that sparks conversations. Experience the digital presence across multiple platforms in one place.
+  </p>
+</div>
         <div className="pst-grid">
           {socialEmbeds.map((embed) => {
             const platformIcon = platforms.find(p => p.id === embed.platform)?.icon || Globe;

@@ -1,5 +1,5 @@
 /* ===================================
-   Social Sidebar - Right Side (Scrolls with page)
+   Social Sidebar - Right Side
    =================================== */
 
 .aaditiya-connection-sidebar {
@@ -26,21 +26,21 @@
   border: 1.5px solid rgba(26, 26, 26, 0.15);
   transition: all 0.3s ease;
   cursor: pointer;
-  
-  &:hover {
-    background: #1a1a1a;
-    color: #f5f3f0;
-    border-color: #1a1a1a;
-    transform: translateY(-3px);
-  }
-  
-  svg {
-    transition: transform 0.3s ease;
-  }
-  
-  &:hover svg {
-    transform: scale(1.1);
-  }
+}
+
+.aaditiya-connection-node-vertical:hover {
+  background: #1a1a1a;
+  color: #f5e6d3;
+  border-color: #1a1a1a;
+  transform: translateY(-3px);
+}
+
+.aaditiya-connection-node-vertical svg {
+  transition: transform 0.3s ease;
+}
+
+.aaditiya-connection-node-vertical:hover svg {
+  transform: scale(1.1);
 }
 
 .aaditiya-connection-line {
@@ -51,7 +51,7 @@
 }
 
 /* ===================================
-   Elegant Hero Section - Refined Design
+   Gallery Hero Section - Elegant Design
    =================================== */
 
 .aaditiya-hero-stage {
@@ -60,9 +60,8 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 3rem;
-  background: #f5f3f0;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d4bc 100%);
   position: relative;
-  top:-50px;
 }
 
 .aaditiya-hero-orchestration {
@@ -101,22 +100,22 @@
 }
 
 .aaditiya-salutation-tag {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #999;
-  letter-spacing: 3px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #d4a574;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
 .aaditiya-identity-signature {
-  font-size: 5rem;
-  font-weight: 200;
-  line-height: 1.05;
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
   color: #1a1a1a;
   margin: 0;
-  letter-spacing: -0.04em;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  letter-spacing: -0.02em;
+  font-family: Georgia, serif;
 }
 
 /* ===================================
@@ -138,24 +137,18 @@
 }
 
 .aaditiya-role-display {
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: #1a1a1a;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #4a4a4a;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  animation: aaditiya-role-appear 0.6s ease;
-}
-
-@keyframes aaditiya-role-appear {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .aaditiya-mission-statement {
-  font-size: 1.05rem;
-  line-height: 1.85;
-  color: #777;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: #6a6a6a;
   max-width: 550px;
-  margin: 0;
+  margin: 0 0 1rem 0;
   font-family: 'Helvetica Neue', Arial, sans-serif;
   font-weight: 300;
 }
@@ -167,7 +160,7 @@
 .aaditiya-action-cluster {
   display: flex;
   gap: 1rem;
-  margin-top: 2.5rem;
+  margin-top: 2rem;
 }
 
 .aaditiya-primary-catalyst {
@@ -175,31 +168,28 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 1.1rem 2.5rem;
-  font-size: 0.85rem;
+  padding: 0.875rem 2rem;
+  font-size: 0.9rem;
   font-weight: 400;
   color: #1a1a1a;
   background: transparent;
-  border: 1.5px solid #1a1a1a;
+  border: 1px solid #1a1a1a;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  white-space: nowrap;
+}
 
-  &:hover {
-    background: #1a1a1a;
-    color: #fff;
-  }
+.aaditiya-primary-catalyst:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
 
-  &:active {
-    transform: scale(0.98);
-  }
+.aaditiya-primary-catalyst:active {
+  transform: scale(0.98);
 }
 
 /* ===================================
-   Showcase Panel - Portfolio Style
+   Showcase Panel - Gallery Style
    =================================== */
 
 .aaditiya-showcase-panel {
@@ -209,24 +199,45 @@
   align-items: center;
 }
 
-.aaditiya-portrait-frame {
+/* Portrait Enclosure */
+.aaditiya-portrait-enclosure {
+  position: relative;
   width: 100%;
   max-width: 260px;
+  
+}
+
+.aaditiya-portrait-frame {
+  width: 100%;
   overflow: visible;
   background: transparent;
   border: 1.5px solid rgba(80, 80, 80, 0.3);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(3px);
   position: relative;
-  padding: 15px;
+  padding: 5px;
+  
 }
 
 .aaditiya-portrait-image {
   width: 100%;
   height: auto;
-  object-fit: contain;
+  object-fit:cover;
   display: block;
   filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.06));
+   background: linear-gradient(135deg, #2a7a7a 0%, #1e5a5a 100%);
+}
+
+.aaditiya-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2a7a7a 0%, #1e5a5a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1rem;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
 .aaditiya-luminous-aura {
@@ -270,7 +281,7 @@
 }
 
 /* ===================================
-   Quote Block - Refined Typography
+   Wisdom Block (Quote Section)
    =================================== */
 
 .aaditiya-wisdom-block {
@@ -290,7 +301,7 @@
   color: #1a1a1a;
   font-style: italic;
   margin: 0 0 1rem 0;
-  font-family: 'Georgia', serif;
+  font-family: Georgia, serif;
   font-weight: 400;
 }
 
@@ -305,7 +316,7 @@
 }
 
 /* ===================================
-   ENHANCED RESPONSIVE STYLES - CLEAN & ORGANIZED
+   RESPONSIVE STYLES
    =================================== */
 
 /* Desktop Large (1400px+) */
@@ -315,7 +326,11 @@
   }
   
   .aaditiya-identity-signature {
-    font-size: 5.5rem;
+    font-size: 4rem;
+  }
+  
+  .aaditiya-portrait-enclosure {
+    max-width: 280px;
   }
 }
 
@@ -327,6 +342,10 @@
   
   .aaditiya-narrative-flow {
     gap: 5rem;
+  }
+  
+  .aaditiya-portrait-enclosure {
+    max-width: 270px;
   }
 }
 
@@ -351,23 +370,19 @@
   }
   
   .aaditiya-identity-signature {
-    font-size: 4.5rem;
-  }
-  
-  .aaditiya-role-display {
-    font-size: 1.35rem;
+    font-size: 3.2rem;
   }
   
   .aaditiya-mission-statement {
-    font-size: 1rem;
+    font-size: 0.85rem;
   }
   
-  .aaditiya-portrait-frame {
+  .aaditiya-portrait-enclosure {
     max-width: 240px;
   }
 }
 
-/* Tablet Landscape (768px - 991px) - SINGLE COLUMN, IMAGE ON TOP */
+/* Tablet Landscape (768px - 991px) */
 @media (min-width: 768px) and (max-width: 991px) {
   .aaditiya-connection-sidebar {
     right: 1.5rem;
@@ -377,11 +392,11 @@
   .aaditiya-connection-node-vertical {
     width: 40px;
     height: 40px;
-    
-    svg {
-      width: 18px;
-      height: 18px;
-    }
+  }
+  
+  .aaditiya-connection-node-vertical svg {
+    width: 18px;
+    height: 18px;
   }
   
   .aaditiya-connection-line {
@@ -408,20 +423,15 @@
   }
   
   .aaditiya-identity-signature {
-    font-size: 4rem;
-  }
-  
-  .aaditiya-role-display,
-  .aaditiya-role-delimiter {
-    font-size: 1.3rem;
+    font-size: 3rem;
   }
   
   .aaditiya-mission-statement {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     max-width: 100%;
   }
   
-  .aaditiya-portrait-frame {
+  .aaditiya-portrait-enclosure {
     max-width: 200px;
   }
   
@@ -430,7 +440,7 @@
   }
 }
 
-/* Tablet Portrait (601px - 767px) - IMAGE ON TOP */
+/* Tablet Portrait (601px - 767px) */
 @media (min-width: 601px) and (max-width: 767px) {
   .aaditiya-connection-sidebar {
     right: 1.2rem;
@@ -440,11 +450,11 @@
   .aaditiya-connection-node-vertical {
     width: 38px;
     height: 38px;
-    
-    svg {
-      width: 17px;
-      height: 17px;
-    }
+  }
+  
+  .aaditiya-connection-node-vertical svg {
+    width: 17px;
+    height: 17px;
   }
   
   .aaditiya-connection-line {
@@ -475,30 +485,25 @@
   }
   
   .aaditiya-identity-signature {
-    font-size: 3.5rem;
-  }
-  
-  .aaditiya-role-display,
-  .aaditiya-role-delimiter {
-    font-size: 1.2rem;
+    font-size: 2.8rem;
   }
   
   .aaditiya-mission-statement {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     line-height: 1.75;
   }
   
   .aaditiya-action-cluster {
     gap: 0.8rem;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
   }
   
   .aaditiya-primary-catalyst {
-    padding: 0.95rem 2rem;
-    font-size: 0.8rem;
+    padding: 0.8rem 1.8rem;
+    font-size: 0.85rem;
   }
   
-  .aaditiya-portrait-frame {
+  .aaditiya-portrait-enclosure {
     max-width: 180px;
   }
   
@@ -507,7 +512,7 @@
   }
 }
 
-/* Mobile Large (481px - 600px) - IMAGE ON TOP */
+/* Mobile Large (481px - 600px) */
 @media (min-width: 481px) and (max-width: 600px) {
   .aaditiya-connection-sidebar {
     right: 1rem;
@@ -517,17 +522,20 @@
   .aaditiya-connection-node-vertical {
     width: 36px;
     height: 36px;
-    
-    svg {
-      width: 16px;
-      height: 16px;
-    }
+  }
+  
+  .aaditiya-connection-node-vertical svg {
+    width: 16px;
+    height: 16px;
   }
   
   .aaditiya-connection-line {
     height: 45px;
   }
   
+  .aaditiya-hero-stage {
+    padding: 3rem 1.5rem;
+  }
 
   .aaditiya-narrative-flow {
     grid-template-columns: 1fr;
@@ -549,38 +557,46 @@
   }
   
   .aaditiya-salutation-tag {
-    font-size: 0.7rem;
-    letter-spacing: 2.5px;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
   }
   
   .aaditiya-identity-signature {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
   
-  .aaditiya-role-display,
-  .aaditiya-role-delimiter {
-    font-size: 1.1rem;
+  .aaditiya-role-display {
+    font-size: 0.95rem;
   }
   
   .aaditiya-mission-statement {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     line-height: 1.7;
   }
   
   .aaditiya-action-cluster {
+    flex-direction: column;
     gap: 0.7rem;
-    margin-top: 1.8rem;
+    margin-top: 1.5rem;
   }
   
   .aaditiya-primary-catalyst {
-    flex: 1;
-    min-width: 140px;
+    width: 100%;
     padding: 0.85rem 1.5rem;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .aaditiya-portrait-enclosure {
+    max-width: 160px;
   }
   
   .aaditiya-portrait-frame {
-    max-width: 160px;
+    padding: 5px;
+  }
+  
+  .aaditiya-corner-accent {
+    width: 15px;
+    height: 15px;
   }
   
   .aaditiya-wisdom-wrapper {
@@ -597,7 +613,7 @@
   }
 }
 
-/* Mobile Medium (376px - 480px) - IMAGE ON TOP, COMPACT */
+/* Mobile Medium (376px - 480px) */
 @media (max-width: 480px) {
   .aaditiya-connection-sidebar {
     right: 0.8rem;
@@ -608,11 +624,11 @@
     width: 34px;
     height: 34px;
     border-width: 1px;
-    
-    svg {
-      width: 15px;
-      height: 15px;
-    }
+  }
+  
+  .aaditiya-connection-node-vertical svg {
+    width: 15px;
+    height: 15px;
   }
   
   .aaditiya-connection-line {
@@ -621,8 +637,6 @@
   }
   
   .aaditiya-hero-stage {
-    position: relative;
-    top:-30px;
     padding: 2.5rem 1.2rem;
   }
   
@@ -646,40 +660,42 @@
   }
   
   .aaditiya-salutation-tag {
-    font-size: 0.65rem;
-    letter-spacing: 2px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
   }
   
   .aaditiya-identity-signature {
-    font-size: 2.5rem;
-    letter-spacing: -0.02em;
+    font-size: 2.2rem;
+    letter-spacing: -0.01em;
   }
   
-  .aaditiya-role-display,
-  .aaditiya-role-delimiter {
-    font-size: 1rem;
+  .aaditiya-role-display {
+    font-size: 0.9rem;
   }
   
   .aaditiya-mission-statement {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     line-height: 1.65;
   }
   
   .aaditiya-action-cluster {
+    flex-direction: column;
     gap: 0.6rem;
-    margin-top: 1.5rem;
-   
+    margin-top: 1.3rem;
   }
   
   .aaditiya-primary-catalyst {
     width: 100%;
-    padding: 0.85rem 1.2rem;
-    font-size: 0.7rem;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.75rem;
+  }
+  
+  .aaditiya-portrait-enclosure {
+    max-width: 150px;
   }
   
   .aaditiya-portrait-frame {
-    max-width: 150px;
-    padding: 12px;
+    padding: 5px;
   }
   
   .aaditiya-corner-accent {
@@ -701,7 +717,7 @@
   }
 }
 
-/* Mobile Small (up to 375px) - VERY COMPACT */
+/* Mobile Small (up to 375px) */
 @media (max-width: 375px) {
   .aaditiya-connection-sidebar {
     right: 0.7rem;
@@ -712,11 +728,11 @@
     width: 32px;
     height: 32px;
     border-width: 1px;
-    
-    svg {
-      width: 14px;
-      height: 14px;
-    }
+  }
+  
+  .aaditiya-connection-node-vertical svg {
+    width: 14px;
+    height: 14px;
   }
   
   .aaditiya-connection-line {
@@ -746,40 +762,41 @@
   }
   
   .aaditiya-salutation-tag {
-    font-size: 0.6rem;
-    letter-spacing: 1.5px;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
   }
   
   .aaditiya-identity-signature {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
   
-  .aaditiya-role-display,
-  .aaditiya-role-delimiter {
-    font-size: 0.95rem;
+  .aaditiya-role-display {
+    font-size: 0.85rem;
   }
   
   .aaditiya-mission-statement {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     line-height: 1.6;
   }
   
   .aaditiya-action-cluster {
+    flex-direction: column;
     gap: 0.5rem;
-    margin-top: 1.3rem;
-    
+    margin-top: 1.2rem;
   }
   
   .aaditiya-primary-catalyst {
     width: 100%;
-    padding: 0.8rem 1rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.5px;
+    padding: 0.75rem 1rem;
+    font-size: 0.7rem;
+  }
+  
+  .aaditiya-portrait-enclosure {
+    max-width: 140px;
   }
   
   .aaditiya-portrait-frame {
-    max-width: 140px;
-    padding: 10px;
+    padding: 5px;
   }
   
   .aaditiya-corner-accent {
@@ -801,7 +818,7 @@
   }
 }
 
-/* Extra Small (320px and below) - MINIMAL */
+/* Extra Small (320px and below) */
 @media (max-width: 320px) {
   .aaditiya-connection-sidebar {
     display: none;
@@ -812,10 +829,10 @@
   }
   
   .aaditiya-identity-signature {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
   
-  .aaditiya-portrait-frame {
+  .aaditiya-portrait-enclosure {
     max-width: 130px;
   }
 }
