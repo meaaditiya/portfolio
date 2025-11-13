@@ -1013,11 +1013,9 @@ useEffect(() => {
     if (loading && posts.length === 0) {
       return (
         <div className="pst-container">
-          <div className="pst-grid">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <SkeletonLoader key={index} type="post" />
-            ))}
-          </div>
+           <div className="pst-error">
+            <SkeletonLoader/>
+           </div>
         </div>
       );
     }
@@ -1238,12 +1236,9 @@ useEffect(() => {
     if (socialLoading) {
       return (
         <div className="pst-container">
-          
-          <div className="pst-grid">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <SkeletonLoader key={index} type="social" />
-            ))}
-          </div>
+           <div className="pst-error">
+            <SkeletonLoader/>
+           </div>
         </div>
       );
     }

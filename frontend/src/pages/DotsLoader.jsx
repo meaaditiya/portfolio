@@ -1,60 +1,29 @@
 import React from 'react';
+import '../pagesCSS/DotsLoader.css';
 
 const CircleLoader = () => {
   return (
-    <div style={{
-      position: 'relative',
-      width: '80px',
-      height: '80px'
-    }}>
+    <div className="ultra_super_unique_loader_container_2025">
       {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
         const angle = (i * 360) / 8;
         return (
           <div
             key={i}
+            className="ultra_super_unique_loader_dot_2025"
             style={{
-              position: 'absolute',
-              top: '-100px',
-              left:'50%',
-              width: '12px',
-              height: '12px',
-              borderRadius: '50%',
-              backgroundColor: '#000000',
-             
               transform: `rotate(${angle}deg) translate(30px) translateX(-50%)`,
-              animation: `fade 1s linear infinite`,
-              animationDelay: `${i * 0.125}s`,
-              opacity: 0.2
+              animationDelay: `${i * 0.125}s`
             }}
           />
         );
       })}
-      <style>{`
-        @keyframes fade {
-          0%, 100% {
-            opacity: 0.2;
-          }
-          50% {
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 };
 
 const App = () => {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      width: '100vw',
-      padding: '20px',
-      boxSizing: 'border-box'
-    }}>
+    <div className="ultra_super_unique_app_wrapper_2025">
       <CircleLoader />
     </div>
   );

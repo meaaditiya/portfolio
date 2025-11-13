@@ -526,7 +526,14 @@ const Blog = () => {
               <div className="summary-content">
                 {isGeneratingSummary && (
                   <div className="generating-summary">
-                    <div className="spinner"></div>
+                   
+<div class="loading2">
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
                     <p>Generating AI summary...</p>
                   </div>
                 )}

@@ -14,8 +14,7 @@ import Stream from './pages/Stream';
 import StreamPost from './pages/Streampost';
 import NotFound from './pages/Notfound.jsx';
 import UserBlogSubmission from './pages/UserBlogSubmission.jsx';
-
-
+import PostSkeletonLoader from './pages/PostSkeleton.jsx';
 const App = () => {
   return (
     <Router>
@@ -37,7 +36,8 @@ const App = () => {
             <Route path="/social" element={<Posts />} />
             <Route path="/community" element={<Posts />} />
             <Route path="/pagenotfound" element={<NotFound/>}/>
-            <Route path ="blogsubmission" element={<UserBlogSubmission/>}/>
+            <Route path ="/blogsubmission" element={<UserBlogSubmission/>}/>
+            <Route path="/image" element= {<PostSkeletonLoader/>}/>
             {/* Catch-all route for 404 - must be last */}
             <Route path="*" element={<NotFound/>}/>
           </Routes>
