@@ -37,7 +37,7 @@ const App = () => {
             <Route path="/community" element={<Posts />} />
             <Route path="/pagenotfound" element={<NotFound/>}/>
             <Route path ="/blogsubmission" element={<UserBlogSubmission/>}/>
-            <Route path="/image" element= {<PostSkeletonLoader/>}/>
+           
             {/* Catch-all route for 404 - must be last */}
             <Route path="*" element={<NotFound/>}/>
           </Routes>
