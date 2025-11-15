@@ -575,7 +575,6 @@ background-color: #F8F4EC;
   }
   
   .aaditiya-action-cluster {
-    flex-direction: column;
     gap: 0.7rem;
     margin-top: 1.5rem;
   }
