@@ -11,7 +11,9 @@ import weatherBackground from '../images/home.png';
 import '../pagesCSS/Home.css';
 import '../pagesCSS/AnnouncementOverlay.css';
 import '../pagesCSS/homepage.css';
-import DOMPurify from 'dompurify';
+import { marked } from 'marked';
+import ReactMarkdown from 'react-markdown';
+import DOMPurify from 'isomorphic-dompurify';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -214,6 +216,274 @@ const handleNextAnnouncement = () => {
 };
   const currentAnnouncement = announcements[currentAnnouncementIndex];
 
+  // Helper function to render announcement content with inline images and videos
+// Add this helper function with your other functions (before the return statement)
+const renderAnnouncementContent = (announcement) => {
+  if (!announcement) return null;
+
+  const content = announcement.caption;
+  const captionFormat = announcement.captionFormat || 'markdown';
+
+  // Check if announcement has inline images or videos
+  const hasInlineMedia = 
+    (announcement.captionImages && announcement.captionImages.length > 0) ||
+    (announcement.captionVideos && announcement.captionVideos.length > 0);
+
+  if (hasInlineMedia) {
+    // Create maps for quick lookup
+    const imageMap = {};
+    const videoMap = {};
+
+    // Map images by imageId
+    if (announcement.captionImages) {
+      announcement.captionImages.forEach(image => {
+        if (image.imageId) {
+          imageMap[image.imageId] = image;
+        }
+      });
+    }
+
+    // Map videos by embedId
+    if (announcement.captionVideos) {
+      announcement.captionVideos.forEach(video => {
+        if (video.embedId) {
+          videoMap[video.embedId] = video;
+        }
+      });
+    }
+
+    // Split content by image and video placeholders
+    const parts = [];
+    let currentIndex = 0;
+    const placeholders = [];
+
+    // Find image placeholders
+    Object.keys(imageMap).forEach(imageId => {
+      const placeholder = `[IMAGE:${imageId}]`;
+      let searchIndex = 0;
+      let foundIndex;
+
+      while ((foundIndex = content.indexOf(placeholder, searchIndex)) !== -1) {
+        placeholders.push({
+          type: 'image',
+          id: imageId,
+          placeholder,
+          startIndex: foundIndex,
+          endIndex: foundIndex + placeholder.length,
+          media: imageMap[imageId]
+        });
+        searchIndex = foundIndex + placeholder.length;
+      }
+    });
+
+    // Find video placeholders
+    Object.keys(videoMap).forEach(embedId => {
+      const placeholder = `[VIDEO:${embedId}]`;
+      let searchIndex = 0;
+      let foundIndex;
+
+      while ((foundIndex = content.indexOf(placeholder, searchIndex)) !== -1) {
+        placeholders.push({
+          type: 'video',
+          id: embedId,
+          placeholder,
+          startIndex: foundIndex,
+          endIndex: foundIndex + placeholder.length,
+          media: videoMap[embedId]
+        });
+        searchIndex = foundIndex + placeholder.length;
+      }
+    });
+
+    // Sort placeholders by position
+    placeholders.sort((a, b) => a.startIndex - b.startIndex);
+
+    // Build parts array
+    placeholders.forEach((placeholderInfo, index) => {
+      // Add text before this media
+      if (placeholderInfo.startIndex > currentIndex) {
+        const textContent = content.substring(currentIndex, placeholderInfo.startIndex);
+        if (textContent.trim()) {
+          parts.push({
+            type: 'text',
+            content: textContent.trim(),
+            key: `text-${index}`
+          });
+        }
+      }
+
+      // Add the media
+      parts.push({
+        type: placeholderInfo.type,
+        media: placeholderInfo.media,
+        key: `${placeholderInfo.type}-${placeholderInfo.id}`
+      });
+
+      currentIndex = placeholderInfo.endIndex;
+    });
+
+    // Add remaining text
+    if (currentIndex < content.length) {
+      const remainingContent = content.substring(currentIndex);
+      if (remainingContent.trim()) {
+        parts.push({
+          type: 'text',
+          content: remainingContent.trim(),
+          key: `text-final`
+        });
+      }
+    }
+
+    // If no placeholders found, render normally
+    if (parts.length === 0) {
+      if (captionFormat === 'markdown' && announcement.renderedCaption) {
+        return (
+          <div 
+            className="announcement_caption_unique_2024 announcement_caption_markdown"
+            dangerouslySetInnerHTML={{ 
+              __html: DOMPurify.sanitize(announcement.renderedCaption, {
+                ALLOWED_TAGS: [
+                  'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
+                  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                  'ul', 'ol', 'li',
+                  'blockquote', 'pre', 'code',
+                  'a', 'span', 'div',
+                  'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                  'mark', 'small', 'sub', 'sup'
+                ],
+                ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
+              })
+            }}
+          />
+        );
+      }
+      return <p className="announcement_caption_unique_2024">{content}</p>;
+    }
+
+    // Render mixed content
+    return (
+      <div className="announcement_caption_unique_2024 announcement_content_with_media">
+        {parts.map(part => {
+          const RenderMarkdownText = ({ content, captionFormat }) => {
+  if (captionFormat === 'markdown') {
+    // Convert markdown to HTML
+    const htmlContent = marked(content); // or your markdown processor
+    
+    return (
+      <div
+        dangerouslySetInnerHTML={{ 
+          __html: DOMPurify.sanitize(htmlContent, {
+            ALLOWED_TAGS: [
+              'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
+              'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+              'ul', 'ol', 'li',
+              'blockquote', 'pre', 'code',
+              'a', 'span', 'div',
+              'table', 'thead', 'tbody', 'tr', 'th', 'td',
+              'mark', 'small', 'sub', 'sup'
+            ],
+            ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
+          })
+        }}
+      />
+    );
+  }
+  return <p>{content}</p>;
+};
+
+// Then in renderAnnouncementContent:
+if (part.type === 'text') {
+  return (
+    <div key={part.key}>
+      <RenderMarkdownText content={part.content} captionFormat={captionFormat} />
+    </div>
+  );
+}
+          if (part.type === 'image') {
+            return (
+              <div 
+                key={part.key} 
+                className={`announcement_inline_image announcement_image_${part.media.position || 'center'}`}
+              >
+                <img 
+                  src={part.media.url} 
+                  alt={part.media.alt || ''} 
+                  loading="lazy" 
+                />
+                {part.media.caption && (
+                  <p className="announcement_image_caption">{part.media.caption}</p>
+                )}
+              </div>
+            );
+          } 
+          
+          if (part.type === 'video') {
+            return (
+              <div 
+                key={part.key} 
+                className={`announcement_inline_video announcement_video_${part.media.position || 'center'}`}
+              >
+                <div className="announcement_video_wrapper">
+                  <iframe
+                    width="560"
+                    height="315"
+                    src={
+                      part.media.platform === 'youtube'
+                        ? `https://www.youtube.com/embed/${part.media.videoId}?rel=0&modestbranding=1${part.media.autoplay ? '&autoplay=1' : ''}${part.media.muted ? '&mute=1' : ''}`
+                        : part.media.platform === 'vimeo'
+                        ? `https://player.vimeo.com/video/${part.media.videoId}?title=0&byline=0&portrait=0${part.media.autoplay ? '&autoplay=1' : ''}${part.media.muted ? '&muted=1' : ''}`
+                        : `https://www.dailymotion.com/embed/video/${part.media.videoId}?ui-highlight=444444&ui-logo=0${part.media.autoplay ? '&autoplay=1' : ''}${part.media.muted ? '&mute=1' : ''}`
+                    }
+                    title={part.media.title || ''}
+                    frameBorder="0"
+                    allow={
+                      part.media.platform === 'youtube'
+                        ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                        : part.media.platform === 'vimeo'
+                        ? 'autoplay; fullscreen; picture-in-picture'
+                        : 'autoplay; fullscreen'
+                    }
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                {part.media.caption && (
+                  <p className="announcement_video_caption">{part.media.caption}</p>
+                )}
+              </div>
+            );
+          }
+          
+          return null;
+        })}
+      </div>
+    );
+  }
+
+  // No inline media - render normally
+  if (captionFormat === 'markdown' && announcement.renderedCaption) {
+    return (
+      <div 
+        className="announcement_caption_unique_2024 announcement_caption_markdown"
+        dangerouslySetInnerHTML={{ 
+          __html: DOMPurify.sanitize(announcement.renderedCaption, {
+            ALLOWED_TAGS: [
+              'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
+              'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+              'ul', 'ol', 'li',
+              'blockquote', 'pre', 'code',
+              'a', 'span', 'div',
+              'table', 'thead', 'tbody', 'tr', 'th', 'td',
+              'mark', 'small', 'sub', 'sup'
+            ],
+            ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
+          })
+        }}
+      />
+    );
+  }
+  
+  return <p className="announcement_caption_unique_2024">{content}</p>;
+};
   return (
     <div className="portfolio-container">
       {/* Announcement Label - Shows when there are announcements */}
@@ -232,8 +502,6 @@ const handleNextAnnouncement = () => {
     </div>
   </button>
 )}
-
-{/* Announcement Overlay */}
 {showAnnouncementOverlay && announcements.length > 0 && currentAnnouncement && (
   <div className="announcement_overlay_wrapper_unique_2024">
     <div 
@@ -242,26 +510,25 @@ const handleNextAnnouncement = () => {
     ></div>
     
     <div className="announcement_overlay_content_unique_2024">
-      {/* Header with "IMPORTANT ANNOUNCEMENT" */}
+      {/* Header */}
       <div className="announcement_overlay_header_unique_2024">
         <h3 className="announcement_overlay_header_title_unique_2024">
           Important Announcement
         </h3>
       
-      {/* Close Button */}
-      <button 
-        className="announcement_overlay_close_btn_unique_2024"
-        onClick={handleCloseAnnouncement}
-        aria-label="Close announcement"
-      >
-        <X size={20} />
-      </button>
+        <button 
+          className="announcement_overlay_close_btn_unique_2024"
+          onClick={handleCloseAnnouncement}
+          aria-label="Close announcement"
+        >
+          <X size={20} />
+        </button>
       </div>
       
       {/* Content Container */}
       <div className="announcement_overlay_container_unique_2024">
         <div className="announcement_card_unique_2024">
-          {/* Title with dynamic color */}
+          {/* Title */}
           <h2 
             className="announcement_title_unique_2024"
             style={{ 
@@ -271,31 +538,10 @@ const handleNextAnnouncement = () => {
             {currentAnnouncement.title}
           </h2>
           
-          {/* Caption - Render as HTML if markdown, otherwise plain text */}
-          {currentAnnouncement.renderedCaption ? (
-            <div 
-              className="announcement_caption_unique_2024 announcement_caption_markdown"
-              dangerouslySetInnerHTML={{ 
-                __html: DOMPurify.sanitize(currentAnnouncement.renderedCaption, {
-                  ALLOWED_TAGS: [
-                    'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
-                    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-                    'ul', 'ol', 'li',
-                    'blockquote', 'pre', 'code',
-                    'a', 'span', 'div',
-                    'table', 'thead', 'tbody', 'tr', 'th', 'td',
-                    'mark', 'small', 'sub', 'sup'
-                  ],
-                  ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
-                })
-              }}
-            />
-          ) : currentAnnouncement.caption ? (
-            <p className="announcement_caption_unique_2024">
-              {currentAnnouncement.caption}
-            </p>
-          ) : null}
+          {/* Caption with inline media */}
+          {renderAnnouncementContent(currentAnnouncement)}
           
+          {/* Featured Image */}
           {currentAnnouncement.hasImage && announcementImages[currentAnnouncement._id] && (
             <div className="announcement_image_wrapper_unique_2024">
               <img 
@@ -305,33 +551,40 @@ const handleNextAnnouncement = () => {
               />
             </div>
           )}
-          
-          {currentAnnouncement.link && (
-            <a 
-              href={currentAnnouncement.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="announcement_link_unique_2024"
-            >
-              Visit <ArrowUpRight size={16} />
-            </a>
-          )}
-          
-          {currentAnnouncement.hasDocument && (
-            <a 
-              href={`https://connectwithaaditiyamg.onrender.com/api/announcement/${currentAnnouncement._id}/document`}
-              download
-              className="announcement_document_link_unique_2024"
-            >
-              <FileText size={16} />
-              Download Document
-            </a>
-          )}
+          <div className="announcement_links_container_2024">
+  
+  {/* External Link */}
+  {currentAnnouncement.link && currentAnnouncement.link.url && (
+    <a 
+      href={currentAnnouncement.link.url}
+      target={currentAnnouncement.link.openInNewTab ? "_blank" : "_self"}
+      rel={currentAnnouncement.link.openInNewTab ? "noopener noreferrer" : ""}
+      className="announcement_link_unique_2024"
+    >
+      {currentAnnouncement.link.name || 'Learn More'} <ArrowUpRight size={16} />
+    </a>
+  )}
+
+  {/* Document Download */}
+  {currentAnnouncement.hasDocument && (
+    <a 
+      href={`https://connectwithaaditiyamg.onrender.com/api/announcement/${currentAnnouncement._id}/document`}
+      download
+      className="announcement_document_link_unique_2024"
+    >
+      <FileText size={16} />
+      Download Document
+    </a>
+  )}
+
+</div>
+
+        
         </div>
       </div>
       
       {/* Slider Controls */}
-      {announcements.length > 1 && (
+      {announcements.length > 0 && (
         <div className="announcement_slider_controls_unique_2024">
           <button
             className="announcement_slider_btn_unique_2024"
@@ -364,7 +617,6 @@ const handleNextAnnouncement = () => {
             <ChevronRight size={20} />
           </button>
           
-          {/* Snooze Button */}
           <button 
             className="announcement_overlay_snooze_btn_unique_2024"
             onClick={handleSnoozeAnnouncement}

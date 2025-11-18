@@ -62,6 +62,7 @@
   padding: 4rem 3rem;
 background-color: #F8F4EC;
   position: relative;
+  top:-40px;
 }
 
 .aaditiya-hero-orchestration {
@@ -678,7 +679,7 @@ background-color: #F8F4EC;
   }
   
   .aaditiya-action-cluster {
-    flex-direction: column;
+  
     gap: 0.6rem;
     margin-top: 1.3rem;
   }
@@ -779,7 +780,7 @@ background-color: #F8F4EC;
   }
   
   .aaditiya-action-cluster {
-    flex-direction: column;
+   
     gap: 0.5rem;
     margin-top: 1.2rem;
   }

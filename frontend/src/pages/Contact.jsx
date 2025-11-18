@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaQuestionCircle, FaProjectDiagram, FaArrowLeft, FaTimes, FaCheckCircle, FaExclamationTriangle, FaMicrophone, FaStop, FaPlay, FaPause } from 'react-icons/fa';
 import axios from 'axios';
 import '../pagesCSS/contact.css';
-
+import successSound from '../assets/success.mp3';
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -104,6 +104,7 @@ const [queryPopupData, setQueryPopupData] = useState({
   message: ''
 });
 
+const successAudioRef = useRef(null);
   // Auto-close popup after 8 seconds
   useEffect(() => {
     let timer;
@@ -142,10 +143,20 @@ const [queryPopupData, setQueryPopupData] = useState({
       }
     };
   }, []);
-
+const playSuccessSound = () => {
+  if (successAudioRef.current) {
+    successAudioRef.current.currentTime = 0;
+    successAudioRef.current.play().catch(error => {
+      console.log('Could not play success sound:', error);
+    });
+  }
+};
   const showFullScreenPopup = (type, title, message, isProject = false) => {
     setPopupData({ type, title, message, isProject });
     setShowPopup(true);
+     if (type === 'success') {
+    playSuccessSound();
+  }
   };
 
   const closePopup = () => {
@@ -154,6 +165,7 @@ const [queryPopupData, setQueryPopupData] = useState({
 const showqueryPopup = (ticketId, message) => {
   setQueryPopupData({ ticketId, message });
   setShowQueryPopup(true);
+  
 };
 const closeQueryPopup = () => {
   setShowQueryPopup(false);
@@ -1256,6 +1268,8 @@ const handleQuerySubmit = async (e) => {
       'Your query has been submitted successfully. Please save your Ticket ID for future reference.'
     );
     
+    playSuccessSound();
+  
     setQueryFormData({
       name: '',
       email: '',
@@ -1486,6 +1500,7 @@ const renderQuerySection = () => (
 
   return (
     <>
+       <audio ref={successAudioRef} src={successSound} preload="auto" />
       <section className="cnt-main-section">
        <h1 className="cnt-section-title tyagi-hero-title">
                 {activeSection === 'contact' ? 'Contact' : activeSection === 'project' ? 'Project' : 'Send Audio'}
