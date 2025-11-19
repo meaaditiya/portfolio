@@ -993,3 +993,79 @@ a:focus-visible {
 .newabout-section{
   margin-top:-0px;
 }
+/* Visitor Stats in Hero Section - Minimal Design */
+.hero-visitor-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  font-size: 13px;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.hero-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.hero-stat-item svg {
+  color: #888;
+  flex-shrink: 0;
+}
+
+.hero-stat-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.hero-stat-label {
+  color: #666;
+  font-size: 12px;
+}
+
+.hero-stat-divider {
+  color: #ddd;
+  font-size: 10px;
+}
+
+.hero-live-dot {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  margin-left: 2px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .hero-visitor-stats {
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .hero-stat-item svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .hero-stat-value {
+    font-size: 12px;
+  }
+
+  .hero-stat-label {
+    font-size: 10px;
+  }
+}

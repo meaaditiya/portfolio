@@ -14,7 +14,8 @@ import '../pagesCSS/homepage.css';
 import { marked } from 'marked';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'isomorphic-dompurify';
-
+;
+import { useVisitor } from '../context/VisitorContext';
 const Home = () => {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -29,6 +30,7 @@ const Home = () => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
 const [firstBlog, setFirstBlog] = useState(null);
 const [isBlogLoading, setIsBlogLoading] = useState(true);
+const { liveCount, visitorStats, isConnected } = useVisitor();
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100);
 
@@ -124,7 +126,6 @@ const fetchFirstBlog = async () => {
     setIsBlogLoading(false);
   }
 };
-
 fetchQuote();
 fetchAnnouncements();
 fetchFirstBlog(); // Add this line
@@ -134,8 +135,8 @@ fetchFirstBlog(); // Add this line
 
     return () => {
       clearTimeout(timer);
-      clearInterval(roleInterval);
-      window.removeEventListener('mousemove', handleMouseMove);
+  clearInterval(roleInterval);
+  window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
 
@@ -695,6 +696,8 @@ const renderAnnouncementContent = (announcement) => {
 </div>
 
 {/* Hero Section */}
+/* Replace your Hero Section with this updated version */
+
 <section className="aaditiya-hero-stage">
   <div className="aaditiya-hero-orchestration">
     <div className={`aaditiya-narrative-flow ${isLoaded ? 'aaditiya-reveal-animate' : ''}`}>
@@ -728,6 +731,24 @@ const renderAnnouncementContent = (announcement) => {
               Contact<ArrowUpRight size={16}/>
             </button>
           </div>
+
+          {/* Visitor Stats - Inline */}
+          <div className="hero-visitor-stats">
+            <div className="hero-stat-item">
+              {isConnected && <span className="hero-live-dot"></span>}
+              <Users size={16} />
+              <span className="hero-stat-value">{liveCount}</span>
+              
+              <span className="hero-stat-label">live</span>
+            </div>
+         
+            <span className="hero-stat-divider">•</span>
+            <div className="hero-stat-item">
+              <Globe size={16} />
+              <span className="hero-stat-value">{visitorStats.totalVisitors}</span>
+              <span className="hero-stat-label">visits</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -739,7 +760,6 @@ const renderAnnouncementContent = (announcement) => {
               alt="Aaditiya Tyagi"
               className="aaditiya-portrait-image"
             />
-            {/* Decorative Corner Elements */}
             <div className="aaditiya-corner-accent aaditiya-corner-top-left"></div>
             <div className="aaditiya-corner-accent aaditiya-corner-top-right"></div>
             <div className="aaditiya-corner-accent aaditiya-corner-bottom-left"></div>
@@ -762,6 +782,7 @@ const renderAnnouncementContent = (announcement) => {
     </div>
   </div>
 </section>
+
         {/* About Section */}
         <section className="newabout-section content-section about-section">
           <div className="section-container">

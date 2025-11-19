@@ -8,16 +8,20 @@ import Projects from './pages/Projects';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
-import './index.css';
 import Posts from './pages/Posts';
 import Stream from './pages/Stream';
 import StreamPost from './pages/Streampost';
 import NotFound from './pages/Notfound.jsx';
 import UserBlogSubmission from './pages/UserBlogSubmission.jsx';
-import PostSkeletonLoader from './pages/PostSkeleton.jsx';
-const App = () => {
+import { VisitorProvider } from './context/VisitorContext';
+import { useVisitorTracking } from './hooks/useVisitorTracking';
+import './index.css';
+
+const AppContent = () => {
+  const visitorData = useVisitorTracking();
+
   return (
-    <Router>
+    <VisitorProvider value={visitorData}>
       <div className="app-container">
         <Header />
         
@@ -36,15 +40,21 @@ const App = () => {
             <Route path="/social" element={<Posts />} />
             <Route path="/community" element={<Posts />} />
             <Route path="/pagenotfound" element={<NotFound/>}/>
-            <Route path ="/blogsubmission" element={<UserBlogSubmission/>}/>
-           
-            {/* Catch-all route for 404 - must be last */}
+            <Route path="/blogsubmission" element={<UserBlogSubmission/>}/>
             <Route path="*" element={<NotFound/>}/>
           </Routes>
         </main>
         
         <Footer />
       </div>
+    </VisitorProvider>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 };
