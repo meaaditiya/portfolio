@@ -2428,10 +2428,10 @@ const getSocialIcon = (platform) => {
               <img 
                 src={`https://connectwithaaditiyamg.onrender.com/api/admins/${blogPost.author._id}/image`}
                 alt={authorData.name}
-                className="author-profile-image"
+                className="author-profile-image1"
               />
             ) : (
-              <div className="author-profile-placeholder">
+              <div className="author-profile-placeholder1">
                 {authorData.name.charAt(0).toUpperCase()}
               </div>
             )}

@@ -218,6 +218,35 @@ const handleNextAnnouncement = () => {
 
   // Helper function to render announcement content with inline images and videos
 // Add this helper function with your other functions (before the return statement)
+// Helper component for rendering markdown text consistently
+const RenderMarkdownText = ({ content, captionFormat }) => {
+  if (captionFormat === 'markdown') {
+    const htmlContent = marked(content);
+    
+    return (
+      <div
+        className="announcement_caption_markdown"
+        dangerouslySetInnerHTML={{ 
+          __html: DOMPurify.sanitize(htmlContent, {
+            ALLOWED_TAGS: [
+              'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
+              'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+              'ul', 'ol', 'li',
+              'blockquote', 'pre', 'code',
+              'a', 'span', 'div',
+              'table', 'thead', 'tbody', 'tr', 'th', 'td',
+              'mark', 'small', 'sub', 'sup'
+            ],
+            ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
+          })
+        }}
+      />
+    );
+  }
+  return <p>{content}</p>;
+};
+
+// Main render function
 const renderAnnouncementContent = (announcement) => {
   if (!announcement) return null;
 
@@ -334,7 +363,7 @@ const renderAnnouncementContent = (announcement) => {
       }
     }
 
-    // If no placeholders found, render normally
+    // If no placeholders found, render normally using renderedCaption
     if (parts.length === 0) {
       if (captionFormat === 'markdown' && announcement.renderedCaption) {
         return (
@@ -360,45 +389,39 @@ const renderAnnouncementContent = (announcement) => {
       return <p className="announcement_caption_unique_2024">{content}</p>;
     }
 
-    // Render mixed content
+    // Render mixed content - use renderedCaption for text parts if available
     return (
       <div className="announcement_caption_unique_2024 announcement_content_with_media">
         {parts.map(part => {
-          const RenderMarkdownText = ({ content, captionFormat }) => {
-  if (captionFormat === 'markdown') {
-    // Convert markdown to HTML
-    const htmlContent = marked(content); // or your markdown processor
-    
-    return (
-      <div
-        dangerouslySetInnerHTML={{ 
-          __html: DOMPurify.sanitize(htmlContent, {
-            ALLOWED_TAGS: [
-              'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
-              'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-              'ul', 'ol', 'li',
-              'blockquote', 'pre', 'code',
-              'a', 'span', 'div',
-              'table', 'thead', 'tbody', 'tr', 'th', 'td',
-              'mark', 'small', 'sub', 'sup'
-            ],
-            ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
-          })
-        }}
-      />
-    );
-  }
-  return <p>{content}</p>;
-};
-
-// Then in renderAnnouncementContent:
-if (part.type === 'text') {
-  return (
-    <div key={part.key}>
-      <RenderMarkdownText content={part.content} captionFormat={captionFormat} />
-    </div>
-  );
-}
+          if (part.type === 'text') {
+            // Use backend-rendered caption if available, otherwise render client-side
+            if (captionFormat === 'markdown' && announcement.renderedCaption) {
+              // Extract and render the portion of renderedCaption for this text segment
+              const htmlContent = marked(part.content);
+              return (
+                <div 
+                  key={part.key}
+                  className="announcement_caption_markdown"
+                  dangerouslySetInnerHTML={{ 
+                    __html: DOMPurify.sanitize(htmlContent, {
+                      ALLOWED_TAGS: [
+                        'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'del',
+                        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                        'ul', 'ol', 'li',
+                        'blockquote', 'pre', 'code',
+                        'a', 'span', 'div',
+                        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                        'mark', 'small', 'sub', 'sup'
+                      ],
+                      ALLOWED_ATTR: ['style', 'class', 'href', 'target', 'rel', 'color', 'bgcolor']
+                    })
+                  }}
+                />
+              );
+            }
+            return <p key={part.key}>{part.content}</p>;
+          }
+          
           if (part.type === 'image') {
             return (
               <div 
@@ -459,7 +482,7 @@ if (part.type === 'text') {
     );
   }
 
-  // No inline media - render normally
+  // No inline media - use pre-rendered caption from backend
   if (captionFormat === 'markdown' && announcement.renderedCaption) {
     return (
       <div 
