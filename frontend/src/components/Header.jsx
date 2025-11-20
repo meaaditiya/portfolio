@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../pagesCSS/Header.css';
+
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeButton, setActiveButton] = useState(null);
@@ -42,6 +42,8 @@ const handleBack = () => {
 
   return (
     <>
+   
+
       <header className="portfolio-header">
         <div className="header-content">
         
