@@ -248,7 +248,7 @@ useEffect(() => {
     setCurrentSentence(sentence);
 
     const utterance = new SpeechSynthesisUtterance(sentence);
-    utterance.rate = 1.5;
+    utterance.rate = 1;
     utterance.pitch = 1;
     utterance.volume = 1;
 
