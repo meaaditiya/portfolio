@@ -1639,7 +1639,7 @@ const getSocialIcon = (platform) => {
           onClick={() => setShowVoiceSelector(!showVoiceSelector)}
           title="Change voice"
         >
-          Voice
+         Select Voice 
         </button>
     {(isReadingAloud || isPausedReading) && (
       <>
