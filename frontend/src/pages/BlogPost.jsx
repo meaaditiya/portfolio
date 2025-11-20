@@ -80,48 +80,54 @@ const [moderationError, setModerationError] = useState('');
  // Read Along state
 const [isReadingAloud, setIsReadingAloud] = useState(false);
   const [isPausedReading, setIsPausedReading] = useState(false);
+const [uniqueReaders, setUniqueReaders] = useState(0);
   
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
-        const data = await response.json();
-        
-        setBlogPost(data);
-        
-        // Check if user has stored info in localStorage FIRST
-        const storedInfo = localStorage.getItem('blogUserInfo');
-        let parsedInfo = null;
-        if (storedInfo) {
-          parsedInfo = JSON.parse(storedInfo);
-          setStoredUserInfo(parsedInfo);
-          setUserForm({
-            name: parsedInfo.name || '',
-            email: parsedInfo.email || ''
-          });
-        }
-        
-        // Also fetch reactions if blog post is found
-        if (data._id) {
-          fetchReactions(data._id);
-          
-          // Pass the parsed user info to fetchCommentsWithReactions
-          await fetchCommentsWithReactions(data._id, 1, parsedInfo);
-          
-          // Check if user has already reacted to the blog post
-          if (parsedInfo && parsedInfo.email) {
-            checkUserReaction(data._id, parsedInfo.email);
-          }
-        }
-      } catch (err) {
-        setError('Failed to fetch blog details');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
+  setIsLoading(true);
+  try {
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
+    const data = await response.json();
+    
+    console.log('Blog data received:', data); // DEBUG
+    
+    setBlogPost(data);
+    
+    // ADD THIS LINE - Store unique readers count
+    setUniqueReaders(data.uniqueReaders || 0);
+    
+    // Check if user has stored info in localStorage FIRST
+    const storedInfo = localStorage.getItem('blogUserInfo');
+    let parsedInfo = null;
+    if (storedInfo) {
+      parsedInfo = JSON.parse(storedInfo);
+      setStoredUserInfo(parsedInfo);
+      setUserForm({
+        name: parsedInfo.name || '',
+        email: parsedInfo.email || ''
+      });
+    }
+    
+    // Also fetch reactions if blog post is found
+    if (data._id) {
+      fetchReactions(data._id);
+      
+      // Pass the parsed user info to fetchCommentsWithReactions
+      await fetchCommentsWithReactions(data._id, 1, parsedInfo);
+      
+      // Check if user has already reacted to the blog post
+      if (parsedInfo && parsedInfo.email) {
+        checkUserReaction(data._id, parsedInfo.email);
       }
-    };
+    }
+  } catch (err) {
+    setError('Failed to fetch blog details');
+    console.error(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
     
     fetchBlogDetails();
   }, [slug]);
@@ -1520,19 +1526,17 @@ const getSocialIcon = (platform) => {
 
           
           {/* Display tags exactly as they are in the blog post */}
-          <div className="blog-post-tags">
-               <div className="blog-post-meta2">
-   <span className="meta-divider2">•</span>
-  <span className="blog-post-reads2">
-   {Math.floor(blogPost.totalReads) || 0} {Math.floor(blogPost.totalReads / 2) === 1 ? 'read' : 'reads'}
-
-  </span>
+       <div className="blog-post-tags">
+  <div className="blog-post-meta2">
+    <span className="meta-divider2">•</span>
+    <span className="blog-post-reads2">
+      {uniqueReaders || 0} {uniqueReaders === 1 ? 'reader' : 'readers'}
+    </span>
+  </div>
+  {blogPost.tags && blogPost.tags.map((tag, index) => (
+    <span key={index} className="tag"># {tag}</span>
+  ))}
 </div>
-            {blogPost.tags && blogPost.tags.map((tag, index) => (
-              <span key={index} className="tag"># {tag}</span>
-            ))}
-         
-          </div>
       
          <div className="blog-controls-minimal">
             <button
