@@ -81,7 +81,15 @@ const [moderationError, setModerationError] = useState('');
 const [isReadingAloud, setIsReadingAloud] = useState(false);
   const [isPausedReading, setIsPausedReading] = useState(false);
 const [uniqueReaders, setUniqueReaders] = useState(0);
-  
+  // Add these states
+const [availableVoices, setAvailableVoices] = useState([]);
+const [selectedVoice, setSelectedVoice] = useState(null);
+const [showVoiceSelector, setShowVoiceSelector] = useState(false);
+const [currentSentence, setCurrentSentence] = useState('');
+const [showReadingOverlay, setShowReadingOverlay] = useState(false);
+const [shouldRestartReading, setShouldRestartReading] = useState(false);
+
+
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -154,6 +162,43 @@ const [uniqueReaders, setUniqueReaders] = useState(0);
       }
     };
   }, []);
+  // Load voices properly (browsers load them async)
+useEffect(() => {
+  const loadVoices = () => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      setAvailableVoices(voices);
+      // Auto-select best voice
+      const bestVoice = voices.find(v => 
+        v.name.includes('Google') || 
+        v.name.includes('Microsoft') || 
+        v.name.includes('Natural') ||
+        v.lang.includes('en-US') || 
+        v.lang.includes('en-IN')
+      ) || voices[0];
+      setSelectedVoice(bestVoice);
+    }
+  };
+
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+
+  return () => {
+    window.speechSynthesis.onvoiceschanged = null;
+  };
+}, []);
+useEffect(() => {
+  if (shouldRestartReading) {
+    handleStopReading();
+
+    setTimeout(() => {
+      handlePlayReading();   // now React has updated selectedVoice
+    }, 150);
+
+    setShouldRestartReading(false);
+  }
+}, [selectedVoice, shouldRestartReading]);
+
 // Get clean text to read
   const getTextToRead = () => {
     if (!blogPost || !blogPost.content) return '';
@@ -173,45 +218,73 @@ const [uniqueReaders, setUniqueReaders] = useState(0);
   };
 
   // Play reading
-  const handlePlayReading = () => {
-    if (isPausedReading) {
-      window.speechSynthesis.resume();
+ const handlePlayReading = () => {
+  if (isPausedReading) {
+    window.speechSynthesis.resume();
+    setIsPausedReading(false);
+    setIsReadingAloud(true);
+    setShowReadingOverlay(true);
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const textToRead = getTextToRead();
+  if (!textToRead) return;
+
+  // Split into sentences for overlay highlighting
+  const sentences = textToRead.match(/[^.!?]+[.!?]+/g) || [textToRead];
+  let currentIndex = 0;
+
+  const speakNextSentence = () => {
+    if (currentIndex >= sentences.length) {
+      setIsReadingAloud(false);
       setIsPausedReading(false);
-      setIsReadingAloud(true);
+      setShowReadingOverlay(false);
+      setCurrentSentence('');
       return;
     }
 
-    window.speechSynthesis.cancel();
-    const textToRead = getTextToRead();
-    if (!textToRead) return;
+    const sentence = sentences[currentIndex].trim();
+    setCurrentSentence(sentence);
 
-    const utterance = new SpeechSynthesisUtterance(textToRead);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
+    const utterance = new SpeechSynthesisUtterance(sentence);
+    utterance.rate = 1.5;
+    utterance.pitch = 1;
+    utterance.volume = 1;
 
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) {
-      utterance.voice = voices[0];
+    // Use selected voice or fallback
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    } else if (availableVoices.length > 0) {
+      // Prefer Google or Microsoft voices
+      const preferred = availableVoices.find(v => 
+        v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Zira') || v.name.includes('David')
+      ) || availableVoices[0];
+      utterance.voice = preferred;
+      setSelectedVoice(preferred);
     }
 
     utterance.onstart = () => {
       setIsReadingAloud(true);
       setIsPausedReading(false);
+      setShowReadingOverlay(true);
     };
 
     utterance.onend = () => {
-      setIsReadingAloud(false);
-      setIsPausedReading(false);
+      currentIndex++;
+      speakNextSentence();
     };
 
     utterance.onerror = () => {
       setIsReadingAloud(false);
-      setIsPausedReading(false);
+      setShowReadingOverlay(false);
     };
 
     window.speechSynthesis.speak(utterance);
   };
+
+  speakNextSentence();
+};
 
   // Pause reading
   const handlePauseReading = () => {
@@ -1539,61 +1612,71 @@ const getSocialIcon = (platform) => {
 </div>
       
          <div className="blog-controls-minimal">
-            <button
-              className="generate-summary-btn2 summarybtn"
-              onClick={(e) => handleGenerateSummary(blogPost, e)}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.8"
-                stroke="url(#starGradient)"
-                style={{ width: '18px', height: '18px', verticalAlign: 'middle', marginRight: '8px' }}
-              >
-                <defs>
-                  <linearGradient id="starGradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#00C4CC" />
-                    <stop offset="100%" stopColor="#0072FF" />
-                  </linearGradient>
-                </defs>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 2.5l2.12 6.51h6.86l-5.55 4.03 2.12 6.51L12 15.52l-5.55 4.03 2.12-6.51L3 9.01h6.86L12 2.5z"
-                />
-              </svg>
-              AI Summary
-            </button>
+  <button
+    className="generate-summary-btn2 summarybtn"
+    onClick={(e) => handleGenerateSummary(blogPost, e)}
+  >
+    AI Summary
+  </button>
 
-            <button
-              className={`read-along-minimal-btn ${isReadingAloud ? 'playing' : ''} ${isPausedReading ? 'paused' : ''}`}
-              onClick={() => {
-                if (isReadingAloud || isPausedReading) {
-                  if (isPausedReading) {
-                    handlePlayReading();
-                  } else {
-                    handlePauseReading();
-                  }
-                } else {
-                  handlePlayReading();
-                }
-              }}
-              title={isPausedReading ? 'Resume reading' : isReadingAloud ? 'Pause reading' : 'Start reading aloud'}
-            >
-              {isReadingAloud ? '⏸' : isPausedReading ? '▶' : '🔊'}
-            </button>
+  <div className="read-along-controls">
+    <button
+        className={`read-along-minimal-btn ${isReadingAloud ? 'playing' : ''} ${isPausedReading ? 'paused' : ''}`}
+      onClick={() => {
+        if (isReadingAloud || isPausedReading) {
+          if (isPausedReading) handlePlayReading();
+          else handlePauseReading();
+        } else {
+          handlePlayReading();
+        }
+      }}
+      title={isPausedReading ? 'resume' : isReadingAloud ? 'pause' : 'Voice'}
+    >
+      {isReadingAloud ? '⏸' : isPausedReading ? '▶' : '🔊'}
+    </button>
+     <button 
+          className="voice-selector-btn" 
+          onClick={() => setShowVoiceSelector(!showVoiceSelector)}
+          title="Change voice"
+        >
+          Voice
+        </button>
+    {(isReadingAloud || isPausedReading) && (
+      <>
+        <button className="read-along-stop-btn" onClick={handleStopReading}>
+           ⏹
+        </button>
+       
+      </>
+    )}
 
-            {(isReadingAloud || isPausedReading) && (
-              <button
-                className="read-along-stop-btn"
-                onClick={handleStopReading}
-                title="Stop reading"
+    {/* Voice Selector Dropdown */}
+    {showVoiceSelector &&(
+      <div className="voice-selector-dropdown">
+        <div className="voice-list">
+          {availableVoices
+            .filter(v => v.lang.includes('en') || v.lang.includes('hi'))
+            .slice(0, 15)
+            .map((voice, i) => (
+              <div
+                key={i}
+                className={`voice-option ${selectedVoice?.name === voice.name ? 'selected' : ''}`}
+                onClick={() => {
+                 setSelectedVoice(voice);   // update voice
+  setShowVoiceSelector(false);
+  setShouldRestartReading(true);  // <-- new flag
+                 
+                }}
               >
-                ⏹
-              </button>
-            )}
-          </div>
+                <span className="voice-name">{voice.name.replace('Microsoft ', '').replace('Google ', '')}</span>
+                <small>{voice.lang}</small>
+              </div>
+            ))}
+        </div>
+      </div>
+    )}
+  </div>
+</div>
 
           
           {/* Render content with inline images and videos */}
@@ -2607,6 +2690,28 @@ const getSocialIcon = (platform) => {
         }}
       >
         I Understand
+      </button>
+    </div>
+  </div>
+)}
+{/* Floating Reading Overlay */}
+{showReadingOverlay && (
+  <div className="reading-overlay">
+    <div className="reading-indicator">
+      <div className="sound-waves">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div className="reading-text">
+        "{currentSentence || 'Starting to read...'}"
+      </div>
+      <button 
+        className="close-overlay-btn"
+        onClick={() => {
+          handleStopReading();
+          setShowReadingOverlay(false);
+        }}
+      >
+        ×
       </button>
     </div>
   </div>

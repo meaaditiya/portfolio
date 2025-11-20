@@ -3375,3 +3375,171 @@ body.modal-open {
     transform: rotate(360deg);
   }
 }
+.read-along-controls {
+  position: relative;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.voice-selector-btn {
+  background: rgba(0, 196, 204, 0.1);
+  border: 1px solid #00c4cc;
+  color: #00c4cc;
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  position: relative;
+  left:34px;
+}
+.voice-selector-btn:hover{
+  cursor: pointer;
+}
+
+.voice-selector-dropdown {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  z-index: 1000;
+  width: 280px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.voice-option {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.voice-option:hover, .voice-option.selected {
+  background: #f0faff;
+}
+
+.voice-option.selected {
+  background: #e3f8ff;
+  font-weight: 600;
+}
+/* ===========================
+   Reading Overlay Container
+   =========================== */
+.reading-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99999;
+  pointer-events: none; /* overlay shows but does not block scrolling */
+}
+
+.reading-indicator {
+  background: rgba(25, 25, 25, 0.92);
+  backdrop-filter: blur(12px);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  animation: fadeUp 0.35s ease-out;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  pointer-events: auto; /* Only the bar interacts */
+}
+
+/* ===========================
+   Sound Wave Animation
+   =========================== */
+.sound-waves {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 22px;
+}
+
+.sound-waves span {
+  width: 4px;
+  height: 6px;
+  background: #4cafef;
+  border-radius: 2px;
+  animation: wave 0.7s infinite ease-in-out;
+  animation-delay: calc(var(--i) * 0.1s);
+  box-shadow: 0 0 6px #4cafef;
+}
+
+.sound-waves span:nth-child(1) { --i: 0; }
+.sound-waves span:nth-child(2) { --i: 1; }
+.sound-waves span:nth-child(3) { --i: 2; }
+.sound-waves span:nth-child(4) { --i: 3; }
+.sound-waves span:nth-child(5) { --i: 4; }
+
+@keyframes wave {
+  0%, 100% { height: 6px; opacity: 0.6; }
+  50%      { height: 22px; opacity: 1; }
+}
+
+/* ===========================
+   Reading Text
+   =========================== */
+.reading-text {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 500;
+  white-space: normal;        /* <-- wraps to next line */
+  overflow-wrap: break-word;  /* <-- long text breaks properly */
+  line-height: 1.3;
+}
+
+
+/* ===========================
+   Close Button
+   =========================== */
+.close-overlay-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.35rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: 0.15s;
+}
+
+.close-overlay-btn:hover {
+  transform: scale(1.2);
+  color: #ff5c5c;
+}
+
+/* ===========================
+   Fade Animation
+   =========================== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================
+   Responsiveness
+   =========================== */
+@media (max-width: 600px) {
+  .reading-indicator {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .reading-text {
+    font-size: 0.82rem;
+  }
+
+  .sound-waves span {
+    width: 3px;
+  }
+}
