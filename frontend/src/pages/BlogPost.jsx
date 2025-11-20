@@ -5,6 +5,7 @@ import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
 import Dots from './DotsLoader';
+import { Volume2, Pause, Play, Square } from 'lucide-react';
 
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
@@ -1569,20 +1570,7 @@ const getSocialIcon = (platform) => {
       
       {!isLoading && blogPost && (
         <div className="card blog-post">
-          <button 
-      className="back-button-overlay"
-      onClick={() => navigate('/blog')}
-    >
-      <FaArrowLeft className="back-icon" />
-      <span>Back to all posts</span>
-    </button>
-    
-    {blogPost.featuredImage && (
-      <div className="featured-image-container">
-        <img src={blogPost.featuredImage} alt={blogPost.title} className="blog-post-image" />
-      </div>
-    )}
-          <h1 className="blog-post-title">{blogPost.title}</h1>
+    <h1 className="blog-post-title">{blogPost.title}</h1>
           <div className="blog-post-meta">
   <span className="blog-post-date">
     {formatBlogDate(blogPost.publishedAt)}
@@ -1596,9 +1584,7 @@ const getSocialIcon = (platform) => {
   {blogPost.author ? `@${blogPost.author.name}` : 'By Aaditiya Tyagi'}
 </span>
 </div>
-
-          
-          {/* Display tags exactly as they are in the blog post */}
+     {/* Display tags exactly as they are in the blog post */}
        <div className="blog-post-tags">
   <div className="blog-post-meta2">
     <span className="meta-divider2">•</span>
@@ -1620,35 +1606,42 @@ const getSocialIcon = (platform) => {
   </button>
 
   <div className="read-along-controls">
-    <button
-        className={`read-along-minimal-btn ${isReadingAloud ? 'playing' : ''} ${isPausedReading ? 'paused' : ''}`}
-      onClick={() => {
-        if (isReadingAloud || isPausedReading) {
-          if (isPausedReading) handlePlayReading();
-          else handlePauseReading();
-        } else {
-          handlePlayReading();
-        }
-      }}
-      title={isPausedReading ? 'resume' : isReadingAloud ? 'pause' : 'Voice'}
-    >
-      {isReadingAloud ? '⏸' : isPausedReading ? '▶' : '🔊'}
+   <button
+  className={`read-along-minimal-btn ${isReadingAloud ? 'playing' : ''} ${isPausedReading ? 'paused' : ''}`}
+  onClick={() => {
+    if (isReadingAloud || isPausedReading) {
+      if (isPausedReading) handlePlayReading();
+      else handlePauseReading();
+    } else {
+      handlePlayReading();
+    }
+  }}
+  title={isPausedReading ? 'resume' : isReadingAloud ? 'pause' : 'Voice'}
+>
+  {isReadingAloud ? (
+    <Pause size={18} strokeWidth={2} />
+  ) : isPausedReading ? (
+    <Play size={18} strokeWidth={2} />
+  ) : (
+    <Volume2 size={18} strokeWidth={2} />
+  )}
+</button>
+
+<button 
+  className="voice-selector-btn" 
+  onClick={() => setShowVoiceSelector(!showVoiceSelector)}
+  title="Change voice"
+>
+  Select Voice 
+</button>
+
+{(isReadingAloud || isPausedReading) && (
+  <>
+    <button className="read-along-stop-btn" onClick={handleStopReading}>
+      <Square size={18} strokeWidth={2} />
     </button>
-     <button 
-          className="voice-selector-btn" 
-          onClick={() => setShowVoiceSelector(!showVoiceSelector)}
-          title="Change voice"
-        >
-         Select Voice 
-        </button>
-    {(isReadingAloud || isPausedReading) && (
-      <>
-        <button className="read-along-stop-btn" onClick={handleStopReading}>
-           ⏹
-        </button>
-       
-      </>
-    )}
+  </>
+)}
 
     {/* Voice Selector Dropdown */}
     {showVoiceSelector &&(
@@ -1677,6 +1670,15 @@ const getSocialIcon = (platform) => {
     )}
   </div>
 </div>
+    {blogPost.featuredImage && (
+      <div className="featured-image-container">
+        <img src={blogPost.featuredImage} alt={blogPost.title} className="blog-post-image" />
+      </div>
+    )}
+          
+
+          
+     
 
           
           {/* Render content with inline images and videos */}
