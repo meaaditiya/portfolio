@@ -671,9 +671,9 @@
 
 .blog-image-full-width .image-caption {
   max-width: 100%;
-  margin-top: 1.5rem;
+  margin-top: -1rem;
   font-size: 1rem;
-  padding: 1rem 1.5rem;
+  padding: 0rem 1.5rem;
  
 }
 
