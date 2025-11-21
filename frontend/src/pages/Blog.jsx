@@ -14,14 +14,12 @@ const Blog = () => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
-  // Filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortOption, setSortOption] = useState('newest');
   const [availableTags, setAvailableTags] = useState([]);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
   
-  // Summary popup states
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [generatedSummary, setGeneratedSummary] = useState('');
@@ -32,18 +30,12 @@ const Blog = () => {
   const [selectedAuthor, setSelectedAuthor] = useState(null);
   const location = useLocation();
   
-  // Function to extract domain from URL
-  const getImageSource = (imageUrl) => {
-    if (!imageUrl) return null;
-    try {
-      const url = new URL(imageUrl);
-      return url.hostname.replace('www.', '');
-    } catch {
-      return 'Unknown Source';
-    }
-  };
+  // Vector search states
+  const [showVectorSearch, setShowVectorSearch] = useState(false);
+  const [vectorSearchQuery, setVectorSearchQuery] = useState('');
+  const [isVectorSearchActive, setIsVectorSearchActive] = useState(false);
+const [isVectorLoading, setIsVectorLoading] = useState(false);
 
-  // Extract all unique tags from blogs
   useEffect(() => {
     if (blogs.length > 0) {
       const tags = new Set();
@@ -57,9 +49,10 @@ const Blog = () => {
   }, [blogs]);
 
   useEffect(() => {
+    if (isVectorSearchActive) return;
+    
     let result = [...blogs];
 
-    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       result = result.filter(blog => 
@@ -69,21 +62,18 @@ const Blog = () => {
       );
     }
 
-    // Author filter
     if (selectedAuthor) {
       result = result.filter(blog => 
         blog.author && blog.author._id === selectedAuthor.id
       );
     }
 
-    // Tag filter
     if (selectedTags.length > 0) {
       result = result.filter(blog => 
         blog.tags && blog.tags.some(tag => selectedTags.includes(tag))
       );
     }
 
-    // Sorting
     switch (sortOption) {
       case 'newest':
         result.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
@@ -105,31 +95,24 @@ const Blog = () => {
     }
 
     setFilteredBlogs(result);
-  }, [blogs, searchQuery, selectedTags, sortOption, selectedAuthor]);
+  }, [blogs, searchQuery, selectedTags, sortOption, selectedAuthor, isVectorSearchActive]);
 
-  // Fetch blogs from API (initial load only)
   useEffect(() => {
     const fetchBlogs = async () => {
       setIsInitialLoading(true);
       try {
         const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=${limit}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch blogs');
-        }
+        if (!response.ok) throw new Error('Failed to fetch blogs');
         const data = await response.json();
         setBlogs(data.blogs);
         setHasMore(data.blogs.length === limit);
       } catch (err) {
         setError('Failed to fetch blogs');
-        console.error(err);
       } finally {
         setIsInitialLoading(false);
       }
     };
-        
-    if (limit === 10) {
-      fetchBlogs();
-    }
+    if (limit === 10) fetchBlogs();
   }, []);
 
   useEffect(() => {
@@ -139,49 +122,39 @@ const Blog = () => {
     }
   }, [location]);
 
-  // Handle Load More button click
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
     const newLimit = limit + 2;
-    
     try {
       const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=${newLimit}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch more blogs');
-      }
+      if (!response.ok) throw new Error('Failed to fetch more blogs');
       const data = await response.json();
       setBlogs(data.blogs);
       setLimit(newLimit);
       setHasMore(data.blogs.length === newLimit);
     } catch (err) {
       setError('Failed to load more blogs');
-      console.error(err);
     } finally {
       setIsLoadingMore(false);
     }
   };
 
-  // Handle tag selection
   const toggleTag = (tag) => {
     setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
   };
 
-  // Clear all filters
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedTags([]);
     setSortOption('newest');
     setSelectedAuthor(null);
+    clearVectorSearch();
   };
 
-  // Check if filters are active
-  const hasActiveFilters = searchQuery || selectedTags.length > 0 || sortOption !== 'newest' || selectedAuthor;
+  const hasActiveFilters = searchQuery || selectedTags.length > 0 || sortOption !== 'newest' || selectedAuthor || isVectorSearchActive;
 
-  // Handle Generate Summary button click
   const handleGenerateSummary = async (blog, event) => {
     event.stopPropagation();
     setSelectedBlog(blog);
@@ -193,27 +166,21 @@ const Blog = () => {
     try {
       const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${blog._id}/generate-summary`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to generate summary');
       }
-
       const data = await response.json();
       setGeneratedSummary(data.summary);
     } catch (err) {
       setSummaryError(err.message);
-      console.error('Error generating summary:', err);
     } finally {
       setIsGeneratingSummary(false);
     }
   };
 
-  // Close summary popup
   const closeSummaryPopup = () => {
     setShowSummaryPopup(false);
     setSelectedBlog(null);
@@ -221,12 +188,48 @@ const Blog = () => {
     setSummaryError(null);
   };
 
-  // Render Error component if any error occurred
-  if (error) {
-    return <Error />;
-  }
+  const handleVectorSearch = async (e) => {
+  e.preventDefault();
+  if (!vectorSearchQuery.trim()) return;
 
-  // Show skeleton loader ONLY on initial load
+  setIsVectorLoading(true); // START BAR
+
+  try {
+    const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: vectorSearchQuery.trim(),
+        limit: 10,
+        minScore: 0.3,
+        includeUnpublished: false,
+        hybridSearch: true,
+        generateSuggestions: false
+      })
+    });
+
+    if (!response.ok) throw new Error('Search failed');
+
+    const data = await response.json();
+    setFilteredBlogs(data.results);
+    setIsVectorSearchActive(true);
+    setShowVectorSearch(false);
+  } catch (error) {
+    setFilteredBlogs([]);
+  } finally {
+    setIsVectorLoading(false); // STOP BAR
+  }
+};
+
+
+  const clearVectorSearch = () => {
+    setVectorSearchQuery('');
+    setIsVectorSearchActive(false);
+    setFilteredBlogs(blogs);
+  };
+
+  if (error) return <Error />;
+
   if (isInitialLoading) {
     return (
       <section className="section">
@@ -238,59 +241,86 @@ const Blog = () => {
 
   return (
     <section className="section">
-     <div className="blog-header-new">
+      <div className="blog-header-new">
         <div className="blog-header-content">
           <h2 className="section-title-new">Recent blog posts</h2>
           
           <div className="header-buttons">
+            {/* Vector Search Button */}
+            <button 
+             title="advanced search"
+              className="vector-search-btn"
+              onClick={() => setShowVectorSearch(!showVectorSearch)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </button>
+
             {/* Write Blog Button */}
             <button 
+            title="write your own blog now"
               className="write-blog-btn"
               onClick={() => navigate('/blogsubmission')}
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="29" 
-                height="29" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="black" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
                 <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
                 <path d="M2 2l7.586 7.586"></path>
                 <circle cx="11" cy="11" r="2"></circle>
               </svg>
-             
             </button>
 
             {/* Filter Button */}
             <button 
+            title="apply filters"
               className="filter-toggle-btn"
               onClick={() => setShowFilterPopup(!showFilterPopup)}
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="29" 
-                height="29" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
               </svg>
-             
               {hasActiveFilters && <span className="filter-badge"></span>}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Vector Search Strip */}
+      {showVectorSearch && (
+        <div className="vector-search-strip">
+          <form className="vector-strip-form" onSubmit={handleVectorSearch}>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={vectorSearchQuery}
+              onChange={(e) => setVectorSearchQuery(e.target.value)}
+              className="vector-strip-input"
+              autoFocus
+            />
+            <button type="submit" className="vector-strip-btn" disabled={!vectorSearchQuery.trim()}>
+              Search
+            </button>
+            <button type="button" className="vector-strip-close" onClick={() => setShowVectorSearch(false)}>
+              ×
+            </button>
+          </form>
+        </div>
+      )}
+    {isVectorLoading && (
+  <div className="vector-progress-bar">
+    <div className="vector-progress-fill"></div>
+  </div>
+)}
+
+      {/* Active Vector Search Indicator */}
+      {isVectorSearchActive && (
+        <div className="vector-active-strip">
+          <span>search results for: "{vectorSearchQuery}"</span>
+          <button onClick={clearVectorSearch}>Clear</button>
+        </div>
+      )}
 
       {/* Filter Popup */}
       {showFilterPopup && (
@@ -302,7 +332,6 @@ const Blog = () => {
             </div>
             
             <div className="filter-popup-content">
-              {/* Search */}
               <div className="filter-group">
                 <label>Search</label>
                 <input
@@ -311,6 +340,7 @@ const Blog = () => {
                   placeholder="Search by title or keywords..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  disabled={isVectorSearchActive}
                 />
               </div>
 
@@ -325,24 +355,18 @@ const Blog = () => {
                       </svg>
                       {selectedAuthor.name}
                     </span>
-                    <button 
-                      className="remove-author-filter"
-                      onClick={() => setSelectedAuthor(null)}
-                      title="Remove author filter"
-                    >
-                      ×
-                    </button>
+                    <button className="remove-author-filter" onClick={() => setSelectedAuthor(null)}>×</button>
                   </div>
                 </div>
               )}
 
-              {/* Sort */}
               <div className="filter-group">
                 <label>Sort By</label>
                 <select
                   className="filter-select"
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
+                  disabled={isVectorSearchActive}
                 >
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>
@@ -352,7 +376,6 @@ const Blog = () => {
                 </select>
               </div>
 
-              {/* Tags */}
               {availableTags.length > 0 && (
                 <div className="filter-group">
                   <label>Tags</label>
@@ -361,7 +384,8 @@ const Blog = () => {
                       <button
                         key={index}
                         className={`filter-tag-btn ${selectedTags.includes(tag) ? 'active' : ''}`}
-                        onClick={() => toggleTag(tag)}
+                        onClick={() => !isVectorSearchActive && toggleTag(tag)}
+                        disabled={isVectorSearchActive}
                       >
                         {tag}
                       </button>
@@ -370,15 +394,10 @@ const Blog = () => {
                 </div>
               )}
 
-              {/* Results & Actions */}
               <div className="filter-footer">
-                <span className="filter-results">
-                  {filteredBlogs.length} of {blogs.length} blogs
-                </span>
+                <span className="filter-results">{filteredBlogs.length} of {blogs.length} blogs</span>
                 {hasActiveFilters && (
-                  <button className="clear-filters-btn" onClick={clearFilters}>
-                    Clear Filters
-                  </button>
+                  <button className="clear-filters-btn" onClick={clearFilters}>Clear Filters</button>
                 )}
               </div>
             </div>
@@ -388,24 +407,19 @@ const Blog = () => {
 
       {filteredBlogs.length === 0 && (
         <div className="empty-state-new">
-          <p>No blog posts match your filters.</p>
+          <p>No blog posts found.</p>
+          {isVectorSearchActive && <button className="clear-search-btn" onClick={clearVectorSearch}>Clear Search</button>}
         </div>
       )}
 
       <div className="blog-grid-new">
-        {/* Featured Large Card (First Blog) */}
         {filteredBlogs.length > 0 && (
-          <div
-            className="blog-card-featured"
-            onClick={() => navigate(`/blog/${filteredBlogs[0].slug || filteredBlogs[0]._id}`)}
-          >
+          <div className="blog-card-featured" onClick={() => navigate(`/blog/${filteredBlogs[0].slug || filteredBlogs[0]._id}`)}>
             <div className="featured-image-wrapper">
               {filteredBlogs[0].featuredImage ? (
                 <img src={filteredBlogs[0].featuredImage} alt={filteredBlogs[0].title} className="featured-image" />
               ) : (
-                <div className="featured-placeholder">
-                  <div className="placeholder-title">AT</div>
-                </div>
+                <div className="featured-placeholder"><div className="placeholder-title">AT</div></div>
               )}
             </div>
             <div className="featured-content">
@@ -413,47 +427,31 @@ const Blog = () => {
                 <span className="featured-author">{filteredBlogs[0].author?.name || 'Anonymous'}</span>
                 <span className="meta-divider">•</span>
                 <span className="featured-date">
-                  {new Date(filteredBlogs[0].publishedAt).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+                  {new Date(filteredBlogs[0].publishedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
               </div>
               <h3 className="featured-title">{filteredBlogs[0].title}</h3>
               <p className="featured-summary">{filteredBlogs[0].summary}</p>
               <div className="featured-footer">
                 <div className="featured-tags">
-                  {filteredBlogs[0].tags && filteredBlogs[0].tags.slice(0, 3).map((tag, index) => (
+                  {filteredBlogs[0].tags?.slice(0, 3).map((tag, index) => (
                     <span key={index} className="featured-tag">{tag}</span>
                   ))}
                 </div>
-                <button
-                  className="generate-summary-btn-new"
-                  onClick={(e) => handleGenerateSummary(filteredBlogs[0], e)}
-                >
-                  AI Summary
-                </button>
+                <button className="generate-summary-btn-new" onClick={(e) => handleGenerateSummary(filteredBlogs[0], e)}>AI Summary</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Smaller Cards (Remaining Blogs) */}
         <div className="blog-cards-grid">
           {filteredBlogs.slice(1).map((blog) => (
-            <div
-              key={blog._id}
-              className="blog-card-small"
-              onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
-            >
+            <div key={blog._id} className="blog-card-small" onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}>
               <div className="small-image-wrapper">
                 {blog.featuredImage ? (
                   <img src={blog.featuredImage} alt={blog.title} className="small-image" />
                 ) : (
-                  <div className="small-placeholder">
-                    <span className="placeholder-text">AT</span>
-                  </div>
+                  <div className="small-placeholder"><span className="placeholder-text">AT</span></div>
                 )}
               </div>
               <div className="small-content">
@@ -461,18 +459,14 @@ const Blog = () => {
                   <span className="small-author">{blog.author?.name || 'Anonymous'}</span>
                   <span className="meta-divider">•</span>
                   <span className="small-date">
-                    {new Date(blog.publishedAt).toLocaleDateString('en-US', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
+                    {new Date(blog.publishedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                 </div>
                 <h3 className="small-title">{blog.title}</h3>
                 <p className="small-summary">{blog.summary}</p>
                 <div className="small-footer">
                   <div className="small-tags">
-                    {blog.tags && blog.tags.slice(0, 2).map((tag, index) => (
+                    {blog.tags?.slice(0, 2).map((tag, index) => (
                       <span key={index} className="small-tag">{tag}</span>
                     ))}
                   </div>
@@ -483,25 +477,18 @@ const Blog = () => {
         </div>
       </div>
 
-      {hasMore && !searchQuery && selectedTags.length === 0 && (
+      {hasMore && !searchQuery && selectedTags.length === 0 && !isVectorSearchActive && (
         <div className="load-more-container">
-          <button 
-            className="load-more-button" 
-            onClick={handleLoadMore}
-            disabled={isLoadingMore}
-          >
+          <button className="load-more-button" onClick={handleLoadMore} disabled={isLoadingMore}>
             {isLoadingMore ? 'Loading...' : 'Load More'}
           </button>
         </div>
       )}
 
       {isLoadingMore && (
-        <div className="loading">
-          <div className="spinner"></div>
-        </div>
+        <div className="loading"><div className="spinner"></div></div>
       )}
 
-      {/* Summary Popup */}
       {showSummaryPopup && (
         <div className="summary-popup-overlay">
           <div className="summary-popup">
@@ -514,74 +501,36 @@ const Blog = () => {
                 <div className="blog-info">
                   <h4>{selectedBlog.title}</h4>
                   <p className="blog-date-popup">
-                    {new Date(selectedBlog.publishedAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    {new Date(selectedBlog.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
               )}
-              
               <div className="summary-content">
                 {isGeneratingSummary && (
                   <div className="generating-summary">
-                   
-<div class="loading2">
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-</div>
+                    <div className="loading2"><span></span><span></span><span></span><span></span><span></span></div>
                     <p>Generating AI summary...</p>
                   </div>
                 )}
-                
-                {summaryError && (
-                  <div className="summary-error">
-                    <p>Error: {summaryError}</p>
-                  </div>
-                )}
-                
+                {summaryError && <div className="summary-error"><p>Error: {summaryError}</p></div>}
                 {generatedSummary && !isGeneratingSummary && (
-                  <div className="generated-summary">
-                    <h5>Summary:</h5>
-                    <p>{generatedSummary}</p>
-                  </div>
+                  <div className="generated-summary"><h5>Summary:</h5><p>{generatedSummary}</p></div>
                 )}
               </div>
             </div>
-
             <>
               {showInfo && (
                 <div className="floating-warning-popup">
-                  This summary is generated by artificial intelligence and may not accurately represent the original message's intent or context. It is recommended to review the content carefully, as certain nuances, meanings, or expressions might be misinterpreted, simplified, or omitted during the automated summarization process. Use it with discretion.
+                  This summary is generated by artificial intelligence and may not accurately represent the original message's intent or context.
                 </div>
               )}
-
               <div className="popup-footer">
-                <div
-                  className="footer-info-icon"
-                  onClick={() => setShowInfo(!showInfo)}
-                  onMouseLeave={() => setShowInfo(false)}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="info-icon"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 
-                             10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 
-                             0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 
-                             8-8 8zm-.88-5.75h1.75v4.25h-1.75V14.25zm0-6.5h1.75v1.75h-1.75V7.75z"/>
+                <div className="footer-info-icon" onClick={() => setShowInfo(!showInfo)} onMouseLeave={() => setShowInfo(false)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.88-5.75h1.75v4.25h-1.75V14.25zm0-6.5h1.75v1.75h-1.75V7.75z"/>
                   </svg>
                 </div>
-
-                <button onClick={closeSummaryPopup} className="close-popup-btn">
-                  Close
-                </button>
+                <button onClick={closeSummaryPopup} className="close-popup-btn">Close</button>
               </div>
             </>
           </div>
