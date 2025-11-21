@@ -250,11 +250,11 @@ const Blog = () => {
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                width="18" 
-                height="18" 
+                width="29" 
+                height="29" 
                 viewBox="0 0 24 24" 
                 fill="none" 
-                stroke="currentColor" 
+                stroke="black" 
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round"
@@ -264,7 +264,7 @@ const Blog = () => {
                 <path d="M2 2l7.586 7.586"></path>
                 <circle cx="11" cy="11" r="2"></circle>
               </svg>
-              Write your own blog
+             
             </button>
 
             {/* Filter Button */}
@@ -274,8 +274,8 @@ const Blog = () => {
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                width="18" 
-                height="18" 
+                width="29" 
+                height="29" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
@@ -285,7 +285,7 @@ const Blog = () => {
               >
                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
               </svg>
-              Filter
+             
               {hasActiveFilters && <span className="filter-badge"></span>}
             </button>
           </div>

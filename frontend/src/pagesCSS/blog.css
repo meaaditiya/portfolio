@@ -72,24 +72,18 @@ body {
   align-items: center;
   gap: 8px;
   padding: 7px 20px;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
   font-family: var(--font-sans);
-  color: white;
-  background-color: black;
-  border: 1px solid black;
+  color: black;
+  background-color: transparent;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: var(--transition);
 }
 
-.filter-toggle-btn:hover {
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border-color: #000000;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
+
 
 .filter-toggle-btn:active {
   transform: translateY(0);
@@ -1127,8 +1121,8 @@ body {
   }
 
   .filter-toggle-btn {
-    padding: 9px 16px;
-    font-size: 13px;
+    padding: 0px 0px;
+    font-size: 18px;
   }
 
   .featured-image-wrapper {
@@ -1331,10 +1325,10 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 16px;
-  background: black;
+  padding: 0px 0px;
+  background: transparent;
   color: white;
-  border: 1px solid black;
+  border: none;
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
@@ -1344,11 +1338,7 @@ body {
   white-space: nowrap;
 }
 
-.write-blog-btn:hover {
-  background-color: #1a1a1a;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
+
 
 .write-blog-btn:active {
   transform: translateY(0);
@@ -1361,15 +1351,15 @@ body {
 /* Responsive styles for write blog button */
 @media (max-width: 768px) {
   .header-buttons {
-    width: 100%;
+    width: 20%;
     
-    gap: 10px;
+    gap: 15px;
   }
 
   .write-blog-btn {
     width: 100%;
     justify-content: center;
-    padding: 7px 16px;
+    padding: 0px 0px;
   }
 
   .filter-toggle-btn {
@@ -1379,15 +1369,12 @@ body {
 
 @media (max-width: 480px) {
   .write-blog-btn {
-    padding: 9px 14px;
+    padding: 0px 0px;
     font-size: 13px;
-    gap: 6px;
+    gap: 15px;
   }
 
-  .write-blog-btn svg {
-    width: 16px;
-    height: 16px;
-  }
+
 }
 
 @media (max-width: 360px) {
