@@ -4155,10 +4155,10 @@ body.modal-open {
 
 /* Heading */
 .checkout-other-blogs-heading {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   margin-bottom: 25px;
   color: #222;
-  font-weight: 600;
+  font-weight: 900;
 }
 
 /* Grid */
@@ -4170,12 +4170,12 @@ body.modal-open {
 
 @media (max-width: 1000px) {
   .checkout-other-blogs-heading {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   margin-bottom: 25px;
   color: #222;
-  font-weight: 600;
+  font-weight: 900;
   position:relative;
-  left:20px;
+  left:10px;
 }
 
   .minimalist-blogs-grid-container {

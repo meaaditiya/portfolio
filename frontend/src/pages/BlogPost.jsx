@@ -2144,26 +2144,22 @@ const getSocialIcon = (platform) => {
     <h3 className="checkout-other-blogs-heading">Checkout Other Blogs</h3>
     <div className="minimalist-blogs-grid-container">
       {blogs.slice(0, 4).map((blog) => (
-        <div
-          key={blog._id}
-          className="clean-blog-item-wrapper"
-          onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
-        >
-          <div className="rectangular-blog-image-holder">
-            {blog.featuredImage ? (
-              <img 
-                src={blog.featuredImage} 
-                alt={blog.title} 
-                className="blog-featured-thumbnail-img" 
-              />
-            ) : (
-              <div className="blog-image-fallback-placeholder">
-                <span className="fallback-initials-text">AT</span>
+       <div
+              key={blog._id}
+              className="blog-card-small"
+              onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
+            >
+          <div className="small-image-wrapper">
+                {blog.featuredImage ? (
+                  <img src={blog.featuredImage} alt={blog.title} className="small-image" />
+                ) : (
+                  <div className="small-placeholder">
+                    <span className="placeholder-text">AT</span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <h3 className="minimalist-blog-post-title">{blog.title}</h3>
-           <div className="small-meta">
+         <div className="small-content">
+                <div className="small-meta">
                   <span className="small-author">{blog.author?.name || 'Anonymous'}</span>
                   <span className="meta-divider">•</span>
                   <span className="small-date">
@@ -2174,6 +2170,17 @@ const getSocialIcon = (platform) => {
                     })}
                   </span>
                 </div>
+                <h3 className="small-title">{blog.title}</h3>
+                <p className="small-summary">{blog.summary}</p>
+                <div className="small-footer">
+                  <div className="small-tags">
+                    {blog.tags && blog.tags.slice(0, 2).map((tag, index) => (
+                      <span key={index} className="small-tag">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+          
         </div>
         
       ))}
