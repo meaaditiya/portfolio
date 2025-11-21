@@ -6,7 +6,6 @@ import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
 import Dots from './DotsLoader';
 import { Volume2, Pause, Play, Square , ChevronDown} from 'lucide-react';
-
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
 
@@ -33,6 +32,7 @@ const BlogPost = () => {
   const [commentSuccess, setCommentSuccess] = useState(null);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentPagination, setCommentPagination] = useState({ page: 1, pages: 1, total: 0 });
+  const [visibleCommentsCount, setVisibleCommentsCount] = useState(2);
 
   // Share state
   const [showShareModal, setShowShareModal] = useState(false);
@@ -90,7 +90,7 @@ const [currentSentence, setCurrentSentence] = useState('');
 const [showReadingOverlay, setShowReadingOverlay] = useState(false);
 const [shouldRestartReading, setShouldRestartReading] = useState(false);
 const [lightboxImage, setLightboxImage] = useState(null);
-
+const [blogs, setBlogs] = useState([]);
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -199,6 +199,25 @@ useEffect(() => {
     setShouldRestartReading(false);
   }
 }, [selectedVoice, shouldRestartReading]);
+// Fetch other blogs for "See Other Blogs" section
+useEffect(() => {
+  const fetchOtherBlogs = async () => {
+    try {
+      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=4');
+      const data = await response.json();
+      
+      // Filter out current blog if it appears in the results
+      const otherBlogs = data.blogs.filter(blog => blog._id !== blogPost?._id);
+      setBlogs(otherBlogs.slice(0, 3));
+    } catch (err) {
+      console.error('Error fetching other blogs:', err);
+    }
+  };
+  
+  if (blogPost) {
+    fetchOtherBlogs();
+  }
+}, [blogPost]);
 
 // Get clean text to read
   const getTextToRead = () => {
@@ -1193,6 +1212,7 @@ const handleReplySubmit = async (e, commentId) => {
       );
       
       setComments(response.data.comments);
+      setVisibleCommentsCount(2);
       setCommentPagination({
         page: response.data.pagination.page,
         pages: response.data.pagination.pages,
@@ -1592,7 +1612,7 @@ const getSocialIcon = (platform) => {
   <div className="blog-post-meta2">
     <span className="meta-divider2">•</span>
     <span className="blog-post-reads2">
-      {uniqueReaders || 0} {uniqueReaders === 1 ? 'reader' : 'readers'}
+      {uniqueReaders || 0} {uniqueReaders === 1 ? 'read' : 'reads'}
     </span>
   </div>
   {blogPost.tags && blogPost.tags.map((tag, index) => (
@@ -1815,7 +1835,7 @@ const getSocialIcon = (platform) => {
 </button>
               </form>
             )}
-            
+             <div className="comments-scrollable-container">
             {/* Comments list */}
             {commentsLoading ? (
               <div className="loading comments-loading">
@@ -1835,6 +1855,7 @@ const getSocialIcon = (platform) => {
                       if (!a.isAuthorComment && b.isAuthorComment) return 1;
                       return new Date(b.createdAt) - new Date(a.createdAt);
                     })
+                    .slice(0, visibleCommentsCount)
                     .map(comment => (
                       <div className={`comment-card ${comment.isAuthorComment ? 'author-comment' : ''}`} key={comment._id}>
                         <div className="comment-header">
@@ -2045,7 +2066,17 @@ const getSocialIcon = (platform) => {
                       </div>
                     ))}
                 </div>
-
+{comments.length > visibleCommentsCount && (
+  <div className="load-more-container">
+    <button 
+      className="load-more-btn"
+      onClick={() => setVisibleCommentsCount(prev => prev + 2)}
+    >
+      <ChevronDown size={20} />
+      <span>Load More Comments</span>
+    </button>
+  </div>
+)}
                 {/* Delete confirmation modal */}
                 {showDeleteModal && (
                   <div className="modal-overlay" onClick={cancelDelete}>
@@ -2106,6 +2137,49 @@ const getSocialIcon = (platform) => {
               </>
             )}
           </div>
+          </div>
+         
+      {blogs.length > 0 && (
+  <div className="simplified-other-blogs-wrapper">
+    <h3 className="checkout-other-blogs-heading">Checkout Other Blogs</h3>
+    <div className="minimalist-blogs-grid-container">
+      {blogs.slice(0, 4).map((blog) => (
+        <div
+          key={blog._id}
+          className="clean-blog-item-wrapper"
+          onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
+        >
+          <div className="rectangular-blog-image-holder">
+            {blog.featuredImage ? (
+              <img 
+                src={blog.featuredImage} 
+                alt={blog.title} 
+                className="blog-featured-thumbnail-img" 
+              />
+            ) : (
+              <div className="blog-image-fallback-placeholder">
+                <span className="fallback-initials-text">AT</span>
+              </div>
+            )}
+          </div>
+          <h3 className="minimalist-blog-post-title">{blog.title}</h3>
+           <div className="small-meta">
+                  <span className="small-author">{blog.author?.name || 'Anonymous'}</span>
+                  <span className="meta-divider">•</span>
+                  <span className="small-date">
+                    {new Date(blog.publishedAt).toLocaleDateString('en-US', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+        </div>
+        
+      ))}
+    </div>
+  </div>
+)}
         </div>
       )}
       
