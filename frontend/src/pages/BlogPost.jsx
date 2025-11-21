@@ -10,124 +10,6 @@ import { Volume2, Pause, Play, Square , ChevronDown} from 'lucide-react';
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
 
-const generateClientFingerprint = async () => {
-  // Canvas Fingerprinting
-  const getCanvasFingerprint = () => {
-    try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
-      
-      canvas.width = 200;
-      canvas.height = 50;
-      ctx.textBaseline = 'top';
-      ctx.font = '14px "Arial"';
-      ctx.fillStyle = '#f60';
-      ctx.fillRect(125, 1, 62, 20);
-      ctx.fillStyle = '#069';
-      ctx.fillText('DeviceID 🎨 🔒', 2, 15);
-      ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-      ctx.fillText('DeviceID 🎨 🔒', 4, 17);
-      
-      return canvas.toDataURL();
-    } catch (e) {
-      return null;
-    }
-  };
-
-  // WebGL Fingerprinting
-  const getWebGLFingerprint = () => {
-    try {
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) return null;
-      
-      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-      if (debugInfo) {
-        return {
-          vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
-          renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
-        };
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  // Audio Fingerprinting
-  const getAudioFingerprint = () => {
-    return new Promise((resolve) => {
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) {
-          resolve(null);
-          return;
-        }
-        
-        const context = new AudioContext();
-        const oscillator = context.createOscillator();
-        const analyser = context.createAnalyser();
-        const gainNode = context.createGain();
-        const scriptProcessor = context.createScriptProcessor(4096, 1, 1);
-        
-        gainNode.gain.value = 0;
-        oscillator.type = 'triangle';
-        oscillator.connect(analyser);
-        analyser.connect(scriptProcessor);
-        scriptProcessor.connect(gainNode);
-        gainNode.connect(context.destination);
-        
-        scriptProcessor.onaudioprocess = function(event) {
-          const output = event.outputBuffer.getChannelData(0);
-          const hash = Array.from(output.slice(0, 100))
-            .reduce((acc, val) => acc + Math.abs(val), 0);
-          
-          oscillator.disconnect();
-          scriptProcessor.disconnect();
-          analyser.disconnect();
-          gainNode.disconnect();
-          
-          resolve(hash.toString());
-        };
-        
-        oscillator.start(0);
-        setTimeout(() => resolve(null), 1000);
-      } catch (e) {
-        resolve(null);
-      }
-    });
-  };
-
-  // Collect all fingerprint data
-  const canvas = getCanvasFingerprint();
-  const webgl = getWebGLFingerprint();
-  const audio = await getAudioFingerprint();
-  
-  return {
-    canvas: canvas ? canvas.substring(0, 100) : null,
-    webgl: webgl?.renderer || null,
-    audio,
-    hardwareConcurrency: navigator.hardwareConcurrency || null,
-    deviceMemory: navigator.deviceMemory || null,
-    platform: navigator.platform,
-    vendor: navigator.vendor,
-    language: navigator.language,
-    screen: {
-      width: window.screen.width,
-      height: window.screen.height,
-      colorDepth: window.screen.colorDepth,
-      pixelRatio: window.devicePixelRatio || 1
-    },
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    touchSupport: JSON.stringify({
-      maxTouchPoints: navigator.maxTouchPoints || 0,
-      touchEvent: 'ontouchstart' in window
-    }),
-    renderer: webgl?.vendor || null
-  };
-};
-
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -211,31 +93,19 @@ const [lightboxImage, setLightboxImage] = useState(null);
 
   // Fetch blog post details
   useEffect(() => {
- const fetchBlogDetails = async () => {
+    const fetchBlogDetails = async () => {
   setIsLoading(true);
   try {
-    // Generate client fingerprint FIRST
-    const fingerprintData = await generateClientFingerprint();
-    console.log('Client fingerprint generated:', fingerprintData);
-    
-    // Send fingerprint data with request
-    const response = await fetch(
-      `https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Fingerprint-Data': JSON.stringify(fingerprintData) // Send as header
-        }
-      }
-    );
-    
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
     const data = await response.json();
     
-    console.log('Blog data received:', data);
+    console.log('Blog data received:', data); // DEBUG
     
     setBlogPost(data);
+    
+    // ADD THIS LINE - Store unique readers count
     setUniqueReaders(data.uniqueReaders || 0);
+    
     // Check if user has stored info in localStorage FIRST
     const storedInfo = localStorage.getItem('blogUserInfo');
     let parsedInfo = null;
@@ -482,7 +352,7 @@ useEffect(() => {
   // Submit reaction with user info
   const submitReaction = async (type, userInfo) => {
     if (!blogPost || !blogPost._id) return;
-    const fingerprintData = await generateClientFingerprint();
+    
     // Optimistic update - update UI immediately
     const previousReaction = userReaction;
     const previousReactions = { ...reactions };
@@ -507,21 +377,16 @@ useEffect(() => {
     
     setReactions(newReactions);
     
- 
-       try {
-    const response = await axios.post(
-      `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/reactions`,
-      {
-        name: userInfo.name,
-        email: userInfo.email,
-        type
-      },
-      {
-        headers: {
-          'X-Fingerprint-Data': JSON.stringify(fingerprintData)
+    try {
+      const response = await axios.post(
+        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/reactions`,
+        {
+          name: userInfo.name,
+          email: userInfo.email,
+          type
         }
-      }
-    );
+      );
+      
       // Store user info for future use
       localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
       setStoredUserInfo(userInfo);
@@ -592,17 +457,9 @@ const handleCommentSubmit = async (e) => {
   }
   
   try {
-    // ✅ FIXED: Generate fingerprint BEFORE submitting
-    const fingerprintData = await generateClientFingerprint();
-    
     await axios.post(
       `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/comments`,
-      commentForm,
-      {
-        headers: {
-          'X-Fingerprint-Data': JSON.stringify(fingerprintData)
-        }
-      }
+      commentForm
     );
     
     // Store user info for future use
@@ -618,7 +475,7 @@ const handleCommentSubmit = async (e) => {
       ...prev,
       content: ''
     }));
-    setCommentSuccess('Comment submitted successfully!');
+    setCommentSuccess('Comment submitted successfully! It will appear after review.');
     
     // Refresh comments with updated user info
     fetchCommentsWithReactions(blogPost._id, 1, userInfo);
@@ -631,8 +488,9 @@ const handleCommentSubmit = async (e) => {
   } catch (err) {
     console.error('Error submitting comment:', err);
     
+    // Check if it's a moderation error (422)
     if (err.response?.status === 422) {
-      setModerationError(err.response?.data?.message);
+      setModerationError(err.response?.data?.message || 'Your comment was flagged by our moderation system.');
       setShowModerationModal(true);
     } else {
       setCommentError(err.response?.data?.message || 'Failed to submit comment');
@@ -1122,17 +980,9 @@ const handleReplySubmit = async (e, commentId) => {
   }
   
   try {
-    // ✅ FIXED: Generate fingerprint BEFORE submitting reply
-    const fingerprintData = await generateClientFingerprint();
-    
     await axios.post(
       `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/replies`,
-      replyForm,
-      {
-        headers: {
-          'X-Fingerprint-Data': JSON.stringify(fingerprintData)
-        }
-      }
+      replyForm
     );
     
     // Store user info for future use
@@ -1166,8 +1016,9 @@ const handleReplySubmit = async (e, commentId) => {
   } catch (err) {
     console.error('Error submitting reply:', err);
     
+    // Check if it's a moderation error (422)
     if (err.response?.status === 422) {
-      setModerationError(err.response?.data?.message);
+      setModerationError(err.response?.data?.message || 'Your reply was flagged by our moderation system.');
       setShowModerationModal(true);
     } else {
       setReplyError(err.response?.data?.message || 'Failed to submit reply');
@@ -1176,6 +1027,7 @@ const handleReplySubmit = async (e, commentId) => {
     setReplyLoading(null);
   }
 };
+
   // Toggle replies visibility
   const fetchReplies = async (commentId) => {
     setRepliesLoading(prev => ({ ...prev, [commentId]: true }));
