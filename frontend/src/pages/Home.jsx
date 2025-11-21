@@ -537,7 +537,7 @@ const renderAnnouncementContent = (announcement) => {
       {/* Header */}
       <div className="announcement_overlay_header_unique_2024">
         <h3 className="announcement_overlay_header_title_unique_2024">
-          Important Announcement
+          PingBoard
         </h3>
       
         <button 
@@ -550,6 +550,7 @@ const renderAnnouncementContent = (announcement) => {
       </div>
       
       {/* Content Container */}
+      <div class="announcement_top_strip_2024"></div>
       <div className="announcement_overlay_container_unique_2024">
         <div className="announcement_card_unique_2024">
           {/* Title */}

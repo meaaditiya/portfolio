@@ -5,7 +5,7 @@ import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
 import Dots from './DotsLoader';
-import { Volume2, Pause, Play, Square } from 'lucide-react';
+import { Volume2, Pause, Play, Square , ChevronDown} from 'lucide-react';
 
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
@@ -1635,7 +1635,7 @@ const getSocialIcon = (platform) => {
   onClick={() => setShowVoiceSelector(!showVoiceSelector)}
   title="Change voice"
 >
-  Select Voice 
+  Select Voice <ChevronDown className='dropdown-btn' size={18} strokeWidth={2} />
 </button>
 
 {(isReadingAloud || isPausedReading) && (

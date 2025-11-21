@@ -38,8 +38,8 @@
 /* Important Announcement Header */
 .announcement_overlay_header_unique_2024 {
   padding: 4px 50px;
-  background-color: none;
-  border-bottom: 0.5px solid #d0d0d0;
+  background-color:#A40050;
+ 
   flex-shrink: 0;
   position: relative;
   display: flex;
@@ -50,7 +50,7 @@
 .announcement_overlay_header_title_unique_2024 {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: white;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin: 0;
@@ -72,11 +72,25 @@
   transform: translateY(-50%);
   z-index: 10;
   transition: all 0.2s ease;
-  color: #333;
+  color: white;
 }
 
 .announcement_overlay_close_btn_unique_2024:hover {
   color: red;
+}
+.announcement_top_strip_2024 {
+  height: 20px;
+  background: #A40050;
+  width: 82%;
+  position: relative;
+   top:-1px;
+  /* Axis Bank simple diagonal */
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    92% 100%,
+    0% 100%
+  );
 }
 
 .announcement_overlay_container_unique_2024 {
@@ -95,6 +109,7 @@
   color: #1a1a1a;
   margin-bottom: 20px;
   line-height: 1.4;
+  text-align: center;
 }
 
 .announcement_caption_unique_2024 {
@@ -322,7 +337,7 @@
   gap: 32px;
   padding: 20px;
   height: 10px;
-  background-color: none;
+  background-color: #A40050;
   border-top: 0.5px solid #d0d0d0;
   flex-shrink: 0;
   margin-top: auto;
@@ -374,7 +389,7 @@
 .announcement_slider_dot_unique_2024 {
   width: 10px;
   height: 10px;
-  background-color: #b0b0b0;
+  background-color: white;
   border: none;
   border-radius: 100%;
   cursor: pointer;
@@ -384,9 +399,9 @@
 
 .announcement_slider_dot_unique_2024.active {
   width: 32px;
-  height: 10px;
+  height: 6px;
   border-radius: 0%;
-  background-color: #5a4a3d;
+  background-color: white;
 }
 
 .announcement_slider_dot_unique_2024:hover:not(.active) {
@@ -501,9 +516,9 @@
 }
 
 .announcement_overlay_snooze_btn_unique_2024 {
-  width: 35px;
-  height: 35px;
-  background-color: #fff4e6;
+  width: 33px;
+  height: 33px;
+  background-color: white;
   border: 1px solid #ffb347;
   display: flex;
   align-items: center;
@@ -511,7 +526,7 @@
   cursor: pointer;
   z-index: 10;
   transition: all 0.2s ease;
-  color: #ff8c00;
+  color: black;
   border-radius: 100%;
 }
 
@@ -749,7 +764,7 @@
   }
 
   .announcement_overlay_header_unique_2024 {
-    padding: 20px 40px;
+    padding: 10px 40px;
   }
 
   .announcement_overlay_header_title_unique_2024 {
@@ -801,7 +816,7 @@
 
   .announcement_slider_dot_unique_2024.active {
     width: 28px;
-    height: 8px;
+    height: 6px;
   }
 
   .announcement_slider_controls_unique_2024 {
@@ -812,8 +827,8 @@
   .announcement_overlay_snooze_btn_unique_2024 {
     top: 20px;
     right: 66px;
-    width: 36px;
-    height: 36px;
+    width: 33px;
+    height: 33px;
   }
 
   .announcement_caption_markdown {
@@ -871,7 +886,7 @@
   }
 
   .announcement_overlay_header_unique_2024 {
-    padding: 18px 28px;
+    padding: 10px 28px;
   }
 
   .announcement_overlay_header_title_unique_2024 {
@@ -915,8 +930,8 @@
   .announcement_overlay_snooze_btn_unique_2024 {
     top: 16px;
     right: 60px;
-    width: 34px;
-    height: 34px;
+    width: 33px;
+    height: 33px;
   }
 
   .announcement_caption_markdown {

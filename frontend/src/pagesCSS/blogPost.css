@@ -59,6 +59,7 @@
   display: block;
   margin-left:5px;
   margin-right:5px;
+    margin-top:50px;
 }
 
 .blog-post-title {
@@ -106,9 +107,11 @@
 
 /* Blog post content */
 .blog-post-content {
+
   margin: 0 2rem 2rem;
   line-height: 1.8;
   font-size: 1.1rem;
+    margin-top:30px;
 }
 
 .blog-post-content p {
@@ -2685,7 +2688,7 @@ body.modal-open {
 }
 /* Generate Summary Button */
 .generate-summary-btn2 {
-  padding: 0.4rem 0.8rem;
+  padding: 0.62rem 0.8rem;
   background: linear-gradient(135deg, var(--color-black), var(--color-gray-700));
   color: var(--color-white);
   border: 1px solid var(--color-gray-800);
@@ -2732,109 +2735,9 @@ body.modal-open {
 }
 
 
-/* Back Button Overlay */
-.back-button-overlay {
-  position: relative;
-  top: 41px;
-  left: 12px;
-  z-index: 10;
-  
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  
-  padding: 12px 20px;
-  border: none;
-  border-radius: 0px;
-  
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(50px);
-  -webkit-backdrop-filter: blur(10px);
-  
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
 
-.back-button-overlay:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: translateX(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-}
 
-.back-button-overlay:active {
-  transform: translateX(-2px);
-}
 
-.back-button-overlay .back-icon {
-  font-size: 16px;
-  transition: transform 0.3s ease;
-}
-
-.back-button-overlay:hover .back-icon {
-  transform: translateX(-2px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .back-button-overlay {
-    top: 51px;
-    left: 15px;
-    padding: 10px 16px;
-    font-size: 13px;
-    width:100px;
-  }
-
-  
-  .back-button-overlay {
-    width: auto;
-    height: 34px;
-  
-    justify-content: center;
-    border-radius: 0%;
-  }
-  
-  .back-button-overlay .back-icon {
-    font-size: 18px;
-  }
-}
-
-/* Alternative style - Light background for dark images */
-.back-button-overlay.light {
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-}
-
-.back-button-overlay.light:hover {
-  background: rgba(255, 255, 255, 1);
-}
-
-/* Alternative style - With border */
-.back-button-overlay.bordered {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Animation on page load */
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.back-button-overlay {
-  animation: slideInFromLeft 0.5s ease-out;
-}
-/* READ ALONG MINIMAL CSS */
 
 .blog-controls-minimal {
   display: flex;
@@ -2851,7 +2754,7 @@ body.modal-open {
   width: 36px;
   height: 36px;
   min-width: 36px;
-  padding: 0;
+  padding: 0 10px;
   border: none;
   border-radius: 4px;
   background: #1a1a1a;
@@ -2875,7 +2778,7 @@ body.modal-open {
 .read-along-minimal-btn:hover {
   background: #000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transform: translateY(-2px);
+  
 }
 
 .read-along-minimal-btn:active {
@@ -2888,9 +2791,8 @@ body.modal-open {
   position: relative;
   left: 30px;
   height: 34px;
-  background: linear-gradient(135deg, #00C4CC, #0072FF);
-  animation: advancedPulse 1.2s ease-in-out infinite, 
-             gradientShift 3s ease-in-out infinite;
+  background:black;
+  
   box-shadow: 0 0 20px rgba(0, 196, 204, 0.4),
               0 0 40px rgba(0, 114, 255, 0.2),
               inset 0 0 10px rgba(255, 255, 255, 0.1);
@@ -2905,7 +2807,7 @@ body.modal-open {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+
   animation: shimmer 2s infinite;
 }
 
@@ -2913,16 +2815,16 @@ body.modal-open {
   box-shadow: 0 0 30px rgba(0, 196, 204, 0.6),
               0 0 60px rgba(0, 114, 255, 0.3),
               inset 0 0 15px rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
+ 
 }
 
 /* PAUSED STATE - Advanced Animation */
 .read-along-minimal-btn.paused {
-  background: linear-gradient(135deg, #ff9800, #f57c00);
+ 
   position: relative;
   left: 30px;
   height: 34px;
-  animation: pauseGlow 1.5s ease-in-out infinite;
+
   box-shadow: 0 0 15px rgba(255, 152, 0, 0.3),
               0 0 30px rgba(245, 124, 0, 0.15),
               inset 0 0 8px rgba(255, 255, 255, 0.1);
@@ -2935,17 +2837,18 @@ body.modal-open {
   left: 50%;
   width: 0;
   height: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+  background: black;
   border-radius: 50%;
-  animation: ripple 1.5s ease-out infinite;
-  transform: translate(-50%, -50%);
+ 
+ 
+  background-color: black;
 }
 
 .read-along-minimal-btn.paused:hover {
   box-shadow: 0 0 25px rgba(255, 152, 0, 0.5),
               0 0 50px rgba(245, 124, 0, 0.25),
               inset 0 0 12px rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
+  
 }
 
 /* STOP BUTTON - Advanced Animation */
@@ -2956,7 +2859,7 @@ body.modal-open {
   padding: 0;
   border: none;
   border-radius: 4px;
-  background: linear-gradient(135deg, #dc3545, #c82333);
+  background:black;
   color: white;
   font-size: 16px;
   cursor: pointer;
@@ -2985,10 +2888,10 @@ body.modal-open {
 }
 
 .read-along-stop-btn:hover {
-  background: linear-gradient(135deg, #c82333, #a71d2a);
+ 
   box-shadow: 0 4px 16px rgba(220, 53, 69, 0.35),
               0 0 20px rgba(220, 53, 69, 0.2);
-  transform: translateY(-2px);
+ 
 }
 
 .read-along-stop-btn:active {
@@ -3384,17 +3287,29 @@ body.modal-open {
   gap: 8px;
   align-items: center;
 }
+.dropdown-btn {
+  position: relative;
+  top: 1px;         /* subtle alignment only */
+}
 
 .voice-selector-btn {
-  background: rgba(0, 196, 204, 0.1);
-  border: 1px solid #00c4cc;
-  color: #00c4cc;
-  padding: 9px 10px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid black;
+  color: white;
+  padding:7px 12px;
   border-radius: 6px;
   font-size: 12px;
-  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  cursor: pointer;
+  position: relative; 
   left:34px;
 }
+
+
 .voice-selector-btn:hover{
   cursor: pointer;
 }
@@ -3430,26 +3345,44 @@ body.modal-open {
 /* ===========================
    Reading Overlay Container
    =========================== */
+/* ===========================
+   Reading Overlay - Premium Minimal
+   =========================== */
+
 .reading-overlay {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   z-index: 99999;
-  pointer-events: none; /* overlay shows but does not block scrolling */
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
 }
 
 .reading-indicator {
-  background: rgba(25, 25, 25, 0.92);
-  backdrop-filter: blur(12px);
-  padding: 12px 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 15, 18, 0.95) 0%,
+    rgba(22, 22, 28, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 14px 24px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
+  max-width: 560px;
   width: 100%;
-  animation: fadeUp 0.35s ease-out;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  pointer-events: auto; /* Only the bar interacts */
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  pointer-events: auto;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ===========================
@@ -3457,30 +3390,37 @@ body.modal-open {
    =========================== */
 .sound-waves {
   display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 22px;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 24px;
+  padding: 0 4px;
 }
 
 .sound-waves span {
-  width: 4px;
-  height: 6px;
-  background: #4cafef;
-  border-radius: 2px;
-  animation: wave 0.7s infinite ease-in-out;
-  animation-delay: calc(var(--i) * 0.1s);
-  box-shadow: 0 0 6px #4cafef;
+  width: 3px;
+  height: 3px;
+  background: #a0a0a0;
+  border-radius: 99px;
+  animation: pulse 1.2s ease-in-out infinite;
 }
 
-.sound-waves span:nth-child(1) { --i: 0; }
-.sound-waves span:nth-child(2) { --i: 1; }
-.sound-waves span:nth-child(3) { --i: 2; }
-.sound-waves span:nth-child(4) { --i: 3; }
-.sound-waves span:nth-child(5) { --i: 4; }
+.sound-waves span:nth-child(1) { animation-delay: 0s; }
+.sound-waves span:nth-child(2) { animation-delay: 0.15s; }
+.sound-waves span:nth-child(3) { animation-delay: 0.3s; }
+.sound-waves span:nth-child(4) { animation-delay: 0.45s; }
+.sound-waves span:nth-child(5) { animation-delay: 0.6s; }
 
-@keyframes wave {
-  0%, 100% { height: 6px; opacity: 0.6; }
-  50%      { height: 22px; opacity: 1; }
+@keyframes pulse {
+  0%, 100% {
+    height: 4px;
+    opacity: 0.4;
+  }
+  50% {
+    height: 20px;
+    opacity: 1;
+    background: #fff;
+  }
 }
 
 /* ===========================
@@ -3488,62 +3428,130 @@ body.modal-open {
    =========================== */
 .reading-text {
   flex: 1;
-  font-size: 0.95rem;
-  color: #fff;
-  font-weight: 500;
-  white-space: normal;        /* <-- wraps to next line */
-  overflow-wrap: break-word;  /* <-- long text breaks properly */
-  line-height: 1.3;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 450;
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
-
 
 /* ===========================
    Close Button
    =========================== */
 .close-overlay-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.06);
   border: none;
-  color: #fff;
-  font-size: 1.35rem;
+  color: rgba(255, 255, 255, 0.5);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   cursor: pointer;
-  padding: 4px 8px;
-  transition: 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .close-overlay-btn:hover {
-  transform: scale(1.2);
-  color: #ff5c5c;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.close-overlay-btn:active {
+  transform: scale(0.95);
+}
+
+.close-overlay-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* ===========================
-   Fade Animation
+   Animations
    =========================== */
-@keyframes fadeUp {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Exit animation class */
+.reading-indicator.closing {
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes slideDown {
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
   }
 }
 
 /* ===========================
-   Responsiveness
+   Responsive
    =========================== */
-@media (max-width: 600px) {
+@media (max-width: 640px) {
+  .reading-overlay {
+    padding: 12px;
+  }
+
+  .reading-indicator {
+    padding: 12px 16px;
+    gap: 14px;
+    border-radius: 14px;
+  }
+
+  .reading-text {
+    font-size: 0.84rem;
+    -webkit-line-clamp: 3;
+  }
+
+  .sound-waves {
+    gap: 2.5px;
+  }
+
+  .sound-waves span {
+    width: 2.5px;
+  }
+
+  .close-overlay-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 380px) {
   .reading-indicator {
     padding: 10px 14px;
     gap: 12px;
   }
 
   .reading-text {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ===========================
+   Reduced Motion
+   =========================== */
+@media (prefers-reduced-motion: reduce) {
+  .reading-indicator {
+    animation: none;
   }
 
   .sound-waves span {
-    width: 3px;
+    animation: none;
+    height: 12px;
+    opacity: 0.7;
   }
 }
 /* ========================================
@@ -3559,6 +3567,8 @@ body.modal-open {
   object-fit: cover;
   display: block;
   aspect-ratio: 16 / 9;
+  margin-top:50px;
+  margin-bottom:50px;
 }
 
 @media (min-width: 769px) {
@@ -3711,6 +3721,7 @@ body.modal-open {
     border-radius: 0;
     padding: 0 2rem;
     box-sizing: border-box;
+    margin-top:50px;
   }
 
   /* Blog title - same width as content */
@@ -3816,6 +3827,8 @@ body.modal-open {
     max-width: 100%;
     padding: 0 1.5rem;
     max-height: clamp(250px, 45vh, 400px);
+    margin-top:50px;
+     margin-top:50px;
   }
 
   .blog-post-title {
@@ -3855,6 +3868,8 @@ body.modal-open {
     max-width: 900px;
     padding: 0 2.5rem;
     max-height: clamp(300px, 50vh, 450px);
+    margin-top:50px;
+     margin-top:50px;
   }
 
   .blog-post-title {
@@ -3895,6 +3910,8 @@ body.modal-open {
     max-width: 940px;
     padding: 0 3rem;
     max-height: clamp(350px, 52vh, 520px);
+    margin-top:50px;
+     margin-top:50px;
   }
 
   .blog-post-title {
@@ -3955,6 +3972,8 @@ body.modal-open {
     max-width: 978px;
     max-height: clamp(400px, 55vh, 550px);
     padding: 0 3rem;
+    margin-top:50px;
+     margin-top:50px;
   }
 
   .blog-controls-minimal,
@@ -3990,6 +4009,8 @@ body.modal-open {
     max-width: 1060px;
     padding: 0 3rem;
     max-height: clamp(450px, 55vh, 600px);
+    margin-top:50px;
+     margin-top:50px;
   }
 
   .blog-post-title {
@@ -4031,6 +4052,8 @@ body.modal-open {
     max-width: 1170px;
     padding: 0 3.5rem;
     max-height: clamp(500px, 50vh, 650px);
+    margin-top:50px;
+     margin-top:50px;
   }
 
   .blog-post-title {
@@ -4110,4 +4133,11 @@ body.modal-open {
     width: 44px;
     height: 44px;
   }
+}
+.generate-summary-btn2,
+.audio-btn,
+.voice-selector-btn {
+  height: 34px;
+  display: flex;
+  align-items: center;
 }

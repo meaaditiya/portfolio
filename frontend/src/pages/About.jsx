@@ -75,15 +75,15 @@ const About = () => {
         <div className="about-hero">
           <div className="about-hero-content">
             <div className="about-text-content">
-             
-<h1 className="tyagi-hero-title">
-              Full-Stack
-              <span className="tyagi-hero-gradient"> Developer</span>
-            </h1>
-              <p className="about-description">
-                Full-stack developer with a strong command of React.js, Node.js, and modern web technologies, 
-                dedicated to building scalable, high-performance, and user-focused digital solutions. 
-                Passionate about innovation, clean code, and crafting seamless web experiences that drive real-world impact.
+             <h1 className="hero-main-title">
+  Full-Stack
+  <span className="hero-gradient-text"> Developer</span>
+</h1>
+      <p className="about-description">
+              Full-stack developer with strong expertise in Java, Spring Boot, SQL, and modern backend engineering. 
+              Skilled in building scalable APIs, secure architectures, and high-performance systems with clean, 
+              maintainable code. Passionate about robust backend design, database optimization, and creating seamless,
+               reliable user experiences that deliver real-world impact.
               </p>
             </div>
             <div className="about-image-wrapper">
