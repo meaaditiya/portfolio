@@ -3195,7 +3195,7 @@ body.modal-open {
    BUTTON GROUP CONTAINER
    =================================== */
 
-.cnt-actions {
+.cnt-actions2 {
   display: flex;
   gap: 1rem;
   justify-content: center;
@@ -3203,31 +3203,31 @@ body.modal-open {
 }
 
 @media (max-width: 991px) {
-  .cnt-actions {
+  .cnt-actions2 {
     gap: 0.8rem;
   }
 }
 
 @media (max-width: 767px) {
-  .cnt-actions {
+  .cnt-actions2 {
     gap: 0.7rem;
   }
 }
 
 @media (max-width: 600px) {
-  .cnt-actions {
+  .cnt-actions2 {
     gap: 0.6rem;
   }
 }
 
 @media (max-width: 480px) {
-  .cnt-actions {
+  .cnt-actions2 {
     gap: 0.5rem;
   }
 }
 
 @media (max-width: 375px) {
-  .cnt-actions {
+  .cnt-actions2 {
     gap: 0.4rem;
   }
 }
@@ -3767,7 +3767,7 @@ body.modal-open {
   }
 
   /* Actions container - same width */
-  .cnt-actions {
+  .cnt-actions2 {
     max-width: 850px;
     margin: 1.5rem auto;
     padding: 0 2rem;
@@ -3817,7 +3817,7 @@ body.modal-open {
   .blog-post-tags,
   .blog-post-content,
   .blog-controls-minimal,
-  .cnt-actions,
+  .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
   .blog-reactions,
@@ -3858,7 +3858,7 @@ body.modal-open {
   .blog-post-meta,
   .blog-post-tags,
   .blog-controls-minimal,
-  .cnt-actions,
+  .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
   .blog-reactions,
@@ -3899,7 +3899,7 @@ body.modal-open {
   .blog-post-meta,
   .blog-post-tags,
   .blog-controls-minimal,
-  .cnt-actions,
+  .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
   .blog-reactions,
@@ -3980,7 +3980,7 @@ body.modal-open {
   }
 
   .blog-controls-minimal,
-  .cnt-actions,
+  .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
   .blog-reactions,
@@ -3998,7 +3998,7 @@ body.modal-open {
   .blog-post-meta,
   .blog-post-tags,
   .blog-controls-minimal,
-  .cnt-actions,
+  .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
   .blog-reactions,
@@ -4041,7 +4041,7 @@ body.modal-open {
   .blog-post-meta,
   .blog-post-tags,
   .blog-controls-minimal,
-  .cnt-actions,
+  .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
   .blog-reactions,
