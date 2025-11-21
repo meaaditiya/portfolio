@@ -89,7 +89,7 @@ const [showVoiceSelector, setShowVoiceSelector] = useState(false);
 const [currentSentence, setCurrentSentence] = useState('');
 const [showReadingOverlay, setShowReadingOverlay] = useState(false);
 const [shouldRestartReading, setShouldRestartReading] = useState(false);
-
+const [lightboxImage, setLightboxImage] = useState(null);
 
   // Fetch blog post details
   useEffect(() => {
@@ -1454,23 +1454,26 @@ const closeSummaryPopup = () => {
                   <ReactMarkdown>{part.content}</ReactMarkdown>
                 </div>
               );
-            } else if (part.type === 'image') {
-              return (
-                <div 
-                  key={part.key} 
-                  className={`blog-image blog-image-${part.media.position || 'center'}`}
-                >
-                  <img 
-                    src={part.media.url} 
-                    alt={part.media.alt || ''} 
-                    loading="lazy" 
-                  />
-                  {part.media.caption && (
-                    <p className="image-caption">{part.media.caption}</p>
-                  )}
-                </div>
-              );
-            } else if (part.type === 'video') {
+            }else if (part.type === 'image') {
+  return (
+    <div 
+      key={part.key} 
+      className={`blog-image blog-image-${part.media.position || 'center'}`}
+    >
+      <img 
+        src={part.media.url} 
+        alt={part.media.alt || ''} 
+        loading="lazy"
+        className="zoomable-image"
+        onClick={() => setLightboxImage(part.media.url)}
+      />
+      {part.media.caption && (
+        <p className="image-caption">{part.media.caption}</p>
+      )}
+    </div>
+  );
+}
+             else if (part.type === 'video') {
               return (
                 <div 
                   key={part.key} 
@@ -2716,6 +2719,12 @@ const getSocialIcon = (platform) => {
         ×
       </button>
     </div>
+  </div>
+)}
+{lightboxImage && (
+  <div className="image-lightbox-overlay" onClick={() => setLightboxImage(null)}>
+    <button className="lightbox-close-btn" onClick={() => setLightboxImage(null)}>×</button>
+    <img src={lightboxImage} alt="Enlarged view" className="lightbox-image" />
   </div>
 )}
     </section>
