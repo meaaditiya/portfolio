@@ -91,6 +91,8 @@ const [showReadingOverlay, setShowReadingOverlay] = useState(false);
 const [shouldRestartReading, setShouldRestartReading] = useState(false);
 const [lightboxImage, setLightboxImage] = useState(null);
 const [blogs, setBlogs] = useState([]);
+// Add near other state declarations
+const [relatedBlogsLoading, setRelatedBlogsLoading] = useState(false);
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -200,22 +202,53 @@ useEffect(() => {
   }
 }, [selectedVoice, shouldRestartReading]);
 // Fetch other blogs for "See Other Blogs" section
+// Fetch related blogs using vector search
 useEffect(() => {
-  const fetchOtherBlogs = async () => {
+  const fetchRelatedBlogs = async () => {
+    if (!blogPost || !blogPost.title) return;
+    
+    setRelatedBlogsLoading(true);
     try {
-      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=4');
+      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: blogPost.title,
+          limit: 4,
+          minScore: 0.3,
+          includeUnpublished: false,
+          hybridSearch: true,
+          generateSuggestions: false
+        })
+      });
+
+      if (!response.ok) throw new Error('Search failed');
+
       const data = await response.json();
+      // Filter out current blog and take top 3
+      const relatedBlogs = data.results
+        .filter(blog => blog._id !== blogPost._id)
+        .slice(0, 3);
       
-      // Filter out current blog if it appears in the results
-      const otherBlogs = data.blogs.filter(blog => blog._id !== blogPost?._id);
-      setBlogs(otherBlogs.slice(0, 3));
+      setBlogs(relatedBlogs);
     } catch (err) {
-      console.error('Error fetching other blogs:', err);
+      console.error('Error fetching related blogs:', err);
+      // Fallback to regular fetch if vector search fails
+      try {
+        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/blogs?status=published&limit=4');
+        const data = await response.json();
+        const otherBlogs = data.blogs.filter(blog => blog._id !== blogPost._id);
+        setBlogs(otherBlogs.slice(0, 3));
+      } catch (fallbackErr) {
+        console.error('Fallback fetch also failed:', fallbackErr);
+      }
+    } finally {
+      setRelatedBlogsLoading(false);
     }
   };
   
   if (blogPost) {
-    fetchOtherBlogs();
+    fetchRelatedBlogs();
   }
 }, [blogPost]);
 

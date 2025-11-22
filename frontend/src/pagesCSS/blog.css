@@ -1324,6 +1324,7 @@ body {
 .vector-search-btn{
   border:none;
   margin-right:15px;
+  background-color: transparent;
 }
 .vector-search-btn:hover{
   cursor: pointer;
@@ -1372,7 +1373,9 @@ body {
     justify-content: center;
     padding: 0px 0px;
   }
-
+.vector-search-btn{
+  margin-right:8px;
+}
   .filter-toggle-btn {
     width: 100%;
   }
@@ -1385,7 +1388,9 @@ body {
     font-size: 13px;
     gap: 15px;
   }
-
+.vector-search-btn{
+  margin-right:2px;
+}
 
 }
 

@@ -56,6 +56,17 @@
   margin: 0;
   text-align: center;
 }
+.announcement_ping_date_unique_2024 {
+  color: #C2185B;              /* dark pink */
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;          /* space before title */
+  padding: 0;
+  background: none;
+  border: none;
+  display: block;              /* ensure it takes full width line */
+  text-align: center;            /* left aligned */
+}
 
 .announcement_overlay_close_btn_unique_2024 {
   position: absolute;
@@ -94,7 +105,7 @@
 }
 
 .announcement_overlay_container_unique_2024 {
-  padding: 50px 50px 50px;
+  padding: 5px 40px 50px;
   overflow-y: auto;
   flex: 1;
 }
@@ -772,7 +783,7 @@
   }
 
   .announcement_overlay_container_unique_2024 {
-    padding: 40px 40px 40px;
+    padding: 5px 25px 40px;
   }
 
   .announcement_title_unique_2024 {
@@ -894,7 +905,7 @@
   }
 
   .announcement_overlay_container_unique_2024 {
-    padding: 35px 28px 28px;
+    padding: 5px 5px 28px;
   }
 
   .announcement_link_unique_2024,

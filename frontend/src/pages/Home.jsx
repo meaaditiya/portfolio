@@ -535,24 +535,39 @@ const renderAnnouncementContent = (announcement) => {
     
     <div className="announcement_overlay_content_unique_2024">
       {/* Header */}
-      <div className="announcement_overlay_header_unique_2024">
-        <h3 className="announcement_overlay_header_title_unique_2024">
-          PingBoard
-        </h3>
-      
-        <button 
-          className="announcement_overlay_close_btn_unique_2024"
-          onClick={handleCloseAnnouncement}
-          aria-label="Close announcement"
-        >
-          <X size={20} />
-        </button>
-      </div>
+   <div className="announcement_overlay_header_unique_2024">
+
+  <h3 className="announcement_overlay_header_title_unique_2024">
+    PingBoard
+  </h3>
+
+  <button 
+    className="announcement_overlay_close_btn_unique_2024"
+    onClick={handleCloseAnnouncement}
+    aria-label="Close announcement"
+  >
+    <X size={20} />
+  </button>
+
+</div>
+
       
       {/* Content Container */}
       <div class="announcement_top_strip_2024"></div>
+     
       <div className="announcement_overlay_container_unique_2024">
+        
+
         <div className="announcement_card_unique_2024">
+           <div className="announcement_ping_date_unique_2024">
+ Pinged on:  {currentAnnouncement.createdAt 
+    ? new Date(currentAnnouncement.createdAt).toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })
+    : 'Unknown'}
+</div>
           {/* Title */}
           <h2 
             className="announcement_title_unique_2024"
