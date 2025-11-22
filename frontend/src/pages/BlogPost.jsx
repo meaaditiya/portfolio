@@ -8,7 +8,9 @@ import Dots from './DotsLoader';
 import { Volume2, Pause, Play, Square , ChevronDown} from 'lucide-react';
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
-
+import { Copy, Check } from 'lucide-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -93,6 +95,7 @@ const [lightboxImage, setLightboxImage] = useState(null);
 const [blogs, setBlogs] = useState([]);
 // Add near other state declarations
 const [relatedBlogsLoading, setRelatedBlogsLoading] = useState(false);
+const [copiedCode, setCopiedCode] = useState(null);
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -1492,7 +1495,29 @@ const closeSummaryPopup = () => {
       if (parts.length === 0) {
         return (
           <div className="blog-post-content" id="articleContent">
-            <ReactMarkdown>{content}</ReactMarkdown>
+           <ReactMarkdown
+  components={{
+    code({ node, inline, className, children, ...props }) {
+      const match = /language-(\w+)/.exec(className || '');
+      const codeString = String(children).replace(/\n$/, '');
+      
+      console.log('Code component called:', { inline, match, className });
+      
+      return !inline && match ? (
+        <CodeBlock
+          language={match[1]}
+          value={codeString}
+        />
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    }
+  }}
+>
+  {content}
+</ReactMarkdown>
           </div>
         );
       }
@@ -1504,7 +1529,22 @@ const closeSummaryPopup = () => {
             if (part.type === 'text') {
               return (
                 <div key={part.key}>
-                  <ReactMarkdown>{part.content}</ReactMarkdown>
+                   <ReactMarkdown
+        components={{
+          code({ node, inline, className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className || '');
+            const codeString = String(children).replace(/\n$/, '');
+            
+            return !inline && match ? (
+              <CodeBlock language={match[1]} value={codeString} />
+            ) : (
+              <code className={className} {...props}>{children}</code>
+            );
+          }
+        }}
+      >
+        {part.content}
+      </ReactMarkdown>
                 </div>
               );
             }else if (part.type === 'image') {
@@ -1571,7 +1611,22 @@ const closeSummaryPopup = () => {
     // No inline images or videos, render as normal markdown
     return (
       <div className="blog-post-content">
-        <ReactMarkdown>{content}</ReactMarkdown>
+         <ReactMarkdown
+      components={{
+        code({ node, inline, className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || '');
+          const codeString = String(children).replace(/\n$/, '');
+          
+          return !inline && match ? (
+            <CodeBlock language={match[1]} value={codeString} />
+          ) : (
+            <code className={className} {...props}>{children}</code>
+          );
+        }
+      }}
+    >
+      {content}
+    </ReactMarkdown>
       </div>
     );
   };
@@ -1611,6 +1666,45 @@ const getSocialIcon = (platform) => {
   };
   return icons[platform] || 'https://cdn.cdnlogo.com/logos/w/90/world-wide-web.svg';
 };
+// Custom code block component with copy button
+// ============================================
+// 1. COMPONENT - Add this before return() in BlogPost
+// ============================================
+
+const CodeBlock = ({ language, value }) => {
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedCode(value);
+      setTimeout(() => setCopiedCode(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <div className="minimal-code-block">
+      <div className="code-top-bar">
+        <span className="code-lang-label">{language || 'code'}</span>
+        <button
+          className="minimal-copy-btn"
+          onClick={handleCopy}
+          title="Copy code"
+        >
+          {copiedCode === value ? (
+            <Check size={18} strokeWidth={2.5} />
+          ) : (
+            <Copy size={18} strokeWidth={2.5} />
+          )}
+        </button>
+      </div>
+      <pre className="minimal-code-pre">
+        <code className="minimal-code-text">{value}</code>
+      </pre>
+    </div>
+  );
+};
+
   return (
     <section className="section blog-post-section">
 

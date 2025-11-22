@@ -4308,3 +4308,117 @@ body.modal-open {
 .load-more-btn:hover svg {
   transform: translateY(2px);
 }
+.minimal-code-block {
+  position: relative;
+  margin: 1.5rem 0;
+  background:none;
+ 
+  overflow: hidden;
+}
+
+.code-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: transparent;
+ 
+}
+
+.code-lang-label {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.minimal-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #000;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.minimal-copy-btn:hover {
+  background: #f5f5f5;
+  transform: scale(1.1);
+}
+
+.minimal-copy-btn:active {
+  transform: scale(0.95);
+}
+
+.minimal-copy-btn svg {
+  display: block;
+}
+
+.minimal-code-pre {
+  margin: 0;
+  padding: 1rem;
+  background: #ffffff;
+  overflow-x: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace;
+}
+
+.minimal-code-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #dc143c;
+  font-weight: 600;
+  font-family: inherit;
+  display: block;
+  white-space: pre;
+}
+
+/* Inline code styles */
+code:not(.minimal-code-text) {
+  background: #f8f8f8;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: #dc143c;
+  font-weight: 600;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace;
+  border: 1px solid #e0e0e0;
+}
+
+/* Scrollbar for code blocks */
+.minimal-code-pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.minimal-code-pre::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.minimal-code-pre::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.minimal-code-pre::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .minimal-code-pre {
+    padding: 0.75rem;
+  }
+  
+  .minimal-code-text {
+    font-size: 0.85rem;
+  }
+  
+  .code-top-bar {
+    padding: 0.4rem 0.75rem;
+  }
+}

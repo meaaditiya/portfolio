@@ -57,15 +57,15 @@
   text-align: center;
 }
 .announcement_ping_date_unique_2024 {
-  color: #C2185B;              /* dark pink */
+  color: #C2185B;              
   font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 8px;          /* space before title */
+  margin-bottom: 8px;         
   padding: 0;
   background: none;
   border: none;
-  display: block;              /* ensure it takes full width line */
-  text-align: center;            /* left aligned */
+  display: block;              
+  text-align: center;           
 }
 
 .announcement_overlay_close_btn_unique_2024 {
