@@ -16,6 +16,7 @@ import UserBlogSubmission from './pages/UserBlogSubmission.jsx';
 import { VisitorProvider } from './context/VisitorContext';
 import { useVisitorTracking } from './hooks/useVisitorTracking';
 import './index.css';
+import Auth from './pages/Auth.jsx';
 
 const AppContent = () => {
   const visitorData = useVisitorTracking();
@@ -41,6 +42,7 @@ const AppContent = () => {
             <Route path="/community" element={<Posts />} />
             <Route path="/pagenotfound" element={<NotFound/>}/>
             <Route path="/blogsubmission" element={<UserBlogSubmission/>}/>
+            <Route path="/blog/subscribe" element={<Auth/>}/>
             <Route path="*" element={<NotFound/>}/>
           </Routes>
         </main>

@@ -257,11 +257,20 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
                 <path d="m21 21-4.35-4.35"></path>
               </svg>
             </button>
-
+             <button 
+              title="subscribe to blog updates"
+              className="vector-search-btn"
+              onClick={() => navigate('/blog/subscribe')}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </button>
             {/* Write Blog Button */}
             <button 
             title="write your own blog now"
-              className="write-blog-btn"
+              className="vector-search-btn"
               onClick={() => navigate('/blogsubmission')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -275,7 +284,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
             {/* Filter Button */}
             <button 
             title="apply filters"
-              className="filter-toggle-btn"
+              className="vector-search-btn"
               onClick={() => setShowFilterPopup(!showFilterPopup)}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -283,6 +292,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
               </svg>
               {hasActiveFilters && <span className="filter-badge"></span>}
             </button>
+            
           </div>
         </div>
       </div>

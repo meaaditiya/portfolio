@@ -1,0 +1,156 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+ background: var(--color-white);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-title {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  text-align: center;
+  color: black;
+  margin-top: 0;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #d0d0d0;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: white;
+  color: black;
+}
+
+.auth-input::placeholder {
+  color: #999;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  background-color: white;
+  color: black;
+  border: 1px solid #000;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+  background-color: #f5f5f5;
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-toggle-text {
+  font-size: 12px;
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  color: black;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+}
+
+.auth-link:hover {
+  text-decoration: none;
+}
+
+.auth-message {
+  font-size: 12px;
+  padding: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+  color: black;
+  background-color: #f9f9f9;
+}
+
+.profile-placeholder {
+  width: 85px;
+  height: 85px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.profile-placeholder::before {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background-color: #999;
+  border-radius: 50%;
+  top: 10px;
+}
+
+.profile-placeholder::after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 28px;
+  background-color: #999;
+  border-radius: 50% 50% 0 0;
+  bottom: 14px;
+}
+
+.profile-info {
+  margin-bottom: 24px;
+}
+
+.profile-label {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 4px;
+  margin-top: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-label:first-child {
+  margin-top: 0;
+}
+
+.profile-value {
+  font-size: 14px;
+  color: black;
+  margin-bottom: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}

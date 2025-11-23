@@ -295,6 +295,7 @@
   background-color: black;
   color: white;
   border: none;
+  justify-content: center;
 }
 
 
@@ -1528,6 +1529,7 @@ body.modal-open {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  justify-content: center;
 }
 
 .btn.btn-secondary:hover {
@@ -4423,5 +4425,62 @@ code:not(.minimal-code-text) {
   }
 }
 /* Add these styles to your blogPost.css */
+/* Login prompt for guests */
+.guest-login-prompt {
+  margin: 15px 0;
+  text-align: center;
+}
 
+.login-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+ 
+  color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+ 
+}
 
+.login-link-btn:hover {
+
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+}
+
+.login-link-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Logged-in user badge */
+.logged-in-user-info {
+  margin-bottom: 15px;
+  padding: 12px;
+  background: linear-gradient(135deg, white 0%, black 900%);
+  border-radius: 8px;
+
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #006064;
+  font-size: 14px;
+}
+
+.user-badge svg {
+  width: 18px;
+  height: 18px;
+  color: black;
+}
+
+.user-badge strong {
+  color: #004d40;
+  font-weight: 600;
+}
