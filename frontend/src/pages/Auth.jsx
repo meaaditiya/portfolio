@@ -158,46 +158,48 @@ export default function Auth() {
       });
   };
 
-  const handleResetPassword = (e) => {
-    e.preventDefault();
-    
-    if (resetForm.newPassword !== resetForm.confirmPassword) {
-      setMessage('Passwords do not match');
-      return;
-    }
+const handleResetPassword = (e) => {
+  e.preventDefault();
+  
+  if (resetForm.newPassword !== resetForm.confirmPassword) {
+    setMessage('Passwords do not match');
+    return;
+  }
 
-    if (resetForm.newPassword.length < 6) {
-      setMessage('Password must be at least 6 characters');
-      return;
-    }
+  if (resetForm.newPassword.length < 6) {
+    setMessage('Password must be at least 6 characters');
+    return;
+  }
 
-    setLoading(true);
-    setMessage('');
-    fetch(`${API_BASE}/user/reset-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, newPassword: resetForm.newPassword })
+  setLoading(true);
+  setMessage('');
+  fetch(`${API_BASE}/user/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, newPassword: resetForm.newPassword })
+  })
+    .then(res => {
+      // ✅ FIX: Check res.ok here and pass both res and data forward
+      return res.json().then(data => ({ ok: res.ok, data }));
     })
-      .then(res => res.json())
-      .then(data => {
-        if (res.ok) {
-          setMessage('✓ Password reset successful. Redirecting to login...');
-          setTimeout(() => {
-            setView('login');
-            setResetForm({ newPassword: '', confirmPassword: '' });
-            setMessage('');
-          }, 2000);
-        } else {
-          setMessage(data.message || 'Reset failed');
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setMessage('Reset failed');
-        setLoading(false);
-      });
-  };
-
+    .then(({ ok, data }) => {
+      if (ok) {  // ✅ Now 'ok' is properly available
+        setMessage('✓ Password reset successful. Redirecting to login...');
+        setTimeout(() => {
+          setView('login');
+          setResetForm({ newPassword: '', confirmPassword: '' });
+          setMessage('');
+        }, 2000);
+      } else {
+        setMessage(data.message || 'Reset failed');
+      }
+      setLoading(false);
+    })
+    .catch(() => {
+      setMessage('Reset failed');
+      setLoading(false);
+    });
+};
   const handleLogout = () => {
     localStorage.removeItem('token');
     setUser(null);
