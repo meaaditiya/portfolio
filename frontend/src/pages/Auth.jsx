@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
+import { Edit2, CheckCircle } from 'lucide-react';
 
 const API_BASE = 'https://connectwithaaditiyamg.onrender.com/api';
 
 export default function Auth() {
-  const [view, setView] = useState('login');
+  const [view, setView] = useState('loading');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [token, setToken] = useState('');
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '' });
@@ -15,13 +18,13 @@ export default function Auth() {
   const [resetForm, setResetForm] = useState({ newPassword: '', confirmPassword: '' });
 
   useEffect(() => {
-    // Check if user is already logged in
     const savedToken = localStorage.getItem('token');
     if (savedToken) {
       fetchProfile(savedToken);
+    } else {
+      setView('login');
     }
 
-    // Check for verification or reset token in URL
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
     if (urlToken) {
@@ -158,53 +161,102 @@ export default function Auth() {
       });
   };
 
-const handleResetPassword = (e) => {
-  e.preventDefault();
-  
-  if (resetForm.newPassword !== resetForm.confirmPassword) {
-    setMessage('Passwords do not match');
-    return;
-  }
+  const handleResetPassword = (e) => {
+    e.preventDefault();
+    
+    if (resetForm.newPassword !== resetForm.confirmPassword) {
+      setMessage('Passwords do not match');
+      return;
+    }
 
-  if (resetForm.newPassword.length < 6) {
-    setMessage('Password must be at least 6 characters');
-    return;
-  }
+    if (resetForm.newPassword.length < 6) {
+      setMessage('Password must be at least 6 characters');
+      return;
+    }
 
-  setLoading(true);
-  setMessage('');
-  fetch(`${API_BASE}/user/reset-password`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, newPassword: resetForm.newPassword })
-  })
-    .then(res => {
-      // ✅ FIX: Check res.ok here and pass both res and data forward
-      return res.json().then(data => ({ ok: res.ok, data }));
+    setLoading(true);
+    setMessage('');
+    fetch(`${API_BASE}/user/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, newPassword: resetForm.newPassword })
     })
-    .then(({ ok, data }) => {
-      if (ok) {  // ✅ Now 'ok' is properly available
-        setMessage('✓ Password reset successful. Redirecting to login...');
-        setTimeout(() => {
-          setView('login');
-          setResetForm({ newPassword: '', confirmPassword: '' });
-          setMessage('');
-        }, 2000);
+      .then(res => {
+        return res.json().then(data => ({ ok: res.ok, data }));
+      })
+      .then(({ ok, data }) => {
+        if (ok) {
+          setMessage('✓ Password reset successful. Redirecting to login...');
+          setTimeout(() => {
+            setView('login');
+            setResetForm({ newPassword: '', confirmPassword: '' });
+            setMessage('');
+          }, 2000);
+        } else {
+          setMessage(data.message || 'Reset failed');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setMessage('Reset failed');
+        setLoading(false);
+      });
+  };
+
+  const handleUpdateName = async () => {
+    if (!newName.trim()) {
+      setMessage('Name cannot be empty');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      const savedToken = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/user/update-name`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${savedToken}`
+        },
+        body: JSON.stringify({ name: newName.trim() })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setUser(data.user);
+        setEditingName(false);
+        setNewName('');
+        setMessage('✓ Name updated successfully');
+        setTimeout(() => setMessage(''), 2000);
       } else {
-        setMessage(data.message || 'Reset failed');
+        setMessage(data.message || 'Update failed');
       }
+    } catch (error) {
+      setMessage('Update failed');
+    } finally {
       setLoading(false);
-    })
-    .catch(() => {
-      setMessage('Reset failed');
-      setLoading(false);
-    });
-};
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     setUser(null);
     setView('login');
     setLoginForm({ email: '', password: '' });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -363,13 +415,14 @@ const handleResetPassword = (e) => {
         }
 
         .auth-profile-field {
-          margin-bottom: 12px;
+          margin-bottom: 16px;
+          position: relative;
         }
 
         .auth-profile-label {
           font-size: 11px;
           color: #666;
-          margin-bottom: 4px;
+          margin-bottom: 6px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
@@ -377,6 +430,80 @@ const handleResetPassword = (e) => {
         .auth-profile-value {
           font-size: 14px;
           color: black;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-height: 32px;
+        }
+
+        .edit-icon {
+          cursor: pointer;
+          padding: 4px;
+          font-size: 16px;
+          color: #666;
+          transition: color 0.2s;
+        }
+
+        .edit-icon:hover {
+          color: #000;
+        }
+
+        .verified-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 14px;
+          color: black;
+        }
+
+        .verified-icon {
+          color: #28a745;
+          flex-shrink: 0;
+        }
+
+        .last-updated {
+          font-size: 11px;
+          color: #999;
+          margin-top: 4px;
+        }
+
+        .name-edit-container {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .name-edit-input {
+          flex: 1;
+          padding: 8px;
+          border: 1px solid #d0d0d0;
+          font-size: 14px;
+          border-radius: 4px;
+        }
+
+        .name-edit-input:focus {
+          outline: none;
+          border-color: #000;
+        }
+
+        .small-button {
+          padding: 8.8px 12px;
+          font-size: 12px;
+          background-color: white;
+          color: black;
+          border: 1px solid #000;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+
+        .small-button:hover {
+          background-color: #f5f5f5;
+        }
+
+        .small-button.cancel {
+          border-color: #d0d0d0;
+          color: #666;
         }
 
         .spinner {
@@ -393,20 +520,96 @@ const handleResetPassword = (e) => {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
+
+        .loading-placeholder {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 200px;
+        }
       `}</style>
 
       <div className="auth-wrapper">
-        {view === 'profile' && user ? (
+        {view === 'loading' ? (
+          <div className="auth-card">
+            <div className="loading-placeholder">
+              <div className="spinner"></div>
+            </div>
+          </div>
+        ) : view === 'profile' && user ? (
           <div className="auth-card">
             <div className="auth-avatar"></div>
+            
             <div className="auth-profile-field">
               <p className="auth-profile-label">Name</p>
-              <p className="auth-profile-value">{user.name}</p>
+              {editingName ? (
+                <div className="name-edit-container">
+                  <input
+                    type="text"
+                    className="name-edit-input"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="Enter new name"
+                    autoFocus
+                  />
+                  <button 
+                    className="small-button" 
+                    onClick={handleUpdateName}
+                    disabled={loading}
+                  >
+                    Save
+                  </button>
+                  <button 
+                    className="small-button cancel" 
+                    onClick={() => {
+                      setEditingName(false);
+                      setNewName('');
+                      setMessage('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <p className="auth-profile-value">
+                  {user.name}
+                  <span 
+                    className="edit-icon" 
+                    onClick={() => {
+                      setEditingName(true);
+                      setNewName(user.name);
+                    }}
+                    title="Edit name"
+                  >
+                    <Edit2 size={16} />
+                  </span>
+                </p>
+              )}
             </div>
+
             <div className="auth-profile-field">
               <p className="auth-profile-label">Email</p>
-              <p className="auth-profile-value">{user.email}</p>
+              <p className="auth-profile-value">
+                {user.email}
+                {user.isVerified && (
+                  <span className="verified-badge">
+                    <CheckCircle size={18} className="verified-icon" />
+                    Verified
+                  </span>
+                )}
+              </p>
             </div>
+
+            {user.updatedAt && (
+              <div className="auth-profile-field">
+                <p className="last-updated">
+                  Last updated: {formatDate(user.updatedAt)}
+                </p>
+              </div>
+            )}
+
+            {message && <p className={`auth-message ${message.includes('successfully') ? 'success' : 'error'}`}>{message}</p>}
+
             <button className="auth-button" onClick={handleLogout}>Logout</button>
           </div>
         ) : view === 'login' ? (
