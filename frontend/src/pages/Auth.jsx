@@ -1,192 +1,201 @@
 import { useState, useEffect } from 'react';
 
+const API_BASE = 'https://connectwithaaditiyamg.onrender.com/api';
+
 export default function Auth() {
   const [view, setView] = useState('login');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [token, setToken] = useState('');
 
-  const [loginForm, setLoginForm] = useState({
-    email: '',
-    password: ''
-  });
-
-  const [registerForm, setRegisterForm] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
-
-  const [forgotForm, setForgotForm] = useState({
-    email: ''
-  });
-
-  const [resetForm, setResetForm] = useState({
-    token: '',
-    newPassword: ''
-  });
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '' });
+  const [forgotForm, setForgotForm] = useState({ email: '' });
+  const [resetForm, setResetForm] = useState({ newPassword: '', confirmPassword: '' });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetchProfile(token);
+    // Check if user is already logged in
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      fetchProfile(savedToken);
+    }
+
+    // Check for verification or reset token in URL
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    if (urlToken) {
+      setToken(urlToken);
+      const page = window.location.pathname;
+      if (page.includes('verify')) {
+        verifyEmailAuto(urlToken);
+      } else if (page.includes('reset')) {
+        setView('reset');
+      }
     }
   }, []);
 
-  const verifyToken = async (token) => {
+  const fetchProfile = async (authToken) => {
     try {
-      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/user/verify', {
+      const response = await fetch(`${API_BASE}/user/profile`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        fetchProfile(token);
-      } else {
-        localStorage.removeItem('token');
-        setView('login');
-      }
-    } catch (error) {
-      console.error('Token verification failed:', error);
-      localStorage.removeItem('token');
-      setView('login');
-    }
-  };
-
-  const fetchProfile = async (token) => {
-    try {
-      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/user/profile', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${authToken}` }
       });
       const data = await response.json();
       if (response.ok) {
         setUser(data);
         setView('profile');
+      } else {
+        localStorage.removeItem('token');
+        setView('login');
       }
     } catch (error) {
       console.error('Profile fetch failed:', error);
+      localStorage.removeItem('token');
+      setView('login');
     }
   };
 
-  const handleLoginChange = (e) => {
-    const { name, value } = e.target;
-    setLoginForm(prev => ({ ...prev, [name]: value }));
-  };
+  const verifyEmailAuto = async (verifyToken) => {
+    try {
+      setMessage('Verifying your email...');
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/user/verify-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: verifyToken })
+      });
 
-  const handleRegisterChange = (e) => {
-    const { name, value } = e.target;
-    setRegisterForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleForgotChange = (e) => {
-    const { name, value } = e.target;
-    setForgotForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleResetChange = (e) => {
-    const { name, value } = e.target;
-    setResetForm(prev => ({ ...prev, [name]: value }));
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('✓ Email verified successfully! You can now login.');
+        setTimeout(() => {
+          setView('login');
+          setMessage('');
+        }, 2000);
+      } else {
+        setMessage(data.message || 'Verification failed. Link may have expired.');
+      }
+    } catch (error) {
+      setMessage('Error verifying email. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogin = (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    fetch('https://connectwithaaditiyamg.onrender.com/api/user/login', {
+    fetch(`${API_BASE}/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginForm)
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        setUser(data.user);
-        setView('profile');
-        setLoginForm({ email: '', password: '' });
-      } else {
-        setMessage(data.message || 'Login failed');
-      }
-      setLoading(false);
-    })
-    .catch(error => {
-      setMessage('Login failed');
-      setLoading(false);
-    });
+      .then(res => res.json())
+      .then(data => {
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          setUser(data.user);
+          setView('profile');
+          setLoginForm({ email: '', password: '' });
+        } else {
+          setMessage(data.message || 'Login failed');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setMessage('Login failed');
+        setLoading(false);
+      });
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    fetch('https://connectwithaaditiyamg.onrender.com/api/user/register', {
+    fetch(`${API_BASE}/user/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(registerForm)
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.message && data.message.includes('successful')) {
-        setMessage('Registration successful. Check your email to verify.');
-        setRegisterForm({ name: '', email: '', password: '' });
-        setTimeout(() => setView('login'), 2000);
-      } else {
-        setMessage(data.message || 'Registration failed');
-      }
-      setLoading(false);
-    })
-    .catch(error => {
-      setMessage('Registration failed');
-      setLoading(false);
-    });
+      .then(res => res.json())
+      .then(data => {
+        if (data.message && data.message.includes('successful')) {
+          setMessage('Registration successful. Check your email to verify.');
+          setRegisterForm({ name: '', email: '', password: '' });
+          setTimeout(() => setView('login'), 2000);
+        } else {
+          setMessage(data.message || 'Registration failed');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setMessage('Registration failed');
+        setLoading(false);
+      });
   };
 
   const handleForgotPassword = (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    fetch('https://connectwithaaditiyamg.onrender.com/api/user/forgot-password', {
+    fetch(`${API_BASE}/user/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(forgotForm)
     })
-    .then(response => response.json())
-    .then(data => {
-      setMessage(data.message || 'Password reset link sent to your email');
-      setForgotForm({ email: '' });
-      setTimeout(() => setView('login'), 3000);
-      setLoading(false);
-    })
-    .catch(error => {
-      setMessage('Request failed');
-      setLoading(false);
-    });
+      .then(res => res.json())
+      .then(data => {
+        setMessage(data.message || 'Password reset link sent to your email');
+        setForgotForm({ email: '' });
+        setTimeout(() => setView('login'), 3000);
+        setLoading(false);
+      })
+      .catch(() => {
+        setMessage('Request failed');
+        setLoading(false);
+      });
   };
 
   const handleResetPassword = (e) => {
     e.preventDefault();
+    
+    if (resetForm.newPassword !== resetForm.confirmPassword) {
+      setMessage('Passwords do not match');
+      return;
+    }
+
+    if (resetForm.newPassword.length < 6) {
+      setMessage('Password must be at least 6 characters');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
-    fetch('https://connectwithaaditiyamg.onrender.com/api/user/reset-password', {
+    fetch(`${API_BASE}/user/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(resetForm)
+      body: JSON.stringify({ token, newPassword: resetForm.newPassword })
     })
-    .then(response => response.json())
-    .then(data => {
-      setMessage(data.message || 'Password reset successful. Login with new password.');
-      setResetForm({ token: '', newPassword: '' });
-      setTimeout(() => setView('login'), 2000);
-      setLoading(false);
-    })
-    .catch(error => {
-      setMessage('Reset failed');
-      setLoading(false);
-    });
+      .then(res => res.json())
+      .then(data => {
+        if (res.ok) {
+          setMessage('✓ Password reset successful. Redirecting to login...');
+          setTimeout(() => {
+            setView('login');
+            setResetForm({ newPassword: '', confirmPassword: '' });
+            setMessage('');
+          }, 2000);
+        } else {
+          setMessage(data.message || 'Reset failed');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setMessage('Reset failed');
+        setLoading(false);
+      });
   };
 
   const handleLogout = () => {
@@ -199,23 +208,25 @@ export default function Auth() {
   return (
     <>
       <style>{`
-        .aaditiya-authentication-wrapper-container-2k9x {
+        .auth-wrapper {
           display: flex;
           justify-content: center;
           align-items: center;
           min-height: 100vh;
           background: white;
+          padding: 20px;
         }
 
-        .aaditiya-authentication-form-card-panel-7h3m {
+        .auth-card {
           width: 100%;
           max-width: 400px;
           background-color: white;
           padding: 40px;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
         }
 
-        .aaditiya-authentication-heading-title-text-5n8p {
+        .auth-heading {
           font-size: 24px;
           font-weight: 500;
           margin-bottom: 24px;
@@ -224,7 +235,7 @@ export default function Auth() {
           margin-top: 0;
         }
 
-        .aaditiya-authentication-textfield-input-element-4q2w {
+        .auth-input {
           width: 100%;
           padding: 12px;
           margin-bottom: 12px;
@@ -233,18 +244,19 @@ export default function Auth() {
           box-sizing: border-box;
           background-color: white;
           color: black;
+          border-radius: 4px;
         }
 
-        .aaditiya-authentication-textfield-input-element-4q2w::placeholder {
+        .auth-input::placeholder {
           color: #999;
         }
 
-        .aaditiya-authentication-textfield-input-element-4q2w:focus {
+        .auth-input:focus {
           outline: none;
           border-color: #000;
         }
 
-        .aaditiya-authentication-submit-action-button-9r5t {
+        .auth-button {
           width: 100%;
           padding: 10px;
           margin-bottom: 12px;
@@ -253,19 +265,26 @@ export default function Auth() {
           border: 1px solid #000;
           font-size: 13px;
           cursor: pointer;
+          border-radius: 4px;
           transition: background-color 0.2s;
         }
 
-        .aaditiya-authentication-submit-action-button-9r5t:hover {
+        .auth-button:hover {
           background-color: #f5f5f5;
         }
 
-        .aaditiya-authentication-submit-action-button-9r5t:disabled {
+        .auth-button:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
 
-        .aaditiya-authentication-navigation-toggle-paragraph-6l1v {
+        .auth-button.success {
+          background-color: #28a745;
+          color: white;
+          border-color: #28a745;
+        }
+
+        .auth-link-text {
           font-size: 12px;
           text-align: center;
           margin-top: 12px;
@@ -273,7 +292,7 @@ export default function Auth() {
           color: black;
         }
 
-        .aaditiya-authentication-navigation-hyperlink-button-3y8z {
+        .auth-link-button {
           background: none;
           border: none;
           color: black;
@@ -283,20 +302,33 @@ export default function Auth() {
           padding: 0;
         }
 
-        .aaditiya-authentication-navigation-hyperlink-button-3y8z:hover {
+        .auth-link-button:hover {
           text-decoration: none;
         }
 
-        .aaditiya-authentication-notification-feedback-text-8d4k {
+        .auth-message {
           font-size: 12px;
           padding: 8px;
           margin-bottom: 12px;
           text-align: center;
           color: black;
           background-color: #f9f9f9;
+          border-radius: 4px;
         }
 
-        .aaditiya-authentication-user-avatar-circular-icon-1x7j {
+        .auth-message.error {
+          color: #dc3545;
+          background-color: #fef3f3;
+          border-left: 3px solid #dc3545;
+        }
+
+        .auth-message.success {
+          color: #28a745;
+          background-color: #f0f9f6;
+          border-left: 3px solid #28a745;
+        }
+
+        .auth-avatar {
           width: 85px;
           height: 85px;
           background-color: #e0e0e0;
@@ -308,7 +340,7 @@ export default function Auth() {
           position: relative;
         }
 
-        .aaditiya-authentication-user-avatar-circular-icon-1x7j::before {
+        .auth-avatar::before {
           content: '';
           position: absolute;
           width: 28px;
@@ -318,7 +350,7 @@ export default function Auth() {
           top: 10px;
         }
 
-        .aaditiya-authentication-user-avatar-circular-icon-1x7j::after {
+        .auth-avatar::after {
           content: '';
           position: absolute;
           width: 50px;
@@ -328,170 +360,152 @@ export default function Auth() {
           bottom: 14px;
         }
 
-        .aaditiya-authentication-profile-details-section-2m9b {
-          margin-bottom: 24px;
+        .auth-profile-field {
+          margin-bottom: 12px;
         }
 
-        .aaditiya-authentication-profile-field-descriptor-label-5p3c {
+        .auth-profile-label {
           font-size: 11px;
           color: #666;
           margin-bottom: 4px;
-          margin-top: 12px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
-        .aaditiya-authentication-profile-field-descriptor-label-5p3c:first-child {
-          margin-top: 0;
-        }
-
-        .aaditiya-authentication-profile-data-display-value-6w4n {
+        .auth-profile-value {
           font-size: 14px;
           color: black;
-          margin-bottom: 0;
         }
 
-        .aaditiya-authentication-form-submission-wrapper-9k2h {
-          display: flex;
-          flex-direction: column;
+        .spinner {
+          display: inline-block;
+          width: 30px;
+          height: 30px;
+          border: 3px solid #f0f0f0;
+          border-top: 3px solid #000;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
       `}</style>
-      
-      <div className="aaditiya-authentication-wrapper-container-2k9x">
+
+      <div className="auth-wrapper">
         {view === 'profile' && user ? (
-          <div className="aaditiya-authentication-form-card-panel-7h3m">
-            <div className="aaditiya-authentication-user-avatar-circular-icon-1x7j"></div>
-            <div className="aaditiya-authentication-profile-details-section-2m9b">
-              <p className="aaditiya-authentication-profile-field-descriptor-label-5p3c">Name</p>
-              <p className="aaditiya-authentication-profile-data-display-value-6w4n">{user.name}</p>
-              <p className="aaditiya-authentication-profile-field-descriptor-label-5p3c">Email</p>
-              <p className="aaditiya-authentication-profile-data-display-value-6w4n">{user.email}</p>
+          <div className="auth-card">
+            <div className="auth-avatar"></div>
+            <div className="auth-profile-field">
+              <p className="auth-profile-label">Name</p>
+              <p className="auth-profile-value">{user.name}</p>
             </div>
-            <button className="aaditiya-authentication-submit-action-button-9r5t" onClick={handleLogout}>Logout</button>
+            <div className="auth-profile-field">
+              <p className="auth-profile-label">Email</p>
+              <p className="auth-profile-value">{user.email}</p>
+            </div>
+            <button className="auth-button" onClick={handleLogout}>Logout</button>
           </div>
         ) : view === 'login' ? (
-          <div className="aaditiya-authentication-form-card-panel-7h3m">
-            <h2 className="aaditiya-authentication-heading-title-text-5n8p">Login</h2>
-            {message && <p className="aaditiya-authentication-notification-feedback-text-8d4k">{message}</p>}
-            <div className="aaditiya-authentication-form-submission-wrapper-9k2h">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={loginForm.email}
-                onChange={handleLoginChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={loginForm.password}
-                onChange={handleLoginChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <button onClick={handleLogin} disabled={loading} className="aaditiya-authentication-submit-action-button-9r5t">
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
-            </div>
-            <p className="aaditiya-authentication-navigation-toggle-paragraph-6l1v">
-              Don't have an account? <button type="button" onClick={() => setView('register')} className="aaditiya-authentication-navigation-hyperlink-button-3y8z">Register</button>
+          <div className="auth-card">
+            <h2 className="auth-heading">Login</h2>
+            {message && <p className={`auth-message ${message.includes('successfully') ? 'success' : 'error'}`}>{message}</p>}
+            <input
+              type="email"
+              placeholder="Email"
+              value={loginForm.email}
+              onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+              className="auth-input"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginForm.password}
+              onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+              className="auth-input"
+            />
+            <button onClick={handleLogin} disabled={loading} className="auth-button">
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+            <p className="auth-link-text">
+              Don't have an account? <button type="button" onClick={() => { setView('register'); setMessage(''); }} className="auth-link-button">Register</button>
             </p>
-            <button type="button" onClick={() => setView('forgot')} className="aaditiya-authentication-navigation-hyperlink-button-3y8z">Forgot Password?</button>
+            <button type="button" onClick={() => { setView('forgot'); setMessage(''); }} className="auth-link-button">Forgot Password?</button>
           </div>
         ) : view === 'register' ? (
-          <div className="aaditiya-authentication-form-card-panel-7h3m">
-            <h2 className="aaditiya-authentication-heading-title-text-5n8p">Register</h2>
-            {message && <p className="aaditiya-authentication-notification-feedback-text-8d4k">{message}</p>}
-            <div className="aaditiya-authentication-form-submission-wrapper-9k2h">
-              <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                value={registerForm.name}
-                onChange={handleRegisterChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={registerForm.email}
-                onChange={handleRegisterChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={registerForm.password}
-                onChange={handleRegisterChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <button onClick={handleRegister} disabled={loading} className="aaditiya-authentication-submit-action-button-9r5t">
-                {loading ? 'Registering...' : 'Register'}
-              </button>
-            </div>
-            <p className="aaditiya-authentication-navigation-toggle-paragraph-6l1v">
-              Already have an account? <button type="button" onClick={() => setView('login')} className="aaditiya-authentication-navigation-hyperlink-button-3y8z">Login</button>
+          <div className="auth-card">
+            <h2 className="auth-heading">Register</h2>
+            {message && <p className={`auth-message ${message.includes('successful') ? 'success' : 'error'}`}>{message}</p>}
+            <input
+              type="text"
+              placeholder="Name"
+              value={registerForm.name}
+              onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
+              className="auth-input"
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={registerForm.email}
+              onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+              className="auth-input"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={registerForm.password}
+              onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
+              className="auth-input"
+            />
+            <button onClick={handleRegister} disabled={loading} className="auth-button">
+              {loading ? 'Registering...' : 'Register'}
+            </button>
+            <p className="auth-link-text">
+              Already have an account? <button type="button" onClick={() => { setView('login'); setMessage(''); }} className="auth-link-button">Login</button>
             </p>
           </div>
         ) : view === 'forgot' ? (
-          <div className="aaditiya-authentication-form-card-panel-7h3m">
-            <h2 className="aaditiya-authentication-heading-title-text-5n8p">Forgot Password</h2>
-            {message && <p className="aaditiya-authentication-notification-feedback-text-8d4k">{message}</p>}
-            <div className="aaditiya-authentication-form-submission-wrapper-9k2h">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={forgotForm.email}
-                onChange={handleForgotChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <button onClick={handleForgotPassword} disabled={loading} className="aaditiya-authentication-submit-action-button-9r5t">
-                {loading ? 'Sending...' : 'Send Reset Link'}
-              </button>
-            </div>
-            <p className="aaditiya-authentication-navigation-toggle-paragraph-6l1v">
-              <button type="button" onClick={() => setView('login')} className="aaditiya-authentication-navigation-hyperlink-button-3y8z">Back to Login</button>
+          <div className="auth-card">
+            <h2 className="auth-heading">Forgot Password</h2>
+            {message && <p className={`auth-message ${message.includes('sent') ? 'success' : 'error'}`}>{message}</p>}
+            <input
+              type="email"
+              placeholder="Email"
+              value={forgotForm.email}
+              onChange={(e) => setForgotForm({ ...forgotForm, email: e.target.value })}
+              className="auth-input"
+            />
+            <button onClick={handleForgotPassword} disabled={loading} className="auth-button">
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+            <p className="auth-link-text">
+              <button type="button" onClick={() => { setView('login'); setMessage(''); }} className="auth-link-button">Back to Login</button>
             </p>
           </div>
         ) : view === 'reset' ? (
-          <div className="aaditiya-authentication-form-card-panel-7h3m">
-            <h2 className="aaditiya-authentication-heading-title-text-5n8p">Reset Password</h2>
-            {message && <p className="aaditiya-authentication-notification-feedback-text-8d4k">{message}</p>}
-            <div className="aaditiya-authentication-form-submission-wrapper-9k2h">
-              <input
-                type="text"
-                name="token"
-                placeholder="Token from email"
-                value={resetForm.token}
-                onChange={handleResetChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <input
-                type="password"
-                name="newPassword"
-                placeholder="New Password"
-                value={resetForm.newPassword}
-                onChange={handleResetChange}
-                required
-                className="aaditiya-authentication-textfield-input-element-4q2w"
-              />
-              <button onClick={handleResetPassword} disabled={loading} className="aaditiya-authentication-submit-action-button-9r5t">
-                {loading ? 'Resetting...' : 'Reset Password'}
-              </button>
-            </div>
-            <p className="aaditiya-authentication-navigation-toggle-paragraph-6l1v">
-              <button type="button" onClick={() => setView('login')} className="aaditiya-authentication-navigation-hyperlink-button-3y8z">Back to Login</button>
+          <div className="auth-card">
+            <h2 className="auth-heading">Reset Password</h2>
+            {message && <p className={`auth-message ${message.includes('successful') ? 'success' : 'error'}`}>{message}</p>}
+            <input
+              type="password"
+              placeholder="New Password"
+              value={resetForm.newPassword}
+              onChange={(e) => setResetForm({ ...resetForm, newPassword: e.target.value })}
+              className="auth-input"
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={resetForm.confirmPassword}
+              onChange={(e) => setResetForm({ ...resetForm, confirmPassword: e.target.value })}
+              className="auth-input"
+            />
+            <button onClick={handleResetPassword} disabled={loading} className="auth-button">
+              {loading ? 'Resetting...' : 'Reset Password'}
+            </button>
+            <p className="auth-link-text">
+              <button type="button" onClick={() => { setView('login'); setMessage(''); }} className="auth-link-button">Back to Login</button>
             </p>
           </div>
         ) : null}

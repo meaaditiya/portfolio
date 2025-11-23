@@ -43,7 +43,14 @@ const AppContent = () => {
             <Route path="/pagenotfound" element={<NotFound/>}/>
             <Route path="/blogsubmission" element={<UserBlogSubmission/>}/>
             <Route path="/blog/subscribe" element={<Auth/>}/>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/login" element={<Auth />} />
+            <Route path="/register" element={<Auth />} />
+            <Route path="/verify-email" element={<Auth />} />
+            <Route path="/reset-password" element={<Auth />} />
+            <Route path="/forgot-password" element={<Auth />} />
             <Route path="*" element={<NotFound/>}/>
+
           </Routes>
         </main>
         
