@@ -7,7 +7,9 @@ import '../pagesCSS/Posts.css';
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
 import Error from './Error.jsx';
-
+import {LogIn } from 'lucide-react'; 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Posts = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
@@ -23,11 +25,7 @@ const Posts = () => {
   const [socialCurrentPage, setSocialCurrentPage] = useState(1);
   const [socialTotalPages, setSocialTotalPages] = useState(1);
   const [commentInput, setCommentInput] = useState('');
-  const [userInfo, setUserInfo] = useState({
-    name: localStorage.getItem('userName') || '',
-    email: localStorage.getItem('userEmail') || '',
-  });
-  const [showUserForm, setShowUserForm] = useState(!userInfo.name || !userInfo.email);
+  const [userInfo, setUserInfo] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showComments, setShowComments] = useState(false);
   const [imageLoadStates, setImageLoadStates] = useState({});
@@ -52,8 +50,10 @@ const Posts = () => {
   const [loadingReplies, setLoadingReplies] = useState({});
   const [commentReactions, setCommentReactions] = useState({});
   const [deleteModal, setDeleteModal] = useState({ show: false, commentId: null, isReply: false, deleting: false });
-const [showFullCaption, setShowFullCaption] = useState(false);
-
+  const [showFullCaption, setShowFullCaption] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [reactingPosts, setReactingPosts] = useState({}); // Track which posts are being reacted to
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
   const activeTab = location.pathname.includes('/social') ? 'social' : 
                     location.pathname.includes('/community') ? 'community' : 'posts';
 
@@ -125,102 +125,168 @@ const [showFullCaption, setShowFullCaption] = useState(false);
     }
   }, [socialEmbeds, activeTab]);
 
-  const fetchSinglePost = async (id) => {
-    try {
-      setPostLoading(true);
-      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${id}`);
-      
-      if (!detailResponse.ok) {
-        throw new Error('Post not found');
-      }
-      
-      const detailData = await detailResponse.json();
-      
-      const reactionResponse = await fetch(
-        `https://connectwithaaditiyamg.onrender.com/api/image-posts/${id}/has-reacted?email=${encodeURIComponent(userInfo.email)}`
-      );
-      const reactionData = await reactionResponse.json();
-      
-      const post = {
-        ...detailData.post,
-        comments: detailData.comments,
-        hasReacted: reactionData.hasReacted,
-      };
-      
-      setSelectedPost(post);
-      
-      if (post.comments) {
-        await fetchCommentReactions(post.comments);
-      }
-      
-      // Initialize video state for modal
-      if (post.mediaType === 'video') {
-        setVideoStates(prev => ({
-          ...prev,
-          [post.id]: { playing: false, muted: false, currentTime: 0, duration: 0 }
-        }));
-        
-        // Auto-play video when modal opens
-        setTimeout(() => {
-          if (modalVideoRef.current) {
-            modalVideoRef.current.play().catch(err => {
-              console.log('Auto-play prevented:', err);
-            });
-            setVideoStates(prev => ({
-              ...prev,
-              [post.id]: { ...prev[post.id], playing: true }
-            }));
-          }
-        }, 100);
-      }
-      
-      document.body.style.overflow = 'hidden';
-      setPostLoading(false);
-    } catch (err) {
-      setError('Failed to fetch post. Please try again later.');
-      setPostLoading(false);
-      console.error('Error fetching post:', err);
-      navigate('/posts');
-    }
-  };
-
-  const fetchCommentReactions = async (comments) => {
-    const reactions = {};
-    for (const comment of comments) {
-      try {
-        const response = await fetch(
-          `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${comment._id}/user-reaction?email=${encodeURIComponent(userInfo.email)}`
-        );
-        const data = await response.json();
-        reactions[comment._id] = data;
-      } catch (err) {
-        console.error('Error fetching comment reaction:', err);
-      }
-    }
-    setCommentReactions(reactions);
-  };
-
-  const fetchReplies = async (commentId) => {
-    if (replies[commentId]) {
+// Add this new useEffect after existing useEffects
+useEffect(() => {
+  const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsAuthenticated(false);
+      setUserInfo(null);
       return;
     }
-    
+
     try {
-      setLoadingReplies(prev => ({ ...prev, [commentId]: true }));
-      const response = await fetch(
-        `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/replies`
-      );
-      const data = await response.json();
-      
-      setReplies(prev => ({ ...prev, [commentId]: data.replies }));
-      await fetchCommentReactions(data.replies);
-      
-      setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
-    } catch (err) {
-      console.error('Error fetching replies:', err);
-      setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
+      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsAuthenticated(true);
+        setUserInfo({
+          name: data.user.name,
+          email: data.user.email,
+          id: data.user.id
+        });
+      } else {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        setUserInfo(null);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      localStorage.removeItem('token');
+      setIsAuthenticated(false);
+      setUserInfo(null);
     }
   };
+
+  checkAuth();
+}, []);
+ const fetchSinglePost = async (id, bustCache = false) => {
+  try {
+    setPostLoading(true);
+    
+    // Add cache busting parameter
+    const cacheBust = bustCache ? `?bustCache=${Date.now()}` : '';
+    const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${id}${cacheBust}`);
+    
+    if (!detailResponse.ok) {
+      throw new Error('Post not found');
+    }
+    
+    const detailData = await detailResponse.json();
+    let hasReacted = false;
+    
+    if (isAuthenticated && userInfo?.email) {
+      try {
+        const token = localStorage.getItem('token');
+        const reactionResponse = await fetch(
+          `https://connectwithaaditiyamg.onrender.com/api/image-posts/${id}/has-reacted?t=${Date.now()}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+        const reactionData = await reactionResponse.json();
+        hasReacted = reactionData.hasReacted;
+      } catch (err) {
+        console.error('Error checking reaction:', err);
+      }
+    }
+
+    const post = {
+      ...detailData.post,
+      comments: detailData.comments,
+      hasReacted: hasReacted,
+    };
+    
+    setSelectedPost(post);
+    
+    if (post.comments) {
+      await fetchCommentReactions(post.comments);
+    }
+    
+    // Initialize video state for modal
+    if (post.mediaType === 'video') {
+      setVideoStates(prev => ({
+        ...prev,
+        [post.id]: { playing: false, muted: false, currentTime: 0, duration: 0 }
+      }));
+      
+      // Auto-play video when modal opens
+      setTimeout(() => {
+        if (modalVideoRef.current) {
+          modalVideoRef.current.play().catch(err => {
+            console.log('Auto-play prevented:', err);
+          });
+          setVideoStates(prev => ({
+            ...prev,
+            [post.id]: { ...prev[post.id], playing: true }
+          }));
+        }
+      }, 100);
+    }
+    
+    document.body.style.overflow = 'hidden';
+    setPostLoading(false);
+  } catch (err) {
+    setError('Failed to fetch post. Please try again later.');
+    setPostLoading(false);
+    console.error('Error fetching post:', err);
+    navigate('/posts');
+  }
+};
+  // REPLACE the entire fetchCommentReactions function with:
+const fetchCommentReactions = async (comments) => {
+  if (!isAuthenticated || !userInfo?.email) return;
+  
+  const reactions = {};
+  for (const comment of comments) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${comment._id}/user-reaction`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      const data = await response.json();
+      reactions[comment._id] = data;
+    } catch (err) {
+      console.error('Error fetching comment reaction:', err);
+    }
+  }
+  setCommentReactions(reactions);
+};
+ const fetchReplies = async (commentId, bustCache = false) => {
+  if (replies[commentId] && !bustCache) {
+    return;
+  }
+  
+  try {
+    setLoadingReplies(prev => ({ ...prev, [commentId]: true }));
+    
+    const cacheBust = bustCache ? `&bustCache=${Date.now()}` : '';
+    const response = await fetch(
+      `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/replies?${cacheBust}`
+    );
+    const data = await response.json();
+    
+    setReplies(prev => ({ ...prev, [commentId]: data.replies }));
+    await fetchCommentReactions(data.replies);
+    
+    setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
+  } catch (err) {
+    console.error('Error fetching replies:', err);
+    setLoadingReplies(prev => ({ ...prev, [commentId]: false }));
+  }
+};
 
   const toggleReplies = async (commentId) => {
     if (!expandedReplies[commentId]) {
@@ -240,16 +306,31 @@ const [showFullCaption, setShowFullCaption] = useState(false);
           const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}`);
           const detailData = await detailResponse.json();
           
-          const reactionResponse = await fetch(
-            `https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}/has-reacted?email=${encodeURIComponent(userInfo.email)}`
-          );
-          const reactionData = await reactionResponse.json();
-          
-          return {
-            ...detailData.post,
-            comments: detailData.comments,
-            hasReacted: reactionData.hasReacted,
-          };
+        let hasReacted = false;
+if (isAuthenticated && userInfo?.email) {
+  try {
+    const token = localStorage.getItem('token');
+    const reactionResponse = await fetch(
+      `https://connectwithaaditiyamg.onrender.com/api/image-posts/${post._id}/has-reacted`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    const reactionData = await reactionResponse.json();
+    hasReacted = reactionData.hasReacted;
+  } catch (err) {
+    console.error('Error checking reaction:', err);
+  }
+}
+
+// Then in the return statement:
+return {
+  ...detailData.post,
+  comments: detailData.comments,
+  hasReacted: hasReacted,
+};
         })
       );
       
@@ -464,30 +545,76 @@ const handleVideoSeek = (postId, e) => {
     setReplyInput(e.target.value);
   };
 
-  const handleCommentSubmit = async () => {
-    if (!commentInput.trim() || !userInfo.name || !userInfo.email || !selectedPost) {
-      alert('Please provide your name, email, and a comment.');
-      return;
-    }
+  // REPLACE entire handleCommentSubmit function with:
+const handleCommentSubmit = async () => {
+  if (!isAuthenticated) {
+    toast.error('Please login to comment', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    return;
+  }
+
+  if (!commentInput.trim()) {
+    toast.warning('Please enter a comment', {
+      position: "top-center",
+      autoClose: 2000,
+    });
+    return;
+  }
+  
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        content: commentInput,
+      }),
+    });
     
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: userInfo.name,
-          email: userInfo.email,
-          content: commentInput,
-        }),
-      });
+    if (!response.ok) throw new Error('Failed to post comment');
+    
+    const data = await response.json();
+    
+    setCommentInput('');
+    toast.success('Comment posted successfully!', {
+      position: "top-center",
+      autoClose: 2000,
+    });
+    
+    // Use the returned updated comments if available
+    if (data.updatedComments) {
+      // Update state immediately with returned data
+      setSelectedPost(prev => ({
+        ...prev,
+        comments: data.updatedComments,
+        commentCount: (prev.commentCount || 0) + 1,
+      }));
       
-      if (!response.ok) throw new Error('Failed to post comment');
+      // Update posts array
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === selectedPost.id
+            ? {
+                ...post,
+                comments: data.updatedComments,
+                commentCount: (post.commentCount || 0) + 1,
+              }
+            : post
+        )
+      );
       
-      setCommentInput('');
+      await fetchCommentReactions(data.updatedComments);
+    } else {
+      // Fallback: fetch fresh data with cache busting
+      await fetchSinglePost(selectedPost.id, true);
       
-      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
+      // Also update the posts array
+      const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}?bustCache=${Date.now()}`);
       const detailData = await detailResponse.json();
       
       setPosts((prevPosts) =>
@@ -501,220 +628,285 @@ const handleVideoSeek = (postId, e) => {
             : post
         )
       );
-      
-      setSelectedPost({
-        ...selectedPost,
-        comments: detailData.comments,
-        commentCount: detailData.post.commentCount,
-      });
-      
-      await fetchCommentReactions(detailData.comments);
-      
-    } catch (err) {
-      alert('Failed to post comment. Please try again.');
-      console.error('Error posting comment:', err);
     }
-  };
+    
+  } catch (err) {
+    toast.error('Failed to post comment', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    console.error('Error posting comment:', err);
+  }
+};
 
-  const handleReplySubmit = async (parentCommentId) => {
-    if (!replyInput.trim() || !userInfo.name || !userInfo.email || !selectedPost) {
-      alert('Please provide your name, email, and a reply.');
-      return;
-    }
-    
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: userInfo.name,
-          email: userInfo.email,
-          content: replyInput,
-          parentCommentId: parentCommentId,
-        }),
-      });
-      
-      if (!response.ok) throw new Error('Failed to post reply');
-      
-      setReplyInput('');
-      setReplyingTo(null);
-      
-      setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
-      await fetchReplies(parentCommentId);
-      
-      setSelectedPost(prev => ({
-        ...prev,
-        comments: prev.comments.map(c => 
-          c._id === parentCommentId 
-            ? { ...c, replyCount: (c.replyCount || 0) + 1 }
-            : c
-        )
-      }));
-      
-    } catch (err) {
-      alert('Failed to post reply. Please try again.');
-      console.error('Error posting reply:', err);
-    }
-  };
+ // REPLACE entire handleReplySubmit function with:
+const handleReplySubmit = async (parentCommentId) => {
+  if (!isAuthenticated) {
+    toast.error('Please login to reply', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    return;
+  }
 
-  const handleCommentReaction = async (commentId, reactionType) => {
-    if (!userInfo.email) {
-      alert('Please provide your email to react to comments.');
-      return;
-    }
+  if (!replyInput.trim()) {
+    toast.warning('Please enter a reply', {
+      position: "top-center",
+      autoClose: 2000,
+    });
+    return;
+  }
+  
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        content: replyInput,
+        parentCommentId: parentCommentId,
+      }),
+    });
     
-    try {
-      const endpoint = reactionType === 'like' 
-        ? `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/like`
-        : `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/dislike`;
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userInfo.email,
-        }),
-      });
-      
-      if (!response.ok) throw new Error('Failed to react to comment');
-      const data = await response.json();
-      
-      setCommentReactions(prev => ({
-        ...prev,
-        [commentId]: {
-          userLiked: data.userLiked,
-          userDisliked: data.userDisliked,
-          likeCount: data.likeCount,
-          dislikeCount: data.dislikeCount,
-        }
-      }));
-      
-    } catch (err) {
-      alert('Failed to react to comment. Please try again.');
-      console.error('Error reacting to comment:', err);
-    }
-  };
+    if (!response.ok) throw new Error('Failed to post reply');
+    
+    const data = await response.json();
+    
+    setReplyInput('');
+    setReplyingTo(null);
+    toast.success('Reply posted successfully!', {
+      position: "top-center",
+      autoClose: 2000,
+    });
+    
+    // Clear cached replies and refetch with cache busting
+    setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
+    
+    // Fetch fresh replies with cache busting
+    const repliesResponse = await fetch(
+      `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
+    );
+    const repliesData = await repliesResponse.json();
+    
+    setReplies(prev => ({ ...prev, [parentCommentId]: repliesData.replies }));
+    await fetchCommentReactions(repliesData.replies);
+    
+    // Update parent comment's reply count
+    setSelectedPost(prev => ({
+      ...prev,
+      comments: prev.comments.map(c => 
+        c._id === parentCommentId 
+          ? { ...c, replyCount: (c.replyCount || 0) + 1 }
+          : c
+      )
+    }));
+    
+  } catch (err) {
+    toast.error('Failed to post reply', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    console.error('Error posting reply:', err);
+  }
+};
+  // REPLACE entire handleCommentReaction function with:
+const handleCommentReaction = async (commentId, reactionType) => {
+  if (!isAuthenticated) {
+    toast.error('Please login to react', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    return;
+  }
+  
+  try {
+    const token = localStorage.getItem('token');
+    const endpoint = reactionType === 'like' 
+      ? `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/like`
+      : `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}/dislike`;
+    
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    
+    if (!response.ok) throw new Error('Failed to react to comment');
+    const data = await response.json();
+    
+    setCommentReactions(prev => ({
+      ...prev,
+      [commentId]: {
+        userLiked: data.userLiked,
+        userDisliked: data.userDisliked,
+        likeCount: data.likeCount,
+        dislikeCount: data.dislikeCount,
+      }
+    }));
+    
+  } catch (err) {
+    toast.error('Failed to react to comment', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    console.error('Error reacting to comment:', err);
+  }
+};
 
-  const handleReaction = async (postId, e) => {
-    e.stopPropagation();
+  // REPLACE entire handleReaction function with:
+const handleReaction = async (postId, e) => {
+  e.stopPropagation();
+  
+  if (!isAuthenticated) {
+    toast.error('Please login to react to posts', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    return;
+  }
+  
+  // Set reacting state
+  setReactingPosts(prev => ({ ...prev, [postId]: true }));
+  
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${postId}/react`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
     
-    if (!userInfo.name || !userInfo.email) {
-      alert('Please provide your name and email to react to posts.');
-      return;
-    }
+    if (!response.ok) throw new Error('Failed to react to post');
+    const data = await response.json();
     
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${postId}/react`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: userInfo.name,
-          email: userInfo.email,
-        }),
-      });
-      
-      if (!response.ok) throw new Error('Failed to react to post');
-      const data = await response.json();
-      
-      setPosts((prevPosts) =>
-        prevPosts.map((post) => {
-          if (post.id === postId) {
-            const newReactionCount =
-              post.reactionCount !== null
-                ? data.hasReacted
-                  ? post.reactionCount + 1
-                  : post.reactionCount - 1
-                : null;
-            return {
-              ...post,
-              hasReacted: data.hasReacted,
-              reactionCount: newReactionCount,
-            };
-          }
-          return post;
-        })
-      );
-      
-      if (selectedPost?.id === postId) {
-        setSelectedPost((prev) => ({
-          ...prev,
-          hasReacted: data.hasReacted,
-          reactionCount:
-            prev.reactionCount !== null
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
+        if (post.id === postId) {
+          const newReactionCount =
+            post.reactionCount !== null
               ? data.hasReacted
-                ? prev.reactionCount + 1
-                : prev.reactionCount - 1
-              : null,
+                ? post.reactionCount + 1
+                : post.reactionCount - 1
+              : null;
+          return {
+            ...post,
+            hasReacted: data.hasReacted,
+            reactionCount: newReactionCount,
+          };
+        }
+        return post;
+      })
+    );
+    
+    if (selectedPost?.id === postId) {
+      setSelectedPost((prev) => ({
+        ...prev,
+        hasReacted: data.hasReacted,
+        reactionCount:
+          prev.reactionCount !== null
+            ? data.hasReacted
+              ? prev.reactionCount + 1
+              : prev.reactionCount - 1
+            : null,
+      }));
+    }
+    
+    // Remove reacting state after completion
+    setReactingPosts(prev => ({ ...prev, [postId]: false }));
+    
+  } catch (err) {
+    toast.error('Failed to react to post', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    console.error('Error reacting to post:', err);
+    setReactingPosts(prev => ({ ...prev, [postId]: false }));
+  }
+};
+
+ // REPLACE entire handleDeleteComment function with:
+const handleDeleteComment = async (commentId, isReply = false) => {
+  if (!isAuthenticated) {
+    toast.error('Please login to delete comments', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    return;
+  }
+  
+  setDeleteModal({ show: true, commentId, isReply });
+};
+// REPLACE entire confirmDeleteComment function with:
+const confirmDeleteComment = async () => {
+  const { commentId, isReply } = deleteModal;
+  
+  setDeleteModal(prev => ({ ...prev, deleting: true }));
+  
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    
+    if (!response.ok) throw new Error('Failed to delete comment');
+    
+    const data = await response.json();
+    
+    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+    toast.success('Comment deleted successfully', {
+      position: "top-center",
+      autoClose: 2000,
+    });
+    
+    if (isReply) {
+      const parentCommentId = selectedPost.comments.find(c => 
+        replies[c._id]?.some(r => r._id === commentId)
+      )?._id;
+      
+      if (parentCommentId) {
+        // Use returned data if available
+        if (data.updatedComments) {
+          setReplies(prev => ({ ...prev, [parentCommentId]: data.updatedComments }));
+        } else {
+          // Fallback: clear and refetch with cache busting
+          setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
+          const repliesResponse = await fetch(
+            `https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
+          );
+          const repliesData = await repliesResponse.json();
+          setReplies(prev => ({ ...prev, [parentCommentId]: repliesData.replies }));
+        }
+        
+        setSelectedPost(prev => ({
+          ...prev,
+          comments: prev.comments.map(c => 
+            c._id === parentCommentId 
+              ? { ...c, replyCount: Math.max(0, (c.replyCount || 0) - 1) }
+              : c
+          )
         }));
       }
-    } catch (err) {
-      alert('Failed to react to post. Please try again.');
-      console.error('Error reacting to post:', err);
-    }
-  };
-
-  const handleDeleteComment = async (commentId, isReply = false) => {
-    if (!userInfo.email) {
-      alert('Please provide your email to delete your comment.');
-      return;
-    }
-    
-    setDeleteModal({ show: true, commentId, isReply });
-  };
-
-  const confirmDeleteComment = async () => {
-    const { commentId, isReply } = deleteModal;
-    
-    setDeleteModal(prev => ({ ...prev, deleting: true }));
-    
-    try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: userInfo.email }),
-      });
-      
-      if (!response.ok) throw new Error('Failed to delete comment');
-      
-      setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
-      
-      if (isReply) {
-        const parentCommentId = selectedPost.comments.find(c => 
-          replies[c._id]?.some(r => r._id === commentId)
-        )?._id;
-        
-        if (parentCommentId) {
-          setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
-          await fetchReplies(parentCommentId);
-          
-          setSelectedPost(prev => ({
-            ...prev,
-            comments: prev.comments.map(c => 
-              c._id === parentCommentId 
-                ? { ...c, replyCount: Math.max(0, (c.replyCount || 0) - 1) }
-                : c
-            )
-          }));
-        }
-      } else {
-        const detailResponse = await fetch(`https://connectwithaaditiyamg.onrender.com/api/image-posts/${selectedPost.id}`);
-        const detailData = await detailResponse.json();
-        
+    } else {
+      // Use returned data if available
+      if (data.updatedComments) {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post.id === selectedPost.id
               ? {
                   ...post,
-                  comments: detailData.comments,
-                  commentCount: detailData.post.commentCount,
+                  comments: data.updatedComments,
+                  commentCount: data.updatedComments.length,
                 }
               : post
           )
@@ -722,23 +914,29 @@ const handleVideoSeek = (postId, e) => {
         
         setSelectedPost({
           ...selectedPost,
-          comments: detailData.comments,
-          commentCount: detailData.post.commentCount,
+          comments: data.updatedComments,
+          commentCount: data.updatedComments.length,
         });
         
-        setReplies({});
-        setExpandedReplies({});
-        
-        await fetchCommentReactions(detailData.comments);
+        await fetchCommentReactions(data.updatedComments);
+      } else {
+        // Fallback: fetch with cache busting
+        await fetchSinglePost(selectedPost.id, true);
       }
       
-    } catch (err) {
-      alert('Failed to delete comment. You can only delete your own comments.');
-      console.error('Error deleting comment:', err);
-      setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+      setReplies({});
+      setExpandedReplies({});
     }
-  };
-
+    
+  } catch (err) {
+    toast.error('Failed to delete comment. You can only delete your own comments.', {
+      position: "top-center",
+      autoClose: 3000,
+    });
+    console.error('Error deleting comment:', err);
+    setDeleteModal({ show: false, commentId: null, isReply: false, deleting: false });
+  }
+};
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -931,16 +1129,15 @@ useEffect(() => {
                 <span>Reply</span>
               </button>
             )}
-            
-            {comment.user.email === userInfo.email && (
-              <button
-                className="pst-delete-comment"
-                onClick={() => handleDeleteComment(comment._id, isReply)}
-              >
-                <Trash2 className="pst-icon-xs" />
-                <span>Delete</span>
-              </button>
-            )}
+           {isAuthenticated && userInfo && comment.user.email === userInfo.email && (
+  <button
+    className="pst-delete-comment"
+    onClick={() => handleDeleteComment(comment._id, isReply)}
+  >
+    <Trash2 className="pst-icon-xs" />
+    <span>Delete</span>
+  </button>
+)}
           </div>
           
           {replyingTo === comment._id && (
@@ -1057,9 +1254,24 @@ useEffect(() => {
     <div className="gallery-hero-welcome-tag">
       Welcome
     </div>
-    
+     
+    {!isAuthenticated ? (
+      <button
+        className="pst-auth-button"
+        onClick={() => navigate('/auth')}
+      >
+        <LogIn className="pst-icon-sm" />
+        <span>Join</span>
+      </button>
+    ) : (
+      <div className="pst-user-info">
+        <User className="pst-icon-sm" />
+        <span>{userInfo?.name}</span>
+      </div>
+    )}
+  
     <h1 className="gallery-hero-title">
-      Explore Aaditya's visual gallery.
+      Explore Aaditiya's visual gallery.
     </h1>
     
     <p className="gallery-hero-subtitle">
@@ -1346,50 +1558,7 @@ useEffect(() => {
 
   return (
     <div className="pst-main">
-      {showUserForm && (
-        <div className="pst-user-modal">
-          <div className="pst-user-form">
-            <button 
-              className="pst-close-button pst-user-close-button"
-              onClick={handleUserFormClose}
-              style={{ position: 'absolute', top: '1rem', right: '1rem' }}
-            >
-              <X className="pst-icon" />
-            </button>
-            <div className="pst-user-header">
-              <div className="pst-user-icon">
-                <User className="pst-icon" />
-              </div>
-              <h3 className="pst-user-title">Welcome!</h3>
-              <p className="pst-user-subtitle">Enter your details to engage with posts</p>
-            </div>
-            <div className="pst-user-inputs">
-              <input
-                type="text"
-                name="name"
-                value={userInfo.name}
-                onChange={handleUserInfoChange}
-                placeholder="Your Name"
-                className="pst-input"
-              />
-              <input
-                type="email"
-                name="email"
-                value={userInfo.email}
-                onChange={handleUserInfoChange}
-                placeholder="Your Email"
-                className="pst-input"
-              />
-              <button 
-                onClick={handleUserInfoSubmit}
-                className="pst-user-submit"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
 
       <div className="pst-tab-navigation">
         <div className="pst-tab-buttons">
@@ -1414,7 +1583,9 @@ useEffect(() => {
             <User className="pst-icon-sm" />
             <span>Community</span>
           </button>
+
         </div>
+      
       </div>
 
       {activeTab === 'social' && (
@@ -1584,8 +1755,11 @@ useEffect(() => {
                   </p>
                 </div>
                <div className="pst-modal-actions">
-  <button className={`pst-like-button ${selectedPost.hasReacted ? 'pst-liked' : ''}`}
-    onClick={(e) => handleReaction(selectedPost.id, e)}>
+<button 
+  className={`pst-like-button ${selectedPost.hasReacted ? 'pst-liked' : ''}`}
+  onClick={(e) => handleReaction(selectedPost.id, e)}
+  disabled={reactingPosts[selectedPost.id]}
+>
     <Heart className={`pst-icon-sm ${selectedPost.hasReacted ? 'pst-icon-filled' : ''}`} />
     <span className="pst-stat-count">{selectedPost.reactionCount || 0}</span>
   </button>
@@ -1740,10 +1914,10 @@ useEffect(() => {
                         rows="2"
                       />
                       <button
-                        className="pst-submit-comment"
-                        onClick={handleCommentSubmit}
-                        disabled={!commentInput.trim() || !userInfo.name || !userInfo.email}
-                      >
+  className="pst-submit-comment"
+  onClick={handleCommentSubmit}
+  disabled={!commentInput.trim() || !isAuthenticated}
+>
                         <Send className="pst-icon-sm" />
                       </button>
                     </div>
@@ -1841,6 +2015,7 @@ useEffect(() => {
           </div>
         </div>
       )}
+       <ToastContainer />
     </div>
   );
 };

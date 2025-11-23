@@ -3577,3 +3577,49 @@ border: 1px solid rgba(255, 255, 255, 0.2);
     line-height: 1.4;
   }
 }
+/* Add this to your Posts.css file */
+.pst-auth-button-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+  
+}
+
+.pst-auth-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0,0,0,0.05);
+  color: black;
+  border: none;
+ 
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  width:100%;
+  justify-content: center;
+}
+
+.pst-auth-button:hover {
+  background: rgba(0,0,0,0.05);
+ 
+}
+
+.pst-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f0f0f0;
+  border-radius: 8px;
+  font-weight: 500;
+  justify-content: center;
+}
+
+.pst-like-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
