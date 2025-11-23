@@ -96,6 +96,9 @@ const [blogs, setBlogs] = useState([]);
 // Add near other state declarations
 const [relatedBlogsLoading, setRelatedBlogsLoading] = useState(false);
 const [copiedCode, setCopiedCode] = useState(null);
+const [reactionInProgress, setReactionInProgress] = useState(false);
+const [lastReactionTime, setLastReactionTime] = useState(0);
+const [commentReactionInProgress, setCommentReactionInProgress] = useState({});
   // Fetch blog post details
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -390,83 +393,119 @@ useEffect(() => {
       fetchCommentsWithReactions(blogPost._id, newPage, storedUserInfo);
     }
   };
-
-  // Handle reaction click
-  const handleReactionClick = (type) => {
-    setReactionType(type);
-    
-    // If user info is already stored, submit reaction directly
-    if (storedUserInfo && storedUserInfo.email && storedUserInfo.name) {
-      submitReaction(type, storedUserInfo);
-    } else {
-      // Otherwise show modal to collect user info
-      setShowReactionModal(true);
-    }
-  };
+const handleReactionClick = (type) => {
+  // Prevent rapid clicks (debounce)
+  const now = Date.now();
+  if (now - lastReactionTime < 1000) { // 1 second cooldown
+    console.log('Please wait before reacting again');
+    return;
+  }
   
-  // Submit reaction with user info
-  const submitReaction = async (type, userInfo) => {
-    if (!blogPost || !blogPost._id) return;
+  // Prevent multiple simultaneous requests
+  if (reactionInProgress) {
+    console.log('Reaction already in progress');
+    return;
+  }
+  
+  setReactionType(type);
+  
+  // If user info is already stored, submit reaction directly
+  if (storedUserInfo && storedUserInfo.email && storedUserInfo.name) {
+    submitReaction(type, storedUserInfo);
+  } else {
+    // Otherwise show modal to collect user info
+    setShowReactionModal(true);
+  }
+};
+ 
+ 
+// FIXED: Submit Blog Reaction with proper locking
+const submitReaction = async (type, userInfo) => {
+  if (!blogPost || !blogPost._id) return;
+  
+  // Double-check if already in progress
+  if (reactionInProgress) {
+    console.log('Reaction submission blocked - already in progress');
+    return;
+  }
+  
+  // Lock the reaction system
+  setReactionInProgress(true);
+  setLastReactionTime(Date.now());
+  
+  // Store previous state for rollback
+  const previousReaction = userReaction;
+  const previousReactions = { ...reactions };
+  
+  // Calculate expected new state
+  let newReactions = { ...reactions };
+  let newUserReaction = null;
+  
+  if (previousReaction === type) {
+    // Removing reaction
+    newReactions[type] = Math.max(0, newReactions[type] - 1);
+    newUserReaction = null;
+  } else {
+    // Adding or changing reaction
+    if (previousReaction) {
+      newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
+    }
+    newReactions[type] = newReactions[type] + 1;
+    newUserReaction = type;
+  }
+  
+  // Optimistic UI update
+  setReactions(newReactions);
+  setUserReaction(newUserReaction);
+  
+  try {
+    const response = await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/reactions`,
+      {
+        name: userInfo.name,
+        email: userInfo.email,
+        type
+      },
+      {
+        timeout: 10000 // 10 second timeout
+      }
+    );
     
-    // Optimistic update - update UI immediately
-    const previousReaction = userReaction;
-    const previousReactions = { ...reactions };
+    // Store user info for future use
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo);
     
-    // Update reaction counts optimistically
-    let newReactions = { ...reactions };
-    
-    if (previousReaction === type) {
-      // User is removing their reaction
-      newReactions[type] = Math.max(0, newReactions[type] - 1);
+    // Update with actual server response
+    if (response.data.reactionRemoved) {
       setUserReaction(null);
     } else {
-      // User is adding a new reaction or changing reaction
-      if (previousReaction) {
-        // Remove old reaction
-        newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
-      }
-      // Add new reaction
-      newReactions[type] = newReactions[type] + 1;
       setUserReaction(type);
     }
     
-    setReactions(newReactions);
+    // Fetch accurate counts from server
+    await fetchReactions(blogPost._id);
     
-    try {
-      const response = await axios.post(
-        `https://connectwithaaditiyamg.onrender.com/api/blogs/${blogPost._id}/reactions`,
-        {
-          name: userInfo.name,
-          email: userInfo.email,
-          type
-        }
-      );
-      
-      // Store user info for future use
-      localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
-      setStoredUserInfo(userInfo);
-      
-      // Update with actual server response
-      if (response.data.reactionRemoved) {
-        setUserReaction(null);
-      } else {
-        setUserReaction(type);
-      }
-      
-      // Refresh reaction counts from server to ensure accuracy
-      fetchReactions(blogPost._id);
-      
-      // Close modal if open
-      setShowReactionModal(false);
-    } catch (err) {
-      // Revert optimistic update on error
-      setReactions(previousReactions);
-      setUserReaction(previousReaction);
-      
-      console.error('Error submitting reaction:', err);
-      alert(`Error: ${err.response?.data?.message || 'Failed to submit reaction'}`);
-    }
-  };
+    // Close modal if open
+    setShowReactionModal(false);
+    
+  } catch (err) {
+    console.error('Error submitting reaction:', err);
+    
+    // ROLLBACK optimistic update on error
+    setReactions(previousReactions);
+    setUserReaction(previousReaction);
+    
+    // Show user-friendly error
+    const errorMessage = err.response?.data?.message || 
+                        err.code === 'ECONNABORTED' ? 'Request timeout. Please try again.' :
+                        'Failed to submit reaction. Please try again.';
+    alert(errorMessage);
+    
+  } finally {
+    // Always unlock after completion
+    setReactionInProgress(false);
+  }
+};
   
   // Handle user form submit for reaction
   const handleReactionFormSubmit = (e) => {
@@ -1140,104 +1179,127 @@ const handleReplySubmit = async (e, commentId) => {
 
   // Handle comment reaction
   const handleCommentReaction = async (commentId, type) => {
-    // If user info is already stored, submit reaction directly
-    if (storedUserInfo && storedUserInfo.email && storedUserInfo.name) {
-      submitCommentReaction(commentId, type, storedUserInfo);
-    } else {
-      // Otherwise show modal to collect user info
-      setReactionType(type);
-      setCommentReactionTarget(commentId); // You'll need to add this state
-      setShowReactionModal(true);
-    }
-  };
+  // Prevent rapid clicks per comment
+  if (commentReactionInProgress[commentId]) {
+    console.log('Comment reaction already in progress');
+    return;
+  }
+  
+  // If user info is already stored, submit reaction directly
+  if (storedUserInfo && storedUserInfo.email && storedUserInfo.name) {
+    submitCommentReaction(commentId, type, storedUserInfo);
+  } else {
+    // Otherwise show modal to collect user info
+    setReactionType(type);
+    setCommentReactionTarget(commentId);
+    setShowReactionModal(true);
+  }
+};
 
   // Add this new function to handle the actual comment reaction submission:
-  const submitCommentReaction = async (commentId, type, userInfo) => {
-    setCommentReactionLoading(commentId);
+ const submitCommentReaction = async (commentId, type, userInfo) => {
+  // Check if already in progress for this specific comment
+  if (commentReactionInProgress[commentId]) {
+    console.log('Comment reaction blocked - already in progress');
+    return;
+  }
+  
+  // Lock this specific comment's reactions
+  setCommentReactionInProgress(prev => ({ ...prev, [commentId]: true }));
+  setCommentReactionLoading(commentId);
+  
+  // Store previous state for rollback
+  const previousReaction = userCommentReactions[commentId];
+  const previousReactions = { ...commentReactions[commentId] } || { likes: 0, dislikes: 0 };
+  
+  // Calculate expected new state
+  let newReactions = { ...previousReactions };
+  let newUserReaction = null;
+  
+  if (previousReaction === type) {
+    // Removing reaction
+    newReactions[type] = Math.max(0, newReactions[type] - 1);
+    newUserReaction = null;
+  } else {
+    // Adding or changing reaction
+    if (previousReaction) {
+      newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
+    }
+    newReactions[type] = newReactions[type] + 1;
+    newUserReaction = type;
+  }
+  
+  // Optimistic UI update
+  setCommentReactions(prev => ({
+    ...prev,
+    [commentId]: newReactions
+  }));
+  setUserCommentReactions(prev => ({
+    ...prev,
+    [commentId]: newUserReaction
+  }));
+  
+  try {
+    const response = await axios.post(
+      `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions`,
+      {
+        name: userInfo.name,
+        email: userInfo.email,
+        type
+      },
+      {
+        timeout: 10000 // 10 second timeout
+      }
+    );
     
-    // Optimistic update - update UI immediately
-    const previousReaction = userCommentReactions[commentId];
-    const previousReactions = { ...commentReactions[commentId] } || { likes: 0, dislikes: 0 };
+    // Store user info for future use
+    localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
+    setStoredUserInfo(userInfo);
     
-    // Update comment reaction counts optimistically
-    let newReactions = { ...previousReactions };
-    
-    if (previousReaction === type) {
-      // User is removing their reaction
-      newReactions[type] = Math.max(0, newReactions[type] - 1);
+    // Update user reaction state with server response
+    if (response.data.reactionRemoved) {
       setUserCommentReactions(prev => ({
         ...prev,
         [commentId]: null
       }));
     } else {
-      // User is adding a new reaction or changing reaction
-      if (previousReaction) {
-        // Remove old reaction
-        newReactions[previousReaction] = Math.max(0, newReactions[previousReaction] - 1);
-      }
-      // Add new reaction
-      newReactions[type] = newReactions[type] + 1;
       setUserCommentReactions(prev => ({
         ...prev,
         [commentId]: type
       }));
     }
     
+    // Refresh comment reaction counts from server
+    await fetchCommentReactions(commentId);
+    
+    // Close modal if open
+    setShowReactionModal(false);
+    
+  } catch (err) {
+    console.error('Error submitting comment reaction:', err);
+    
+    // ROLLBACK optimistic update on error
     setCommentReactions(prev => ({
       ...prev,
-      [commentId]: newReactions
+      [commentId]: previousReactions
+    }));
+    setUserCommentReactions(prev => ({
+      ...prev,
+      [commentId]: previousReaction
     }));
     
-    try {
-      const response = await axios.post(
-        `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions`,
-        {
-          name: userInfo.name,
-          email: userInfo.email,
-          type
-        }
-      );
-      
-      // Store user info for future use
-      localStorage.setItem('blogUserInfo', JSON.stringify(userInfo));
-      setStoredUserInfo(userInfo);
-      
-      // Update user reaction state with server response
-      if (response.data.reactionRemoved) {
-        setUserCommentReactions(prev => ({
-          ...prev,
-          [commentId]: null
-        }));
-      } else {
-        setUserCommentReactions(prev => ({
-          ...prev,
-          [commentId]: type
-        }));
-      }
-      
-      // Refresh comment reaction counts from server to ensure accuracy
-      fetchCommentReactions(commentId);
-      
-      // Close modal if open
-      setShowReactionModal(false);
-    } catch (err) {
-      // Revert optimistic update on error
-      setCommentReactions(prev => ({
-        ...prev,
-        [commentId]: previousReactions
-      }));
-      setUserCommentReactions(prev => ({
-        ...prev,
-        [commentId]: previousReaction
-      }));
-      
-      console.error('Error submitting comment reaction:', err);
-      alert(err.response?.data?.message || 'Failed to submit reaction');
-    } finally {
-      setCommentReactionLoading(null);
-    }
-  };
-
+    // Show user-friendly error
+    const errorMessage = err.response?.data?.message || 
+                        err.code === 'ECONNABORTED' ? 'Request timeout. Please try again.' :
+                        'Failed to submit reaction. Please try again.';
+    alert(errorMessage);
+    
+  } finally {
+    // Always unlock after completion
+    setCommentReactionInProgress(prev => ({ ...prev, [commentId]: false }));
+    setCommentReactionLoading(null);
+  }
+};
   // Update your existing fetchComments function to also fetch reactions
   const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => {
     setCommentsLoading(true);
@@ -1835,25 +1897,28 @@ const CodeBlock = ({ language, value }) => {
           {renderContentWithMedia(blogPost.content)}
           
           {/* Reactions section */}
-          <div className="blog-reactions">
-            <h3>Did you find this article helpful?</h3>
-            <div className="reaction-buttons">
-              <button
-                className={`reaction-btn ${userReaction === 'like' ? 'active' : ''}`}
-                onClick={() => handleReactionClick('like')}
-              >
-                {userReaction === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
-                <span>{reactions.likes}</span>
-              </button>
-              <button
-                className={`reaction-btn ${userReaction === 'dislike' ? 'active' : ''}`}
-                onClick={() => handleReactionClick('dislike')}
-              >
-                {userReaction === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
-                <span>{reactions.dislikes}</span>
-              </button>
-            </div>
-          </div>
+        <div className="blog-reactions">
+  <h3>Did you find this article helpful?</h3>
+  <div className="reaction-buttons">
+    <button
+      className={`reaction-btn ${userReaction === 'like' ? 'active' : ''} ${reactionInProgress ? 'disabled' : ''}`}
+      onClick={() => handleReactionClick('like')}
+      disabled={reactionInProgress}
+    >
+      {userReaction === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
+      <span>{reactions.likes}</span>
+    </button>
+    <button
+      className={`reaction-btn ${userReaction === 'dislike' ? 'active' : ''} ${reactionInProgress ? 'disabled' : ''}`}
+      onClick={() => handleReactionClick('dislike')}
+      disabled={reactionInProgress}
+    >
+      {userReaction === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
+      <span>{reactions.dislikes}</span>
+    </button>
+  </div>
+
+</div>
              
           
           {/* Share section */}
@@ -2013,14 +2078,14 @@ const CodeBlock = ({ language, value }) => {
                         <div className="comment-actions">
                           {/* Comment Reactions */}
                           <div className="comment-reactions">
-                            <button
-                              className={`reaction-btn2 ${userCommentReactions[comment._id] === 'like' ? 'active' : ''}`}
-                              onClick={() => handleCommentReaction(comment._id, 'like')}
-                              disabled={commentReactionLoading === comment._id}
-                            >
-                              {userCommentReactions[comment._id] === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
-                              <span>{commentReactions[comment._id]?.likes || 0}</span>
-                            </button>
+                          <button
+  className={`reaction-btn2 ${userCommentReactions[comment._id] === 'like' ? 'active' : ''}`}
+  onClick={() => handleCommentReaction(comment._id, 'like')}
+  disabled={commentReactionInProgress[comment._id]}
+>
+  {userCommentReactions[comment._id] === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
+  <span>{commentReactions[comment._id]?.likes || 0}</span>
+</button>
                             <button
                               className={`reaction-btn2 ${userCommentReactions[comment._id] === 'dislike' ? 'active' : ''}`}
                               onClick={() => handleCommentReaction(comment._id, 'dislike')}
