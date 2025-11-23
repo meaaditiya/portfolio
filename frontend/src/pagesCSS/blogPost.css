@@ -4466,13 +4466,7 @@ code:not(.minimal-code-text) {
 
 }
 
-.user-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #006064;
-  font-size: 14px;
-}
+
 
 .user-badge svg {
   width: 18px;
