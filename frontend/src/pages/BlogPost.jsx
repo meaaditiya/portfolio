@@ -2115,6 +2115,19 @@ const CodeBlock = ({ language, value }) => {
             <div className="subscriber-cta-section">
               <div className="cta-content">
                 <h3>Unlock Full Access</h3>
+               <h3 
+  className="price-free-heading" 
+  style={{
+    textAlign: "center",
+    fontSize: "2rem",
+    fontWeight: "700",
+    marginTop: "6px"
+  }}
+>
+  ₹0
+</h3>
+
+
                 <p>Subscribe to read this article and access exclusive content from our writers</p>
                 <div className="cta-benefits">
                   <div className="benefit-item">

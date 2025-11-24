@@ -280,7 +280,7 @@ const handleBack = () => {
         }
 
         .menu-center {
-          position: absolute;
+          position: relative;
           top: 10%;
           left: 50%;
           transform: translate(-50%, -50%);
@@ -552,9 +552,7 @@ const handleBack = () => {
       {/* Circular Mobile Menu */}
       <div className={`circular-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`}>
         <div className="circular-menu-container">
-          <div className="menu-center" onClick={toggleMobileMenu}>
-            <span className="close-icon">×</span>
-          </div>
+          
           
           {navItems.map((item) => (
             <button
@@ -565,6 +563,9 @@ const handleBack = () => {
               <span>{item.name}</span>
             </button>
           ))}
+          <div className="circular-nav-item" onClick={toggleMobileMenu}>
+            <span className="close-icon">Close</span>
+          </div>
         </div>
       </div>
     </>

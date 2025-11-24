@@ -4820,3 +4820,6 @@ code:not(.minimal-code-text) {
     transform: none;
   }
 }
+.price-free-heading{
+  text-align: center;
+}
