@@ -2158,7 +2158,10 @@ const CodeBlock = ({ language, value }) => {
               </div>
               <button 
                 className="btn btn-primary cta-button"
-                onClick={() => navigate('/blog/subscribe')}
+               onClick={() => {
+  const currentUrl = window.location.pathname + window.location.search;
+  navigate(`/auth?redirect=${encodeURIComponent(currentUrl)}`);
+}}
               >
                 Subscribe Now
               </button>

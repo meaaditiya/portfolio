@@ -4540,7 +4540,7 @@ code:not(.minimal-code-text) {
   position: relative;
   overflow: hidden;
   border-radius: 12px;
-  background: #f5f5f5;
+  background-color: var(--color-white);
 }
 
 .featured-image-container .subscription-overlay {

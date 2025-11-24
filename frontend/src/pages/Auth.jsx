@@ -21,14 +21,15 @@ export default function Auth() {
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const params = new URLSearchParams(window.location.search);
+     const redir = params.get('redirect');
+    if (redir) {
+      setRedirectPath(decodeURIComponent(redir));
+    }
     const urlToken = params.get('token');
     const googleLogin = params.get('google_login');
     const authError = params.get('error');
     
-    const redirect = params.get('redirect');
-    if (redirect) {
-      setRedirectPath(decodeURIComponent(redirect));
-    }
+   
 
     // Handle Google OAuth callback
     if (googleLogin === 'success' && urlToken) {
@@ -719,6 +720,34 @@ export default function Auth() {
   width: 18px;
   height: 18px;
 }
+  .auth-buttons-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 15px;
+  gap: 10px;
+  min-height: 48px;     /* prevents upward movement / layout shift */
+}
+
+.auth-mini-button {
+  flex: 1;               /* makes each button equal size in same row */
+  padding: 10px;
+  background: none;      /* transparent background */
+  border: 1px solid #000;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.auth-mini-button:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+  
       `}</style>
 
       <div className="auth-wrapper">
@@ -727,6 +756,7 @@ export default function Auth() {
             <div className="loading-placeholder">
               <div className="spinner"></div>
             </div>
+            
           </div>
         ) : view === 'profile' && user ? (
           <>
@@ -812,14 +842,32 @@ export default function Auth() {
               <button className="auth-button" onClick={handleLogout}>Logout</button>
             </div>
             
-            <div className="auth-explore-section">
-              <button 
-                className="auth-explore-button" 
-                onClick={() => window.history.back()}
-              >
-                Continue Exploring <span className='navigation-back'><ChevronRight/></span>
-              </button>
-            </div>
+ <div className="auth-buttons-row">
+  {redirectPath && (
+    <button 
+      className="auth-mini-button"
+      onClick={() => window.location.href = redirectPath}
+    >
+      Continue to Blog
+    </button>
+  )}
+
+  <button 
+    className="auth-mini-button"
+    onClick={() => window.location.href = "/posts"}
+  >
+    Explore Posts
+  </button>
+
+  <button 
+    className="auth-mini-button"
+    onClick={() => window.location.href = "/"}
+  >
+    Continue to App
+  </button>
+</div>
+
+
           </>
         ) : view === 'login' ? (
           <div className="auth-card">
