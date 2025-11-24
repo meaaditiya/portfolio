@@ -21,10 +21,18 @@ export default function Auth() {
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const params = new URLSearchParams(window.location.search);
-     const redir = params.get('redirect');
-    if (redir) {
-      setRedirectPath(decodeURIComponent(redir));
-    }
+   const redir = params.get('redirect');
+if (redir) {
+  const decoded = decodeURIComponent(redir);
+  setRedirectPath(decoded);
+
+  // STEP 1: SAVE redirect to localStorage
+  localStorage.setItem("redirect_after_login", decoded);
+}
+const storedRedirect = localStorage.getItem("redirect_after_login");
+if (!redir && storedRedirect) {
+  setRedirectPath(storedRedirect);
+}
     const urlToken = params.get('token');
     const googleLogin = params.get('google_login');
     const authError = params.get('error');
@@ -843,14 +851,16 @@ export default function Auth() {
             </div>
             
  <div className="auth-buttons-row">
-  {redirectPath && (
-    <button 
-      className="auth-mini-button"
-      onClick={() => window.location.href = redirectPath}
-    >
-      Continue to Blog
-    </button>
-  )}
+{redirectPath && (
+  <button 
+    className="auth-mini-button"
+    onClick={() =>  {localStorage.removeItem("redirect_after_login"); 
+      window.location.href = redirectPath;} }
+  >
+    Continue to Blog
+  </button>
+)}
+
 
   <button 
     className="auth-mini-button"

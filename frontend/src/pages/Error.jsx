@@ -20,7 +20,7 @@ export default function RetroTVNetworkError() {
           align-items: center;
           justify-content: center;
           margin-top: 5em;
-          margin-top:-50px;
+          margin-top:20px;
         }
 
         .antenna {
