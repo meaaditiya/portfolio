@@ -21,10 +21,6 @@ export default function Auth() {
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const params = new URLSearchParams(window.location.search);
-    const redir = params.get("redirect");
-  if (redir) {
-    setRedirectPath(decodeURIComponent(redir));
-  }
     const urlToken = params.get('token');
     const googleLogin = params.get('google_login');
     const authError = params.get('error');
@@ -35,17 +31,12 @@ export default function Auth() {
     }
 
     // Handle Google OAuth callback
-   if (googleLogin === 'success' && urlToken) {
-  localStorage.setItem('token', urlToken);
-  fetchProfile(urlToken);
- if (redirectPath) {
-  window.location.replace(redirectPath);
-} else {
-  window.location.replace('/');
-}
-
-  return;
-}
+    if (googleLogin === 'success' && urlToken) {
+      localStorage.setItem('token', urlToken);
+      fetchProfile(urlToken);
+      window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
 
     if (authError) {
       setMessage('Google authentication failed. Please try again.');
@@ -78,16 +69,15 @@ export default function Auth() {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
       const data = await response.json();
-    if (response.ok) {
-  setUser(data);
-
-  if (redirectPath) {
-    window.location.replace(redirectPath);
-  } else {
-    setView('profile');  // only for users who VISIT /auth directly
-  }
-}
- else {
+      if (response.ok) {
+        setUser(data);
+        
+        if (redirectPath) {
+          window.location.href = redirectPath;
+        } else {
+          setView('profile');
+        }
+      } else {
         localStorage.removeItem('token');
         setView('login');
       }
@@ -141,12 +131,11 @@ export default function Auth() {
           setUser(data.user);
           setLoginForm({ email: '', password: '' });
           
-        if (redirectPath) {
-  window.location.replace(redirectPath);
-} else {
-  window.location.replace('/');
-}
-
+          if (redirectPath) {
+            window.location.href = redirectPath;
+          } else {
+            setView('profile');
+          }
         } else {
           setMessage(data.message || 'Login failed');
         }
@@ -826,14 +815,7 @@ export default function Auth() {
             <div className="auth-explore-section">
               <button 
                 className="auth-explore-button" 
-              onClick={() => {
-  if (redirectPath) {
-    window.location.replace(redirectPath);
-  } else {
-    window.location.replace('/');
-  }
-}}
-
+                onClick={() => window.history.back()}
               >
                 Continue Exploring <span className='navigation-back'><ChevronRight/></span>
               </button>
