@@ -17,6 +17,7 @@ import { VisitorProvider } from './context/VisitorContext';
 import { useVisitorTracking } from './hooks/useVisitorTracking';
 import './index.css';
 import Auth from './pages/Auth.jsx';
+import ScrollToTop from './ScrollTop.jsx';
 
 const AppContent = () => {
   const visitorData = useVisitorTracking();
@@ -63,6 +64,7 @@ const AppContent = () => {
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );

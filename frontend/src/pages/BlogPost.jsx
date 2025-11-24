@@ -2156,12 +2156,16 @@ const CodeBlock = ({ language, value }) => {
                   </div>
                 </div>
               </div>
-              <button 
-                className="btn btn-primary cta-button"
-                onClick={() => navigate('/blog/subscribe')}
-              >
-                Subscribe Now
-              </button>
+             <button 
+  className="btn btn-primary cta-button"
+  onClick={() => {
+    const currentUrl = window.location.pathname + window.location.search;
+    navigate(`/auth?redirect=${encodeURIComponent(currentUrl)}`);
+  }}
+>
+  Subscribe Now
+</button>
+
               <button 
                 className="btn btn-secondary cta-button-secondary"
                 onClick={() => navigate('/blog')}
