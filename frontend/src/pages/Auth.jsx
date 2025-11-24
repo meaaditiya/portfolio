@@ -141,7 +141,9 @@ if (!redir && storedRedirect) {
           setLoginForm({ email: '', password: '' });
           
           if (redirectPath) {
+            localStorage.removeItem("redirect_after_login")
             window.location.href = redirectPath;
+            
           } else {
             setView('profile');
           }
@@ -857,7 +859,7 @@ if (!redir && storedRedirect) {
     onClick={() =>  {localStorage.removeItem("redirect_after_login"); 
       window.location.href = redirectPath;} }
   >
-    Continue to Blog
+    Blog <ChevronRight className='blog-move'   size={12}/>
   </button>
 )}
 
@@ -866,14 +868,14 @@ if (!redir && storedRedirect) {
     className="auth-mini-button"
     onClick={() => window.location.href = "/posts"}
   >
-    Explore Posts
+    Posts
   </button>
 
   <button 
     className="auth-mini-button"
     onClick={() => window.location.href = "/"}
   >
-    Continue to App
+    Explore
   </button>
 </div>
 
