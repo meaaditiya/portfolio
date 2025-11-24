@@ -4755,50 +4755,7 @@ code:not(.minimal-code-text) {
   }
 }
 
-/* ============================================
-   DARK MODE SUPPORT (Optional)
-   ============================================ */
 
-@media (prefers-color-scheme: dark) {
-  .subscriber-cta-section {
-    border-color: #374151;
-  }
-
-  .cta-content h3 {
-    color: #f9fafb;
-  }
-
-  .cta-content > p {
-    color: #9ca3af;
-  }
-
-  .benefit-item svg {
-    stroke: #f9fafb;
-  }
-
-  .benefit-item span {
-    color: #d1d5db;
-  }
-
-  .cta-button {
-    background: #f9fafb;
-    color: #111827;
-  }
-
-  .cta-button:hover {
-    background: #e5e7eb;
-  }
-
-  .cta-button-secondary {
-    color: #f9fafb;
-    border-color: #4b5563;
-  }
-
-  .cta-button-secondary:hover {
-    background: #1f2937;
-    border-color: #6b7280;
-  }
-}
 
 /* ============================================
    ACCESSIBILITY
