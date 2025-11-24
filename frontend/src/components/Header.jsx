@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import { User } from "lucide-react";
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeButton, setActiveButton] = useState(null);
@@ -38,6 +38,9 @@ const handleBack = () => {
     { name: 'Blogs', path: '/blog' },
     { name: 'Contact', path: '/contact' },
     { name: 'Stream', path: '/stream' },
+   {name: <User size={18} />, path: '/auth'},
+
+
   ];
 
   return (
@@ -278,11 +281,11 @@ const handleBack = () => {
 
         .menu-center {
           position: absolute;
-          top: 50%;
+          top: 10%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 60px;
-          height: 60px;
+          width: 90px;
+          height: 90px;
           background: white;
           border-radius: 50%;
           display: flex;
@@ -294,10 +297,12 @@ const handleBack = () => {
         }
 
         .close-icon {
-          font-size: 28px;
+          font-size: 38px;
           color: #000;
-          font-weight: 300;
+          font-weight: 350;
           line-height: 1;
+          position:relative;
+          top:-2px;
         }
 
         .circular-nav-item {

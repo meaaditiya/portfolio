@@ -1,3 +1,5 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap');
 * {
   margin: 0;
   padding: 0;
@@ -1246,7 +1248,6 @@ body {
 }
 /* Clean Professional Typography Override */
 
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 .about-section {
   font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;

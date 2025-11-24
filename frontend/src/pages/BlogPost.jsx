@@ -103,12 +103,21 @@ const [commentReactionInProgress, setCommentReactionInProgress] = useState({});
 const [isLoggedIn, setIsLoggedIn] = useState(false);
 const [loggedInUser, setLoggedInUser] = useState(null);
 const [commentDeletability, setCommentDeletability] = useState({});
+const [authCheckComplete, setAuthCheckComplete] = useState(false);
   // Fetch blog post details
  useEffect(() => {
   const fetchBlogDetails = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`);
+      const token = localStorage.getItem("token");
+
+const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+});
       const data = await response.json();
       
       console.log('Blog data received:', data);
@@ -307,6 +316,14 @@ useEffect(() => {
   
   checkAuth();
 }, []);
+const isSubscriberOnlyBlog = () => {
+  return blogPost && blogPost.isSubscriberOnly === true;
+};
+
+const canAccessFullContent = () => {
+  // User can access if: logged in OR not subscriber-only
+  return isLoggedIn || !isSubscriberOnlyBlog();
+};
 // Get clean text to read
   const getTextToRead = () => {
     if (!blogPost || !blogPost.content) return '';
@@ -2037,6 +2054,111 @@ const CodeBlock = ({ language, value }) => {
       
       {!isLoading && blogPost && (
         <div className="card blog-post">
+           {isSubscriberOnlyBlog() && !canAccessFullContent() ? (
+          <div className="subscriber-only-preview">
+            {/* Featured Image */}
+            {blogPost.featuredImage && (
+              <div className="featured-image-container">
+                <img 
+                  src={blogPost.featuredImage} 
+                  alt={blogPost.title}
+                  className="blog-post-image subscription-blur"
+                />
+                <div className="subscription-overlay">
+                  <div className="subscription-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <h2>Subscriber Only Content</h2>
+                    <p>This article is exclusively available to our subscribers</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Title, Author, Date - Always visible */}
+            <h1 className="blog-post-title">{blogPost.title}</h1>
+            
+            <div className="blog-post-meta">
+              <span className="blog-post-date">
+                {formatBlogDate(blogPost.publishedAt)}
+              </span>
+              <span className="meta-divider">• Written by</span>
+              <span 
+                className="blog-post-author clickable-author"
+                onClick={() => blogPost.author?._id && fetchAuthorProfile(blogPost.author._id)}
+                style={{ cursor: blogPost.author?._id ? 'pointer' : 'default' }}
+              >
+                {blogPost.author ? `@${blogPost.author.name}` : 'By Aaditiya Tyagi'}
+              </span>
+            </div>
+            
+            {/* Tags */}
+            <div className="blog-post-tags">
+              <div className="blog-post-meta2">
+                <span className="meta-divider2">•</span>
+                <span className="blog-post-reads2">
+                  {uniqueReaders || 0} {uniqueReaders === 1 ? 'read' : 'reads'}
+                </span>
+              </div>
+              {blogPost.tags && blogPost.tags.map((tag, index) => (
+                <span key={index} className="tag"># {tag}</span>
+              ))}
+            </div>
+            
+            {/* Summary */}
+            <div className="subscriber-preview-summary">
+              <p className="summary-text">{blogPost.summary}</p>
+            </div>
+            
+            {/* Call to Action - Subscribe */}
+            <div className="subscriber-cta-section">
+              <div className="cta-content">
+                <h3>Unlock Full Access</h3>
+                <p>Subscribe to read this article and access exclusive content from our writers</p>
+                <div className="cta-benefits">
+                  <div className="benefit-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Full article access</span>
+                  </div>
+                  <div className="benefit-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Ad-free reading</span>
+                  </div>
+                  <div className="benefit-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Exclusive member content</span>
+                  </div>
+                  <div className="benefit-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Support great writing</span>
+                  </div>
+                </div>
+              </div>
+              <button 
+                className="btn btn-primary cta-button"
+                onClick={() => navigate('/blog/subscribe')}
+              >
+                Subscribe Now
+              </button>
+              <button 
+                className="btn btn-secondary cta-button-secondary"
+                onClick={() => navigate('/blog')}
+              >
+                Browse Other Articles
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
     <h1 className="blog-post-title">{blogPost.title}</h1>
           <div className="blog-post-meta">
   <span className="blog-post-date">
@@ -2701,7 +2823,10 @@ const CodeBlock = ({ language, value }) => {
       ))}
     </div>
   </div>
+  
 )}
+</>
+        )}
         </div>
       )}
       

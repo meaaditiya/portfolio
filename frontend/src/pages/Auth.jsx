@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Edit2, CheckCircle } from 'lucide-react';
+import { Edit2, CheckCircle,ChevronRight } from 'lucide-react';
 
 const API_BASE = 'https://connectwithaaditiyamg.onrender.com/api';
 
@@ -11,6 +11,9 @@ export default function Auth() {
   const [token, setToken] = useState('');
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState('');
+  
+  // ✅ NEW: Add state for redirect path
+  const [redirectPath, setRedirectPath] = useState(null);
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '' });
@@ -19,14 +22,21 @@ export default function Auth() {
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    
+    // ✅ NEW: Capture redirect parameter from URL
+    const redirect = params.get('redirect');
+    if (redirect) {
+      setRedirectPath(decodeURIComponent(redirect));
+    }
+    
     if (savedToken) {
       fetchProfile(savedToken);
     } else {
       setView('login');
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
     if (urlToken) {
       setToken(urlToken);
       const page = window.location.pathname;
@@ -47,7 +57,13 @@ export default function Auth() {
       const data = await response.json();
       if (response.ok) {
         setUser(data);
-        setView('profile');
+        
+        // ✅ NEW: If already logged in and there's a redirect, go there
+        if (redirectPath) {
+          window.location.href = redirectPath;
+        } else {
+          setView('profile');
+        }
       } else {
         localStorage.removeItem('token');
         setView('login');
@@ -86,6 +102,7 @@ export default function Auth() {
     }
   };
 
+  // ✅ MODIFIED: Updated handleLogin with redirect logic
   const handleLogin = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -100,8 +117,16 @@ export default function Auth() {
         if (data.token) {
           localStorage.setItem('token', data.token);
           setUser(data.user);
-          setView('profile');
           setLoginForm({ email: '', password: '' });
+          
+          // ✅ NEW: Check if there's a redirect path
+          if (redirectPath) {
+            // Redirect to the page user came from
+            window.location.href = redirectPath;
+          } else {
+            // Show profile if coming directly to auth
+            setView('profile');
+          }
         } else {
           setMessage(data.message || 'Login failed');
         }
@@ -113,6 +138,7 @@ export default function Auth() {
       });
   };
 
+  // ✅ MODIFIED: Updated handleRegister with redirect logic
   const handleRegister = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -127,6 +153,8 @@ export default function Auth() {
         if (data.message && data.message.includes('successful')) {
           setMessage('Registration successful. Check your email to verify.');
           setRegisterForm({ name: '', email: '', password: '' });
+          
+          // ✅ NEW: Preserve redirect when switching to login
           setTimeout(() => setView('login'), 2000);
         } else {
           setMessage(data.message || 'Registration failed');
@@ -264,10 +292,11 @@ export default function Auth() {
       <style>{`
         .auth-wrapper {
           display: flex;
+          flex-direction: column;
           justify-content: center;
           align-items: center;
           min-height: 100vh;
-          background: white;
+          background: none;
           padding: 20px;
         }
 
@@ -479,12 +508,20 @@ export default function Auth() {
           border: 1px solid #d0d0d0;
           font-size: 14px;
           border-radius: 4px;
+          
         }
 
         .name-edit-input:focus {
           outline: none;
           border-color: #000;
         }
+        .namesave-control {
+        margin-top:10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap:5px;
+}
 
         .small-button {
           padding: 8.8px 12px;
@@ -495,6 +532,8 @@ export default function Auth() {
           border-radius: 4px;
           cursor: pointer;
           transition: background-color 0.2s;
+          width:100%;
+          
         }
 
         .small-button:hover {
@@ -527,6 +566,44 @@ export default function Auth() {
           align-items: center;
           min-height: 200px;
         }
+
+        .auth-explore-section {
+          width: 100%;
+          max-width: 400px;
+          margin-top: 20px;
+          text-align: center;
+          padding: 20px;
+         
+          border-radius: 8px;
+        }
+
+        .auth-explore-text {
+          font-size: 14px;
+          color: #333;
+          margin-bottom: 16px;
+          line-height: 1.6;
+        }
+
+        .auth-explore-button {
+          width: 100%;
+          padding: 12px;
+          background: none;
+          color: black;
+          border: none;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          border-radius: 4px;
+          transition: background-color 0.2s;
+        }
+        .navigation-back{
+        position:relative;
+        top:7px;
+        }
+        .navigation-back:hover{
+        transform: translateX(-50%);
+       }
+       
       `}</style>
 
       <div className="auth-wrapper">
@@ -537,81 +614,100 @@ export default function Auth() {
             </div>
           </div>
         ) : view === 'profile' && user ? (
-          <div className="auth-card">
-            <div className="auth-avatar"></div>
-            
-            <div className="auth-profile-field">
-              <p className="auth-profile-label">Name</p>
-              {editingName ? (
-                <div className="name-edit-container">
-                  <input
-                    type="text"
-                    className="name-edit-input"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Enter new name"
-                    autoFocus
-                  />
-                  <button 
-                    className="small-button" 
-                    onClick={handleUpdateName}
-                    disabled={loading}
-                  >
-                    Save
-                  </button>
-                  <button 
-                    className="small-button cancel" 
-                    onClick={() => {
-                      setEditingName(false);
-                      setNewName('');
-                      setMessage('');
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <p className="auth-profile-value">
-                  {user.name}
-                  <span 
-                    className="edit-icon" 
-                    onClick={() => {
-                      setEditingName(true);
-                      setNewName(user.name);
-                    }}
-                    title="Edit name"
-                  >
-                    <Edit2 size={16} />
-                  </span>
-                </p>
-              )}
-            </div>
-
-            <div className="auth-profile-field">
-              <p className="auth-profile-label">Email</p>
-              <p className="auth-profile-value">
-                {user.email}
-                {user.isVerified && (
-                  <span className="verified-badge">
-                    <CheckCircle size={18} className="verified-icon" />
-                    Verified
-                  </span>
-                )}
-              </p>
-            </div>
-
-            {user.updatedAt && (
+          <>
+            <div className="auth-card">
+              <div className="auth-avatar"></div>
+              
               <div className="auth-profile-field">
-                <p className="last-updated">
-                  Last updated: {formatDate(user.updatedAt)}
+                <p className="auth-profile-label">Name</p>
+                {editingName ? (
+                  <>
+                  <div className="name-edit-container">
+                    <input
+                      type="text"
+                      className="name-edit-input"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="Enter new name"
+                      autoFocus
+                    />
+                   
+                  </div>
+                  <div className='namesave-control'>
+                   <button 
+                      className="small-button" 
+                      onClick={handleUpdateName}
+                      disabled={loading}
+                    >
+                      Save
+                    </button>
+                    <button 
+                      className="small-button cancel" 
+                      onClick={() => {
+                        setEditingName(false);
+                        setNewName('');
+                        setMessage('');
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    </div>
+                   </>
+                  
+                ) : (
+                  <p className="auth-profile-value">
+                    {user.name}
+                    <span 
+                      className="edit-icon" 
+                      onClick={() => {
+                        setEditingName(true);
+                        setNewName(user.name);
+                      }}
+                      title="Edit name"
+                    >
+                      <Edit2 size={16} />
+                    </span>
+                  </p>
+                )}
+              </div>
+
+              <div className="auth-profile-field">
+                <p className="auth-profile-label">Email</p>
+                <p className="auth-profile-value">
+                  {user.email}
+                  {user.isVerified && (
+                    <span className="verified-badge">
+                      <CheckCircle size={18} className="verified-icon" />
+                      Verified
+                    </span>
+                  )}
                 </p>
               </div>
-            )}
 
-            {message && <p className={`auth-message ${message.includes('successfully') ? 'success' : 'error'}`}>{message}</p>}
+              {user.updatedAt && (
+                <div className="auth-profile-field">
+                  <p className="last-updated">
+                    Last updated: {formatDate(user.updatedAt)}
+                  </p>
+                </div>
+              )}
 
-            <button className="auth-button" onClick={handleLogout}>Logout</button>
-          </div>
+              {message && <p className={`auth-message ${message.includes('successfully') ? 'success' : 'error'}`}>{message}</p>}
+
+              <button className="auth-button" onClick={handleLogout}>Logout</button>
+            </div>
+            
+            {/* Continue Exploring Section */}
+            <div className="auth-explore-section">
+             
+              <button 
+                className="auth-explore-button" 
+                onClick={() => window.history.back()}
+              >
+                Continue Exploring <span className='navigation-back'><ChevronRight/></span>
+              </button>
+            </div>
+          </>
         ) : view === 'login' ? (
           <div className="auth-card">
             <h2 className="auth-heading">Login</h2>
