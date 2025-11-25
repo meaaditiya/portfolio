@@ -42,7 +42,7 @@ body {
   margin: 0 auto;
   padding: 4rem 2rem;
   min-height: 100vh;
-  margin-top: 20px;
+  margin-top: -110px;
 }
 
 /* ========== BLOG HEADER ========== */
@@ -55,6 +55,8 @@ body {
   justify-content: space-between;
   align-items: center;
   max-width: 100%;
+  position: relative;
+  top:30px;
 }
 
 .section-title-new {
@@ -1021,10 +1023,10 @@ body {
 
 @media (max-width: 768px) {
   .section {
-    padding: 2rem 1.5rem;
+    padding: 2rem .5rem;
   }
 .section{
-   margin-top: 70px;
+   margin-top: -70px;
 }
   .blog-header-content {
     flex-direction: column;

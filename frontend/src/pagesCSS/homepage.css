@@ -5,7 +5,7 @@
 .aaditiya-connection-sidebar {
   position: absolute;
   right: 2.5rem;
-  top: 50%;
+  top: 5.5%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@
 .aaditiya-connection-line {
   width: 1.5px;
   height: 80px;
-  background: rgba(26, 26, 26, 0.15);
+  background: black;
   margin-top: 1rem;
 }
 
@@ -353,6 +353,9 @@ background-color: #F8F4EC;
 /* Laptop (992px - 1199px) */
 @media (min-width: 992px) and (max-width: 1199px) {
   .aaditiya-connection-sidebar {
+    position: absolute;
+  right: 2.5rem;
+  top: 4.8%;
     right: 1.5rem;
   }
   
@@ -386,6 +389,9 @@ background-color: #F8F4EC;
 /* Tablet Landscape (768px - 991px) */
 @media (min-width: 768px) and (max-width: 991px) {
   .aaditiya-connection-sidebar {
+    position: absolute;
+  right: 2.5rem;
+  top: 5.2%;
     right: 1.5rem;
     gap: 1.5rem;
   }
@@ -444,6 +450,9 @@ background-color: #F8F4EC;
 /* Tablet Portrait (601px - 767px) */
 @media (min-width: 601px) and (max-width: 767px) {
   .aaditiya-connection-sidebar {
+  position: absolute;
+  right: 2.5rem;
+  top: 3%;
     right: 1.2rem;
     gap: 1.3rem;
   }
@@ -516,6 +525,9 @@ background-color: #F8F4EC;
 /* Mobile Large (481px - 600px) */
 @media (min-width: 481px) and (max-width: 600px) {
   .aaditiya-connection-sidebar {
+    position: absolute;
+  right: 2.5rem;
+  top: 3.5%;
     right: 1rem;
     gap: 1rem;
   }
@@ -616,6 +628,9 @@ background-color: #F8F4EC;
 /* Mobile Medium (376px - 480px) */
 @media (max-width: 480px) {
   .aaditiya-connection-sidebar {
+    position: absolute;
+  right: 2.5rem;
+  top: 4.2%;
     right: 0.8rem;
     gap: 0.9rem;
   }

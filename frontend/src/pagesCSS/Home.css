@@ -82,7 +82,7 @@ body {
   width: 100vw;
   margin: 0;
   padding: 0;
-  margin-top: 50px;
+  margin-top: -50px;
 }
 
 .portfolio-main {
@@ -638,7 +638,7 @@ a:focus-visible {
 }
 .stream-section{
   position: relative;
-  top:-100px;
+  top:-80px;
   
 }
 /* Increase width of sections and containers to cover more of the screen */

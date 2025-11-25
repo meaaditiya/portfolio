@@ -50,7 +50,8 @@
   margin: 0 auto;
   padding: 3rem 2rem;
   min-height: 100vh;
-  margin-top: 70px;
+  margin-top: -70px;
+  
 }
 
 .tyagi-project-container {
@@ -851,7 +852,7 @@
 
 @media (max-width: 768px) {
   .tyagi-project-section {
-    padding: 2rem 1.5rem;
+    padding: 2rem .8rem;
   }
 
   /* Force single column layout with full-width images */

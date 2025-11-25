@@ -234,7 +234,11 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
   if (isInitialLoading) {
     return (
       <section className="section">
-        <h2 className="section-title title2">Recent blog posts</h2>
+         <h1 className="tyagi-hero-title">
+              Blogs and 
+              <span className="tyagi-hero-gradient"> Writings</span>
+            </h1>
+          
         <BlogSkeletonLoader count={10} />
       </section>
     );
@@ -244,7 +248,10 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     <section className="section">
       <div className="blog-header-new">
         <div className="blog-header-content">
-          <h2 className="section-title-new">Recent blog posts</h2>
+        <h1 className="tyagi-hero-title">
+              Blogs and 
+              <span className="tyagi-hero-gradient"> Writings</span>
+            </h1>
           
           <div className="header-buttons">
             {/* Vector Search Button */}

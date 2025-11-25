@@ -54,7 +54,7 @@ body {
   justify-content: center;
   align-items: center;
   background: var(--color-white);
-  margin-top: 50px;
+  margin-top: -50px;
 }
 
 /* About Container */
@@ -623,7 +623,7 @@ body {
 @media (max-width: 1024px) {
   .about-section {
     padding: 3.5rem 1rem;
-    margin-top: 70px;
+    margin-top: -70px;
   }
 
   .about-hero-content {
@@ -683,7 +683,7 @@ body {
 @media (max-width: 768px) {
   .about-section {
     padding: 3rem 0.875rem;
-    margin-top: 65px;
+    margin-top: -65px;
   }
 
   .about-hero {
@@ -769,7 +769,7 @@ body {
 @media (max-width: 640px) {
   .about-section {
     padding: 2.5rem 0.75rem;
-    margin-top: 60px;
+    margin-top: -60px;
   }
 
   .about-hero {

@@ -15,6 +15,7 @@ import NotFound from './pages/Notfound.jsx';
 import UserBlogSubmission from './pages/UserBlogSubmission.jsx';
 import { VisitorProvider } from './context/VisitorContext';
 import { useVisitorTracking } from './hooks/useVisitorTracking';
+import DotsLoader from './pages/DotsLoader.jsx';
 import './index.css';
 import Auth from './pages/Auth.jsx';
 import ScrollToTop from './ScrollTop.jsx';
@@ -50,6 +51,7 @@ const AppContent = () => {
             <Route path="/verify-email" element={<Auth />} />
             <Route path="/reset-password" element={<Auth />} />
             <Route path="/forgot-password" element={<Auth />} />
+            <Route path="/dots" element={<DotsLoader/>}/>
             <Route path="*" element={<NotFound/>}/>
 
           </Routes>
