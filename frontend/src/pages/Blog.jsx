@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BlogSkeletonLoader from './BlogSkeletonLoader';
+import { Crown } from 'lucide-react';
 import Error from './Error.jsx';
 import '../pagesCSS/blog.css';
 
@@ -426,6 +427,9 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
         {filteredBlogs.length > 0 && (
           <div className="blog-card-featured" onClick={() => navigate(`/blog/${filteredBlogs[0].slug || filteredBlogs[0]._id}`)}>
             <div className="featured-image-wrapper">
+              <div className="image-overlay-text">
+    {filteredBlogs[0].readTime} min read
+  </div>
               {filteredBlogs[0].featuredImage ? (
                 <img src={filteredBlogs[0].featuredImage} alt={filteredBlogs[0].title} className="featured-image" />
               ) : (
@@ -439,6 +443,12 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
                 <span className="featured-date">
                   {new Date(filteredBlogs[0].publishedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
+                {filteredBlogs[0].isSubscriberOnly && ( 
+                <>
+              <span className='premium-badge'><Crown/></span>
+              <span className='premium-text'>Subscibers</span>
+                </>
+              )}
               </div>
               <h3 className="featured-title">{filteredBlogs[0].title}</h3>
               <p className="featured-summary">{filteredBlogs[0].summary}</p>
@@ -458,6 +468,9 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
           {filteredBlogs.slice(1).map((blog) => (
             <div key={blog._id} className="blog-card-small" onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}>
               <div className="small-image-wrapper">
+                 <div className="image-overlay-text-small">
+    {blog.readTime} min read
+  </div>
                 {blog.featuredImage ? (
                   <img src={blog.featuredImage} alt={blog.title} className="small-image" />
                 ) : (
@@ -471,6 +484,12 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
                   <span className="small-date">
                     {new Date(blog.publishedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
+                  {blog.isSubscriberOnly && ( 
+                <>
+              <span className='premium-badge'><Crown/></span>
+              <span className='premium-text'>Subscibers</span>
+                </>
+              )}
                 </div>
                 <h3 className="small-title">{blog.title}</h3>
                 <p className="small-summary">{blog.summary}</p>

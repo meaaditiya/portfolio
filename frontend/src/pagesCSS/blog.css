@@ -1500,3 +1500,60 @@ body {
   0% { width: 0%; }
   100% { width: 100%; }
 }
+
+
+.image-overlay-text {
+  position: absolute;
+  top: 10px;       /* distance from top */
+  left: 10px;      /* distance from left */
+  background: rgba(0, 0, 0, 0.55); /* premium dark blur */
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  backdrop-filter: blur(4px);  /* modern glass effect */
+  z-index: 2; /* ensures it sits above the image */
+}
+
+
+
+.image-overlay-text-small {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #fff;
+  backdrop-filter: blur(3px);
+  z-index: 2;
+}
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #b38b2a; /* darker premium gold */
+  font-size: 17px;
+  padding-left: 4px; /* space only before the crown */
+}
+
+.premium-badge svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.6;
+  stroke: #b38b2a;
+}
+
+.premium-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #b7922c; /* slightly lighter dark gold */
+  margin-left: 3px; /* very small spacing between crown & text */
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+}
+

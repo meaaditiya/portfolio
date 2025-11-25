@@ -761,13 +761,15 @@ if (!redir && storedRedirect) {
 .auth-mini-button {
   flex: 1;               /* makes each button equal size in same row */
   padding: 10px;
-  background: none;      /* transparent background */
-  border: 1px solid #000;
-  border-radius: 4px;
+  background-color:white;      /* transparent background */
+  border:white;
+ 
+  
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
+  
 }
 
 .auth-mini-button:hover {
