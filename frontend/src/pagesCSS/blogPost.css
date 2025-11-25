@@ -4780,3 +4780,143 @@ code:not(.minimal-code-text) {
 .price-free-heading{
   text-align: center;
 }
+/* ============================================
+   USER AVATAR STYLES - LEFT ALIGNED
+   ============================================ */
+
+/* Comment User Avatar */
+.comment-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-right: 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.comment-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  background: black;
+  border-radius: 50%;
+}
+
+/* Reply User Avatar (smaller) */
+.reply-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-right: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reply-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.reply-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 50%;
+}
+
+/* Author Info Layout - Horizontal (Avatar + Name in Same Row) */
+.comment-author-info {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 0;
+  flex: 1;
+}
+
+.comment-author-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.reply-author-info {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 0;
+  flex: 1;
+}
+
+.reply-author-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+/* Loading/Error State */
+.comment-avatar-image:not([src]),
+.reply-avatar-image:not([src]) {
+  display: none;
+}
+
+.comment-user-avatar img[src=""],
+.reply-user-avatar img[src=""] {
+  display: none;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .comment-user-avatar {
+    width: 36px;
+    height: 36px;
+    margin-right: 10px;
+  }
+  
+  .comment-avatar-placeholder {
+    font-size: 14px;
+  }
+  
+  .reply-user-avatar {
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+  }
+  
+  .reply-avatar-placeholder {
+    font-size: 12px;
+  }
+}

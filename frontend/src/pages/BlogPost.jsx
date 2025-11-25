@@ -316,6 +316,23 @@ useEffect(() => {
   
   checkAuth();
 }, []);
+const getUserProfilePicture = (comment) => {
+  // Check if comment has user profile picture (for authenticated users)
+  if (comment.user?.profilePicture) {
+    return comment.user.profilePicture;
+  }
+  return null;
+};
+
+// Get initials for fallback avatar
+const getInitials = (name) => {
+  if (!name) return 'U';
+  const words = name.trim().split(' ');
+  if (words.length >= 2) {
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  }
+  return name[0].toUpperCase();
+};
 const isSubscriberOnlyBlog = () => {
   return blogPost && blogPost.isSubscriberOnly === true;
 };
@@ -2479,14 +2496,38 @@ const CodeBlock = ({ language, value }) => {
     .slice(0, visibleCommentsCount)
     .map(comment => (
                       <div className={`comment-card ${comment.isAuthorComment ? 'author-comment' : ''}`} key={comment._id}>
-                        <div className="comment-header">
-                          <div className="comment-author-info">
-                            <strong className="comment-author">
-                              {comment.user.name}
-                              {comment.isAuthorComment && <span className="author-badge">Author</span>}
-                            </strong>
-                            <span className="comment-date">{formatDate(comment.createdAt)}</span>
-                          </div>
+  <div className="comment-header">
+    <div className="comment-author-info">
+      {/* ✅ ADD PROFILE PICTURE */}
+      <div className="comment-user-avatar">
+        {getUserProfilePicture(comment) ? (
+          <img 
+            src={getUserProfilePicture(comment)} 
+            alt={comment.user.name}
+            className="comment-avatar-image"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <div 
+          className="comment-avatar-placeholder"
+          style={{ display: getUserProfilePicture(comment) ? 'none' : 'flex' }}
+        >
+          {getInitials(comment.user.name)}
+        </div>
+      </div>
+      
+      {/* ✅ WRAP TEXT IN CONTAINER */}
+      <div className="comment-author-text">
+        <strong className="comment-author">
+          {comment.user.name}
+          {comment.isAuthorComment && <span className="author-badge">Author</span>}
+        </strong>
+        <span className="comment-date">{formatDate(comment.createdAt)}</span>
+      </div>
+    </div>
                           
                         {/* Show delete button only for non-author comments and if verified ownership */}
 {!comment.isAuthorComment && commentDeletability[comment._id] === true && (
@@ -2658,19 +2699,40 @@ const CodeBlock = ({ language, value }) => {
                                     return new Date(b.createdAt) - new Date(a.createdAt);
                                   })
                                   .map(reply => (
-                                    <div 
-                                      className={`reply-card ${reply.isAuthorComment ? 'author-reply' : ''}`} 
-                                      key={reply._id}
-                                    >
-                                      <div className="reply-header">
-                                        <div className="reply-author-info">
-                                          <strong className="reply-author">
-                                            {reply.user.name}
-                                            {reply.isAuthorComment && <span className="author-badge1">Author</span>}
-                                          </strong>
-                                          <span className="reply-date">{formatDate(reply.createdAt)}</span>
-                                        </div>
-                                        
+                                  
+                                        <div className={`reply-card ${reply.isAuthorComment ? 'author-reply' : ''}`} key={reply._id}>
+  <div className="reply-header">
+    <div className="reply-author-info">
+      {/* ✅ ADD PROFILE PICTURE FOR REPLIES */}
+      <div className="reply-user-avatar">
+        {getUserProfilePicture(reply) ? (
+          <img 
+            src={getUserProfilePicture(reply)} 
+            alt={reply.user.name}
+            className="reply-avatar-image"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <div 
+          className="reply-avatar-placeholder"
+          style={{ display: getUserProfilePicture(reply) ? 'none' : 'flex' }}
+        >
+          {getInitials(reply.user.name)}
+        </div>
+      </div>
+      
+      {/* ✅ WRAP TEXT IN CONTAINER */}
+      <div className="reply-author-text">
+        <strong className="reply-author">
+          {reply.user.name}
+          {reply.isAuthorComment && <span className="author-badge1">Author</span>}
+        </strong>
+        <span className="reply-date">{formatDate(reply.createdAt)}</span>
+      </div>
+    </div>
                                        {/* Delete button for user's own replies with verified ownership */}
 {!reply.isAuthorComment && commentDeletability[reply._id] === true && (
   <button
