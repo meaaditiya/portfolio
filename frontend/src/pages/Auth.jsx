@@ -141,7 +141,7 @@ if (!redir && storedRedirect) {
           setLoginForm({ email: '', password: '' });
           
           if (redirectPath) {
-            localStorage.removeItem("redirect_after_login")
+            localStorage.removeItem("redirect_after_login");
             window.location.href = redirectPath;
             
           } else {
@@ -433,37 +433,46 @@ if (!redir && storedRedirect) {
           border-left: 3px solid #28a745;
         }
 
-        .auth-avatar {
-          width: 85px;
-          height: 85px;
-          background-color: #e0e0e0;
-          border-radius: 50%;
-          margin: 0 auto 24px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-        }
+ .auth-avatar {
+  width: 85px;
+  height: 85px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden; /* ADD THIS */
+}
 
-        .auth-avatar::before {
-          content: '';
-          position: absolute;
-          width: 28px;
-          height: 28px;
-          background-color: #999;
-          border-radius: 50%;
-          top: 10px;
-        }
+/* ADD THIS NEW CLASS */
+.auth-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 
-        .auth-avatar::after {
-          content: '';
-          position: absolute;
-          width: 50px;
-          height: 28px;
-          background-color: #999;
-          border-radius: 50% 50% 0 0;
-          bottom: 14px;
-        }
+.auth-avatar::before {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background-color: #999;
+  border-radius: 50%;
+  top: 10px;
+}
+
+.auth-avatar::after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 28px;
+  background-color: #999;
+  border-radius: 50% 50% 0 0;
+  bottom: 14px;
+}
 
         .auth-profile-field {
           margin-bottom: 16px;
@@ -771,8 +780,15 @@ if (!redir && storedRedirect) {
         ) : view === 'profile' && user ? (
           <>
             <div className="auth-card">
-              <div className="auth-avatar"></div>
-              
+              <div className="auth-avatar">
+        {user.profilePicture ? (
+          <img 
+            src={user.profilePicture} 
+            alt={user.name}
+            className="auth-avatar-image"
+          />
+        ) : null}
+        </div>
               <div className="auth-profile-field">
                 <p className="auth-profile-label">Name</p>
                 {editingName ? (
