@@ -462,6 +462,7 @@ if (!redir && storedRedirect) {
   background-color: #999;
   border-radius: 50%;
   top: 10px;
+  z-index: 1;
 }
 
 .auth-avatar::after {
@@ -472,6 +473,13 @@ if (!redir && storedRedirect) {
   background-color: #999;
   border-radius: 50% 50% 0 0;
   bottom: 14px;
+  z-index: 1;
+}
+
+/* ADD THIS NEW RULE */
+.auth-avatar.has-image::before,
+.auth-avatar.has-image::after {
+  display: none;
 }
 
         .auth-profile-field {
@@ -780,15 +788,15 @@ if (!redir && storedRedirect) {
         ) : view === 'profile' && user ? (
           <>
             <div className="auth-card">
-              <div className="auth-avatar">
-        {user.profilePicture ? (
-          <img 
-            src={user.profilePicture} 
-            alt={user.name}
-            className="auth-avatar-image"
-          />
-        ) : null}
-        </div>
+           <div className={`auth-avatar ${user.profilePicture ? 'has-image' : ''}`}>
+  {user.profilePicture ? (
+    <img 
+      src={user.profilePicture} 
+      alt={user.name}
+      className="auth-avatar-image"
+    />
+  ) : null}
+</div>
               <div className="auth-profile-field">
                 <p className="auth-profile-label">Name</p>
                 {editingName ? (
