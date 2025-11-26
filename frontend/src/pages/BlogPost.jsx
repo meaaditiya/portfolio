@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
+import { MessageCircleReply } from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
@@ -9,8 +10,7 @@ import { Volume2, Pause, Play, Square , ChevronDown} from 'lucide-react';
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
 import { Copy, Check } from 'lucide-react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -2123,10 +2123,7 @@ const CodeBlock = ({ language, value }) => {
               ))}
             </div>
             
-            {/* Summary */}
-            <div className="subscriber-preview-summary">
-              <p className="summary-text">{blogPost.summary}</p>
-            </div>
+         
             
             {/* Call to Action - Subscribe */}
             <div className="subscriber-cta-section">
@@ -2565,15 +2562,20 @@ const CodeBlock = ({ language, value }) => {
                               {userCommentReactions[comment._id] === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
                               <span>{commentReactions[comment._id]?.dislikes || 0}</span>
                             </button>
+<button
+  className="reply-btn"
+  onClick={() => {
+    toggleReplyForm(comment._id);
+  }}
+>
+  <MessageCircleReply />
+</button>
+
+
                           </div>
                           
                           {/* Reply Button */}
-                          <button
-                            className="reply-btn"
-                            onClick={() => toggleReplyForm(comment._id)}
-                          >
-                            Reply
-                          </button>
+                          
                           
                           {/* Show Replies Button */}
                           {comment.repliesCount > 0 && (
@@ -2648,7 +2650,7 @@ const CodeBlock = ({ language, value }) => {
     )}
     
     <div className="form-group">
-      <label htmlFor={`reply-content-${comment._id}`}>Reply *</label>
+      <label htmlFor={`reply-content-${comment._id}`}>Reply</label>
       <textarea
         id={`reply-content-${comment._id}`}
         name="content"
@@ -2666,14 +2668,14 @@ const CodeBlock = ({ language, value }) => {
     <div className="reply-form-actions">
       <button 
         type="button" 
-        className="btn btn-secondary"
+        className="btn btn-primary"
         onClick={() => toggleReplyForm(comment._id)}
       >
         Cancel
       </button>
       <button 
         type="submit" 
-        className="btn btn-primary"
+        className="submit-comment btn btn-primary"
         disabled={replyLoading === comment._id}
       >
         {replyLoading === comment._id ? 'Submitting...' : 'Submit Reply'}

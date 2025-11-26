@@ -42,7 +42,7 @@ body {
   margin: 0 auto;
   padding: 4rem 2rem;
   min-height: 100vh;
-  margin-top: -110px;
+  margin-top: -100px;
 }
 
 /* ========== BLOG HEADER ========== */
@@ -56,7 +56,7 @@ body {
   align-items: center;
   max-width: 100%;
   position: relative;
-  top:30px;
+  top:20px;
 }
 
 .section-title-new {

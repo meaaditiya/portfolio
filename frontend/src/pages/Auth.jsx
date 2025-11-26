@@ -1084,24 +1084,7 @@ Continue with Google
           <button type="button" onClick={() => { setView('forgot'); setMessage(''); }} className="auth-link-button">Forgot Password?</button>
         </div>
 
-        <div className="benefits-section">
-          <div className="benefit-card">
-            <div className="benefit-title">Share Ideas</div>
-            <div className="benefit-text">Express yourself through writing</div>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-title">Build Audience</div>
-            <div className="benefit-text">Grow your readership</div>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-title">Connect</div>
-            <div className="benefit-text">Engage with readers</div>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-title">Create</div>
-            <div className="benefit-text">Write and publish freely</div>
-          </div>
-        </div>
+       
       </>
     ) : view === 'register' ? (
       <>
