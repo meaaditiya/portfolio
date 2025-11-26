@@ -2476,19 +2476,7 @@ const CodeBlock = ({ language, value }) => {
     </div>
     
     <div className="reaction-button-wrapper">
-      {reactions.dislikes > 0 && (
-        <OverlappingAvatars
-          users={reactionUsers.filter(u => u.type === 'dislike')}
-          total={reactions.dislikes}
-          onClick={(e) => {
-            e.stopPropagation();
-            fetchBlogReactionUsers('dislike');
-            setReactionUsersType('dislike');
-            setShowReactionUsersModal(true);
-          }}
-        />
-      )}
-
+     
       <button
       
         className={`reaction-btn ${userReaction === 'dislike' ? 'active' : ''} ${reactionInProgress ? 'disabled' : ''}`}
