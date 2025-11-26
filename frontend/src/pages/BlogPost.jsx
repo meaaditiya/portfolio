@@ -104,24 +104,35 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
 const [loggedInUser, setLoggedInUser] = useState(null);
 const [commentDeletability, setCommentDeletability] = useState({});
 const [authCheckComplete, setAuthCheckComplete] = useState(false);
+// Add these new state variables after your existing state declarations
+const [showReactionUsersModal, setShowReactionUsersModal] = useState(false);
+const [reactionUsers, setReactionUsers] = useState([]);
+const [reactionUsersLoading, setReactionUsersLoading] = useState(false);
+const [reactionUsersType, setReactionUsersType] = useState('like'); // 'like' or 'dislike'
+const [reactionUsersTarget, setReactionUsersTarget] = useState(null); // { type: 'blog' | 'comment', id: string }
+
+const [showCommentReactionUsersModal, setShowCommentReactionUsersModal] = useState(false);
+const [commentReactionUsers, setCommentReactionUsers] = useState({});
   // Fetch blog post details
- useEffect(() => {
+useEffect(() => {
   const fetchBlogDetails = async () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
 
-const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
-});
+      const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blogs/${slug}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
       const data = await response.json();
       
       console.log('Blog data received:', data);
       
+      // ✅ SET BLOG POST FIRST
       setBlogPost(data);
       setUniqueReaders(data.uniqueReaders || 0);
       
@@ -137,17 +148,22 @@ const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blo
         });
       }
       
-     if (data._id) {
-  // OPTIMIZED: Don't block blog render waiting for reactions/comments
-  fetchReactions(data._id);
-  
-  if (parsedInfo && parsedInfo.email) {
-    checkUserReaction(data._id, parsedInfo.email);
-  }
-  
-  // Load comments in background without awaiting
-  fetchCommentsWithReactions(data._id, 1, parsedInfo);
-}
+      // ✅ NOW fetch reactions/comments AFTER blogPost is set
+      if (data._id) {
+        // Fetch reactions
+        fetchReactions(data._id);
+        
+        // ✅ FIXED: Pass data._id instead of blogPost._id (which is still null)
+        fetchBlogReactionUsers(data._id);
+        
+        // Check user reaction
+        if (parsedInfo && parsedInfo.email) {
+          checkUserReaction(data._id, parsedInfo.email);
+        }
+        
+        // Load comments
+        fetchCommentsWithReactions(data._id, 1, parsedInfo);
+      }
     } catch (err) {
       setError('Failed to fetch blog details');
       console.error(err);
@@ -158,7 +174,6 @@ const response = await fetch(`https://connectwithaaditiyamg.onrender.com/api/blo
   
   fetchBlogDetails();
 }, [slug]);
-
   // When modal opens
   useEffect(() => {
     if (showShareModal) {
@@ -576,7 +591,7 @@ const submitReaction = async (type, userInfo) => {
     
     // Fetch accurate counts from server
     await fetchReactions(blogPost._id);
-    
+    await fetchBlogReactionUsers(blogPost._id);
     // Close modal if open
     setShowReactionModal(false);
     
@@ -1489,7 +1504,7 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
     
     // Refresh comment reaction counts from server
     await fetchCommentReactions(commentId);
-    
+    await fetchCommentReactionUsers(commentId); 
     // Close modal if open
     setShowReactionModal(false);
     
@@ -2021,7 +2036,134 @@ const getSocialIcon = (platform) => {
 // ============================================
 // 1. COMPONENT - Add this before return() in BlogPost
 // ============================================
+// Fetch users who reacted to blog
+const fetchBlogReactionUsers = async (blogId = null, type = null) => {
+  // Use passed blogId or fall back to blogPost._id
+  const id = blogId || blogPost?._id;
+  
+  if (!id) {
+    console.log('No blog ID available for fetching reaction users');
+    return;
+  }
+  
+  setReactionUsersLoading(true);
+  try {
+    const url = type 
+      ? `https://connectwithaaditiyamg.onrender.com/api/blogs/${id}/reactions/users?type=${type}`
+      : `https://connectwithaaditiyamg.onrender.com/api/blogs/${id}/reactions/users`;
+    
+    const response = await axios.get(url);
+    setReactionUsers(response.data.users);
+  } catch (err) {
+    console.error('Error fetching reaction users:', err);
+  } finally {
+    setReactionUsersLoading(false);
+  }
+};
 
+// Fetch users who reacted to comment
+const fetchCommentReactionUsers = async (commentId, type = null) => {
+  setReactionUsersLoading(true);
+  try {
+    const url = type
+      ? `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions/users?type=${type}`
+      : `https://connectwithaaditiyamg.onrender.com/api/comments/${commentId}/reactions/users`;
+    
+    const response = await axios.get(url);
+    setCommentReactionUsers(prev => ({
+      ...prev,
+      [commentId]: response.data.users
+    }));
+  } catch (err) {
+    console.error('Error fetching comment reaction users:', err);
+  } finally {
+    setReactionUsersLoading(false);
+  }
+};
+
+// Get first 3 users for preview
+const getReactionPreviewUsers = (users) => {
+  if (!users || users.length === 0) return [];
+  return users.slice(0, 3);
+};
+// Overlapping Avatars Component
+const OverlappingAvatars = ({ users, total, onClick }) => {
+  const previewUsers = getReactionPreviewUsers(users);
+  
+  if (previewUsers.length === 0) return null;
+  
+  return (
+    <div className="overlapping-avatars" onClick={onClick}>
+      {previewUsers.map((user, index) => (
+        <div 
+          key={index} 
+          className="avatar-circle"
+          style={{ zIndex: previewUsers.length - index }}
+        >
+          {user.profilePicture ? (
+            <img 
+              src={user.profilePicture} 
+              alt={user.name}
+              className="avatar-image"
+            />
+          ) : (
+            <div className="avatar-placeholder">
+              {getInitials(user.name)}
+            </div>
+          )}
+        </div>
+      ))}
+      {total > 3 && (
+        <div className="avatar-more" style={{ zIndex: 0 }}>
+          +{total - 3}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Reaction Users Modal Component
+const ReactionUsersModal = ({ users, loading, onClose }) => {
+  if (!users || users.length === 0) return null;
+  
+  return (
+    <div className="reaction-modal-mini" onClick={(e) => e.stopPropagation()}>
+      <div className="reaction-modal-header">
+        <span className="reaction-modal-title">Reactions</span>
+        <button className="reaction-modal-close" onClick={onClose}>×</button>
+      </div>
+      
+      {loading ? (
+        <div className="reaction-modal-loading">
+          <div className="spinner-mini"></div>
+        </div>
+      ) : (
+        <div className="reaction-users-list">
+          {users.map((user, index) => (
+            <div key={index} className="reaction-user-item">
+              <div className="reaction-user-avatar">
+                {user.profilePicture ? (
+                  <img src={user.profilePicture} alt={user.name} />
+                ) : (
+                  <div className="reaction-user-placeholder">
+                    {getInitials(user.name)}
+                  </div>
+                )}
+              </div>
+              <div className="reaction-user-info">
+                <span className="reaction-user-name">{user.name}</span>
+                <span className="reaction-user-time">{formatDate(user.createdAt)}</span>
+              </div>
+              <div className={`reaction-type-icon ${user.type}`}>
+                {user.type === 'like' ? <FaThumbsUp size={12} /> : <FaThumbsDown size={12} />}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 const CodeBlock = ({ language, value }) => {
   const handleCopy = async () => {
     try {
@@ -2032,7 +2174,7 @@ const CodeBlock = ({ language, value }) => {
       console.error('Failed to copy:', err);
     }
   };
-
+// Fetch users who reacted to blog
   return (
     <div className="minimal-code-block">
       <div className="code-top-bar">
@@ -2304,28 +2446,74 @@ const CodeBlock = ({ language, value }) => {
           {renderContentWithMedia(blogPost.content)}
           
           {/* Reactions section */}
-        <div className="blog-reactions">
+    {/* Reactions section - UPDATED */}
+<div className="blog-reactions">
   <h3>Did you find this article helpful?</h3>
   <div className="reaction-buttons">
-    <button
-      className={`reaction-btn ${userReaction === 'like' ? 'active' : ''} ${reactionInProgress ? 'disabled' : ''}`}
-      onClick={() => handleReactionClick('like')}
-      disabled={reactionInProgress}
-    >
-      {userReaction === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
-      <span>{reactions.likes}</span>
-    </button>
-    <button
-      className={`reaction-btn ${userReaction === 'dislike' ? 'active' : ''} ${reactionInProgress ? 'disabled' : ''}`}
-      onClick={() => handleReactionClick('dislike')}
-      disabled={reactionInProgress}
-    >
-      {userReaction === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
-      <span>{reactions.dislikes}</span>
-    </button>
-  </div>
+    <div className="reaction-button-wrapper">
+      {reactions.likes > 0 && (
+        <OverlappingAvatars
+          users={reactionUsers.filter(u => u.type === 'like')}
+          total={reactions.likes}
+          onClick={(e) => {
+            e.stopPropagation();
+            fetchBlogReactionUsers('like');
+            setReactionUsersType('like');
+            setShowReactionUsersModal(true);
+          }}
+        />
+      )}
+      <button
+        className={`reaction-btn ${userReaction === 'like' ? 'active' : ''} ${reactionInProgress ? 'disabled' : ''}`}
+        onClick={() => handleReactionClick('like')}
+        disabled={reactionInProgress}
+      >
+        {userReaction === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
+      
+      </button>
+        <span className='like-count'>{reactions.likes}</span>
+    </div>
+    
+    <div className="reaction-button-wrapper">
+      {reactions.dislikes > 0 && (
+        <OverlappingAvatars
+          users={reactionUsers.filter(u => u.type === 'dislike')}
+          total={reactions.dislikes}
+          onClick={(e) => {
+            e.stopPropagation();
+            fetchBlogReactionUsers('dislike');
+            setReactionUsersType('dislike');
+            setShowReactionUsersModal(true);
+          }}
+        />
+      )}
 
+      <button
+      
+        className={`reaction-btn ${userReaction === 'dislike' ? 'active' : ''} ${reactionInProgress ? 'disabled' : ''}`}
+        onClick={() => handleReactionClick('dislike')}
+        disabled={reactionInProgress}
+      > <span> </span>
+        {userReaction === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
+       
+      </button>
+    </div>
+  </div>
 </div>
+
+{/* Blog Reaction Users Modal */}
+{showReactionUsersModal && (
+  <div 
+    className="reaction-modal-overlay" 
+    onClick={() => setShowReactionUsersModal(false)}
+  >
+    <ReactionUsersModal
+      users={reactionUsers.filter(u => u.type === reactionUsersType)}
+      loading={reactionUsersLoading}
+      onClose={() => setShowReactionUsersModal(false)}
+    />
+  </div>
+)}
              
           
           {/* Share section */}
@@ -2542,51 +2730,90 @@ const CodeBlock = ({ language, value }) => {
                         
                         <div className="comment-content">{comment.content}</div>
                         
-                        {/* Comment Actions */}
-                        <div className="comment-actions">
-                          {/* Comment Reactions */}
-                          <div className="comment-reactions">
-                          <button
-  className={`reaction-btn2 ${userCommentReactions[comment._id] === 'like' ? 'active' : ''}`}
-  onClick={() => handleCommentReaction(comment._id, 'like')}
-  disabled={commentReactionInProgress[comment._id]}
->
-  {userCommentReactions[comment._id] === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
-  <span>{commentReactions[comment._id]?.likes || 0}</span>
-</button>
-                            <button
-                              className={`reaction-btn2 ${userCommentReactions[comment._id] === 'dislike' ? 'active' : ''}`}
-                              onClick={() => handleCommentReaction(comment._id, 'dislike')}
-                              disabled={commentReactionLoading === comment._id}
-                            >
-                              {userCommentReactions[comment._id] === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
-                              <span>{commentReactions[comment._id]?.dislikes || 0}</span>
-                            </button>
-<button
-  className="reply-btn"
-  onClick={() => {
-    toggleReplyForm(comment._id);
-  }}
->
-  <MessageCircleReply />
-</button>
+                     {/* Comment Reactions - UPDATED */}
+<div className="comment-actions">
+  <div className="comment-reactions">
+    <div className="reaction-button-wrapper">
+      {commentReactions[comment._id]?.likes > 0 && (
+        <OverlappingAvatars
+          users={(commentReactionUsers[comment._id] || []).filter(u => u.type === 'like')}
+          total={commentReactions[comment._id]?.likes}
+          onClick={(e) => {
+            e.stopPropagation();
+            fetchCommentReactionUsers(comment._id, 'like');
+            setReactionUsersTarget({ type: 'comment', id: comment._id });
+            setReactionUsersType('like');
+            setShowCommentReactionUsersModal(true);
+          }}
+        />
+      )}
+      <button
+        className={`reaction-btn2 ${userCommentReactions[comment._id] === 'like' ? 'active' : ''}`}
+        onClick={() => handleCommentReaction(comment._id, 'like')}
+        disabled={commentReactionInProgress[comment._id]}
+      >
+        {userCommentReactions[comment._id] === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
+       
+      </button>
+       <span className='like-count2'>{commentReactions[comment._id]?.likes || 0}</span>
+    </div>
+    
+    <div className="reaction-button-wrapper">
+      {commentReactions[comment._id]?.dislikes > 0 && (
+        <OverlappingAvatars
+          users={(commentReactionUsers[comment._id] || []).filter(u => u.type === 'dislike')}
+          total={commentReactions[comment._id]?.dislikes}
+          onClick={(e) => {
+            e.stopPropagation();
+            fetchCommentReactionUsers(comment._id, 'dislike');
+            setReactionUsersTarget({ type: 'comment', id: comment._id });
+            setReactionUsersType('dislike');
+            setShowCommentReactionUsersModal(true);
+          }}
+        />
+      )}
+      <button
+        className={`reaction-btn2 ${userCommentReactions[comment._id] === 'dislike' ? 'active' : ''}`}
+        onClick={() => handleCommentReaction(comment._id, 'dislike')}
+        disabled={commentReactionInProgress[comment._id]}
+      >
+        {userCommentReactions[comment._id] === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
+        
+      </button>
+      
+    </div>
+    
+    <button
+      className="reply-btn"
+      onClick={() => toggleReplyForm(comment._id)}
+    > 
+      <MessageCircleReply size={20} />
+    </button>
+  </div>
+  
+  {comment.repliesCount > 0 && (
+    <button
+      className="show-replies-btn"
+      onClick={() => toggleReplies(comment._id)}
+    >
+      {showReplies[comment._id] ? 'Hide' : 'Show'} {comment.repliesCount} {comment.repliesCount === 1 ? 'Reply' : 'Replies'}
+    </button>
+  )}
+</div>
 
-
-                          </div>
-                          
-                          {/* Reply Button */}
-                          
-                          
-                          {/* Show Replies Button */}
-                          {comment.repliesCount > 0 && (
-                            <button
-                              className="show-replies-btn"
-                              onClick={() => toggleReplies(comment._id)}
-                            >
-                              {showReplies[comment._id] ? 'Hide' : 'Show'} {comment.repliesCount} {comment.repliesCount === 1 ? 'Reply' : 'Replies'}
-                            </button>
-                          )}
-                        </div>
+{/* Comment Reaction Users Modal */}
+{showCommentReactionUsersModal && reactionUsersTarget && (
+  <div 
+    className="reaction-modal-overlay" 
+    onClick={() => setShowCommentReactionUsersModal(false)}
+  >
+    <ReactionUsersModal
+      users={(commentReactionUsers[reactionUsersTarget.id] || []).filter(u => u.type === reactionUsersType)}
+      loading={reactionUsersLoading}
+      onClose={() => setShowCommentReactionUsersModal(false)}
+    />
+  </div>
+)}
                         
                      {showReplyForm[comment._id] && (
   <form className="reply-form" onSubmit={(e) => handleReplySubmit(e, comment._id)}>
