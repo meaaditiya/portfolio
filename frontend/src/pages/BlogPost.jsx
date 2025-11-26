@@ -2447,8 +2447,9 @@ const CodeBlock = ({ language, value }) => {
           
           {/* Reactions section */}
     {/* Reactions section - UPDATED */}
+     <h3 className='reaction-heading'>Vote this up if you like this post</h3>
 <div className="blog-reactions">
-  <h3>Did you find this article helpful?</h3>
+ 
   <div className="reaction-buttons">
     <div className="reaction-button-wrapper">
       {reactions.likes > 0 && (
@@ -2526,7 +2527,7 @@ const CodeBlock = ({ language, value }) => {
               Share
             </button>
              <button 
-    className="rpt-btn btn share-btn"
+    className="btn share-btn"
     onClick={() => {
       // Pre-fill email if user info exists
       if (storedUserInfo && storedUserInfo.email) {
@@ -2759,19 +2760,7 @@ const CodeBlock = ({ language, value }) => {
     </div>
     
     <div className="reaction-button-wrapper">
-      {commentReactions[comment._id]?.dislikes > 0 && (
-        <OverlappingAvatars
-          users={(commentReactionUsers[comment._id] || []).filter(u => u.type === 'dislike')}
-          total={commentReactions[comment._id]?.dislikes}
-          onClick={(e) => {
-            e.stopPropagation();
-            fetchCommentReactionUsers(comment._id, 'dislike');
-            setReactionUsersTarget({ type: 'comment', id: comment._id });
-            setReactionUsersType('dislike');
-            setShowCommentReactionUsersModal(true);
-          }}
-        />
-      )}
+      
       <button
         className={`reaction-btn2 ${userCommentReactions[comment._id] === 'dislike' ? 'active' : ''}`}
         onClick={() => handleCommentReaction(comment._id, 'dislike')}
