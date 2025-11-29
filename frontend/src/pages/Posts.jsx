@@ -136,7 +136,7 @@ useEffect(() => {
     }
 
     try {
-      const response = await fetch(`${process.env.backend_url}/api/verify`, {
+      const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/verify', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -171,7 +171,7 @@ useEffect(() => {
     
     // Add cache busting parameter
     const cacheBust = bustCache ? `?bustCache=${Date.now()}` : '';
-    const detailResponse = await fetch(`${process.env.backend_url}/api/image-posts/${id}${cacheBust}`);
+    const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${id}${cacheBust}`);
     
     if (!detailResponse.ok) {
       throw new Error('Post not found');
@@ -184,7 +184,7 @@ useEffect(() => {
       try {
         const token = localStorage.getItem('token');
         const reactionResponse = await fetch(
-          `${process.env.backend_url}/api/image-posts/${id}/has-reacted?t=${Date.now()}`,
+          `https://connectwithaaditiyamg2.onrender.com/api/image-posts/${id}/has-reacted?t=${Date.now()}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -249,7 +249,7 @@ const fetchCommentReactions = async (comments) => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.backend_url}/api/image-posts/comments/${comment._id}/user-reaction`,
+        `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${comment._id}/user-reaction`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -274,7 +274,7 @@ const fetchCommentReactions = async (comments) => {
     
     const cacheBust = bustCache ? `&bustCache=${Date.now()}` : '';
     const response = await fetch(
-      `${process.env.backend_url}/api/image-posts/comments/${commentId}/replies?${cacheBust}`
+      `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}/replies?${cacheBust}`
     );
     const data = await response.json();
     
@@ -298,12 +298,12 @@ const fetchCommentReactions = async (comments) => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.backend_url}/api/image-posts?page=${currentPage}&limit=9`);
+      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts?page=${currentPage}&limit=9`);
       const data = await response.json();
       
       const postsWithDetails = await Promise.all(
         data.posts.map(async (post) => {
-          const detailResponse = await fetch(`${process.env.backend_url}/api/image-posts/${post._id}`);
+          const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${post._id}`);
           const detailData = await detailResponse.json();
           
         let hasReacted = false;
@@ -311,7 +311,7 @@ if (isAuthenticated && userInfo?.email) {
   try {
     const token = localStorage.getItem('token');
     const reactionResponse = await fetch(
-      `${process.env.backend_url}/api/image-posts/${post._id}/has-reacted`,
+      `https://connectwithaaditiyamg2.onrender.com/api/image-posts/${post._id}/has-reacted`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -358,7 +358,7 @@ return {
     try {
       setSocialLoading(true);
       const platformParam = selectedPlatform === 'all' ? '' : `&platform=${selectedPlatform}`;
-      const response = await fetch(`${process.env.backend_url}/api/social-embeds?page=${socialCurrentPage}&limit=9${platformParam}`);
+      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/social-embeds?page=${socialCurrentPage}&limit=9${platformParam}`);
       const data = await response.json();
       setSocialEmbeds(data.embeds);
       setSocialTotalPages(data.pagination.pages);
@@ -565,7 +565,7 @@ const handleCommentSubmit = async () => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${process.env.backend_url}/api/image-posts/${selectedPost.id}/comments`, {
+    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -614,7 +614,7 @@ const handleCommentSubmit = async () => {
       await fetchSinglePost(selectedPost.id, true);
       
       // Also update the posts array
-      const detailResponse = await fetch(`${process.env.backend_url}/api/image-posts/${selectedPost.id}?bustCache=${Date.now()}`);
+      const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}?bustCache=${Date.now()}`);
       const detailData = await detailResponse.json();
       
       setPosts((prevPosts) =>
@@ -659,7 +659,7 @@ const handleReplySubmit = async (parentCommentId) => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${process.env.backend_url}/api/image-posts/${selectedPost.id}/comments`, {
+    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -687,7 +687,7 @@ const handleReplySubmit = async (parentCommentId) => {
     
     // Fetch fresh replies with cache busting
     const repliesResponse = await fetch(
-      `${process.env.backend_url}/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
+      `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
     );
     const repliesData = await repliesResponse.json();
     
@@ -725,8 +725,8 @@ const handleCommentReaction = async (commentId, reactionType) => {
   try {
     const token = localStorage.getItem('token');
     const endpoint = reactionType === 'like' 
-      ? `${process.env.backend_url}/api/image-posts/comments/${commentId}/like`
-      : `${process.env.backend_url}/api/image-posts/comments/${commentId}/dislike`;
+      ? `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}/like`
+      : `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}/dislike`;
     
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -775,7 +775,7 @@ const handleReaction = async (postId, e) => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${process.env.backend_url}/api/image-posts/${postId}/react`, {
+    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${postId}/react`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -851,7 +851,7 @@ const confirmDeleteComment = async () => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${process.env.backend_url}/api/image-posts/comments/${commentId}`, {
+    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -882,7 +882,7 @@ const confirmDeleteComment = async () => {
           // Fallback: clear and refetch with cache busting
           setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
           const repliesResponse = await fetch(
-            `${process.env.backend_url}/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
+            `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
           );
           const repliesData = await repliesResponse.json();
           setReplies(prev => ({ ...prev, [parentCommentId]: repliesData.replies }));

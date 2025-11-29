@@ -4,7 +4,7 @@ import '../pagesCSS/UserBlogSubmission.css';
 
 const UserBlogSubmission = () => {
   const navigate = useNavigate();
-  const API_URL = process.env.backend_url;
+  const API_URL = 'https://connectwithaaditiyamg2.onrender.com';
 
   const [blogFormData, setblogFormData] = useState({
     userName: '',

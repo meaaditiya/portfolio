@@ -25,7 +25,7 @@ export const useVisitorTracking = () => {
     sessionIdRef.current = sessionId;
 
     // Initialize socket connection
-    const socketInstance = io('https://connectwithaaditiyamg.onrender.com', {
+    const socketInstance = io('https://connectwithaaditiyamg2.onrender.com', {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 5,
@@ -59,7 +59,7 @@ export const useVisitorTracking = () => {
     // Fetch all visitor stats
     const fetchAllStats = async () => {
       try {
-        const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/visitors/stats/all');
+        const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/visitors/stats/all');
         if (response.ok) {
           const data = await response.json();
           setVisitorStats({

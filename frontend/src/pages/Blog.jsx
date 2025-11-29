@@ -102,7 +102,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     const fetchBlogs = async () => {
       setIsInitialLoading(true);
       try {
-        const response = await fetch(`${process.env.backend_url}/api/blogs?status=published&limit=${limit}`);
+        const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/blogs?status=published&limit=${limit}`);
         if (!response.ok) throw new Error('Failed to fetch blogs');
         const data = await response.json();
         setBlogs(data.blogs);
@@ -127,7 +127,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     setIsLoadingMore(true);
     const newLimit = limit + 2;
     try {
-      const response = await fetch(`${process.env.backend_url}/api/blogs?status=published&limit=${newLimit}`);
+      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/blogs?status=published&limit=${newLimit}`);
       if (!response.ok) throw new Error('Failed to fetch more blogs');
       const data = await response.json();
       setBlogs(data.blogs);
@@ -165,7 +165,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     setIsGeneratingSummary(true);
 
     try {
-      const response = await fetch(`${process.env.backend_url}/api/blogs/${blog._id}/generate-summary`, {
+      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/blogs/${blog._id}/generate-summary`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -196,7 +196,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
   setIsVectorLoading(true); // START BAR
 
   try {
-    const response = await fetch(`${process.env.backend_url}/api/search`, {
+    const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

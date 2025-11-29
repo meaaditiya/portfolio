@@ -45,7 +45,7 @@ const { liveCount, visitorStats, isConnected } = useVisitor();
     // Fetch quote
     const fetchQuote = async () => {
       try {
-        const response = await fetch(`${process.env.backend_url}/api/quote`);
+        const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/quote');
         if (response.ok) {
           const data = await response.json();
           setQuote(data.quote);
@@ -59,7 +59,7 @@ const { liveCount, visitorStats, isConnected } = useVisitor();
 
   const fetchAnnouncements = async (isManualOpen = false) => {
   try {
-    const response = await fetch(`${process.env.backend_url}/api/announcement/active`);
+    const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/announcement/active');
     if (response.ok) {
       const data = await response.json();
       console.log('Announcements data:', data);
@@ -80,7 +80,7 @@ const { liveCount, visitorStats, isConnected } = useVisitor();
         const imageMap = {};
         sortedAnnouncements.forEach(announcement => {
           if (announcement.hasImage) {
-            imageMap[announcement._id] = `${process.env.backend_url}/api/announcement/${announcement._id}/image`;
+            imageMap[announcement._id] = `https://connectwithaaditiyamg2.onrender.com/api/announcement/${announcement._id}/image`;
             console.log(`Image URL set for ${announcement._id}:`, imageMap[announcement._id]);
           }
         });
@@ -113,7 +113,7 @@ const { liveCount, visitorStats, isConnected } = useVisitor();
     // Fetch first blog
 const fetchFirstBlog = async () => {
   try {
-    const response = await fetch(`${process.env.backend_url}/api/blogs?status=published&limit=1`);
+    const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/blogs?status=published&limit=1');
     if (response.ok) {
       const data = await response.json();
       if (data.blogs && data.blogs.length > 0) {
@@ -608,7 +608,7 @@ const renderAnnouncementContent = (announcement) => {
   {/* Document Download */}
   {currentAnnouncement.hasDocument && (
     <a 
-      href={`${process.env.backend_url}/api/announcement/${currentAnnouncement._id}/document`}
+      href={`https://connectwithaaditiyamg2.onrender.com/api/announcement/${currentAnnouncement._id}/document`}
       download
       className="announcement_document_link_unique_2024"
     >

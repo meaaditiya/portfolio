@@ -30,7 +30,7 @@ const StreamPost = () => {
       setLoading(true);
       
       // Fetch all streams to find the specific one
-      const response = await fetch(`${process.env.backend_url}/api/streams`);
+      const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/streams');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -62,7 +62,7 @@ const StreamPost = () => {
 
   const fetchEmbedData = async (streamId, streamPassword = '') => {
     try {
-      const response = await fetch(`${process.env.backend_url}/api/streams/${streamId}/embed`, {
+      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/streams/${streamId}/embed`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
