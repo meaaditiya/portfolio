@@ -18,7 +18,7 @@ const StreamApp = () => {
     try {
       setLoading(true);
       
-      const response = await fetch('https://connectwithaaditiyamg.onrender.com/api/streams');
+      const response = await fetch(`${process.env.backend_url}/api/streams`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
