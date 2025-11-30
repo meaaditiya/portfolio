@@ -19,6 +19,7 @@ import DotsLoader from './pages/DotsLoader.jsx';
 import './index.css';
 import Auth from './pages/Auth.jsx';
 import ScrollToTop from './ScrollTop.jsx';
+import Document from './pages/document.jsx';
 
 const AppContent = () => {
   const visitorData = useVisitorTracking();
@@ -53,7 +54,7 @@ const AppContent = () => {
             <Route path="/forgot-password" element={<Auth />} />
             <Route path="/dots" element={<DotsLoader/>}/>
             <Route path="*" element={<NotFound/>}/>
-
+            <Route path="/resources" element={<Document/>}/>
           </Routes>
         </main>
         

@@ -35,10 +35,12 @@ const handleBack = () => {
     { name: 'About', path: '/about' },
     { name: 'Gallery', path: '/posts' },
     { name: 'Projects', path: '/projects' },
+    { name: 'Resources', path: '/resources' },
     { name: 'Blogs', path: '/blog' },
     { name: 'Contact', path: '/contact' },
     { name: 'Stream', path: '/stream' },
    {name: <User size={18} />, path: '/auth'},
+
 
 
   ];
