@@ -55,6 +55,7 @@ const AppContent = () => {
             <Route path="/dots" element={<DotsLoader/>}/>
             <Route path="*" element={<NotFound/>}/>
             <Route path="/resources" element={<Document/>}/>
+            <Route path="/resources/folder/:folderId" element={<Document/>}/>
           </Routes>
         </main>
         
