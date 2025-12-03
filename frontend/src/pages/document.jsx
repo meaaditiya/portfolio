@@ -289,7 +289,7 @@ const getCodingPlatformIcon = (url) => {
   
   // HackerEarth
   if (urlLower.includes('hackerearth.com')) {
-    return <img src="https://static.hackerearth.com/static/hackerearth/images/logo/HE_logo.png" alt="HackerEarth" style={{width: '20px' , height: '20px', marginRight: '4px'}} />;
+    return <img src="https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/hackerearth-xbfvysgxrsn2j02f5cxoh6.png/hackerearth-88ifrxvj4oup9czcvfx5xt.png?_a=DATAg1AAZAA0" alt="HackerEarth" style={{width: '20px' , height: '20px', marginRight: '4px'}} />;
   }
   
   // InterviewBit
