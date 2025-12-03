@@ -56,6 +56,7 @@ const AppContent = () => {
             <Route path="*" element={<NotFound/>}/>
             <Route path="/resources" element={<Document/>}/>
             <Route path="/resources/folder/:folderId" element={<Document/>}/>
+            <Route path="/resources/list/:excelId" element={<Document />} />
           </Routes>
         </main>
         

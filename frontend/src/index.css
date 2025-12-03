@@ -23,6 +23,14 @@ body {
  
    
 }
+.app-container {
+  scrollbar-width: none;   /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.app-container::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari */
+}
 
 
 /* Section */
@@ -174,4 +182,28 @@ html {
   ::-webkit-scrollbar-thumb {
     border-radius: 1.5px;
   }
+}
+/* HIDE SCROLLBAR FOR ENTIRE APP */
+
+/* For Chrome, Edge, Safari */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.app-container::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* For Firefox */
+html,
+body,
+.app-container {
+  scrollbar-width: none !important;   /* Firefox */
+}
+
+/* For IE/Edge Legacy */
+html,
+body,
+.app-container {
+  -ms-overflow-style: none !important;
 }
