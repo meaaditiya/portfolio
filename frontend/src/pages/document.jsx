@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, ArrowUpDown } from 'lucide-react';
+import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, ArrowUpDown ,Link as LinkIcon, ExternalLink} from 'lucide-react';
 import '../pagesCSS/document.css';
 
 const Documents = () => {
@@ -115,39 +115,44 @@ const Documents = () => {
   };
 
   // Search documents
-  const handleSearch = async (query) => {
-    setSearchQuery(query);
+ const handleSearch = async (query) => {
+  setSearchQuery(query);
 
-    if (!query.trim()) {
-      setFilteredItems(items);
-      setSearchMode(false);
-      return;
-    }
+  if (!query.trim()) {
+    setFilteredItems(items);
+    setSearchMode(false);
+    return;
+  }
 
-    try {
-      setSearchMode(true);
-      const response = await fetch(
-        `https://connectwithaaditiyamg2.onrender.com/api/search?q=${encodeURIComponent(query)}`
-      );
-      const results = await response.json();
+  try {
+    setSearchMode(true);
+    const response = await fetch(
+      `https://connectwithaaditiyamg2.onrender.com/api/search?q=${encodeURIComponent(query)}`
+    );
+    const results = await response.json();
 
-      // Combine folders and files
-      const combined = [...(results.folders || []), ...(results.files || [])];
-      setFilteredItems(combined);
-    } catch (err) {
-      console.error("Error searching:", err);
-    }
-  };
+    // Combine folders, files, and links
+    const combined = [
+      ...(results.folders || []), 
+      ...(results.files || []),
+      ...(results.links || [])
+    ];
+    setFilteredItems(combined);
+  } catch (err) {
+    console.error("Error searching:", err);
+  }
+};
 
   // Handle item click (navigate into folder or download file)
-  const handleItemClick = (item) => {
-    if (item.type === 'folder') {
-      navigate(`/resources/folder/${item._id}`);
-    } else {
-      handleDownload(item._id);
-    }
-  };
-
+ const handleItemClick = (item) => {
+  if (item.type === 'folder') {
+    navigate(`/resources/folder/${item._id}`);
+  } else if (item.type === 'link') {
+    window.open(item.url, '_blank', 'noopener,noreferrer');
+  } else {
+    handleDownload(item._id);
+  }
+};
   // Download file
   const handleDownload = async (docId) => {
     try {
@@ -162,15 +167,18 @@ const Documents = () => {
   };
 
   // Get file icon with color
-  const getFileIcon = (mime) => {
-    if (!mime) return <File size={16} />;
-    if (mime.includes("pdf")) return <File size={16} className="file-icon-pdf" />;
-    if (mime.includes("image")) return <File size={16} className="file-icon-image" />;
-    if (mime.includes("word")) return <File size={16} className="file-icon-word" />;
-    if (mime.includes("excel") || mime.includes("spreadsheet")) return <File size={16} className="file-icon-excel" />;
-    return <File size={16} />;
-  };
-
+  // Get file icon with color
+const getFileIcon = (item) => {
+  if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
+  
+  const mime = item.mimeType;
+  if (!mime) return <File size={16} />;
+  if (mime.includes("pdf")) return <File size={16} className="file-icon-pdf" />;
+  if (mime.includes("image")) return <File size={16} className="file-icon-image" />;
+  if (mime.includes("word")) return <File size={16} className="file-icon-word" />;
+  if (mime.includes("excel") || mime.includes("spreadsheet")) return <File size={16} className="file-icon-excel" />;
+  return <File size={16} />;
+};
   const formatFileSize = (bytes) => {
     if (!bytes) return "";
     if (bytes < 1024) return bytes + " B";
@@ -340,82 +348,110 @@ const Documents = () => {
                 <th className="th action-column"></th>
               </tr>
             </thead>
-            <tbody>
-              {filteredItems.map((item) => (
-                <tr 
-                  key={item._id} 
-                  className="table-row"
-                  onDoubleClick={() => handleItemClick(item)}
-                >
-                  <td className="td name-cell">
-                    <div className="name-content">
-                      {item.type === 'folder' ? (
-                        <Folder size={16} className="folder-icon-small" />
-                      ) : (
-                        getFileIcon(item.mimeType)
-                      )}
-                      <span className="file-name">{item.name || item.originalName}</span>
-                    </div>
-                  </td>
-                  <td className="td">{formatDate(item.updatedAt || item.createdAt)}</td>
-                  <td className="td">{getFileType(item)}</td>
-                  <td className="td">
-                    {item.type === 'folder' ? '' : formatFileSize(item.size)}
-                  </td>
-                  <td className="td">
-                    {item.type === 'file' && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownload(item._id);
-                        }}
-                        className="download-button"
-                        title="Download"
-                      >
-                        <Download size={16} />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+           <tbody>
+  {filteredItems.map((item) => (
+    <tr 
+      key={item._id} 
+      className="table-row"
+      onDoubleClick={() => handleItemClick(item)}
+    >
+      <td className="td name-cell">
+        <div className="name-content">
+          {item.type === 'folder' ? (
+            <Folder size={16} className="folder-icon-small" />
+          ) : item.type === 'link' ? (
+            <LinkIcon size={16} className="file-icon-link" />
+          ) : (
+            getFileIcon(item)
+          )}
+          <span className="file-name">{item.name || item.originalName}</span>
+        </div>
+      </td>
+      <td className="td">{formatDate(item.updatedAt || item.createdAt)}</td>
+      <td className="td">{getFileType(item)}</td>
+      <td className="td">
+        {item.type === 'folder' || item.type === 'link' ? '' : formatFileSize(item.size)}
+      </td>
+      <td className="td">
+        {item.type === 'file' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDownload(item._id);
+            }}
+            className="download-button"
+            title="Download"
+          >
+            <Download size={16} />
+          </button>
+        )}
+        {item.type === 'link' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(item.url, '_blank', 'noopener,noreferrer');
+            }}
+            className="download-button"
+            title="Open Link"
+          >
+            <ExternalLink size={16} />
+          </button>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
           </table>
         </div>
       ) : (
-        <div className="grid-container">
-          {filteredItems.map((item) => (
-            <div 
-              key={item._id} 
-              className="grid-item"
-              onDoubleClick={() => handleItemClick(item)}
-            >
-              <div className="grid-icon">
-                {item.type === 'folder' ? (
-                  <Folder size={48} className="folder-icon-large" />
-                ) : (
-                  <div className="file-icon-large">
-                    {getFileIcon(item.mimeType)}
-                  </div>
-                )}
-              </div>
-              <div className="grid-item-name" title={item.name || item.originalName}>
-                {item.name || item.originalName}
-              </div>
-              {item.type === 'file' && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDownload(item._id);
-                  }}
-                  className="grid-download-button"
-                  title="Download"
-                >
-                  <Download size={14} />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+      <div className="grid-container">
+  {filteredItems.map((item) => (
+    <div 
+      key={item._id} 
+      className="grid-item"
+      onDoubleClick={() => handleItemClick(item)}
+    >
+      <div className="grid-icon">
+        {item.type === 'folder' ? (
+          <Folder size={48} className="folder-icon-large" />
+        ) : item.type === 'link' ? (
+          <LinkIcon size={48} className="link-icon-large" />
+        ) : (
+          <div className="file-icon-large">
+            {getFileIcon(item)}
+          </div>
+        )}
+      </div>
+      <div className="grid-item-name" title={item.name || item.originalName}>
+        {item.name || item.originalName}
+      </div>
+      {item.type === 'file' && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDownload(item._id);
+          }}
+          className="grid-download-button"
+          title="Download"
+        >
+          <Download size={14} />
+        </button>
+      )}
+      {item.type === 'link' && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(item.url, '_blank', 'noopener,noreferrer');
+          }}
+          className="grid-download-button"
+          title="Open Link"
+        >
+          <ExternalLink size={14} />
+        </button>
+      )}
+    </div>
+  ))}
+</div>
       )}
     </div>
   );

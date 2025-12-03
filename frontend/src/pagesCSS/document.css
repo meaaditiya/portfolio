@@ -583,3 +583,22 @@
 .table-container::-webkit-scrollbar-thumb:hover {
   background: #A19F9D;
 }
+/* Link Icon Styles */
+.file-icon-link {
+  color: #9C27B0;
+}
+
+.link-icon-large {
+  color: #9C27B0;
+}
+
+/* Link URL display in grid view (optional - if you want to show URL) */
+.grid-link-url {
+  font-size: 11px;
+  color: #9C27B0;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
