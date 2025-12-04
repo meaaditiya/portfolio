@@ -1,5 +1,5 @@
 // src/App.js
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -23,10 +23,13 @@ import Document from './pages/document.jsx';
 
 const AppContent = () => {
   const visitorData = useVisitorTracking();
+  const location = useLocation();
+
+  const isResourcesRoute = location.pathname.startsWith('/resources');
 
   return (
     <VisitorProvider value={visitorData}>
-      <div className="app-container">
+      <div className={`app-container ${isResourcesRoute ? "resources-bg" : ""}`}>
         <Header />
         
         <main className="main">
@@ -65,6 +68,7 @@ const AppContent = () => {
     </VisitorProvider>
   );
 };
+
 
 const App = () => {
   return (

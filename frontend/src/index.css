@@ -194,12 +194,7 @@ body::-webkit-scrollbar,
   display: none !important;
 }
 
-/* For Firefox */
-html,
-body,
-.app-container {
-  scrollbar-width: none !important;   /* Firefox */
-}
+
 
 /* For IE/Edge Legacy */
 html,
