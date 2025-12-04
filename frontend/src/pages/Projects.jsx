@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../pagesCSS/Projects.css';
 import aadiImage10 from '../images/court.avif';
 import aadiImage1 from '../images/aadiimage01.jpeg';
@@ -355,8 +355,12 @@ const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
   const [showGitHub, setShowGitHub] = useState(false);
   const [currentRepoUrl, setCurrentRepoUrl] = useState('');
+  const [fetchedProjects, setFetchedProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const projects = [
+  const API_URL = 'https://connectwithaaditiyamg2.onrender.com';
+
+  const staticProjects = [
     {
       id: 1,
       title: 'E-Portal for Case Management',
@@ -461,6 +465,38 @@ const Projects = () => {
     },
   ];
 
+  const imageMap = {
+    'aadiImage10': aadiImage10,
+    'aadiImage1': aadiImage1,
+    'castwave': castwave,
+    'weatherImage': weatherImage
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/api/projects`);
+      const data = await response.json();
+      if (response.ok) {
+        const projectsWithImages = data.projects.map(project => ({
+          ...project,
+          image: project.imageUrl || null
+        }));
+        setFetchedProjects(projectsWithImages);
+      }
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const projects = [...staticProjects, ...fetchedProjects];
+
   const toggleProjectDetails = (projectId) => {
     setActiveProject(activeProject === projectId ? null : projectId);
   };
@@ -475,8 +511,6 @@ const Projects = () => {
     setCurrentRepoUrl('');
   };
 
-  
-
   return (
     <>
       <section className="tyagi-project-section" id="projects">
@@ -488,20 +522,23 @@ const Projects = () => {
           
           <div className="tyagi-project-layout">
             {projects.map((project) => {
-              const isActive = activeProject === project.id;
+              const isActive = activeProject === project.id || activeProject === project._id;
+              const projectId = project.id || project._id;
               
               return (
                 <div 
-                  key={project.id} 
+                  key={projectId} 
                   className={`tyagi-project-card ${project.color}-accent ${isActive ? 'tyagi-project-expanded' : ''}`}
                 >
                   <div className="tyagi-project-header">
                     <div className="tyagi-project-image-container">
-                      <img 
-                        src={project.image} 
-                        alt={project.title} 
-                        className="tyagi-project-image" 
-                      />
+                      {project.image && (
+                        <img 
+                          src={project.image} 
+                          alt={project.title} 
+                          className="tyagi-project-image" 
+                        />
+                      )}
                       <div className="tyagi-project-tech-badges">
                         {project.tech.slice(0, 3).map((tech, idx) => (
                           <span key={idx} className="tyagi-project-tech-badge1">{tech}</span>
@@ -523,7 +560,7 @@ const Projects = () => {
                       <div className="tyagi-project-toggle">
                         <button 
                           className="tyagi-project-toggle-button"
-                          onClick={() => toggleProjectDetails(project.id)}
+                          onClick={() => toggleProjectDetails(projectId)}
                         >
                           {isActive ? 'Hide Details' : 'Show Details'}
                           <span className={`tyagi-project-arrow-icon ${isActive ? 'tyagi-project-up' : 'tyagi-project-down'}`}></span>
@@ -535,7 +572,6 @@ const Projects = () => {
                   {isActive && (
                     <div className="tyagi-project-details">
                       <div className="tyagi-project-details-content">
-                        {/* Features Section */}
                         <div className="tyagi-project-details-section">
                           <h4 className="tyagi-project-details-heading">Key Features</h4>
                           <ul className="tyagi-project-details-list">
@@ -545,7 +581,6 @@ const Projects = () => {
                           </ul>
                         </div>
                         
-                        {/* Technologies Section */}
                         <div className="tyagi-project-details-section">
                           <h4 className="tyagi-project-details-heading">Technologies Used</h4>
                           <div className="tyagi-project-tech-tags">
@@ -555,7 +590,6 @@ const Projects = () => {
                           </div>
                         </div>
                         
-                        {/* Outcomes Section */}
                         <div className="tyagi-project-details-section">
                           <h4 className="tyagi-project-details-heading">Outcomes</h4>
                           <ul className="tyagi-project-details-list">
@@ -565,18 +599,16 @@ const Projects = () => {
                           </ul>
                         </div>
                         
-                        {/* Action Button Section */}
                         <div className="tyagi-project-details-actions">
+                         
                           {project.link && (
-                            <a 
-                              href={project.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="tyagi-project-action-button"
-                            >
-                              Visit
-                            </a>
-                          )}
+                              <button
+                                onClick={() => window.open(project.link, "_blank", "noopener,noreferrer")}
+                                className="tyagi-project-action-button tyagi-project-github-button"
+                              >
+                                Visit
+                              </button>
+                            )}
                           {project.githubUrl && (
                             <button 
                               onClick={() => openGitHub(project.githubUrl)}
