@@ -320,12 +320,12 @@ useEffect(() => {
         const updatedBookmarks = bookmarks.filter(id => id !== item._id);
         saveBookmarksToStorage(updatedBookmarks);
         updateItemBookmarkStatus(item._id, false);
-        alert('Bookmark removed');
+       
       } else {
         bookmarks.push(item._id);
         saveBookmarksToStorage(bookmarks);
         updateItemBookmarkStatus(item._id, true);
-        alert('Bookmarked!');
+        
       }
     } else {
       const token = localStorage.getItem('token');
@@ -341,7 +341,7 @@ useEffect(() => {
 
         if (res.ok) {
           updateItemBookmarkStatus(item._id, !currentlyBookmarked);
-          alert(currentlyBookmarked ? 'Bookmark removed' : 'Bookmarked!');
+         
         } else {
           const error = await res.json();
           console.error('Bookmark error:', error);
@@ -464,8 +464,8 @@ useEffect(() => {
         await loadExcelCheckmarks(id);
       }
     } catch (err) {
-      console.error('Error loading Excel data:', err);
-      alert('Failed to load Excel file');
+      console.error('Error loading List data:', err);
+      alert('Failed to load  file');
     } finally {
       setLoading(false);
     }
@@ -1102,7 +1102,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
                         navigate(`/resources/list/${item._id}`);
                       }}
                       className="download-button"
-                      title="View Excel"
+                      title="View List"
                     >
                       <ExternalLink size={16} />
                     </button>
@@ -1187,7 +1187,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
                 navigate(`/resources/list/${item._id}`);
               }}
               className="grid-download-button"
-              title="View Excel"
+              title="View List"
             >
               <ExternalLink size={14} />
             </button>
