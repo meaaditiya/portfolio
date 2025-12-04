@@ -81,12 +81,18 @@ const handleBack = () => {
           justify-content: space-between;
           gap: 2rem;
         }
+.header-content {
+  pointer-events: none;
+}
 
+.header-content > * {
+  pointer-events: auto;
+}
         .logo-section {
           display: flex;
           align-items: center;
           flex-shrink: 0;
-          z-index: 11;
+          z-index: 0;
         }
 
         .stylish-at-logo {
@@ -408,6 +414,14 @@ const handleBack = () => {
   padding: 0.4rem;
   margin-right: 0.3rem;
 }
+  .back-button {
+  pointer-events: none;
+}
+
+.back-button > * {
+  pointer-events: auto;
+}
+   
           .main-navigation {
             display: none;
           }
