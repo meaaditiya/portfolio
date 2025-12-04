@@ -816,3 +816,332 @@
     overflow-x: auto;
   }
 }
+/* ============================================================================
+   BOOKMARK & CHECKMARK STYLES
+   ============================================================================ */
+
+/* Bookmark Button in List View */
+.bookmark-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #605E5C;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.bookmark-button:hover {
+  background-color: #F3F3F3;
+  color: #FFC107;
+}
+
+.bookmark-button.bookmarked {
+  color: #FFC107;
+}
+
+.bookmark-button.bookmarked:hover {
+  background-color: #FFF8E1;
+}
+
+/* Action Buttons Container - Keep them in ONE row */
+.action-buttons-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap; /* IMPORTANT: Prevent wrapping to new line */
+}
+
+/* Update existing td for action column to prevent wrapping */
+.td.action-column {
+  white-space: nowrap;
+}
+
+/* Bookmark Button in Grid View */
+.grid-bookmark-button {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #E5E5E5;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #605E5C;
+  border-radius: 2px;
+  opacity: 0;
+  transition: all 0.1s ease;
+  z-index: 10;
+}
+
+.grid-bookmark-button.bookmarked {
+  background: #FFC107;
+  color: #fff;
+  opacity: 1;
+  border-color: #FFC107;
+}
+
+.grid-item:hover .grid-bookmark-button {
+  opacity: 1;
+}
+
+.grid-bookmark-button:hover {
+  background-color: #FFC107;
+  color: #fff;
+  border-color: #FFC107;
+  transform: scale(1.1);
+}
+
+/* Excel Checkmark Columns */
+.excel-checkmark-cell {
+  text-align: center;
+  padding: 12px 8px;
+}
+
+.excel-checkmark-cell input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #0078D4;
+  border-radius: 2px;
+}
+
+.excel-checkmark-cell input[type="checkbox"]:hover {
+  transform: scale(1.1);
+}
+
+.excel-checkmark-cell input[type="checkbox"]:checked {
+  accent-color: #217346;
+}
+
+/* Checkmark Header Column */
+.excel-table-header.checkmark-header {
+  text-align: center;
+  color: #0078D4;
+  font-weight: 600;
+}
+
+/* Bookmark Icon Animation */
+@keyframes bookmarkPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.bookmark-button.bookmarked svg,
+.grid-bookmark-button.bookmarked svg {
+  animation: bookmarkPulse 0.3s ease;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .action-buttons-container {
+    gap: 2px;
+  }
+
+  .bookmark-button,
+  .download-button {
+    padding: 6px;
+  }
+
+  .grid-bookmark-button {
+    padding: 4px;
+  }
+
+  .excel-checkmark-cell input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-buttons-container {
+    flex-direction: row; /* Keep horizontal even on mobile */
+  }
+
+  .bookmark-button,
+  .download-button {
+    padding: 4px;
+  }
+}
+/* Filter Buttons */
+.filter-button {
+  position: relative;
+}
+
+.filter-button.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.filter-button.active:hover {
+  background-color: #bbdefb;
+}
+
+/* Checkmark Filter Dropdown */
+.checkmark-filter-dropdown {
+  position: relative;
+}
+
+.checkmark-filter-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.filter-option {
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  color: #333;
+}
+
+.filter-option:hover {
+  background-color: #f5f5f5;
+}
+
+.filter-option.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+/* Checkmark Styles - Minimal and Clean */
+.excel-checkmark-cell {
+  text-align: center;
+  padding: 12px;
+  background-color: #fafafa;
+}
+
+.checkmark-unchecked {
+  color: #bdbdbd;
+  fill: none;
+  transition: all 0.2s ease;
+}
+
+.checkmark-checked {
+  color: #1976d2;
+  fill: #1976d2;
+  transition: all 0.2s ease;
+}
+
+/* Specific checkmark type styles */
+.checkmark-type-checkbox .checkmark-checked {
+  color: #1976d2;
+  fill: none;
+}
+
+.checkmark-type-check .checkmark-checked {
+  color: #2e7d32;
+  fill: none;
+}
+
+.checkmark-type-circle .checkmark-checked {
+  color: #1976d2;
+  fill: #1976d2;
+}
+
+.checkmark-type-star .checkmark-checked {
+  color: #f57c00;
+  fill: #f57c00;
+}
+
+.checkmark-type-heart .checkmark-checked {
+  color: #c62828;
+  fill: #c62828;
+}
+
+/* Hover effects */
+.excel-checkmark-cell:hover .checkmark-unchecked {
+  color: #757575;
+  transform: scale(1.1);
+}
+
+.excel-checkmark-cell:hover .checkmark-checked {
+  transform: scale(1.1);
+}
+
+/* Header alignment for filters */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-count {
+  margin-right: 8px;
+  padding: 6px 12px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #666;
+}
+/* Excel Header with Filters */
+.excel-header {
+  display: flex;
+  
+  justify-content: space-between;
+  padding: 20px 4px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fff;
+  gap: 16px;
+}
+
+.excel-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+
+
+.excel-back-btn:hover {
+  background-color: #e0e0e0;
+}
+
+
+
+/* Filter button in Excel view */
+.excel-filters .filter-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.excel-filters .filter-button:hover {
+  background-color: #e3f2fd;
+  border-color: #1976d2;
+}
+
+.excel-filters .filter-button.active {
+  background-color: #1976d2;
+  color: white;
+  border-color: #1976d2;
+}
