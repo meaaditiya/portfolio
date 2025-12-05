@@ -616,11 +616,11 @@ useEffect(() => {
     }
     
     if (urlLower.includes('takeuforward.org') || urlLower.includes('tuf')) {
-      return <img src="https://takeuforward.org/static/media/TufPlusDark.2f9770f2ccd35b40c4c5.png" alt="TakeUForward" style={{width: '20px', height: '20px', marginRight: '4px'}} />;
+      return <img src="https://yt3.googleusercontent.com/dSkEwiYrGlZPE6t9irfN8RlpDlaU_n7u3oEnHxJIY_knycUXPzEVlFKbYtwzkcysNDVZPn5zmHg=s900-c-k-c0x00ffffff-no-rj" alt="TakeUForward" style={{width: '20px', height: '20px', marginRight: '4px'}} />;
     }
     
     if (urlLower.includes('youtube.com') || urlLower.includes('youtu.be')) {
-      return <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" alt="YouTube" style={{width: '25px', height: '20px', marginRight: '4px'}} />;
+      return <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" alt="YouTube" style={{width: '25px', height: '16px', marginRight: '4px'}} />;
     }
     
     if (urlLower.includes('github.com')) {
