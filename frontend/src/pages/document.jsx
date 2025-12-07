@@ -1,8 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart } from 'lucide-react';
 import '../pagesCSS/document.css';
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 const Documents = () => {
   const { folderId, excelId } = useParams();
   const navigate = useNavigate();
@@ -31,7 +45,7 @@ const Documents = () => {
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
-
+  const debouncedSearchQuery = useDebounce(searchQuery, 800);
   const CHECKMARK_ICON_MAP = {
     'checkbox': CheckSquare,
     'check': Check,
@@ -59,17 +73,24 @@ const Documents = () => {
     }
   }, [folderId, excelId, userId]);
 
-  useEffect(() => {
-    let result = [...items];
-    if (showBookmarkedOnly) {
-      result = result.filter(item => item.isBookmarked);
-    }
-    if (searchQuery.trim() && searchMode) {
-      result = filteredItems;
-    }
+ // useEffect 1: Handle filtering (bookmarks, sorting)
+useEffect(() => {
+  let result = [...items];
+  if (showBookmarkedOnly) {
+    result = result.filter(item => item.isBookmarked);
+  }
+  if (!searchMode) {
     setFilteredItems(sortItems(result));
-  }, [items, showBookmarkedOnly, searchQuery, searchMode, sortBy, sortOrder]);
-
+  }
+}, [items, showBookmarkedOnly, sortBy, sortOrder, searchMode]);
+useEffect(() => {
+  if (debouncedSearchQuery.trim()) {
+    handleSearch(debouncedSearchQuery);
+  } else {
+    setFilteredItems(sortItems(items));
+    setSearchMode(false);
+  }
+}, [debouncedSearchQuery]);
   const getFilteredExcelRows = (sheetData) => {
     if (activeCheckmarkFilters.size === 0) return sheetData;
     
@@ -250,41 +271,49 @@ useEffect(() => {
     }
   };
 
-  const handleSearch = async (query) => {
-    setSearchQuery(query);
+ const handleSearch = async (query) => {
+  if (!query.trim()) {
+    setFilteredItems(sortItems(items));
+    setSearchMode(false);
+    return;
+  }
 
-    if (!query.trim()) {
-      setFilteredItems(sortItems(items));
-      setSearchMode(false);
-      return;
+  try {
+    setSearchMode(true);
+    setLoading(true);
+    
+    // Build URL with folder context
+    const params = new URLSearchParams({
+      q: query,
+      limit: 10
+    });
+    
+    // Add parentId if we're inside a folder
+    if (folderId) {
+      params.append('parentId', folderId);
+    }
+    
+    const response = await fetch(
+      `https://connectwithaaditiyamg2.onrender.com/api/search?${params.toString()}`
+    );
+    const data = await response.json();
+
+    let results = data.results || [];
+    if (!isAuthenticated) {
+      results = results.map(item => ({
+        ...item,
+        isBookmarked: isItemBookmarkedLocally(item._id)
+      }));
     }
 
-    try {
-      setSearchMode(true);
-      const response = await fetch(
-        `https://connectwithaaditiyamg2.onrender.com/api/search?q=${encodeURIComponent(query)}`
-      );
-      const results = await response.json();
-
-      let combined = [
-        ...(results.folders || []), 
-        ...(results.files || []),
-        ...(results.links || []),
-        ...(results.excels || [])
-      ];
-
-      if (!isAuthenticated) {
-        combined = combined.map(item => ({
-          ...item,
-          isBookmarked: isItemBookmarkedLocally(item._id)
-        }));
-      }
-
-      setFilteredItems(sortItems(combined));
-    } catch (err) {
-      console.error("Error searching:", err);
-    }
-  };
+    setFilteredItems(results);
+  } catch (err) {
+    console.error("Error searching:", err);
+    setFilteredItems([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const isItemBookmarkedLocally = (itemId) => {
     if (isAuthenticated) return false;
@@ -980,13 +1009,13 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   <div className="search-container">
     <div className="search-box">
       <Search size={16} className="search-icon" />
-      <input
-        type="text"
-        placeholder="Search"
-        value={searchQuery}
-        onChange={(e) => handleSearch(e.target.value)}
-        className="search-input"
-      />
+     <input
+  type="text"
+  placeholder={folderId ? "Search in this folder..." : "Search all documents..."}
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)} // Just update state, debounce handles the rest
+  className="search-input"
+/>
       {searchQuery && (
         <button
           onClick={() => {
