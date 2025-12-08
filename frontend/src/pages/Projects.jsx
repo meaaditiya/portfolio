@@ -5,7 +5,89 @@ import aadiImage1 from '../images/aadiimage01.jpeg';
 import weatherImage from '../images/weather.jpg';
 import castwave from '../images/Castwave.jpeg';
 import React from 'react';
-import { Search, Folder, File, GitBranch, Star, Eye, AlertCircle, Loader2, FolderOpen, FileText, Code } from 'lucide-react';
+import { Search, Folder, File, GitBranch, Star, Eye, AlertCircle, Loader2, FolderOpen, FileText, Code, X, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ImageZoomModal = ({ images, initialIndex, onClose }) => {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const goToPrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowRight') goToNext();
+    if (e.key === 'ArrowLeft') goToPrev();
+    if (e.key === 'Escape') onClose();
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [currentIndex]);
+
+  return (
+    <div className="tyagi-zoom-overlay" onClick={onClose}>
+      <button className="tyagi-zoom-close" onClick={onClose}>
+        <X size={24} />
+      </button>
+      
+      {images.length > 1 && (
+        <>
+          <button 
+            className="tyagi-zoom-nav tyagi-zoom-prev" 
+            onClick={(e) => { e.stopPropagation(); goToPrev(); }}
+          >
+            <ChevronLeft size={32} />
+          </button>
+          
+          <button 
+            className="tyagi-zoom-nav tyagi-zoom-next" 
+            onClick={(e) => { e.stopPropagation(); goToNext(); }}
+          >
+            <ChevronRight size={32} />
+          </button>
+        </>
+      )}
+      
+      <div className="tyagi-zoom-content" onClick={(e) => e.stopPropagation()}>
+        <img 
+          src={images[currentIndex]} 
+          alt={`Gallery ${currentIndex + 1}`}
+          className="tyagi-zoom-image"
+        />
+        
+        {images.length > 1 && (
+          <div className="tyagi-zoom-counter">
+            {currentIndex + 1} / {images.length}
+          </div>
+        )}
+      </div>
+      
+      {images.length > 1 && (
+        <div className="tyagi-zoom-thumbnails">
+          {images.map((img, idx) => (
+            <div
+              key={idx}
+              className={`tyagi-zoom-thumb ${idx === currentIndex ? 'active' : ''}`}
+              onClick={(e) => { e.stopPropagation(); setCurrentIndex(idx); }}
+            >
+              <img src={img} alt={`Thumbnail ${idx + 1}`} />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const GitHubRepoExplorer = ({ repoUrl: initialRepoUrl, onClose }) => {
   const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN; 
@@ -357,7 +439,8 @@ const Projects = () => {
   const [currentRepoUrl, setCurrentRepoUrl] = useState('');
   const [fetchedProjects, setFetchedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [zoomModal, setZoomModal] = useState({ show: false, images: [], index: 0 });
+const [carouselTimers, setCarouselTimers] = useState({});
   const API_URL = 'https://connectwithaaditiyamg2.onrender.com';
 
   const staticProjects = [];
@@ -393,7 +476,38 @@ const Projects = () => {
   };
 
   const projects = [...staticProjects, ...fetchedProjects];
-
+useEffect(() => {
+  const carouselIntervals = {};
+  
+  const startAutoSlide = (projectId, totalImages) => {
+    let currentSlide = 0;
+    
+    const interval = setInterval(() => {
+      const radioId = `cr-${projectId}-${currentSlide}`;
+      const radio = document.getElementById(radioId);
+      if (radio) {
+        radio.checked = true;
+        // Trigger change event
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      currentSlide = (currentSlide + 1) % totalImages;
+    }, 2000);
+    
+    carouselIntervals[projectId] = interval;
+  };
+  
+  // Start auto-slide for each project with gallery
+  projects.forEach(project => {
+    if (project.galleryImages && project.galleryImages.length > 0) {
+      const projectId = project.id || project._id;
+      startAutoSlide(projectId, project.galleryImages.length);
+    }
+  });
+  
+  return () => {
+    Object.values(carouselIntervals).forEach(interval => clearInterval(interval));
+  };
+}, [projects]);
   const toggleProjectDetails = (projectId) => {
     setActiveProject(activeProject === projectId ? null : projectId);
   };
@@ -406,6 +520,14 @@ const Projects = () => {
   const closeGitHub = () => {
     setShowGitHub(false);
     setCurrentRepoUrl('');
+  };
+
+  const openZoom = (images, index) => {
+    setZoomModal({ show: true, images, index });
+  };
+
+  const closeZoom = () => {
+    setZoomModal({ show: false, images: [], index: 0 });
   };
 
   return (
@@ -519,10 +641,12 @@ const Projects = () => {
                                       <div 
                                         className="tyagi-carousel-item" 
                                         style={{ '--z': project.galleryImages.length - idx }}
+                                        onClick={() => openZoom(project.galleryImages, idx)}
                                       >
                                         <img 
                                           src={imgUrl} 
                                           alt={`${project.title} gallery ${idx + 1}`}
+                                          loading="lazy"
                                         />
                                       </div>
                                     </React.Fragment>
@@ -565,6 +689,14 @@ const Projects = () => {
         <GitHubRepoExplorer 
           repoUrl={currentRepoUrl} 
           onClose={closeGitHub} 
+        />
+      )}
+
+      {zoomModal.show && (
+        <ImageZoomModal
+          images={zoomModal.images}
+          initialIndex={zoomModal.index}
+          onClose={closeZoom}
         />
       )}
     </>

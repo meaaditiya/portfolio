@@ -373,7 +373,7 @@
   text-align: center;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--color-gray-200);
+ 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1050,13 +1050,14 @@
 
 /* Carousel Container */
 .tyagi-carousel {
-  max-width: 500px;
-  width: 500px;
-  height: 380px;
+  max-width: 600px;
+  width: 600px;
+  height: 400px;
   border-radius: 0;
   padding: 20px;
   padding-bottom: 40px;
   box-shadow: none;
+  border: 1px solid var(--color-gray-200);
   
   display: flex;
   align-items: flex-end;
@@ -1082,14 +1083,25 @@
   
   z-index: var(--z);
   transition: .3s ease-out;
+  cursor: zoom-in;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tyagi-carousel-item:hover {
+  opacity: 0.95;
 }
 
 .tyagi-carousel-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   user-select: none;
   -moz-user-select: none;
+  pointer-events: none;
 }
 
 /* Carousel Radio Inputs */
@@ -1104,15 +1116,16 @@
 
 /* Carousel Labels (Navigation Dots) */
 .tyagi-carousel label {
-  width: 10%;
+  width: 5%;
   height: 10px;
   margin-right: 4px;
   border-radius: 20px;
   
-  background: hsla(0 0% 90% / .3);
+ background: rgba(0, 0, 0, 0.3);
   cursor: pointer;
   
   position: relative;
+  top:20px;
   z-index: 10;
   transition: var(--transition);
 }
@@ -1127,9 +1140,7 @@
 
 /* Active State */
 .tyagi-carousel input:checked + label {
-  background: linear-gradient(to right,
-    hsla(var(--hue) 80% 70% / .7),
-    hsla(calc(var(--hue) + 30) 80% 50% / .7));
+  background: black;
 }
 
 /* Slide Transitions */
@@ -1146,13 +1157,197 @@
   transition: 0s;
 }
 
-/* ========== RESPONSIVE CAROUSEL STYLES ========== */
+/* ========== IMAGE ZOOM MODAL STYLES ========== */
+
+.tyagi-zoom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tyagi-zoom-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10002;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.tyagi-zoom-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.tyagi-zoom-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10002;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.tyagi-zoom-nav:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.tyagi-zoom-prev {
+  left: 20px;
+}
+
+.tyagi-zoom-next {
+  right: 20px;
+}
+
+.tyagi-zoom-content {
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tyagi-zoom-image {
+  max-width: 100%;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.tyagi-zoom-counter {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10002;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tyagi-zoom-thumbnails {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10002;
+  max-width: 90vw;
+  overflow-x: auto;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tyagi-zoom-thumbnails::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tyagi-zoom-thumbnails::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.tyagi-zoom-thumbnails::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.tyagi-zoom-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.tyagi-zoom-thumb:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.tyagi-zoom-thumb.active {
+  border-color: white;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.tyagi-zoom-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ========== RESPONSIVE CAROUSEL & ZOOM STYLES ========== */
 
 @media (max-width: 1024px) {
   .tyagi-carousel {
-    max-width: 450px;
-    width: 450px;
-    height: 350px;
+    max-width: 550px;
+    width: 550px;
+    height: 380px;
   }
 }
 
@@ -1173,6 +1368,41 @@
     margin-top: 0.75rem;
     padding-top: 1.25rem;
   }
+
+  .tyagi-zoom-nav {
+    width: 44px;
+    height: 44px;
+  }
+
+  .tyagi-zoom-prev {
+    left: 10px;
+  }
+
+  .tyagi-zoom-next {
+    right: 10px;
+  }
+
+  .tyagi-zoom-close {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .tyagi-zoom-counter {
+    top: 10px;
+  }
+
+  .tyagi-zoom-thumbnails {
+    bottom: 10px;
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .tyagi-zoom-thumb {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1189,6 +1419,44 @@
     height: 6px;
     margin-right: 3px;
   }
+
+  .tyagi-zoom-overlay {
+    padding: 10px;
+  }
+
+  .tyagi-zoom-nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .tyagi-zoom-prev {
+    left: 5px;
+  }
+
+  .tyagi-zoom-next {
+    right: 5px;
+  }
+
+  .tyagi-zoom-close {
+    width: 36px;
+    height: 36px;
+  }
+
+  .tyagi-zoom-counter {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .tyagi-zoom-thumbnails {
+    bottom: 5px;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .tyagi-zoom-thumb {
+    width: 45px;
+    height: 45px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -1199,13 +1467,20 @@
     padding: 10px;
     padding-bottom: 25px;
   }
+
+  .tyagi-zoom-thumb {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 /* ========== ACCESSIBILITY & ANIMATIONS ========== */
 
 /* Keyboard Navigation Support */
-.tyagi-carousel label:focus-visible {
-  outline: 2px solid var(--color-black);
+.tyagi-carousel label:focus-visible,
+.tyagi-zoom-close:focus-visible,
+.tyagi-zoom-nav:focus-visible {
+  outline: 2px solid white;
   outline-offset: 2px;
 }
 
@@ -1218,6 +1493,20 @@
   .tyagi-carousel label {
     transition: none;
   }
+
+  .tyagi-zoom-overlay,
+  .tyagi-zoom-content {
+    animation: none;
+  }
+
+  .tyagi-zoom-nav:hover,
+  .tyagi-zoom-thumb:hover {
+    transform: none;
+  }
+
+  .tyagi-zoom-nav:hover {
+    transform: translateY(-50%);
+  }
 }
 
 /* Print Styles */
@@ -1226,6 +1515,7 @@
     height: auto;
     max-height: 400px;
     box-shadow: none;
+    border: 1px solid #ddd;
   }
   
   .tyagi-carousel label {
@@ -1236,5 +1526,35 @@
     position: relative;
     transform: none !important;
     opacity: 1 !important;
+    cursor: default;
   }
+
+  .tyagi-zoom-overlay {
+    display: none;
+  }
+}
+
+/* Auto-rotate carousel - add to Projects.css */
+@keyframes carousel-rotate {
+  0%, 20% { z-index: 100; }
+  21%, 100% { z-index: 0; }
+}
+
+.tyagi-carousel {
+  position: relative;
+}
+
+/* Automatically cycle through slides */
+input[id^="cr-"] {
+  display: none;
+}
+
+/* Slide 0 - visible 0-20% */
+#cr-:nth-child(1) ~ .tyagi-carousel-item:nth-child(1) {
+  animation: carousel-rotate 15s infinite;
+}
+
+/* Slide 1 - visible 20-40% */
+#cr-:nth-child(2) ~ .tyagi-carousel-item:nth-child(2) {
+  animation: carousel-rotate 15s infinite 3s;
 }
