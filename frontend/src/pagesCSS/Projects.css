@@ -1030,3 +1030,211 @@
     display: none;
   }
 }
+/* ========== GALLERY CAROUSEL STYLES - ADD TO EXISTING PROJECTS.CSS ========== */
+
+/* Gallery Section */
+.tyagi-project-gallery-section {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+/* Carousel Wrapper */
+.tyagi-carousel-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Carousel Container */
+.tyagi-carousel {
+  max-width: 500px;
+  width: 500px;
+  height: 380px;
+  border-radius: 0;
+  padding: 20px;
+  padding-bottom: 40px;
+  box-shadow: none;
+  
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  
+  box-sizing: border-box;
+}
+
+.tyagi-carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  width: 100%;
+  height: 100%;
+  transform-origin: left 50%;
+  
+  background: inherit;
+  
+  z-index: var(--z);
+  transition: .3s ease-out;
+}
+
+.tyagi-carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -moz-user-select: none;
+}
+
+/* Carousel Radio Inputs */
+.tyagi-carousel input[type="radio"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  z-index: -10;
+  pointer-events: none;
+}
+
+/* Carousel Labels (Navigation Dots) */
+.tyagi-carousel label {
+  width: 10%;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 20px;
+  
+  background: hsla(0 0% 90% / .3);
+  cursor: pointer;
+  
+  position: relative;
+  z-index: 10;
+  transition: var(--transition);
+}
+
+.tyagi-carousel label:last-child {
+  margin-right: 0;
+}
+
+.tyagi-carousel label:hover {
+  background: hsla(0 0% 70% / .5);
+}
+
+/* Active State */
+.tyagi-carousel input:checked + label {
+  background: linear-gradient(to right,
+    hsla(var(--hue) 80% 70% / .7),
+    hsla(calc(var(--hue) + 30) 80% 50% / .7));
+}
+
+/* Slide Transitions */
+.tyagi-carousel input:not(:checked) + label + .tyagi-carousel-item {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.tyagi-carousel input:checked + label + .tyagi-carousel-item ~ .tyagi-carousel-item {
+  transform: translateX(100%);
+}
+
+.tyagi-carousel input:not(:checked) + label + .tyagi-carousel-item {
+  transition: 0s;
+}
+
+/* ========== RESPONSIVE CAROUSEL STYLES ========== */
+
+@media (max-width: 1024px) {
+  .tyagi-carousel {
+    max-width: 450px;
+    width: 450px;
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tyagi-carousel {
+    max-width: 100%;
+    width: 100%;
+    height: 350px;
+    padding: 15px;
+    padding-bottom: 35px;
+  }
+  
+  .tyagi-carousel label {
+    height: 8px;
+  }
+  
+  .tyagi-project-gallery-section {
+    margin-top: 0.75rem;
+    padding-top: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tyagi-carousel {
+    max-width: 100%;
+    width: 100%;
+    height: 280px;
+    padding: 12px;
+    padding-bottom: 30px;
+    border-radius: 0;
+  }
+  
+  .tyagi-carousel label {
+    height: 6px;
+    margin-right: 3px;
+  }
+}
+
+@media (max-width: 360px) {
+  .tyagi-carousel {
+    max-width: 100%;
+    width: 100%;
+    height: 240px;
+    padding: 10px;
+    padding-bottom: 25px;
+  }
+}
+
+/* ========== ACCESSIBILITY & ANIMATIONS ========== */
+
+/* Keyboard Navigation Support */
+.tyagi-carousel label:focus-visible {
+  outline: 2px solid var(--color-black);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .tyagi-carousel-item {
+    transition: none;
+  }
+  
+  .tyagi-carousel label {
+    transition: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .tyagi-carousel {
+    height: auto;
+    max-height: 400px;
+    box-shadow: none;
+  }
+  
+  .tyagi-carousel label {
+    display: none;
+  }
+  
+  .tyagi-carousel-item {
+    position: relative;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
