@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock } from 'lucide-react';
+import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import '../pagesCSS/document.css';
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -61,7 +61,11 @@ const [submittingRequest, setSubmittingRequest] = useState(false);
     'star': Star,
     'heart': Heart
   };
-
+const [alertPopup, setAlertPopup] = useState({
+  show: false,
+  type: 'success', 
+  message: ''
+});
   const getCheckmarkIcon = (type = 'checkbox') => {
     const IconComponent = CHECKMARK_ICON_MAP[type] || CheckSquare;
     return IconComponent;
@@ -186,7 +190,7 @@ useEffect(() => {
   };
 const requestAccess = async () => {
   if (!requestFormData.name.trim() || !requestFormData.email.trim() || !requestFormData.message.trim()) {
-    alert('Please fill in all fields');
+   showAlert('Please fill in all fields', 'error');
     return;
   }
 
@@ -212,16 +216,16 @@ const requestAccess = async () => {
     const data = await response.json();
 
     if (response.ok) {
-      alert('Access request submitted successfully! You will receive an email when it is reviewed.');
+    showAlert('Access request submitted successfully! You will receive an email when it is reviewed.', 'success');
       setShowAccessRequestModal(false);
       setRequestFormData({ name: '', email: '', message: '' });
       setAccessRequestItem(null);
     } else {
-      alert(data.message || 'Failed to submit request');
+     showAlert(data.message || 'Failed to submit request', 'error');
     }
   } catch (err) {
     console.error('Error requesting access:', err);
-    alert('Failed to submit access request');
+  showAlert('Failed to submit access request', 'error');
   } finally {
     setSubmittingRequest(false);
   }
@@ -268,7 +272,18 @@ const requestAccess = async () => {
   };
 
 
+const showAlert = (message, type = 'info') => {
+  setAlertPopup({ show: true, type, message });
+  
+  // Auto-close after 3 seconds
+  setTimeout(() => {
+    setAlertPopup({ show: false, type: '', message: '' });
+  }, 7000);
+};
 
+const closeAlert = () => {
+  setAlertPopup({ show: false, type: '', message: '' });
+};
 const fetchFolderContents = async (parentId) => {
   try {
     setLoading(true);
@@ -291,7 +306,7 @@ const fetchFolderContents = async (parentId) => {
     const data = await response.json();
 
     if (response.status === 403) {
-      alert(data.message + (data.details ? ` (${data.details})` : ''));
+    showAlert('Failed to load folder. Access denied or folder not found.', 'error');
       navigate('/resources');
       return;
     }
@@ -371,7 +386,7 @@ const handleSearch = async (query) => {
 
     if (response.status === 403) {
       const errorData = await response.json();
-      alert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''));
+     showAlert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''), 'error');
       setFilteredItems([]);
       return;
     }
@@ -566,7 +581,8 @@ const loadExcelDataById = async (id) => {
     
     if (res.status === 403) {
       const errorData = await res.json();
-      alert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''));
+     showAlert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''), 'error');
+
       navigate('/resources');
       return;
     }
@@ -589,7 +605,8 @@ const loadExcelDataById = async (id) => {
     }
   } catch (err) {
     console.error('Error loading List data:', err);
-    alert('Failed to load file. Access denied or file not found.');
+  showAlert('Failed to load file. Access denied or file not found.', 'error');
+
     navigate('/resources');
   } finally {
     setLoading(false);
@@ -608,7 +625,7 @@ const loadExcelDataById = async (id) => {
       setShowAccessRequestModal(true);
       setAccessRequestItem(item);
     } else {
-      alert('You do not have access to this item');
+    showAlert('You do not have access to this item', 'error');
     }
     return;
   }
@@ -653,7 +670,7 @@ const handleDownload = async (docId) => {
     
     if (res.status === 403) {
       const errorData = await res.json();
-      alert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''));
+  showAlert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''), 'error');
       return;
     }
     
@@ -662,7 +679,7 @@ const handleDownload = async (docId) => {
     window.open(data.downloadUrl, "_blank");
   } catch (err) {
     console.error("Error downloading:", err);
-    alert("Failed to download file. Access denied or file not found.");
+   showAlert("Failed to download file. Access denied or file not found.", 'error');
   }
 };
 
@@ -1447,20 +1464,40 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
         </div>
       </div>
       
-      <div className="access-modal-footer">
+       <div className="access-modal-footer">
         <button 
-          className="access-btn-cancel"
+          className="usersubmit-btn-small"
           onClick={() => setShowAccessRequestModal(false)}
           disabled={submittingRequest}
         >
           Cancel
         </button>
         <button 
-          className="access-btn-submit"
+          className="usersubmit-btn-small"
           onClick={requestAccess}
           disabled={submittingRequest}
         >
           {submittingRequest ? 'Submitting...' : 'Submit Request'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{/* Alert Popup */}
+{alertPopup.show && (
+  <div className="usersubmit-overlay" onClick={closeAlert}>
+    <div className="usersubmit-modal" onClick={(e) => e.stopPropagation()}>
+      <div className={`usersubmit-successicon ${alertPopup.type}`}>
+        {alertPopup.type === 'success' && <CheckCircle size={60} />}
+        {alertPopup.type === 'error' && <AlertCircle size={60} />}
+        {alertPopup.type === 'info' && <AlertCircle size={60} />}
+      </div>
+      
+      <p className="usersubmit-message">{alertPopup.message}</p>
+      
+      <div className="usersubmit-actions">
+        <button className="usersubmit-btn-small" onClick={closeAlert}>
+          Close
         </button>
       </div>
     </div>
