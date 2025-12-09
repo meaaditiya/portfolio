@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
-import '../pagesCSS/Projects.css';
-import aadiImage10 from '../images/court.avif';
-import aadiImage1 from '../images/aadiimage01.jpeg';
-import weatherImage from '../images/weather.jpg';
-import castwave from '../images/Castwave.jpeg';
 import React from 'react';
 import { Search, Folder, File, GitBranch, Star, Eye, AlertCircle, Loader2, FolderOpen, FileText, Code, X, ChevronLeft, ChevronRight } from 'lucide-react';
-
+import "../pagesCSS/Projects.css";
 const ImageZoomModal = ({ images, initialIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
@@ -440,17 +435,139 @@ const Projects = () => {
   const [fetchedProjects, setFetchedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [zoomModal, setZoomModal] = useState({ show: false, images: [], index: 0 });
-const [carouselTimers, setCarouselTimers] = useState({});
   const API_URL = 'https://connectwithaaditiyamg2.onrender.com';
 
-  const staticProjects = [];
-
-  const imageMap = {
-    'aadiImage10': aadiImage10,
-    'aadiImage1': aadiImage1,
-    'castwave': castwave,
-    'weatherImage': weatherImage
-  };
+  const staticProjects = [
+    {
+      id: 'static-1',
+      title: 'E-Portal for Case Management',
+      period: '08 Mar, 2023 - 15 May, 2024',
+      teamSize: 4,
+      description: 'Developed an advanced e-Portal to streamline judicial processes, enhancing transparency, accessibility, and communication between judges, lawyers, and clients.',
+      detailedDescription: [
+        'Built a React.js and Node.js-based web application with a secure role-based authentication system.',
+        'Implemented real-time case tracking and notifications for efficient case management.',
+        'Integrated centralized document management for secure storage and access.',
+        'Enabled video conferencing capabilities for remote hearings.',
+        'Developed automated scheduling and task management features.',
+        'Modernized judicial infrastructure with a user-friendly, efficient digital platform.'
+      ],
+      tech: ['ReactJS', 'Node.js', 'MongoDB', 'Express.js', 'JSON'],
+      outcomes: [
+        'Enhanced transparency in judicial processes.',
+        'Improved accessibility for stakeholders.',
+        'Reduced administrative overhead.',
+        'Enabled seamless communication between judges, lawyers, and clients.'
+      ],
+      link: 'https://ecourtfiling.onrender.com/',
+      githubUrl: 'https://github.com/meaaditiya/casemanager.git',
+      color: 'purple',
+      image: 'https://connectwithaaditiya.onrender.com/assets/court-BEfDN9my.avif',
+      galleryImages: [
+        'https://i.postimg.cc/zv9CkmkD/Screenshot-2025-12-08-205943.png',
+        'https://i.postimg.cc/15wCYMVG/Screenshot-2025-12-08-210003.png',
+        'https://i.postimg.cc/wMJVZTMj/Screenshot-2025-12-08-210143.png',
+        'https://i.postimg.cc/fbJY1Tq8/Screenshot-2025-12-08-210205.png',
+        'https://i.postimg.cc/SQWCBPV2/Screenshot-2025-12-08-210235.png',
+        'https://i.postimg.cc/P5FwbnrH/Screenshot-2025-12-08-210308.png'
+      ]
+    },
+    {
+      id: 'static-2',
+      title: 'Personal Attendance Manager',
+      period: '01 Jan, 2025 - 10 Mar, 2025',
+      teamSize: 1,
+      description: 'A user-friendly digital tool designed to help individuals track and manage their attendance effectively with real-time calculations and target setting.',
+      detailedDescription: [
+        'Developed a web application using React.js for an intuitive user interface.',
+        'Implemented manual entry for daily attendance with real-time percentage calculations.',
+        'Enabled tracking of total classes/days attended and scheduled.',
+        'Created a target attendance calculator to recommend required class attendance.',
+        'Added functionality to save and review attendance history.'
+      ],
+      tech: ['React.js', 'HTML', 'CSS', 'Javascript'],
+      outcomes: [
+        'Simplified attendance tracking for users.',
+        'Provided actionable insights to meet attendance goals.',
+        'Offered a responsive and intuitive interface.'
+      ],
+      link: 'https://attendancetarget.onrender.com/',
+      githubUrl: 'https://github.com/meaaditiya/bunkoff.git',
+      color: 'pink',
+      image: 'https://connectwithaaditiya.onrender.com/assets/aadiimage01-BMFGd64v.jpeg',
+      galleryImages: [
+        "https://i.postimg.cc/kMv04tbH/Screenshot-2025-12-09-130315.png",
+    "https://i.postimg.cc/hjqY4SPp/Screenshot-2025-12-09-130336.png",
+    "https://i.postimg.cc/d0GWxzRz/Screenshot-2025-12-09-130406.png",
+    "https://i.postimg.cc/zX3xrLF8/Screenshot-2025-12-09-130417.png",
+    "https://i.postimg.cc/D00PnDsv/Screenshot-2025-12-09-130438.png"
+  
+      ]
+    },
+    {
+      id: 'static-3',
+      title: 'CastWave',
+      period: '30 May, 2024 - 23 Jul, 2024',
+      teamSize: 1,
+      description: 'A full-stack live chat application enabling real-time chatting community sessions, and interactive conversations with advanced host controls.',
+      detailedDescription: [
+        'Built with Next.js (App Router) and TypeScript for scalable, maintainable architecture.',
+        'Implemented secure user authentication and session-based login persistence using Firebase Auth.',
+        'Designed dynamic session creation, scheduling, and real-time live control features for hosts.',
+        'Integrated Firestore for real-time chat synchronization and participant management.',
+        'Enabled live polls with real-time voting and results display for session engagement.',
+        'Developed featured messages and message voting for interactive discussion flow.',
+        'Integrated Google Genkit for AI-powered live chat summarization.',
+        'Styled using Tailwind CSS and ShadCN UI for responsive, modern light/dark themed UI.',
+        'Managed app-wide state using React Hooks and Context API.'
+      ],
+      tech: ['Next.js', 'TypeScript', 'Firebase', 'Firestore', 'Tailwind CSS', 'ShadCN UI', 'Genkit', 'React Hooks', 'Context API'],
+      outcomes: [
+        'Enabled creators and communities to host live chat events with rich interaction.',
+        'Improved user engagement through polls, featured messages, and voting.',
+        'Enhanced content accessibility with AI-based chat summarization.'
+      ],
+      link: 'https://castwave-red.vercel.app/',
+      githubUrl: 'https://github.com/meaaditiya/castwave.git',
+      color: 'purple',
+      image: 'https://connectwithaaditiya.onrender.com/assets/Castwave-DtxVIx0N.jpeg',
+      galleryImages: [
+         "https://i.postimg.cc/Nfv3GkFS/Screenshot-2025-08-11-230532.png",
+    "https://i.postimg.cc/zf4dtqRw/Screenshot-2025-08-11-231004.png",
+    "https://i.postimg.cc/gk4g9VZy/Screenshot-2025-08-12-143532.png",
+    "https://i.postimg.cc/SNQGGnvC/Screenshot-2025-08-12-171600.png",
+    "https://i.postimg.cc/1XmDMdJS/Screenshot-2025-08-12-171613.png",
+    "https://i.postimg.cc/1X3NDq3Q/Screenshot-2025-08-12-171045.png"
+      ]
+    },
+    {
+      id: 'static-4',
+      title: 'Weather Tracking for Farmers',
+      period: '01 May, 2023 - 23 Jul, 2024',
+      teamSize: 4,
+      description: 'A comprehensive digital solution for farmers to monitor agricultural weather conditions, providing crop-specific insights and real-time updates.',
+      detailedDescription: [
+        'Developed a responsive frontend with React.js for an interactive user experience.',
+        'Built a robust backend using Node.js and Express.js for API development.',
+        'Utilized MongoDB for flexible data storage and WebSocket for real-time updates.',
+        'Integrated weather APIs and Google Maps API for accurate, geolocation-based data.',
+        'Provided hourly and daily weather predictions, including temperature, humidity, and precipitation.',
+        'Offered crop-specific recommendations and alerts for risks like frost or drought.',
+        'Included soil moisture and temperature tracking with historical data analysis.'
+      ],
+      tech: ['ReactJS', 'Web API', 'Google API', 'Google Maps API', 'MongoDB', 'Express.js', 'Node.js'],
+      outcomes: [
+        'Empowered farmers with data-driven agricultural decisions.',
+        'Optimized crop management with personalized insights.',
+        'Mitigated weather-related risks through timely alerts.'
+      ],
+      link: '',
+      githubUrl: '',
+      color: 'orange',
+      image: 'https://connectwithaaditiya.onrender.com/assets/weather-qtVvAYyw.jpg',
+      galleryImages: []
+    }
+  ];
 
   useEffect(() => {
     fetchProjects();
@@ -475,39 +592,39 @@ const [carouselTimers, setCarouselTimers] = useState({});
     }
   };
 
-  const projects = [...staticProjects, ...fetchedProjects];
-useEffect(() => {
-  const carouselIntervals = {};
-  
-  const startAutoSlide = (projectId, totalImages) => {
-    let currentSlide = 0;
+  const projects = fetchedProjects.length > 0 ? fetchedProjects : staticProjects;
+
+  useEffect(() => {
+    const carouselIntervals = {};
     
-    const interval = setInterval(() => {
-      const radioId = `cr-${projectId}-${currentSlide}`;
-      const radio = document.getElementById(radioId);
-      if (radio) {
-        radio.checked = true;
-        // Trigger change event
-        radio.dispatchEvent(new Event('change', { bubbles: true }));
+    const startAutoSlide = (projectId, totalImages) => {
+      let currentSlide = 0;
+      
+      const interval = setInterval(() => {
+        const radioId = `cr-${projectId}-${currentSlide}`;
+        const radio = document.getElementById(radioId);
+        if (radio) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        currentSlide = (currentSlide + 1) % totalImages;
+      }, 2000);
+      
+      carouselIntervals[projectId] = interval;
+    };
+    
+    projects.forEach(project => {
+      if (project.galleryImages && project.galleryImages.length > 0) {
+        const projectId = project.id || project._id;
+        startAutoSlide(projectId, project.galleryImages.length);
       }
-      currentSlide = (currentSlide + 1) % totalImages;
-    }, 2000);
+    });
     
-    carouselIntervals[projectId] = interval;
-  };
-  
-  // Start auto-slide for each project with gallery
-  projects.forEach(project => {
-    if (project.galleryImages && project.galleryImages.length > 0) {
-      const projectId = project.id || project._id;
-      startAutoSlide(projectId, project.galleryImages.length);
-    }
-  });
-  
-  return () => {
-    Object.values(carouselIntervals).forEach(interval => clearInterval(interval));
-  };
-}, [projects]);
+    return () => {
+      Object.values(carouselIntervals).forEach(interval => clearInterval(interval));
+    };
+  }, [projects]);
+
   const toggleProjectDetails = (projectId) => {
     setActiveProject(activeProject === projectId ? null : projectId);
   };

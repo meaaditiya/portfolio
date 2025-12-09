@@ -1703,29 +1703,21 @@ const verifyCommentOwnership = async (commentId, userEmail) => {
     return false;
   }
 };
-
-// NEW: Batch verify ownership for multiple comments
-// NEW: Batch verify ownership for multiple comments
-// NEW: Batch verify ownership for multiple comments
 const batchVerifyCommentOwnership = async (comments, userInfo = null) => {
-  // Priority: passed userInfo > loggedInUser > storedUserInfo
   const userEmail = userInfo?.email || 
                     (isLoggedIn && loggedInUser ? loggedInUser.email : null) || 
                     storedUserInfo?.email;
-  
   console.log('🔍 Batch verifying comments for email:', userEmail);
   
   if (!userEmail) {
     console.log('❌ No user email available for verification');
-    return; // Don't clear existing state
+    return; 
   }
-  
   const verificationPromises = comments.map(async (comment) => {
     const canDelete = await verifyCommentOwnership(comment._id, userEmail);
     console.log(`Comment ${comment._id} deletable:`, canDelete);
     return { commentId: comment._id, canDelete };
   });
-  
   const results = await Promise.all(verificationPromises);
   
   const deletabilityMap = {};
