@@ -462,7 +462,7 @@ const Projects = () => {
       link: 'https://ecourtfiling.onrender.com/',
       githubUrl: 'https://github.com/meaaditiya/casemanager.git',
       color: 'purple',
-      image: 'https://connectwithaaditiya.onrender.com/assets/court-BEfDN9my.avif',
+      image: 'https://wallpapers.com/images/hd/court-background-um6lv448fx52zx1n.jpg',
       galleryImages: [
         'https://i.postimg.cc/zv9CkmkD/Screenshot-2025-12-08-205943.png',
         'https://i.postimg.cc/15wCYMVG/Screenshot-2025-12-08-210003.png',
