@@ -1,5 +1,5 @@
-// src/App.js
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -25,7 +25,8 @@ const AppContent = () => {
   const visitorData = useVisitorTracking();
   const location = useLocation();
 
-  const isResourcesRoute = location.pathname.startsWith('/resources');
+  const isResourcesRoute = location.pathname.startsWith('/resources') || 
+                          location.pathname.startsWith('/access');
 
   return (
     <VisitorProvider value={visitorData}>
@@ -56,10 +57,12 @@ const AppContent = () => {
             <Route path="/reset-password" element={<Auth />} />
             <Route path="/forgot-password" element={<Auth />} />
             <Route path="/dots" element={<DotsLoader/>}/>
-            <Route path="*" element={<NotFound/>}/>
             <Route path="/resources" element={<Document/>}/>
             <Route path="/resources/folder/:folderId" element={<Document/>}/>
             <Route path="/resources/list/:excelId" element={<Document />} />
+            <Route path="/access/:id" element={<AccessRedirect />} />
+            
+            <Route path="*" element={<NotFound/>}/>
           </Routes>
         </main>
         
@@ -68,7 +71,77 @@ const AppContent = () => {
     </VisitorProvider>
   );
 };
-
+const AccessRedirect = () => {
+  const location = useLocation();
+  const [loading, setLoading] = React.useState(true);
+  const [redirectPath, setRedirectPath] = React.useState(null);
+  
+  React.useEffect(() => {
+    const handleAccess = async () => {
+      const params = new URLSearchParams(location.search);
+      const key = params.get('key');
+      const pathParts = location.pathname.split('/');
+      const documentId = pathParts[pathParts.length - 1];
+      
+      if (!key) {
+        setRedirectPath('/resources');
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const response = await fetch(
+          `https://connectwithaaditiyamg2.onrender.com/api/item/${documentId}?key=${key}`
+        );
+        
+        if (!response.ok) {
+          console.error('Access denied');
+          setRedirectPath('/resources');
+          setLoading(false);
+          return;
+        }
+        
+        const data = await response.json();
+        switch(data.type) {
+          case 'folder':
+            setRedirectPath(`/resources/folder/${documentId}?key=${key}`);
+            break;
+          case 'excel':
+            setRedirectPath(`/resources/list/${documentId}?key=${key}`);
+            break;
+          case 'file':
+          case 'link':
+          default:
+            setRedirectPath(`/resources?key=${key}`);
+            break;
+        }
+        
+      } catch (err) {
+        console.error('Error accessing document:', err);
+        setRedirectPath('/resources');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    handleAccess();
+  }, [location]);
+  
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh' 
+      }}>
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+  
+  return redirectPath ? <Navigate to={redirectPath} replace /> : null;
+};
 
 const App = () => {
   return (
