@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart } from 'lucide-react';
+import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock } from 'lucide-react';
 import '../pagesCSS/document.css';
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -45,6 +45,14 @@ const Documents = () => {
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [showAccessRequestModal, setShowAccessRequestModal] = useState(false);
+const [accessRequestItem, setAccessRequestItem] = useState(null);
+const [requestFormData, setRequestFormData] = useState({
+  name: '',
+  email: '',
+  message: ''
+});
+const [submittingRequest, setSubmittingRequest] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 800);
   const CHECKMARK_ICON_MAP = {
     'checkbox': CheckSquare,
@@ -176,7 +184,48 @@ useEffect(() => {
     }
     return anonId;
   };
+const requestAccess = async () => {
+  if (!requestFormData.name.trim() || !requestFormData.email.trim() || !requestFormData.message.trim()) {
+    alert('Please fill in all fields');
+    return;
+  }
 
+  try {
+    setSubmittingRequest(true);
+    
+    const response = await fetch(
+      `https://connectwithaaditiyamg2.onrender.com/api/user/request-access/${accessRequestItem._id}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: requestFormData.name,
+          email: requestFormData.email,
+          message: requestFormData.message,
+          userId: isAuthenticated ? userId : null
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert('Access request submitted successfully! You will receive an email when it is reviewed.');
+      setShowAccessRequestModal(false);
+      setRequestFormData({ name: '', email: '', message: '' });
+      setAccessRequestItem(null);
+    } else {
+      alert(data.message || 'Failed to submit request');
+    }
+  } catch (err) {
+    console.error('Error requesting access:', err);
+    alert('Failed to submit access request');
+  } finally {
+    setSubmittingRequest(false);
+  }
+};
   const sortItems = (itemsToSort) => {
     return itemsToSort.sort((a, b) => {
       if (a.type !== b.type) {
@@ -218,48 +267,65 @@ useEffect(() => {
     setShowSortMenu(false);
   };
 
-  const fetchFolderContents = async (parentId) => {
-    try {
-      setLoading(true);
-      const url = parentId 
-        ? `https://connectwithaaditiyamg2.onrender.com/api/folder/contents?parentId=${parentId}`
-        : `https://connectwithaaditiyamg2.onrender.com/api/folder/contents`;
-      
-      const token = localStorage.getItem('token');
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-      
-      const response = await fetch(url, { headers });
-      const data = await response.json();
-
-      let itemsWithBookmarks = data.items || [];
-
-      if (!isAuthenticated) {
-        itemsWithBookmarks = itemsWithBookmarks.map(item => ({
-          ...item,
-          isBookmarked: isItemBookmarkedLocally(item._id)
-        }));
-      }
-
-      setItems(itemsWithBookmarks);
-      setFilteredItems(sortItems(itemsWithBookmarks));
-      setCurrentFolder(data.currentFolder);
-      
-      if (parentId) {
-        await fetchBreadcrumb(parentId);
-      } else {
-        setBreadcrumb([]);
-      }
-      
-      setSearchMode(false);
-      setSearchQuery('');
-      setViewingExcel(null);
-      setExcelData(null);
-    } catch (err) {
-      console.error("Error fetching folder contents:", err);
-    } finally {
-      setLoading(false);
+const fetchFolderContents = async (parentId) => {
+  try {
+    setLoading(true);
+    
+    // Get access key from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    
+    let url = parentId 
+      ? `https://connectwithaaditiyamg2.onrender.com/api/folder/contents?parentId=${parentId}`
+      : `https://connectwithaaditiyamg2.onrender.com/api/folder/contents`;
+    
+    // Append access key if present
+    if (accessKey) {
+      url += `${parentId ? '&' : '?'}key=${accessKey}`;
     }
-  };
+    
+    const token = localStorage.getItem('token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    
+    const response = await fetch(url, { headers });
+    const data = await response.json();
+
+    // Handle access denied
+    if (response.status === 403) {
+      alert(data.message || 'Access denied to this folder');
+      navigate('/resources');
+      return;
+    }
+
+    let itemsWithBookmarks = data.items || [];
+
+    if (!isAuthenticated) {
+      itemsWithBookmarks = itemsWithBookmarks.map(item => ({
+        ...item,
+        isBookmarked: isItemBookmarkedLocally(item._id)
+      }));
+    }
+
+    setItems(itemsWithBookmarks);
+    setFilteredItems(sortItems(itemsWithBookmarks));
+    setCurrentFolder(data.currentFolder);
+    
+    if (parentId) {
+      await fetchBreadcrumb(parentId);
+    } else {
+      setBreadcrumb([]);
+    }
+    
+    setSearchMode(false);
+    setSearchQuery('');
+    setViewingExcel(null);
+    setExcelData(null);
+  } catch (err) {
+    console.error("Error fetching folder contents:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchBreadcrumb = async (itemId) => {
     try {
@@ -271,7 +337,7 @@ useEffect(() => {
     }
   };
 
- const handleSearch = async (query) => {
+const handleSearch = async (query) => {
   if (!query.trim()) {
     setFilteredItems(sortItems(items));
     setSearchMode(false);
@@ -282,15 +348,21 @@ useEffect(() => {
     setSearchMode(true);
     setLoading(true);
     
-    // Build URL with folder context
+    // Get access key from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    
     const params = new URLSearchParams({
       q: query,
       limit: 10
     });
     
-    // Add parentId if we're inside a folder
     if (folderId) {
       params.append('parentId', folderId);
+    }
+    
+    if (accessKey) {
+      params.append('key', accessKey);
     }
     
     const response = await fetch(
@@ -299,6 +371,10 @@ useEffect(() => {
     const data = await response.json();
 
     let results = data.results || [];
+    
+    // Filter out items user doesn't have access to
+    results = results.filter(item => item.hasAccess !== false);
+    
     if (!isAuthenticated) {
       results = results.map(item => ({
         ...item,
@@ -464,69 +540,132 @@ useEffect(() => {
       }
     }
   };
-
-  const loadExcelDataById = async (id) => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-      
-      const res = await fetch(
-        `https://connectwithaaditiyamg2.onrender.com/api/excel/${id}/data`,
-        { headers }
-      );
-      
-      if (!res.ok) {
-        throw new Error('Failed to load Excel file');
-      }
-      
-      const data = await res.json();
-      
-      setExcelData(data);
-      setViewingExcel({ _id: id, name: data.name || 'Excel File' });
-      setSelectedSheet(data.sheetNames?.[0] || null);
-      setCheckmarkColumns(data.checkmarkFields || []);
-      
-      if (isAuthenticated && data.userCheckmarks) {
-        setExcelCheckmarks(data.userCheckmarks);
-      } else {
-        await loadExcelCheckmarks(id);
-      }
-    } catch (err) {
-      console.error('Error loading List data:', err);
-      alert('Failed to load  file');
-    } finally {
-      setLoading(false);
+const loadExcelDataById = async (id) => {
+  try {
+    setLoading(true);
+    
+    // Get access key from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    
+    let url = `https://connectwithaaditiyamg2.onrender.com/api/excel/${id}/data`;
+    if (accessKey) {
+      url += `?key=${accessKey}`;
     }
-  };
-
+    
+    const token = localStorage.getItem('token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    
+    const res = await fetch(url, { headers });
+    
+    if (res.status === 403) {
+      const errorData = await res.json();
+      alert(errorData.message || 'Access denied to this document');
+      navigate('/resources');
+      return;
+    }
+    
+    if (res.status === 404 || !res.ok) {
+      throw new Error('Failed to load Excel file');
+    }
+    
+    const data = await res.json();
+    
+    // Handle locked documents
+    if (data.accessLevel === 'locked') {
+      alert('This document is locked. Only metadata is available.');
+      navigate('/resources');
+      return;
+    }
+    
+    setExcelData(data);
+    setViewingExcel({ _id: id, name: data.name || 'Excel File' });
+    setSelectedSheet(data.sheetNames?.[0] || null);
+    setCheckmarkColumns(data.checkmarkFields || []);
+    
+    if (isAuthenticated && data.userCheckmarks) {
+      setExcelCheckmarks(data.userCheckmarks);
+    } else {
+      await loadExcelCheckmarks(id);
+    }
+  } catch (err) {
+    console.error('Error loading List data:', err);
+    alert('Failed to load file');
+    navigate('/resources');
+  } finally {
+    setLoading(false);
+  }
+};
+ 
   const closeExcelView = () => {
     navigate('/resources');
   };
 
-  const handleItemClick = (item) => {
-    if (item.type === 'folder') {
-      navigate(`/resources/folder/${item._id}`);
-    } else if (item.type === 'link') {
-      window.open(item.url, '_blank', 'noopener,noreferrer');
-    } else if (item.type === 'excel') {
-      navigate(`/resources/list/${item._id}`);
+ const handleItemClick = (item) => {
+  // Check if item has access restrictions
+  if (item.hasAccess === false || item.accessLevel === 'locked') {
+    if (item.canRequestAccess) {
+      // Show access request modal
+      setShowAccessRequestModal(true);
+      setAccessRequestItem(item);
     } else {
-      handleDownload(item._id);
+      alert('You do not have access to this item');
     }
-  };
+    return;
+  }
 
-  const handleDownload = async (docId) => {
-    try {
-      const res = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/download/${docId}`);
-      const data = await res.json();
-      if (!data.downloadUrl) throw new Error("No download URL");
-      window.open(data.downloadUrl, "_blank");
-    } catch (err) {
-      console.error("Error downloading:", err);
-      alert("Failed to download file");
+  // Get access key to pass along
+  const urlParams = new URLSearchParams(window.location.search);
+  const accessKey = urlParams.get('key');
+  const keyParam = accessKey ? `?key=${accessKey}` : '';
+
+  if (item.type === 'folder') {
+    navigate(`/resources/folder/${item._id}${keyParam}`);
+  } else if (item.type === 'link') {
+    window.open(item.url, '_blank', 'noopener,noreferrer');
+  } else if (item.type === 'excel') {
+    navigate(`/resources/list/${item._id}${keyParam}`);
+  } else {
+    handleDownload(item._id);
+  }
+};
+
+ const handleDownload = async (docId) => {
+  try {
+    // Get access key from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    
+    let url = `https://connectwithaaditiyamg2.onrender.com/api/download/${docId}`;
+    const params = new URLSearchParams();
+    
+    if (accessKey) {
+      params.append('key', accessKey);
     }
-  };
+    if (userId) {
+      params.append('userId', userId);
+    }
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    
+    const res = await fetch(url);
+    
+    if (res.status === 403) {
+      const errorData = await res.json();
+      alert(errorData.message || 'Access denied');
+      return;
+    }
+    
+    const data = await res.json();
+    if (!data.downloadUrl) throw new Error("No download URL");
+    window.open(data.downloadUrl, "_blank");
+  } catch (err) {
+    console.error("Error downloading:", err);
+    alert("Failed to download file");
+  }
+};
 
   const getFileIcon = (item) => {
     if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
@@ -1056,90 +1195,99 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
           </tr>
         </thead>
         <tbody>
-          {filteredItems.map((item) => (
-            <tr 
-              key={item._id} 
-              className="table-row"
-              onDoubleClick={() => handleItemClick(item)}
-            >
-              <td className="td name-cell">
-                <div className="name-content">
-                  {item.type === 'folder' ? (
-                    <Folder size={16} className="folder-icon-small" />
-                  ) : item.type === 'link' ? (
-                    <LinkIcon size={16} className="file-icon-link" />
-                  ) : item.type === 'excel' ? (
-                    <List size={16} className="file-icon-excel" />
-                  ) : (
-                    getFileIcon(item)
-                  )}
-                  <span className="file-name">{item.name || item.originalName}</span>
-                </div>
-              </td>
-              <td className="td">{formatDate(item.createdAt)}</td>
-              <td className="td">{getFileType(item)}</td>
-              <td className="td">
-                {item.type === 'folder' || item.type === 'link' ? '' : 
-                 item.type === 'excel' ? `${item.rowCount} items` :
-                 formatFileSize(item.size)}
-              </td>
-              <td className="td action-column">
-                <div className="action-buttons-container">
-                  {item.bookmarkEnabled && (
-                    <button
-                      onClick={(e) => toggleUserBookmark(item, e)}
-                      className={`bookmark-button ${item.isBookmarked ? 'bookmarked' : ''}`}
-                      title={item.isBookmarked ? 'Remove Bookmark' : 'Bookmark'}
-                    >
-                      <Star
-                        size={16}
-                        fill={item.isBookmarked ? '#FFC107' : 'none'}
-                        color={item.isBookmarked ? '#FFC107' : 'currentColor'}
-                      />
-                    </button>
-                  )}
-                  {item.type === 'file' && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownload(item._id);
-                      }}
-                      className="download-button"
-                      title="Download"
-                    >
-                      <Download size={16} />
-                    </button>
-                  )}
-
-                  {item.type === 'link' && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(item.url, '_blank', 'noopener,noreferrer');
-                      }}
-                      className="download-button"
-                      title="Open Link"
-                    >
-                      <ExternalLink size={16} />
-                    </button>
-                  )}
-
-                  {item.type === 'excel' && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/resources/list/${item._id}`);
-                      }}
-                      className="download-button"
-                      title="View List"
-                    >
-                      <ExternalLink size={16} />
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+       {filteredItems.map((item) => (
+  <tr 
+    key={item._id} 
+    className={`table-row ${(item.hasAccess === false || item.accessLevel === 'locked') ? 'locked-row' : ''}`}
+    onDoubleClick={() => handleItemClick(item)}
+  >
+    <td className="td name-cell">
+      <div className="name-content">
+        {item.type === 'folder' ? (
+          <Folder size={16} className="folder-icon-small" />
+        ) : item.type === 'link' ? (
+          <LinkIcon size={16} className="file-icon-link" />
+        ) : item.type === 'excel' ? (
+          <List size={16} className="file-icon-excel" />
+        ) : (
+          getFileIcon(item)
+        )}
+        <span className="file-name">{item.name || item.originalName}</span>
+        {(item.hasAccess === false || item.accessLevel === 'locked') && (
+          <Lock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
+        )}
+      </div>
+    </td>
+    <td className="td">{formatDate(item.createdAt)}</td>
+    <td className="td">{getFileType(item)}</td>
+    <td className="td">
+      {item.type === 'folder' || item.type === 'link' ? '' : 
+       item.type === 'excel' ? `${item.rowCount} items` :
+       formatFileSize(item.size)}
+    </td>
+    <td className="td action-column">
+      <div className="action-buttons-container">
+        {/* Only show action buttons if user has access */}
+        {item.hasAccess !== false && item.accessLevel !== 'locked' && (
+          <>
+            {item.bookmarkEnabled && (
+              <button
+                onClick={(e) => toggleUserBookmark(item, e)}
+                className={`bookmark-button ${item.isBookmarked ? 'bookmarked' : ''}`}
+                title={item.isBookmarked ? 'Remove Bookmark' : 'Bookmark'}
+              >
+                <Star
+                  size={16}
+                  fill={item.isBookmarked ? '#FFC107' : 'none'}
+                  color={item.isBookmarked ? '#FFC107' : 'currentColor'}
+                />
+              </button>
+            )}
+            {item.type === 'file' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDownload(item._id);
+                }}
+                className="download-button"
+                title="Download"
+              >
+                <Download size={16} />
+              </button>
+            )}
+            {item.type === 'link' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(item.url, '_blank', 'noopener,noreferrer');
+                }}
+                className="download-button"
+                title="Open Link"
+              >
+                <ExternalLink size={16} />
+              </button>
+            )}
+            {item.type === 'excel' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const accessKey = urlParams.get('key');
+                  const keyParam = accessKey ? `?key=${accessKey}` : '';
+                  navigate(`/resources/list/${item._id}${keyParam}`);
+                }}
+                className="download-button"
+                title="View List"
+              >
+                <ExternalLink size={16} />
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </td>
+  </tr>
+))}
         </tbody>
       </table>
     </div>
@@ -1147,10 +1295,10 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     <div className="grid-container">
       {filteredItems.map((item) => (
         <div 
-          key={item._id} 
-          className="grid-item"
-          onDoubleClick={() => handleItemClick(item)}
-        >
+    key={item._id} 
+    className={`grid-item ${(item.hasAccess === false || item.accessLevel === 'locked') ? 'locked-item' : ''}`}
+    onDoubleClick={() => handleItemClick(item)}
+  >
           {item.bookmarkEnabled && (
             <button
               onClick={(e) => toggleUserBookmark(item, e)}
@@ -1165,19 +1313,41 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
             </button>
           )}
 
-          <div className="grid-icon">
-            {item.type === 'folder' ? (
-              <Folder size={48} className="folder-icon-large" />
-            ) : item.type === 'link' ? (
-              <LinkIcon size={48} className="link-icon-large" />
-            ) : item.type === 'excel' ? (
-              <ListIcon size={48} className="file-icon-excel" />
-            ) : (
-              <div className="file-icon-large">
-                {getFileIcon(item)}
-              </div>
-            )}
-          </div>
+        // In grid view, replace the grid-icon div with:
+<div className="grid-icon">
+  {item.hasAccess === false || item.accessLevel === 'locked' ? (
+    <div className="locked-item-indicator">
+      {item.type === 'folder' ? (
+        <Folder size={48} className="folder-icon-large locked-icon" />
+      ) : item.type === 'link' ? (
+        <LinkIcon size={48} className="link-icon-large locked-icon" />
+      ) : item.type === 'excel' ? (
+        <ListIcon size={48} className="file-icon-excel locked-icon" />
+      ) : (
+        <div className="file-icon-large locked-icon">
+          {getFileIcon(item)}
+        </div>
+      )}
+      <div className="lock-overlay">
+        <Lock size={24} className="lock-icon" />
+      </div>
+    </div>
+  ) : (
+    <>
+      {item.type === 'folder' ? (
+        <Folder size={48} className="folder-icon-large" />
+      ) : item.type === 'link' ? (
+        <LinkIcon size={48} className="link-icon-large" />
+      ) : item.type === 'excel' ? (
+        <ListIcon size={48} className="file-icon-excel" />
+      ) : (
+        <div className="file-icon-large">
+          {getFileIcon(item)}
+        </div>
+      )}
+    </>
+  )}
+</div>
           
           <div className="grid-item-name" title={item.name || item.originalName}>
             {item.name || item.originalName}
@@ -1225,6 +1395,78 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
       ))}
     </div>
   )}
+  {/* Access Request Modal */}
+{showAccessRequestModal && accessRequestItem && (
+  <div className="access-modal-overlay" onClick={() => setShowAccessRequestModal(false)}>
+    <div className="access-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="access-modal-header">
+        <h3>Request Access</h3>
+        <button 
+          className="access-modal-close"
+          onClick={() => setShowAccessRequestModal(false)}
+        >
+          <X size={20} />
+        </button>
+      </div>
+      
+      <div className="access-modal-body">
+        <p className="access-modal-description">
+          Request access to: <strong>{accessRequestItem.name}</strong>
+        </p>
+        
+        <div className="access-form-group">
+          <label>Your Name *</label>
+          <input
+            type="text"
+            placeholder="Enter your name"
+            value={requestFormData.name}
+            onChange={(e) => setRequestFormData({...requestFormData, name: e.target.value})}
+            className="access-form-input"
+          />
+        </div>
+        
+        <div className="access-form-group">
+          <label>Your Email *</label>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={requestFormData.email}
+            onChange={(e) => setRequestFormData({...requestFormData, email: e.target.value})}
+            className="access-form-input"
+          />
+        </div>
+        
+        <div className="access-form-group">
+          <label>Reason for Access *</label>
+          <textarea
+            placeholder="Why do you need access to this document?"
+            value={requestFormData.message}
+            onChange={(e) => setRequestFormData({...requestFormData, message: e.target.value})}
+            className="access-form-textarea"
+            rows="4"
+          />
+        </div>
+      </div>
+      
+      <div className="access-modal-footer">
+        <button 
+          className="access-btn-cancel"
+          onClick={() => setShowAccessRequestModal(false)}
+          disabled={submittingRequest}
+        >
+          Cancel
+        </button>
+        <button 
+          className="access-btn-submit"
+          onClick={requestAccess}
+          disabled={submittingRequest}
+        >
+          {submittingRequest ? 'Submitting...' : 'Submit Request'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 </div>
 );
 };

@@ -1157,3 +1157,251 @@
   color: white;
   border-color: #1976d2;
 }
+/* ============================================================================
+   ACCESS CONTROL & LOCKED ITEMS
+   ============================================================================ */
+
+/* Locked Item Indicator */
+.locked-item-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.locked-icon {
+  opacity: 0.4;
+  filter: grayscale(100%);
+}
+
+.lock-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-icon {
+  color: #fff;
+}
+
+/* Locked row in table view */
+.table-row.locked-row {
+  opacity: 0.6;
+  background-color: #fafafa;
+}
+
+.table-row.locked-row:hover {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.table-row.locked-row .name-content {
+  position: relative;
+}
+
+.table-row.locked-row .name-content::before {
+  content: '🔒';
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+/* Grid locked item */
+.grid-item.locked-item {
+  opacity: 0.7;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.grid-item.locked-item:hover {
+  background-color: #f5f5f5;
+}
+
+/* Access Request Modal */
+.access-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.access-modal {
+  background: #fff;
+  border-radius: 4px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.access-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #E5E5E5;
+}
+
+.access-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1F1F1F;
+}
+
+.access-modal-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  color: #605E5C;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.access-modal-close:hover {
+  background-color: #F3F3F3;
+}
+
+.access-modal-body {
+  padding: 24px;
+}
+
+.access-modal-description {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #605E5C;
+}
+
+.access-form-group {
+  margin-bottom: 16px;
+}
+
+.access-form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1F1F1F;
+}
+
+.access-form-input,
+.access-form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #8A8886;
+  border-radius: 2px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1F1F1F;
+  transition: border-color 0.1s ease;
+  box-sizing: border-box;
+}
+
+.access-form-input:focus,
+.access-form-textarea:focus {
+  outline: none;
+  border-color: #0078D4;
+}
+
+.access-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.access-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #E5E5E5;
+  background-color: #FAFAFA;
+}
+
+.access-btn-cancel,
+.access-btn-submit {
+  padding: 8px 16px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  border: 1px solid;
+}
+
+.access-btn-cancel {
+  background: #FFFFFF;
+  border-color: #8A8886;
+  color: #605E5C;
+}
+
+.access-btn-cancel:hover:not(:disabled) {
+  background-color: #F3F3F3;
+  border-color: #605E5C;
+}
+
+.access-btn-submit {
+  background: #0078D4;
+  border-color: #0078D4;
+  color: #FFFFFF;
+}
+
+.access-btn-submit:hover:not(:disabled) {
+  background: #106EBE;
+  border-color: #106EBE;
+}
+
+.access-btn-submit:disabled,
+.access-btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .access-modal {
+    width: 95%;
+    margin: 0 16px;
+  }
+  
+  .access-modal-header,
+  .access-modal-body,
+  .access-modal-footer {
+    padding: 16px;
+  }
+  
+  .access-modal-header h3 {
+    font-size: 16px;
+  }
+}
