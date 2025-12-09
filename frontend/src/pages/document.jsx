@@ -267,11 +267,12 @@ const requestAccess = async () => {
     setShowSortMenu(false);
   };
 
+
+
 const fetchFolderContents = async (parentId) => {
   try {
     setLoading(true);
     
-    // Get access key from URL if present
     const urlParams = new URLSearchParams(window.location.search);
     const accessKey = urlParams.get('key');
     
@@ -279,7 +280,6 @@ const fetchFolderContents = async (parentId) => {
       ? `https://connectwithaaditiyamg2.onrender.com/api/folder/contents?parentId=${parentId}`
       : `https://connectwithaaditiyamg2.onrender.com/api/folder/contents`;
     
-    // Append access key if present
     if (accessKey) {
       url += `${parentId ? '&' : '?'}key=${accessKey}`;
     }
@@ -290,9 +290,8 @@ const fetchFolderContents = async (parentId) => {
     const response = await fetch(url, { headers });
     const data = await response.json();
 
-    // Handle access denied
     if (response.status === 403) {
-      alert(data.message || 'Access denied to this folder');
+      alert(data.message + (data.details ? ` (${data.details})` : ''));
       navigate('/resources');
       return;
     }
@@ -322,6 +321,8 @@ const fetchFolderContents = async (parentId) => {
     setExcelData(null);
   } catch (err) {
     console.error("Error fetching folder contents:", err);
+    alert('Failed to load folder. Access denied or folder not found.');
+    navigate('/resources');
   } finally {
     setLoading(false);
   }
@@ -348,7 +349,6 @@ const handleSearch = async (query) => {
     setSearchMode(true);
     setLoading(true);
     
-    // Get access key from URL
     const urlParams = new URLSearchParams(window.location.search);
     const accessKey = urlParams.get('key');
     
@@ -368,11 +368,18 @@ const handleSearch = async (query) => {
     const response = await fetch(
       `https://connectwithaaditiyamg2.onrender.com/api/search?${params.toString()}`
     );
+
+    if (response.status === 403) {
+      const errorData = await response.json();
+      alert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''));
+      setFilteredItems([]);
+      return;
+    }
+
     const data = await response.json();
 
     let results = data.results || [];
     
-    // Filter out items user doesn't have access to
     results = results.filter(item => item.hasAccess !== false);
     
     if (!isAuthenticated) {
@@ -544,7 +551,6 @@ const loadExcelDataById = async (id) => {
   try {
     setLoading(true);
     
-    // Get access key from URL
     const urlParams = new URLSearchParams(window.location.search);
     const accessKey = urlParams.get('key');
     
@@ -560,7 +566,7 @@ const loadExcelDataById = async (id) => {
     
     if (res.status === 403) {
       const errorData = await res.json();
-      alert(errorData.message || 'Access denied to this document');
+      alert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''));
       navigate('/resources');
       return;
     }
@@ -570,13 +576,6 @@ const loadExcelDataById = async (id) => {
     }
     
     const data = await res.json();
-    
-    // Handle locked documents
-    if (data.accessLevel === 'locked') {
-      alert('This document is locked. Only metadata is available.');
-      navigate('/resources');
-      return;
-    }
     
     setExcelData(data);
     setViewingExcel({ _id: id, name: data.name || 'Excel File' });
@@ -590,7 +589,7 @@ const loadExcelDataById = async (id) => {
     }
   } catch (err) {
     console.error('Error loading List data:', err);
-    alert('Failed to load file');
+    alert('Failed to load file. Access denied or file not found.');
     navigate('/resources');
   } finally {
     setLoading(false);
@@ -630,9 +629,9 @@ const loadExcelDataById = async (id) => {
   }
 };
 
- const handleDownload = async (docId) => {
+
+const handleDownload = async (docId) => {
   try {
-    // Get access key from URL
     const urlParams = new URLSearchParams(window.location.search);
     const accessKey = urlParams.get('key');
     
@@ -654,7 +653,7 @@ const loadExcelDataById = async (id) => {
     
     if (res.status === 403) {
       const errorData = await res.json();
-      alert(errorData.message || 'Access denied');
+      alert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''));
       return;
     }
     
@@ -663,7 +662,7 @@ const loadExcelDataById = async (id) => {
     window.open(data.downloadUrl, "_blank");
   } catch (err) {
     console.error("Error downloading:", err);
-    alert("Failed to download file");
+    alert("Failed to download file. Access denied or file not found.");
   }
 };
 
