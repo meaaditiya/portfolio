@@ -1329,7 +1329,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
             </button>
           )}
 
-        // In grid view, replace the grid-icon div with:
+       
 <div className="grid-icon">
   {item.hasAccess === false || item.accessLevel === 'locked' ? (
     <div className="locked-item-indicator">
