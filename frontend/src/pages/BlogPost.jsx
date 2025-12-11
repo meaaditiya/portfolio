@@ -332,10 +332,17 @@ useEffect(() => {
   checkAuth();
 }, []);
 const getUserProfilePicture = (comment) => {
-  // Check if comment has user profile picture (for authenticated users)
+  
+  if (comment.isAuthorComment && comment.authorAdminId) {
+    if (comment.authorHasProfileImage || comment.authorAdminId.profileImage?.data) {
+      return `https://connectwithaaditiyamg2.onrender.com/api/admins/${comment.authorAdminId._id}/image`;
+    }
+  }
+ 
   if (comment.user?.profilePicture) {
     return comment.user.profilePicture;
   }
+  
   return null;
 };
 

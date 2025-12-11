@@ -20,7 +20,6 @@ import './index.css';
 import Auth from './pages/Auth.jsx';
 import ScrollToTop from './ScrollTop.jsx';
 import Document from './pages/document.jsx';
-
 const AppContent = () => {
   const visitorData = useVisitorTracking();
   const location = useLocation();
@@ -61,8 +60,8 @@ const AppContent = () => {
             <Route path="/resources/folder/:folderId" element={<Document/>}/>
             <Route path="/resources/list/:excelId" element={<Document />} />
             <Route path="/access/:id" element={<AccessRedirect />} />
-            
             <Route path="*" element={<NotFound/>}/>
+
           </Routes>
         </main>
         
