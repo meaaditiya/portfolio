@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -20,12 +20,17 @@ import './index.css';
 import Auth from './pages/Auth.jsx';
 import ScrollToTop from './ScrollTop.jsx';
 import Document from './pages/document.jsx';
+import Forbidden from './pages/Forbidden.jsx';
+
+import "./api/globalFetch";
+import { setFetchNavigator } from "./api/globalFetch";
+
 const AppContent = () => {
   const visitorData = useVisitorTracking();
   const location = useLocation();
 
   const isResourcesRoute = location.pathname.startsWith('/resources') || 
-                          location.pathname.startsWith('/access');
+                           location.pathname.startsWith('/access');
 
   return (
     <VisitorProvider value={visitorData}>
@@ -60,8 +65,8 @@ const AppContent = () => {
             <Route path="/resources/folder/:folderId" element={<Document/>}/>
             <Route path="/resources/list/:excelId" element={<Document />} />
             <Route path="/access/:id" element={<AccessRedirect />} />
+            <Route path="/forbidden" element={<Forbidden />} />
             <Route path="*" element={<NotFound/>}/>
-
           </Routes>
         </main>
         
@@ -70,6 +75,7 @@ const AppContent = () => {
     </VisitorProvider>
   );
 };
+
 const AccessRedirect = () => {
   const location = useLocation();
   const [loading, setLoading] = React.useState(true);
@@ -94,7 +100,6 @@ const AccessRedirect = () => {
         );
         
         if (!response.ok) {
-          console.error('Access denied');
           setRedirectPath('/resources');
           setLoading(false);
           return;
@@ -108,15 +113,12 @@ const AccessRedirect = () => {
           case 'excel':
             setRedirectPath(`/resources/list/${documentId}?key=${key}`);
             break;
-          case 'file':
-          case 'link':
           default:
             setRedirectPath(`/resources?key=${key}`);
             break;
         }
         
       } catch (err) {
-        console.error('Error accessing document:', err);
         setRedirectPath('/resources');
       } finally {
         setLoading(false);
@@ -142,11 +144,20 @@ const AccessRedirect = () => {
   return redirectPath ? <Navigate to={redirectPath} replace /> : null;
 };
 
+const NavigatorWrapper = () => {
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    setFetchNavigator(navigate);
+  }, []);
+  return <AppContent />;
+};
+
+
 const App = () => {
   return (
     <Router>
       <ScrollToTop />
-      <AppContent />
+      <NavigatorWrapper />
     </Router>
   );
 };

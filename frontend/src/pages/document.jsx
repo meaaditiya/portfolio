@@ -305,11 +305,7 @@ const fetchFolderContents = async (parentId) => {
     const response = await fetch(url, { headers });
     const data = await response.json();
 
-    if (response.status === 403) {
-    showAlert('Failed to load folder. Access denied or folder not found.', 'error');
-      navigate('/resources');
-      return;
-    }
+  
 
     let itemsWithBookmarks = data.items || [];
 
@@ -384,12 +380,7 @@ const handleSearch = async (query) => {
       `https://connectwithaaditiyamg2.onrender.com/api/search?${params.toString()}`
     );
 
-    if (response.status === 403) {
-      const errorData = await response.json();
-     showAlert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''), 'error');
-      setFilteredItems([]);
-      return;
-    }
+  
 
     const data = await response.json();
 
@@ -579,13 +570,7 @@ const loadExcelDataById = async (id) => {
     
     const res = await fetch(url, { headers });
     
-    if (res.status === 403) {
-      const errorData = await res.json();
-     showAlert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''), 'error');
-
-      navigate('/resources');
-      return;
-    }
+  
     
     if (res.status === 404 || !res.ok) {
       throw new Error('Failed to load Excel file');
@@ -668,11 +653,7 @@ const handleDownload = async (docId) => {
     
     const res = await fetch(url);
     
-    if (res.status === 403) {
-      const errorData = await res.json();
-  showAlert(errorData.message + (errorData.details ? ` (${errorData.details})` : ''), 'error');
-      return;
-    }
+   
     
     const data = await res.json();
     if (!data.downloadUrl) throw new Error("No download URL");

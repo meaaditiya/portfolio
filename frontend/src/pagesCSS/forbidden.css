@@ -1,0 +1,125 @@
+/* Forbidden Page Container */
+.forbidden-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  
+}
+
+/* SVG Styling */
+.forbidden-page svg {
+  width: 100%;
+  height: auto;
+  max-width: 12rem;
+  margin-bottom: 0.5rem;
+  display: block;
+
+  position: relative;
+  top:-150px;
+}
+
+/* Text Container */
+.forbidden-page .flex {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+/* Heading */
+.forbidden-page h1 {
+  font-size: 1.875rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  position: relative;
+    top:-130px;
+}
+
+/* Paragraph */
+.forbidden-page p {
+  font-size: 1.25rem;
+  text-align: center;
+  max-width: 28rem;
+  line-height: 1.5;
+    position: relative;
+        top:-110px;
+}
+
+/* Responsive - Small screens (640px and up) */
+@media (min-width: 640px) {
+  .forbidden-page {
+    padding: 1.5rem;
+  }
+
+  .forbidden-page svg {
+    max-width: 14rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .forbidden-page h1 {
+    font-size: 2rem;
+  }
+
+  .forbidden-page p {
+    font-size: 1.125rem;
+  }
+}
+
+/* Responsive - Medium screens (768px and up) */
+@media (min-width: 768px) {
+  .forbidden-page {
+    padding: 2rem;
+  }
+
+  .forbidden-page svg {
+    max-width: 18rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .forbidden-page h1 {
+    font-size: 2.25rem;
+  }
+
+  .forbidden-page p {
+    font-size: 1.125rem;
+  }
+}
+
+/* Responsive - Large screens (1024px and up) */
+@media (min-width: 1024px) {
+  .forbidden-page {
+    padding: 2rem;
+  }
+
+  .forbidden-page svg {
+    max-width: 20rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .forbidden-page h1 {
+    font-size: 2.5rem;
+  }
+
+  .forbidden-page p {
+    font-size: 1.25rem;
+  }
+}
+
+/* Responsive - Extra large screens (1280px and up) */
+@media (min-width: 1280px) {
+  .forbidden-page {
+    padding: 2rem;
+  }
+
+  .forbidden-page svg {
+    max-width: 24rem;
+    margin-bottom: 0.75rem;
+  }
+}
