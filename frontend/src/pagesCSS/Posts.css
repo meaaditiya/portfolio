@@ -231,7 +231,7 @@
 
 /* Main Container */
 .pst-container {
-  max-width: 1200px;
+  max-width: 2000px;
   margin: 0 auto;
   padding: 0 var(--spacing-xl);
 }
@@ -1400,233 +1400,8 @@
   transform: scale(1.1);
 }
 
-/* Social Media Cards - Enhanced with Fixed Height */
-.pst-social-embed {
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-  height: 100%;
-}
 
 
-.pst-social-embed .pst-post-card {
-  border: 1px solid #e2e8f0;
-  background: white;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-
-.pst-social-embed:hover .pst-post-card {
-  border-color: #c7d2fe;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.pst-social-header {
-  padding: 16px 16px 8px;
-  flex-shrink: 0;
-}
-
-.pst-platform-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-  text-transform: capitalize;
-  transition: all 0.2s ease;
-}
-
-.pst-social-embed:hover .pst-platform-badge {
-  background: #f1f5f9;
-  transform: scale(1.05);
-}
-
-.pst-social-content {
-  padding: 8px 16px 16px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.pst-social-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 8px 0;
-  line-height: 1.4;
-  display: -webkit-box;
- 
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.pst-social-description {
-  font-size: 13px;
-  color: #64748b;
-  margin: 0 0 12px 0;
-  line-height: 1.5;
-  display: -webkit-box;
-  
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-/* Fixed height container for social preview on larger screens */
-.pst-social-preview {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 769px) {
-  .pst-social-preview {
-    height: 300px;
-    overflow: hidden;
-    border-radius: 8px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    position: relative;
-  }
-  
-  .pst-social-preview::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background: linear-gradient(transparent, #f8fafc);
-    pointer-events: none;
-  }
-  
-  .pst-social-preview > * {
-    height: 100%;
-    overflow: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
-  }
-  
-  .pst-social-preview > *::-webkit-scrollbar {
-    width: 4px;
-  }
-  
-  .pst-social-preview > *::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .pst-social-preview > *::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 2px;
-  }
-  
-  .pst-social-preview > *::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-  
-  /* Ensure grid items have consistent height */
-  .pst-grid .pst-social-embed {
-    height: 480px;
-  }
-}
-
-
-
-/* Close Button Styles */
-.pst-modal-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #64748b;
-  transition: all 0.2s ease;
-  z-index: 10;
-}
-
-.pst-modal-close:hover {
-  background: rgba(255, 255, 255, 1);
-  color: #334155;
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Modal Overlay */
-.pst-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-@media (max-width: 480px) {
-  .pst-modal-overlay {
-    padding: 10px;
-  }
-}
-/* Enhanced Loading States */
-@keyframes shimmer {
-  0% { 
-    background-position: -200px 0; 
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(0%);
-  }
-  100% { 
-    background-position: calc(200px + 100%) 0;
-    transform: translateX(100%);
-  }
-}
-
-.pst-social-loading {
-  background: linear-gradient(90deg, #f0f0f0 0px, #e0e0e0 40px, #f0f0f0 80px);
-  background-size: 200px;
-  animation: shimmer 2s infinite;
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.pst-social-loading::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-  animation: shimmer 1.5s infinite;
-}
 
 
 
@@ -3645,3 +3420,335 @@ border: 1px solid rgba(255, 255, 255, 0.2);
 .pst-delete-modal {
   z-index: 9999;
 }
+/* ============================================
+   POSTS GRID OVERRIDE - MAXIMUM SPECIFICITY
+   Add this CSS AFTER all other styles
+   ============================================ */
+
+/* Force override for posts grid container */
+.pst-main .pst-container .pst-grid.pst-posts-grid,
+.pst-container .pst-grid.pst-posts-grid,
+.pst-grid.pst-posts-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 24px !important;
+  margin-bottom: 32px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Individual post cards in posts grid */
+.pst-main .pst-container .pst-grid.pst-posts-grid .pst-post,
+.pst-container .pst-grid.pst-posts-grid .pst-post,
+.pst-grid.pst-posts-grid .pst-post {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Large Desktop - 4 cards */
+@media (min-width: 1200px) {
+  .pst-main .pst-container .pst-grid.pst-posts-grid,
+  .pst-container .pst-grid.pst-posts-grid,
+  .pst-grid.pst-posts-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
+    max-width: 1400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* Desktop - 3 cards */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .pst-main .pst-container .pst-grid.pst-posts-grid,
+  .pst-container .pst-grid.pst-posts-grid,
+  .pst-grid.pst-posts-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
+/* Tablet - 2 cards */
+@media (min-width: 481px) and (max-width: 768px) {
+  .pst-main .pst-container .pst-grid.pst-posts-grid,
+  .pst-container .pst-grid.pst-posts-grid,
+  .pst-grid.pst-posts-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+/* Mobile - 1 card */
+@media (max-width: 480px) {
+  .pst-main .pst-container .pst-grid.pst-posts-grid,
+  .pst-container .pst-grid.pst-posts-grid,
+  .pst-grid.pst-posts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* Ensure post card structure */
+.pst-grid.pst-posts-grid .pst-post .pst-post-card {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.pst-grid.pst-posts-grid .pst-post .pst-post-image {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.pst-grid.pst-posts-grid .pst-post .pst-image,
+.pst-grid.pst-posts-grid .pst-post .pst-video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+/* Remove any old grid styles that might interfere */
+.pst-grid.pst-posts-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  column-count: unset !important;
+  column-gap: unset !important;
+  column-fill: unset !important;
+}
+
+/* Fix overlay positioning */
+.pst-grid.pst-posts-grid .pst-post-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 16px !important;
+}
+
+/* Social media grid remains untouched - use default .pst-grid styles */
+.pst-grid:not(.pst-posts-grid) {
+  /* Will use existing social media grid styles */
+}
+/* ============================================
+   SOCIAL MEDIA GRID FIXES - OVERRIDE
+   ============================================ */
+
+/* Force 3 cards per row for social media */
+.pst-grid:not(.pst-posts-grid) {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 24px !important;
+}
+
+/* Fix card height - prevent elongation */
+.pst-social-embed {
+  min-height: 500px !important;
+  max-height: 500px !important;
+}
+
+.pst-social-embed .pst-post-card {
+  height: 100% !important;
+  min-height: 500px !important;
+  max-height: 500px !important;
+}
+
+.pst-social-preview {
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 100% !important;
+  flex: 1 !important;
+}
+
+/* Remove white footer/header and gradient */
+.pst-social-header {
+  background: transparent !important;
+  border-bottom: none !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.pst-social-content {
+  padding: 0 !important;
+  height: 100% !important;
+}
+
+.pst-social-preview::before {
+  display: none !important;
+}
+
+/* Platform badge - transparent background, icon only */
+.pst-platform-badge {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0.5rem !important;
+}
+
+.pst-platform-badge .pst-platform-name {
+  display: none !important;
+}
+
+/* Social Modal - ONLY POST VISIBLE, SCROLLABLE WITH MARGINS */
+.pst-social-modal-content {
+  background: transparent !important;
+  border-radius: 0 !important;
+  max-width: 100vw !important;
+  width: 100vw !important;
+  max-height: 100vh !important;
+  height: 100vh !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 60px 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hide all text content in modal */
+.pst-social-modal-header {
+  display: none !important;
+}
+
+.pst-social-embed-container {
+  background: transparent !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.pst-social-embed-container::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.pst-social-embed-content {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  min-height: auto !important;
+  width: 100% !important;
+  max-width: 650px !important;
+  margin: 0 auto !important;
+}
+
+/* Force Twitter embeds to be larger */
+.pst-social-embed-content .twitter-tweet,
+.pst-social-embed-content iframe {
+  width: 100% !important;
+  min-width: 550px !important;
+  max-width: 650px !important;
+  margin: 0 auto !important;
+  transform: scale(1.2) !important;
+  transform-origin: top center !important;
+}
+
+/* Hide scrollbars globally in modal */
+.pst-post-modal * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.pst-post-modal *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Tablet - 2 cards, increased height */
+@media (max-width: 1024px) {
+  .pst-grid:not(.pst-posts-grid) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .pst-social-embed,
+  .pst-social-embed .pst-post-card {
+    min-height: 480px !important;
+    max-height: 480px !important;
+  }
+  
+  .pst-social-modal-content {
+    padding: 40px 20px !important;
+  }
+  
+  .pst-social-embed-content .twitter-tweet,
+  .pst-social-embed-content iframe {
+    min-width: 450px !important;
+    max-width: 550px !important;
+  }
+}
+
+/* Mobile - 1 card */
+@media (max-width: 768px) {
+  .pst-grid:not(.pst-posts-grid) {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .pst-social-embed,
+  .pst-social-embed .pst-post-card {
+    min-height: 500px !important;
+    max-height: 500px !important;
+  }
+  
+  .pst-social-modal-content {
+    padding: 30px 15px !important;
+  }
+  
+  .pst-social-embed-content {
+    max-width: 100% !important;
+  }
+  
+  .pst-social-embed-content .twitter-tweet,
+  .pst-social-embed-content iframe {
+    min-width: 100% !important;
+    max-width: 100% !important;
+    transform: scale(1) !important;
+  }
+}
+.pst-comment-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.pst-comment-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.pst-comment-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 50%;
+}
+

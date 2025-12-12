@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../pagesCSS/Posts.css';
-
+import axios from 'axios';
 
 import Community from './Community.jsx';
 import SkeletonLoader from './PostSkeleton.jsx';
@@ -32,7 +32,7 @@ const Posts = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
-  
+  const [CurrentUser, setUser] = useState(null); 
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedSocialEmbed, setSelectedSocialEmbed] = useState(null);
 
@@ -63,7 +63,7 @@ const Posts = () => {
     { id: 'facebook', name: 'Facebook', icon: Facebook },
     { id: 'linkedin', name: 'LinkedIn', icon: Linkedin }
   ];
-
+const API_BASE_URL = 'https://connectwithaaditiyamg2.onrender.com';
   useEffect(() => {
     if (postId && activeTab === 'posts') {
       fetchSinglePost(postId);
@@ -165,13 +165,33 @@ useEffect(() => {
 
   checkAuth();
 }, []);
- const fetchSinglePost = async (id, bustCache = false) => {
+const getUserProfilePicture = (comment) => {
+  if (comment.isAuthorComment && comment.authorAdminId) {
+    if (comment.authorHasProfileImage || comment.authorAdminId.profileImage?.data) {
+      return `${API_BASE_URL}/api/admins/${comment.authorAdminId._id}/image`;
+    }
+  }
+
+  if (comment.user?.profilePicture) {
+    return comment.user.profilePicture;
+  }
+  
+  return null;
+};
+const getInitials = (name) => {
+  if (!name) return 'U';
+  const words = name.trim().split(' ');
+  if (words.length >= 2) {
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  }
+  return name[0].toUpperCase();
+};
+    const fetchSinglePost = async (id, bustCache = false) => {
   try {
     setPostLoading(true);
     
-    // Add cache busting parameter
     const cacheBust = bustCache ? `?bustCache=${Date.now()}` : '';
-    const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${id}${cacheBust}`);
+    const detailResponse = await fetch(`${API_BASE_URL}/api/image-posts/${id}${cacheBust}`);
     
     if (!detailResponse.ok) {
       throw new Error('Post not found');
@@ -184,7 +204,7 @@ useEffect(() => {
       try {
         const token = localStorage.getItem('token');
         const reactionResponse = await fetch(
-          `https://connectwithaaditiyamg2.onrender.com/api/image-posts/${id}/has-reacted?t=${Date.now()}`,
+          `${API_BASE_URL}/api/image-posts/${id}/has-reacted?t=${Date.now()}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -197,19 +217,18 @@ useEffect(() => {
         console.error('Error checking reaction:', err);
       }
     }
+const post = {
+  ...detailData.post,
+  media: `${API_BASE_URL}${detailData.post.media}`,
+  thumbnail: detailData.post.thumbnail ? `${API_BASE_URL}${detailData.post.thumbnail}` : null,
+  comments: detailData.comments,
+  hasReacted: hasReacted,
+};
+setSelectedPost(post);
 
-    const post = {
-      ...detailData.post,
-      comments: detailData.comments,
-      hasReacted: hasReacted,
-    };
-    
-    setSelectedPost(post);
-    
-    if (post.comments) {
-      await fetchCommentReactions(post.comments);
-    }
-    
+if (post.comments) {
+  await fetchCommentReactions(post.comments);
+}
     // Initialize video state for modal
     if (post.mediaType === 'video') {
       setVideoStates(prev => ({
@@ -240,7 +259,6 @@ useEffect(() => {
     navigate('/posts');
   }
 };
-  // REPLACE the entire fetchCommentReactions function with:
 const fetchCommentReactions = async (comments) => {
   if (!isAuthenticated || !userInfo?.email) return;
   
@@ -249,7 +267,7 @@ const fetchCommentReactions = async (comments) => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${comment._id}/user-reaction`,
+        `${API_BASE_URL}/api/image-posts/comments/${comment._id}/user-reaction`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -262,9 +280,18 @@ const fetchCommentReactions = async (comments) => {
       console.error('Error fetching comment reaction:', err);
     }
   }
+  for (const comment of comments) {
+    if (comment.isAuthorComment && comment.authorAdminId) {
+      comment.authorHasProfileImage = !!(
+        comment.authorAdminId.profileImage && 
+        comment.authorAdminId.profileImage.data
+      );
+    }
+  }
+  
   setCommentReactions(reactions);
 };
- const fetchReplies = async (commentId, bustCache = false) => {
+const fetchReplies = async (commentId, bustCache = false) => {
   if (replies[commentId] && !bustCache) {
     return;
   }
@@ -274,9 +301,17 @@ const fetchCommentReactions = async (comments) => {
     
     const cacheBust = bustCache ? `&bustCache=${Date.now()}` : '';
     const response = await fetch(
-      `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}/replies?${cacheBust}`
+      `${API_BASE_URL}/api/image-posts/comments/${commentId}/replies?${cacheBust}`
     );
     const data = await response.json();
+    for (const reply of data.replies) {
+      if (reply.isAuthorComment && reply.authorAdminId) {
+        reply.authorHasProfileImage = !!(
+          reply.authorAdminId.profileImage && 
+          reply.authorAdminId.profileImage.data
+        );
+      }
+    }
     
     setReplies(prev => ({ ...prev, [commentId]: data.replies }));
     await fetchCommentReactions(data.replies);
@@ -294,45 +329,46 @@ const fetchCommentReactions = async (comments) => {
     }
     setExpandedReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
   };
-
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts?page=${currentPage}&limit=9`);
-      const data = await response.json();
-      
-      const postsWithDetails = await Promise.all(
-        data.posts.map(async (post) => {
-          const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${post._id}`);
-          const detailData = await detailResponse.json();
-          
-        let hasReacted = false;
-if (isAuthenticated && userInfo?.email) {
+const fetchPosts = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const reactionResponse = await fetch(
-      `https://connectwithaaditiyamg2.onrender.com/api/image-posts/${post._id}/has-reacted`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
+    setLoading(true);
+    const response = await fetch(`${API_BASE_URL}/api/image-posts?page=${currentPage}&limit=9`);
+    const data = await response.json();
+    
+    const postsWithDetails = await Promise.all(
+      data.posts.map(async (post) => {
+        const detailResponse = await fetch(`${API_BASE_URL}/api/image-posts/${post._id}`);
+        const detailData = await detailResponse.json();
+        
+        let hasReacted = false;
+        if (isAuthenticated && userInfo?.email) {
+          try {
+            const token = localStorage.getItem('token');
+            const reactionResponse = await fetch(
+              `${API_BASE_URL}/api/image-posts/${post._id}/has-reacted`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              }
+            );
+            const reactionData = await reactionResponse.json();
+            hasReacted = reactionData.hasReacted;
+          } catch (err) {
+            console.error('Error checking reaction:', err);
+          }
         }
-      }
-    );
-    const reactionData = await reactionResponse.json();
-    hasReacted = reactionData.hasReacted;
-  } catch (err) {
-    console.error('Error checking reaction:', err);
-  }
-}
 
-// Then in the return statement:
-return {
-  ...detailData.post,
-  comments: detailData.comments,
-  hasReacted: hasReacted,
-};
-        })
-      );
+        return {
+          ...detailData.post,
+          // Prepend API base URL to media paths
+          media: `${API_BASE_URL}${detailData.post.media}`,
+          thumbnail: detailData.post.thumbnail ? `${API_BASE_URL}${detailData.post.thumbnail}` : null,
+          comments: detailData.comments,
+          hasReacted: hasReacted,
+        };
+      })
+    );
       
       // Initialize video states
       postsWithDetails.forEach(post => {
@@ -586,49 +622,49 @@ const handleCommentSubmit = async () => {
       autoClose: 2000,
     });
     
-    // Use the returned updated comments if available
-    if (data.updatedComments) {
-      // Update state immediately with returned data
-      setSelectedPost(prev => ({
-        ...prev,
-        comments: data.updatedComments,
-        commentCount: (prev.commentCount || 0) + 1,
-      }));
-      
-      // Update posts array
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === selectedPost.id
-            ? {
-                ...post,
-                comments: data.updatedComments,
-                commentCount: (post.commentCount || 0) + 1,
-              }
-            : post
-        )
-      );
-      
-      await fetchCommentReactions(data.updatedComments);
-    } else {
-      // Fallback: fetch fresh data with cache busting
-      await fetchSinglePost(selectedPost.id, true);
-      
-      // Also update the posts array
-      const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}?bustCache=${Date.now()}`);
-      const detailData = await detailResponse.json();
-      
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === selectedPost.id
-            ? {
-                ...post,
-                comments: detailData.comments,
-                commentCount: detailData.post.commentCount,
-              }
-            : post
-        )
-      );
-    }
+// Use the returned updated comments if available
+if (data.updatedComments) {
+  // Update state immediately with returned data
+  setSelectedPost(prev => ({
+    ...prev,
+    comments: data.updatedComments,
+    commentCount: (prev.commentCount || 0) + 1,
+  }));
+  
+  // Update posts array
+  setPosts((prevPosts) =>
+    prevPosts.map((post) =>
+      post.id === selectedPost.id
+        ? {
+            ...post,
+            comments: data.updatedComments,
+            commentCount: (post.commentCount || 0) + 1,
+          }
+        : post
+    )
+  );
+  
+  // ✅ This will now work correctly with backend-provided profile pictures
+  await fetchCommentReactions(data.updatedComments);
+} else {
+  // Fallback: fetch fresh data with cache busting
+  await fetchSinglePost(selectedPost.id, true);
+  
+  const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}?bustCache=${Date.now()}`);
+  const detailData = await detailResponse.json();
+  
+  setPosts((prevPosts) =>
+    prevPosts.map((post) =>
+      post.id === selectedPost.id
+        ? {
+            ...post,
+            comments: detailData.comments,
+            commentCount: detailData.post.commentCount,
+          }
+        : post
+    )
+  );
+}
     
   } catch (err) {
     toast.error('Failed to post comment', {
@@ -685,15 +721,13 @@ const handleReplySubmit = async (parentCommentId) => {
     // Clear cached replies and refetch with cache busting
     setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
     
-    // Fetch fresh replies with cache busting
-    const repliesResponse = await fetch(
-      `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
-    );
-    const repliesData = await repliesResponse.json();
-    
-    setReplies(prev => ({ ...prev, [parentCommentId]: repliesData.replies }));
-    await fetchCommentReactions(repliesData.replies);
-    
+const repliesResponse = await fetch(
+  `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
+);
+const repliesData = await repliesResponse.json();
+
+setReplies(prev => ({ ...prev, [parentCommentId]: repliesData.replies }));
+await fetchCommentReactions(repliesData.replies);
     // Update parent comment's reply count
     setSelectedPost(prev => ({
       ...prev,
@@ -1085,127 +1119,155 @@ useEffect(() => {
   return () => window.removeEventListener('keydown', handleKeyDown);
 }, [postId, selectedPost, posts]);
 
-  const renderComment = (comment, isReply = false) => {
-    const reaction = commentReactions[comment._id] || {};
-    
-    return (
-      <div key={comment._id} className={`pst-comment ${isReply ? 'pst-comment-reply' : ''}`}>
-        <div className="pst-comment-icon">
-          <User className="pst-icon-sm" />
-        </div>
-        <div className="pst-comment-content">
-          <div className="pst-comment-header">
-            <span className="pst-comment-name">{comment.user.name}</span>
-            {comment.isAuthorComment && (
-              <span className="pst-author-badge">Author</span>
-            )}
-            <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
-          </div>
-          <p className="pst-comment-text">{comment.content}</p>
-          
-          <div className="pst-comment-actions">
-            <button
-              className={`pst-comment-reaction-btn ${reaction.userLiked ? 'pst-reaction-active' : ''}`}
-              onClick={() => handleCommentReaction(comment._id, 'like')}
-            >
-              <ThumbsUp className="pst-icon-xs" />
-              <span>{reaction.likeCount || 0}</span>
-            </button>
-            
-            <button
-              className={`pst-comment-reaction-btn ${reaction.userDisliked ? 'pst-reaction-active' : ''}`}
-              onClick={() => handleCommentReaction(comment._id, 'dislike')}
-            >
-              <ThumbsDown className="pst-icon-xs" />
-              <span>{reaction.dislikeCount || 0}</span>
-            </button>
-            
-            {!isReply && (
-              <button
-                className="pst-comment-reply-btn"
-                onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
-              >
-                <MessageCircle className="pst-icon-xs" />
-                <span>Reply</span>
-              </button>
-            )}
-           {isAuthenticated && userInfo && comment.user.email === userInfo.email && (
-  <button
-    className="pst-delete-comment"
-    onClick={() => handleDeleteComment(comment._id, isReply)}
-  >
-    <Trash2 className="pst-icon-xs" />
-    <span>Delete</span>
-  </button>
-)}
-          </div>
-          
-          {replyingTo === comment._id && (
-            <div className="pst-reply-form">
-              <textarea
-                placeholder={`Reply to ${comment.user.name}...`}
-                value={replyInput}
-                onChange={handleReplyChange}
-                className="pst-textarea pst-reply-textarea"
-                rows="2"
-              />
-              <div className="pst-reply-form-actions">
-                <button
-                  className="pst-cancel-reply-btn"
-                  onClick={() => {
-                    setReplyingTo(null);
-                    setReplyInput('');
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="pst-submit-reply-btn"
-                  onClick={() => handleReplySubmit(comment._id)}
-                  disabled={!replyInput.trim()}
-                >
-                  <Send className="pst-icon-xs" />
-                  Reply
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {!isReply && comment.replyCount > 0 && (
-            <button
-              className="pst-show-replies-btn"
-              onClick={() => toggleReplies(comment._id)}
-            >
-              {expandedReplies[comment._id] ? (
-                <>
-                  <ChevronUp className="pst-icon-xs" />
-                  <span>Hide {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="pst-icon-xs" />
-                  <span>Show {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
-                </>
-              )}
-            </button>
-          )}
-          
-          {expandedReplies[comment._id] && (
-            <div className="pst-replies-container">
-              {loadingReplies[comment._id] ? (
-                <div className="pst-replies-loading">Loading replies...</div>
-              ) : replies[comment._id]?.length > 0 ? (
-                replies[comment._id].map(reply => renderComment(reply, true))
-              ) : (
-                <div className="pst-no-replies">No replies yet</div>
-              )}
-            </div>
-          )}
+// REPLACE the entire renderComment function with this fixed version:
+
+const renderComment = (comment, isReply = false) => {
+  const reaction = commentReactions[comment._id] || {};
+  const profilePicture = getUserProfilePicture(comment);
+  
+  return (
+    <div key={comment._id} className={`pst-comment ${isReply ? 'pst-comment-reply' : ''}`}>
+      {/* PROFILE PICTURE AVATAR */}
+      <div className="pst-comment-avatar">
+        {profilePicture ? (
+          <img 
+            src={profilePicture} 
+            alt={comment.user.name}
+            className="pst-comment-avatar-image"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <div 
+          className="pst-comment-avatar-placeholder"
+          style={{ display: profilePicture ? 'none' : 'flex' }}
+        >
+          {getInitials(comment.user.name)}
         </div>
       </div>
-    );
-  };
+      
+      <div className="pst-comment-content">
+        {/* COMMENT HEADER */}
+        <div className="pst-comment-header">
+          <span className="pst-comment-name">{comment.user.name}</span>
+          {comment.isAuthorComment && (
+            <span className="pst-author-badge">Author</span>
+          )}
+          <span className="pst-comment-date">{formatDate(comment.createdAt)}</span>
+        </div>
 
+        {/* COMMENT TEXT */}
+        <p className="pst-comment-text">{comment.content}</p>
+        
+        {/* COMMENT ACTIONS */}
+        <div className="pst-comment-actions">
+          <button
+            className={`pst-comment-reaction-btn ${reaction.userLiked ? 'pst-reaction-active' : ''}`}
+            onClick={() => handleCommentReaction(comment._id, 'like')}
+          >
+            <ThumbsUp className="pst-icon-xs" />
+            <span>{reaction.likeCount || 0}</span>
+          </button>
+          
+          <button
+            className={`pst-comment-reaction-btn ${reaction.userDisliked ? 'pst-reaction-active' : ''}`}
+            onClick={() => handleCommentReaction(comment._id, 'dislike')}
+          >
+            <ThumbsDown className="pst-icon-xs" />
+            <span>{reaction.dislikeCount || 0}</span>
+          </button>
+          
+          {!isReply && (
+            <button
+              className="pst-comment-reply-btn"
+              onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
+            >
+              <MessageCircle className="pst-icon-xs" />
+              <span>Reply</span>
+            </button>
+          )}
+          
+          {isAuthenticated && userInfo && comment.user.email === userInfo.email && (
+            <button
+              className="pst-delete-comment"
+              onClick={() => handleDeleteComment(comment._id, isReply)}
+            >
+              <Trash2 className="pst-icon-xs" />
+              <span>Delete</span>
+            </button>
+          )}
+        </div>
+        
+        {/* REPLY FORM - Only show if replying to this comment */}
+        {replyingTo === comment._id && (
+          <div className="pst-reply-form">
+            <textarea
+              placeholder={`Reply to ${comment.user.name}...`}
+              value={replyInput}
+              onChange={handleReplyChange}
+              className="pst-textarea pst-reply-textarea"
+              rows="2"
+            />
+            <div className="pst-reply-form-actions">
+              <button
+                className="pst-cancel-reply-btn"
+                onClick={() => {
+                  setReplyingTo(null);
+                  setReplyInput('');
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="pst-submit-reply-btn"
+                onClick={() => handleReplySubmit(comment._id)}
+                disabled={!replyInput.trim()}
+              >
+                <Send className="pst-icon-xs" />
+                Reply
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {/* SHOW REPLIES BUTTON - Only for top-level comments */}
+        {!isReply && comment.replyCount > 0 && (
+          <button
+            className="pst-show-replies-btn"
+            onClick={() => toggleReplies(comment._id)}
+          >
+            {expandedReplies[comment._id] ? (
+              <>
+                <ChevronUp className="pst-icon-xs" />
+                <span>Hide {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+              </>
+            ) : (
+              <>
+                <ChevronDown className="pst-icon-xs" />
+                <span>Show {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}</span>
+              </>
+            )}
+          </button>
+        )}
+        
+        {/* REPLIES CONTAINER - Shows replies when expanded */}
+        {expandedReplies[comment._id] && (
+          <div className="pst-replies-container">
+            {loadingReplies[comment._id] ? (
+              <div className="pst-replies-loading">Loading replies...</div>
+            ) : replies[comment._id]?.length > 0 ? (
+              replies[comment._id].map(reply => renderComment(reply, true))
+            ) : (
+              <div className="pst-no-replies">No replies yet</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
   const renderPostsContent = () => {
     if (loading && posts.length === 0) {
       return (
