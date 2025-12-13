@@ -190,16 +190,8 @@ const getInitials = (name) => {
   try {
     setPostLoading(true);
     
-   
     const cacheBust = bustCache ? `?bustCache=${Date.now()}` : '';
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-    
-    const detailResponse = await fetch(
-      `${API_BASE_URL}/api/image-posts/${id}${cacheBust}`,
-      { signal: controller.signal }
-    );
-    
-    clearTimeout(timeoutId);
+    const detailResponse = await fetch(`${API_BASE_URL}/api/image-posts/${id}${cacheBust}`);
     
     if (!detailResponse.ok) {
       throw new Error('Post not found');
