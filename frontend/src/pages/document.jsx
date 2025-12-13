@@ -1607,8 +1607,9 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
               window.turnstile.remove(turnstileWidgetId.current);
               turnstileWidgetId.current = null;
             }
+            window.history.back();
           }}
-          className="usersubmit-btn-small"
+          className="usersubmit-btn-small2"
         >
           Cancel
         </button>
@@ -1749,17 +1750,13 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   animation: pulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
 
 /* Modal Footer */
 .turnstile-modal-footer {
   margin-top: 2rem;
 }
 
-.usersubmit-btn-small {
+.usersubmit-btn-small2 {
   padding: 0.875rem 2rem;
   background: transparent;
   color: #0f172a;
@@ -1773,7 +1770,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   overflow: hidden;
 }
 
-.usersubmit-btn-small::before {
+.usersubmit-btn-small2::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -1783,16 +1780,16 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   z-index: -1;
 }
 
-.usersubmit-btn-small:hover::before {
+.usersubmit-btn-small2:hover::before {
   transform: translateX(0);
 }
 
-.usersubmit-btn-small:hover {
+.usersubmit-btn-small2:hover {
   color: #f5f3f0;
   transform: translateY(-2px);
 }
 
-.usersubmit-btn-small:active {
+.usersubmit-btn-small2:active {
   transform: translateY(0);
 }
 
@@ -1829,7 +1826,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     font-size: 1rem;
   }
 
-  .spinner {
+  .spinner4 {
     width: 60px;
     height: 60px;
   }
@@ -1858,7 +1855,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
 @media (prefers-reduced-motion: reduce) {
   .turnstile-modal-overlay,
   .turnstile-modal,
-  .spinner-ring,
+  .spinner4-ring,
   .turnstile-loading p,
   .usersubmit-btn-small::before,
   .turnstile-modal-overlay::before {
