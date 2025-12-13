@@ -46,26 +46,26 @@ const handleSubmitQuery = async () => {
   return (
     <div className="forbidden-page">
       {showPopup && (
-  <div className="popup-overlay">
-    <div className="popup-content">
-      <button className="popup-close" onClick={() => setShowPopup(false)}>×</button>
-      <h2 className="popup-heading">Security System Falsely Marks Me Suspicious</h2>
+  <div className="jpopup-overlay">
+    <div className="jpopup-content">
+      <button className="jpopup-close" onClick={() => setShowPopup(false)}>×</button>
+      <h2 className="jpopup-heading">Security System Falsely Marks Me Suspicious</h2>
       <input
         type="text"
         placeholder="Your Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="popup-input"
+        className="jpopup-input"
       />
       <input
         type="email"
         placeholder="Your Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="popup-input"
+        className="jpopup-input"
       />
       {!ticketId ? (
-        <button onClick={handleSubmitQuery} className="popup-button" disabled={loading}>
+        <button onClick={handleSubmitQuery} className="jpopup-button" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit Query'}
         </button>
       ) : (
@@ -78,7 +78,7 @@ const handleSubmitQuery = async () => {
       navigator.clipboard.writeText(ticketId);
       setCopied(true);
     }}
-    className="popup-button"
+    className="jpopup-button"
   >
     {copied ? 'Copied!' : 'Copy Ticket ID'}
   </button>

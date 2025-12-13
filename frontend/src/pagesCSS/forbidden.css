@@ -186,8 +186,8 @@ background: #E5E7EB ;
   background: #EEF2F7 ;
 }
 
-/* Popup Styles */
-.popup-overlay {
+/* jpopup Styles */
+.jpopup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -201,7 +201,7 @@ background: #E5E7EB ;
   padding: 1rem;
 }
 
-.popup-content {
+.jpopup-content {
   background: white;
   padding: 1.5rem;
   border-radius: 0.5rem;
@@ -211,7 +211,7 @@ background: #E5E7EB ;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-.popup-close {
+.jpopup-close {
   position: absolute;
   top: 0.5rem;
   right: 0.75rem;
@@ -225,11 +225,11 @@ background: #E5E7EB ;
   transition: color 0.2s;
 }
 
-.popup-close:hover {
+.jpopup-close:hover {
   color: #374151;
 }
 
-.popup-heading {
+.jpopup-heading {
   font-size: 1.125rem;
   font-weight: 500;
   margin-bottom: 1.25rem;
@@ -238,7 +238,7 @@ background: #E5E7EB ;
   line-height: 1.4;
 }
 
-.popup-input {
+.jpopup-input {
   width: 100%;
   padding: 0.75rem;
   margin-bottom: 1rem;
@@ -249,12 +249,12 @@ background: #E5E7EB ;
   transition: border-color 0.2s;
 }
 
-.popup-input:focus {
+.jpopup-input:focus {
   outline: none;
   border-color: #6B7280;
 }
 
-.popup-button {
+.jpopup-button {
   width: 100%;
   padding: 0.75rem;
   background: #374151;
@@ -267,11 +267,11 @@ background: #E5E7EB ;
   transition: background 0.2s;
 }
 
-.popup-button:hover {
+.jpopup-button:hover {
   background: #1F2937;
 }
 
-.popup-button:disabled {
+.jpopup-button:disabled {
   background: #9CA3AF;
   cursor: not-allowed;
 }
@@ -316,21 +316,21 @@ background: #E5E7EB ;
     font-size: 1rem;
   }
 
-  .popup-content {
+  .jpopup-content {
     padding: 2rem;
     max-width: 28rem;
   }
 
-  .popup-heading {
+  .jpopup-heading {
     font-size: 1.25rem;
     margin-bottom: 1.5rem;
   }
 
-  .popup-input {
+  .jpopup-input {
     font-size: 1rem;
   }
 
-  .popup-button {
+  .jpopup-button {
     font-size: 1rem;
   }
 
