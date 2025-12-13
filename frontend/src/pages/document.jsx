@@ -1703,45 +1703,40 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
 }
 
 /* Modern 3-Ring Spinner */
-.spinner4 {
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
+ .spinner4 {
+          position: relative;
+          width: 80px;
+          height: 80px;
+        }
 
-.spinner4-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: #0f172a;
-  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-}
+        .spinner4-ring {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          border: 4px solid transparent;
+          border-top-color: #0f172a;
+          animation: spin 1s linear infinite;
+        }
 
-.spinner4-ring:nth-child(2) {
-  border-top-color: rgba(15, 23, 42, 0.5);
-  animation-delay: -0.5s;
-  animation-duration: 2s;
-}
+        .spinner4-ring:nth-child(2) {
+          border-top-color: #475569;
+          animation-duration: 1.5s;
+        }
 
-.spinner4-ring:nth-child(3) {
-  border-top-color: rgba(15, 23, 42, 0.25);
-  animation-delay: -1s;
-  animation-duration: 2.5s;
-}
+        .spinner4-ring:nth-child(3) {
+          border-top-color: #94a3b8;
+          animation-duration: 2s;
+        }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.1);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      
 .turnstile-loading p {
   font-size: 0.9375rem;
   color: #5e4d3a;
