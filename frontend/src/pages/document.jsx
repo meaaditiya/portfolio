@@ -42,7 +42,11 @@ const Documents = () => {
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [activeCheckmarkFilters, setActiveCheckmarkFilters] = useState(new Set());
   const [showCheckmarkFilterMenu, setShowCheckmarkFilterMenu] = useState(false);
-  
+  const [showTurnstileModal, setShowTurnstileModal] = useState(false);
+const [turnstileAction, setTurnstileAction] = useState(null);
+const [turnstileToken, setTurnstileToken] = useState(null);
+const [turnstilePending, setTurnstilePending] = useState(false);
+const turnstileWidgetId = useRef(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
   const [showAccessRequestModal, setShowAccessRequestModal] = useState(false);
@@ -70,6 +74,17 @@ const [alertPopup, setAlertPopup] = useState({
     const IconComponent = CHECKMARK_ICON_MAP[type] || CheckSquare;
     return IconComponent;
   };
+useEffect(() => {
+  const script = document.createElement('script');
+  script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+  script.async = true;
+  script.defer = true;
+  document.body.appendChild(script);
+
+  return () => {
+    document.body.removeChild(script);
+  };
+}, []);
 
   useEffect(() => {
     checkAuthentication();
@@ -140,6 +155,41 @@ useEffect(() => {
     document.removeEventListener('mousedown', handleClickOutside);
   };
 }, [showCheckmarkFilterMenu]);
+const handleTurnstileVerify = (token) => {
+  setTurnstileToken(token);
+  setTurnstilePending(false);
+  
+  // Execute the pending action
+  if (turnstileAction) {
+    turnstileAction.callback(token);
+    setTurnstileAction(null);
+    setShowTurnstileModal(false);
+  }
+};
+
+// Initialize Turnstile widget when modal opens
+useEffect(() => {
+  if (showTurnstileModal && window.turnstile && !turnstileWidgetId.current) {
+    setTurnstilePending(true);
+    setTimeout(() => {
+      turnstileWidgetId.current = window.turnstile.render('#turnstile-widget', {
+        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+        callback: handleTurnstileVerify,
+        theme: 'light'
+      });
+    }, 100);
+  }
+  return () => {
+    if (turnstileWidgetId.current && window.turnstile) {
+      try {
+        window.turnstile.remove(turnstileWidgetId.current);
+        turnstileWidgetId.current = null;
+      } catch (e) {
+        console.error('Error removing turnstile:', e);
+      }
+    }
+  };
+}, [showTurnstileModal]);
   const toggleCheckmarkFilter = (filterKey) => {
     setActiveCheckmarkFilters(prev => {
       const newFilters = new Set(prev);
@@ -554,48 +604,71 @@ const handleSearch = async (query) => {
     }
   };
 const loadExcelDataById = async (id) => {
-  try {
-    setLoading(true);
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessKey = urlParams.get('key');
-    
-    let url = `https://connectwithaaditiyamg2.onrender.com/api/excel/${id}/data`;
-    if (accessKey) {
-      url += `?key=${accessKey}`;
+  const executeLoadExcel = async (token) => {
+    try {
+      setLoading(true);
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const accessKey = urlParams.get('key');
+      
+      let url = `https://connectwithaaditiyamg2.onrender.com/api/excel/${id}/data`;
+      if (accessKey) {
+        url += `?key=${accessKey}`;
+      }
+      
+      const tokenObj = localStorage.getItem('token');
+      const headers = {
+        'X-Turnstile-Token': token
+      };
+      
+      if (tokenObj) {
+        headers['Authorization'] = `Bearer ${tokenObj}`;
+      }
+      
+      const res = await fetch(url, { headers });
+      
+      if (res.status === 403) {
+        const data = await res.json();
+        if (data.requiresTurnstile) {
+          showAlert('Verification failed. Please try again.', 'error');
+          navigate('/resources');
+          return;
+        }
+      }
+      
+      if (res.status === 404 || !res.ok) {
+        throw new Error('Failed to load Excel file');
+      }
+      
+      const data = await res.json();
+      
+      setExcelData(data);
+      setViewingExcel({ _id: id, name: data.name || 'Excel File' });
+      setSelectedSheet(data.sheetNames?.[0] || null);
+      setCheckmarkColumns(data.checkmarkFields || []);
+      
+      if (isAuthenticated && data.userCheckmarks) {
+        setExcelCheckmarks(data.userCheckmarks);
+      } else {
+        await loadExcelCheckmarks(id);
+      }
+    } catch (err) {
+      console.error('Error loading List data:', err);
+      showAlert('Failed to load file. Access denied or file not found.', 'error');
+      navigate('/resources');
+    } finally {
+      setLoading(false);
     }
-    
-    const token = localStorage.getItem('token');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    
-    const res = await fetch(url, { headers });
-    
-  
-    
-    if (res.status === 404 || !res.ok) {
-      throw new Error('Failed to load Excel file');
-    }
-    
-    const data = await res.json();
-    
-    setExcelData(data);
-    setViewingExcel({ _id: id, name: data.name || 'Excel File' });
-    setSelectedSheet(data.sheetNames?.[0] || null);
-    setCheckmarkColumns(data.checkmarkFields || []);
-    
-    if (isAuthenticated && data.userCheckmarks) {
-      setExcelCheckmarks(data.userCheckmarks);
-    } else {
-      await loadExcelCheckmarks(id);
-    }
-  } catch (err) {
-    console.error('Error loading List data:', err);
-  showAlert('Failed to load file. Access denied or file not found.', 'error');
+  };
 
-    navigate('/resources');
-  } finally {
-    setLoading(false);
-  }
+  // Show Turnstile modal
+  setTurnstileAction({
+    type: 'excel',
+    excelId: id,
+    callback: executeLoadExcel
+  });
+  setShowTurnstileModal(true);
+  turnstileWidgetId.current = null;
 };
  
   const closeExcelView = () => {
@@ -631,39 +704,56 @@ const loadExcelDataById = async (id) => {
   }
 };
 
-
 const handleDownload = async (docId) => {
-  try {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessKey = urlParams.get('key');
-    
-    let url = `https://connectwithaaditiyamg2.onrender.com/api/download/${docId}`;
-    const params = new URLSearchParams();
-    
-    if (accessKey) {
-      params.append('key', accessKey);
+  const executeDownload = async (token) => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const accessKey = urlParams.get('key');
+      
+      const params = new URLSearchParams();
+      
+      if (accessKey) {
+        params.append('key', accessKey);
+      }
+      if (userId) {
+        params.append('userId', userId);
+      }
+      // Send turnstile token as query param instead of header
+      params.append('turnstileToken', token);
+      
+      let url = `https://connectwithaaditiyamg2.onrender.com/api/download/${docId}?${params.toString()}`;
+      
+      const res = await fetch(url);
+      
+      if (res.status === 403) {
+        const data = await res.json();
+        if (data.requiresTurnstile) {
+          showAlert('Verification failed. Please try again.', 'error');
+          return;
+        }
+      }
+      
+      const data = await res.json();
+      if (!data.downloadUrl) throw new Error("No download URL");
+      
+      // Navigate to download URL
+      window.location.href = data.downloadUrl;
+      
+    } catch (err) {
+      console.error("Error downloading:", err);
+      showAlert("Failed to download file. Access denied or file not found.", 'error');
     }
-    if (userId) {
-      params.append('userId', userId);
-    }
-    
-    if (params.toString()) {
-      url += `?${params.toString()}`;
-    }
-    
-    const res = await fetch(url);
-    
-   
-    
-    const data = await res.json();
-    if (!data.downloadUrl) throw new Error("No download URL");
-    window.open(data.downloadUrl, "_blank");
-  } catch (err) {
-    console.error("Error downloading:", err);
-   showAlert("Failed to download file. Access denied or file not found.", 'error');
-  }
-};
+  };
 
+  // Show Turnstile modal
+  setTurnstileAction({
+    type: 'download',
+    docId,
+    callback: executeDownload
+  });
+  setShowTurnstileModal(true);
+  turnstileWidgetId.current = null;
+};
   const getFileIcon = (item) => {
     if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
     if (item.type === 'excel') return <ListIcon size={16} className="file-icon-excel" />;
@@ -1484,6 +1574,299 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     </div>
   </div>
 )}
+{/* Turnstile Verification Modal */}
+
+{showTurnstileModal && (
+  <div className="turnstile-modal-overlay">
+    <div className="turnstile-modal">
+      <div className="turnstile-modal-header">
+        <h3>Security Verification</h3>
+        <p>Please verify you're human to continue</p>
+      </div>
+      
+      <div className="turnstile-modal-body">
+        <div id="turnstile-widget"></div>
+        {turnstilePending && (
+          <div className="turnstile-loading">
+            <div className="spinner4">
+              <div className="spinner4-ring"></div>
+              <div className="spinner4-ring"></div>
+              <div className="spinner4-ring"></div>
+            </div>
+            <p>Verifying your identity...</p>
+          </div>
+        )}
+      </div>
+      
+      <div className="turnstile-modal-footer">
+        <button
+          onClick={() => {
+            setShowTurnstileModal(false);
+            setTurnstileAction(null);
+            if (turnstileWidgetId.current && window.turnstile) {
+              window.turnstile.remove(turnstileWidgetId.current);
+              turnstileWidgetId.current = null;
+            }
+          }}
+          className="usersubmit-btn-small"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+<style jsx>{`
+/* Full Screen Overlay */
+.turnstile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(245, 243, 240, 0.98);
+  backdrop-filter: blur(12px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Container */
+.turnstile-modal {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  padding: 3rem 2rem;
+  text-align: center;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal Header */
+.turnstile-modal-header {
+  margin-bottom: 3rem;
+}
+
+.turnstile-modal-header h3 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.02em;
+}
+
+.turnstile-modal-header p {
+  font-size: 1.125rem;
+  color: #5e4d3a;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Modal Body */
+.turnstile-modal-body {
+  margin: 2.5rem 0;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#turnstile-widget {
+  margin: 0 auto;
+}
+
+/* Loading State */
+.turnstile-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Modern 3-Ring Spinner */
+.spinner4 {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.spinner4-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #0f172a;
+  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.spinner4-ring:nth-child(2) {
+  border-top-color: rgba(15, 23, 42, 0.5);
+  animation-delay: -0.5s;
+  animation-duration: 2s;
+}
+
+.spinner4-ring:nth-child(3) {
+  border-top-color: rgba(15, 23, 42, 0.25);
+  animation-delay: -1s;
+  animation-duration: 2.5s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.turnstile-loading p {
+  font-size: 0.9375rem;
+  color: #5e4d3a;
+  font-weight: 600;
+  margin: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Modal Footer */
+.turnstile-modal-footer {
+  margin-top: 2rem;
+}
+
+.usersubmit-btn-small {
+  padding: 0.875rem 2rem;
+  background: transparent;
+  color: #0f172a;
+  border: 2px solid #0f172a;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.usersubmit-btn-small::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #0f172a;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.usersubmit-btn-small:hover::before {
+  transform: translateX(0);
+}
+
+.usersubmit-btn-small:hover {
+  color: #f5f3f0;
+  transform: translateY(-2px);
+}
+
+.usersubmit-btn-small:active {
+  transform: translateY(0);
+}
+
+/* Animated Grid Background */
+.turnstile-modal-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+@keyframes gridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .turnstile-modal {
+    padding: 2rem 1.5rem;
+  }
+
+  .turnstile-modal-header h3 {
+    font-size: 2rem;
+  }
+
+  .turnstile-modal-header p {
+    font-size: 1rem;
+  }
+
+  .spinner {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .turnstile-modal {
+    padding: 1.5rem 1rem;
+  }
+
+  .turnstile-modal-header h3 {
+    font-size: 1.75rem;
+  }
+
+  .turnstile-modal-header p {
+    font-size: 0.9375rem;
+  }
+
+  .usersubmit-btn-small {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .turnstile-modal-overlay,
+  .turnstile-modal,
+  .spinner-ring,
+  .turnstile-loading p,
+  .usersubmit-btn-small::before,
+  .turnstile-modal-overlay::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+`}</style>
 </div>
 );
 };
