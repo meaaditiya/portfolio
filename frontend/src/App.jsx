@@ -96,7 +96,7 @@ const AccessRedirect = () => {
       
       try {
         const response = await fetch(
-          `https://connectwithaaditiyamg2.onrender.com/api/item/${documentId}?key=${key}`
+          `https://aadibgmg.onrender.com/api/item/${documentId}?key=${key}`
         );
         
         if (!response.ok) {

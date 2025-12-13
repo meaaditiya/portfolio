@@ -78,7 +78,7 @@ useEffect(() => {
 }, [controlsTimeout]);
   const fetchActiveProfileImage = async () => {
     try {
-      const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/profile-image/active');
+      const response = await fetch('https://aadibgmg.onrender.com/api/profile-image/active');
       if (response.ok) {
         const imageBlob = await response.blob();
         const imageUrl = URL.createObjectURL(imageBlob);
@@ -92,7 +92,7 @@ useEffect(() => {
  const fetchPosts = async () => {
   try {
     setLoading(true);
-    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/posts?page=${currentPage}&limit=10`);
+    const response = await fetch(`https://aadibgmg.onrender.com/api/community/posts?page=${currentPage}&limit=10`);
     const data = await response.json();
     setPosts(data.posts);
     setTotalPages(data.totalPages);
@@ -157,7 +157,7 @@ useEffect(() => {
         })
       );
 
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${postId}/like`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/posts/${postId}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: userInfo.email, userName: userInfo.name })
@@ -174,7 +174,7 @@ useEffect(() => {
 
   const fetchComments = async (postId) => {
     try {
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${postId}/comments`);
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/posts/${postId}/comments`);
       const data = await response.json();
       setComments(prev => ({ ...prev, [postId]: data.comments }));
     } catch (error) {
@@ -197,7 +197,7 @@ useEffect(() => {
     if (!userInfo || !newComment.trim()) return;
 
     try {
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${postId}/comment`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/posts/${postId}/comment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -263,7 +263,7 @@ useEffect(() => {
         return newComments;
       });
 
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/comments/${commentId}/like`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/comments/${commentId}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: userInfo.email, userName: userInfo.name })
@@ -286,7 +286,7 @@ useEffect(() => {
     if (!userInfo) return;
 
     try {
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/comments/${commentId}`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/comments/${commentId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: userInfo.email })
@@ -321,7 +321,7 @@ useEffect(() => {
     if (!userInfo) return;
 
     try {
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/comments/${commentId}/replies/${replyId}`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/comments/${commentId}/replies/${replyId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: userInfo.email })
@@ -383,7 +383,7 @@ useEffect(() => {
         })
       );
 
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${postId}/vote`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/posts/${postId}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -449,7 +449,7 @@ useEffect(() => {
     }
 
     try {
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${postId}/quiz-answer`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/community/posts/${postId}/quiz-answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -591,7 +591,7 @@ const toggleMute = (postId) => {
         'auto': '0'
       };
       const qualityPath = qualityMap[quality] || '0';
-      video.src = `https://connectwithaaditiyamg2.onrender.com/api/community/posts/${postId}/media/video/${qualityPath}`;
+      video.src = `https://aadibgmg.onrender.com/api/community/posts/${postId}/media/video/${qualityPath}`;
       
       setVideoStates(prev => ({
         ...prev,
@@ -715,7 +715,7 @@ const renderVideoPlayer = (post) => {
       >
         <video
           ref={el => videoRefs.current[post._id] = el}
-          src={`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${post._id}/media/video/0`}
+          src={`https://aadibgmg.onrender.com/api/community/posts/${post._id}/media/video/0`}
           className="advanced-video-player"
           loop
           muted={videoState.isMuted}
@@ -898,10 +898,10 @@ const renderVideoPlayer = (post) => {
               {post.images.map((image, index) => (
                 <img 
                   key={index}
-                  src={`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${post._id}/media/image/${index}`}
+                  src={`https://aadibgmg.onrender.com/api/community/posts/${post._id}/media/image/${index}`}
                   alt={`Post image ${index + 1}`}
                   className="post-image"
-                  onClick={() => openFullScreenImage(`https://connectwithaaditiyamg2.onrender.com/api/community/posts/${post._id}/media/image/${index}`)}
+                  onClick={() => openFullScreenImage(`https://aadibgmg.onrender.com/api/community/posts/${post._id}/media/image/${index}`)}
                 />
               ))}
             </div>

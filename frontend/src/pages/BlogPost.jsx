@@ -120,7 +120,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/blogs/${slug}`, {
+      const response = await fetch(`https://aadibgmg.onrender.com/api/blogs/${slug}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -240,7 +240,7 @@ useEffect(() => {
     
     setRelatedBlogsLoading(true);
     try {
-      const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/search', {
+      const response = await fetch('https://aadibgmg.onrender.com/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -266,7 +266,7 @@ useEffect(() => {
       console.error('Error fetching related blogs:', err);
       // Fallback to regular fetch if vector search fails
       try {
-        const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/blogs?status=published&limit=4');
+        const response = await fetch('https://aadibgmg.onrender.com/api/blogs?status=published&limit=4');
         const data = await response.json();
         const otherBlogs = data.blogs.filter(blog => blog._id !== blogPost._id);
         setBlogs(otherBlogs.slice(0, 3));
@@ -291,7 +291,7 @@ useEffect(() => {
     if (token) {
       try {
         // Verify token with your backend
-        const response = await axios.get('https://connectwithaaditiyamg2.onrender.com/api/verify', {
+        const response = await axios.get('https://aadibgmg.onrender.com/api/verify', {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -335,7 +335,7 @@ const getUserProfilePicture = (comment) => {
   
   if (comment.isAuthorComment && comment.authorAdminId) {
     if (comment.authorHasProfileImage || comment.authorAdminId.profileImage?.data) {
-      return `https://connectwithaaditiyamg2.onrender.com/api/admins/${comment.authorAdminId._id}/image`;
+      return `https://aadibgmg.onrender.com/api/admins/${comment.authorAdminId._id}/image`;
     }
   }
  
@@ -468,7 +468,7 @@ const canAccessFullContent = () => {
   // Fetch reaction counts
   const fetchReactions = async (blogId) => {
     try {
-      const response = await axios.get(`https://connectwithaaditiyamg2.onrender.com/api/blogs/${blogId}/reactions/count`);
+      const response = await axios.get(`https://aadibgmg.onrender.com/api/blogs/${blogId}/reactions/count`);
       setReactions(response.data);
     } catch (err) {
       console.error('Error fetching reactions:', err);
@@ -479,7 +479,7 @@ const canAccessFullContent = () => {
   const checkUserReaction = async (blogId, email) => {
     try {
       const response = await axios.get(
-        `https://connectwithaaditiyamg2.onrender.com/api/blogs/${blogId}/reactions/user`,
+        `https://aadibgmg.onrender.com/api/blogs/${blogId}/reactions/user`,
         { params: { email } }
       );
       
@@ -574,7 +574,7 @@ const submitReaction = async (type, userInfo) => {
   
   try {
     const response = await axios.post(
-      `https://connectwithaaditiyamg2.onrender.com/api/blogs/${blogPost._id}/reactions`,
+      `https://aadibgmg.onrender.com/api/blogs/${blogPost._id}/reactions`,
       {
         name: userInfo.name,
         email: userInfo.email,
@@ -684,7 +684,7 @@ const handleCommentSubmit = async (e) => {
   
   try {
     await axios.post(
-      `https://connectwithaaditiyamg2.onrender.com/api/blogs/${blogPost._id}/comments`,
+      `https://aadibgmg.onrender.com/api/blogs/${blogPost._id}/comments`,
       submitData,
       {
         headers: {
@@ -757,7 +757,7 @@ const handleCommentSubmit = async (e) => {
   
   try {
     await axios.delete(
-      `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentToDelete.id}/user`,
+      `https://aadibgmg.onrender.com/api/comments/${commentToDelete.id}/user`,
       { 
         data: { email: emailToUse },
         headers: {
@@ -1274,7 +1274,7 @@ const handleReplySubmit = async (e, commentId) => {
   
   try {
     await axios.post(
-      `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/replies`,
+      `https://aadibgmg.onrender.com/api/comments/${commentId}/replies`,
       submitData,
       {
         headers: {
@@ -1340,7 +1340,7 @@ const handleReplySubmit = async (e, commentId) => {
   setRepliesLoading(prev => ({ ...prev, [commentId]: true }));
   try {
     const response = await axios.get(
-      `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/replies`
+      `https://aadibgmg.onrender.com/api/comments/${commentId}/replies`
     );
     
     setCommentReplies(prev => ({
@@ -1361,7 +1361,7 @@ const handleReplySubmit = async (e, commentId) => {
   const fetchCommentReactions = async (commentId) => {
     try {
       const response = await axios.get(
-        `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/reactions/count`
+        `https://aadibgmg.onrender.com/api/comments/${commentId}/reactions/count`
       );
       
       setCommentReactions(prev => ({
@@ -1377,7 +1377,7 @@ const handleReplySubmit = async (e, commentId) => {
   const checkUserCommentReaction = async (commentId, email) => {
     try {
       const response = await axios.get(
-        `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/reactions/user`,
+        `https://aadibgmg.onrender.com/api/comments/${commentId}/reactions/user`,
         { params: { email } }
       );
       
@@ -1479,7 +1479,7 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
   
   try {
     const response = await axios.post(
-      `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/reactions`,
+      `https://aadibgmg.onrender.com/api/comments/${commentId}/reactions`,
       submitData,
       {
         headers: {
@@ -1548,7 +1548,7 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
   
   try {
     const response = await axios.get(
-      `https://connectwithaaditiyamg2.onrender.com/api/blogs/${blogId}/comments`,
+      `https://aadibgmg.onrender.com/api/blogs/${blogId}/comments`,
       { params: { page, limit: 5 } }
     );
     
@@ -1627,7 +1627,7 @@ const handleReportSubmit = async (e) => {
   
   try {
     await axios.post(
-      `https://connectwithaaditiyamg2.onrender.com/api/blogs/${blogPost._id}/report`,
+      `https://aadibgmg.onrender.com/api/blogs/${blogPost._id}/report`,
       {
         userEmail: reportForm.email,
         reason: reportForm.reason
@@ -1660,7 +1660,7 @@ const handleGenerateSummary = async (blog, event) => {
   setIsGeneratingSummary(true);
 
   try {
-    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/blogs/${blog._id}/generate-summary`, {
+    const response = await fetch(`https://aadibgmg.onrender.com/api/blogs/${blog._id}/generate-summary`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1693,7 +1693,7 @@ const verifyCommentOwnership = async (commentId, userEmail) => {
     const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
     
     const response = await axios.post(
-      `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/verify-ownership`,
+      `https://aadibgmg.onrender.com/api/comments/${commentId}/verify-ownership`,
       { email: userEmail },
       {
         headers: {
@@ -2006,7 +2006,7 @@ const fetchAuthorProfile = async (authorId) => {
   setShowAuthorModal(true);
   try {
     const response = await axios.get(
-      `https://connectwithaaditiyamg2.onrender.com/api/admins/${authorId}/public`
+      `https://aadibgmg.onrender.com/api/admins/${authorId}/public`
     );
     setAuthorData(response.data.admin);
   } catch (err) {
@@ -2048,8 +2048,8 @@ const fetchBlogReactionUsers = async (blogId = null, type = null) => {
   setReactionUsersLoading(true);
   try {
     const url = type 
-      ? `https://connectwithaaditiyamg2.onrender.com/api/blogs/${id}/reactions/users?type=${type}`
-      : `https://connectwithaaditiyamg2.onrender.com/api/blogs/${id}/reactions/users`;
+      ? `https://aadibgmg.onrender.com/api/blogs/${id}/reactions/users?type=${type}`
+      : `https://aadibgmg.onrender.com/api/blogs/${id}/reactions/users`;
     
     const response = await axios.get(url);
     setReactionUsers(response.data.users);
@@ -2065,8 +2065,8 @@ const fetchCommentReactionUsers = async (commentId, type = null) => {
   setReactionUsersLoading(true);
   try {
     const url = type
-      ? `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/reactions/users?type=${type}`
-      : `https://connectwithaaditiyamg2.onrender.com/api/comments/${commentId}/reactions/users`;
+      ? `https://aadibgmg.onrender.com/api/comments/${commentId}/reactions/users?type=${type}`
+      : `https://aadibgmg.onrender.com/api/comments/${commentId}/reactions/users`;
     
     const response = await axios.get(url);
     setCommentReactionUsers(prev => ({
@@ -3522,7 +3522,7 @@ const CodeBlock = ({ language, value }) => {
           <div className="author-profile-header">
             {authorData.profileImage?.hasImage ? (
               <img 
-                src={`https://connectwithaaditiyamg2.onrender.com/api/admins/${blogPost.author._id}/image`}
+                src={`https://aadibgmg.onrender.com/api/admins/${blogPost.author._id}/image`}
                 alt={authorData.name}
                 className="author-profile-image1"
               />

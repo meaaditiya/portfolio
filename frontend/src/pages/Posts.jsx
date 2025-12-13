@@ -63,7 +63,7 @@ const Posts = () => {
     { id: 'facebook', name: 'Facebook', icon: Facebook },
     { id: 'linkedin', name: 'LinkedIn', icon: Linkedin }
   ];
-const API_BASE_URL = 'https://connectwithaaditiyamg2.onrender.com';
+const API_BASE_URL = 'https://aadibgmg.onrender.com';
   useEffect(() => {
     if (postId && activeTab === 'posts') {
       fetchSinglePost(postId);
@@ -136,7 +136,7 @@ useEffect(() => {
     }
 
     try {
-      const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/verify', {
+      const response = await fetch('https://aadibgmg.onrender.com/api/verify', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -394,7 +394,7 @@ const fetchPosts = async () => {
     try {
       setSocialLoading(true);
       const platformParam = selectedPlatform === 'all' ? '' : `&platform=${selectedPlatform}`;
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/social-embeds?page=${socialCurrentPage}&limit=9${platformParam}`);
+      const response = await fetch(`https://aadibgmg.onrender.com/api/social-embeds?page=${socialCurrentPage}&limit=9${platformParam}`);
       const data = await response.json();
       setSocialEmbeds(data.embeds);
       setSocialTotalPages(data.pagination.pages);
@@ -601,7 +601,7 @@ const handleCommentSubmit = async () => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
+    const response = await fetch(`https://aadibgmg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -650,7 +650,7 @@ if (data.updatedComments) {
   // Fallback: fetch fresh data with cache busting
   await fetchSinglePost(selectedPost.id, true);
   
-  const detailResponse = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}?bustCache=${Date.now()}`);
+  const detailResponse = await fetch(`https://aadibgmg.onrender.com/api/image-posts/${selectedPost.id}?bustCache=${Date.now()}`);
   const detailData = await detailResponse.json();
   
   setPosts((prevPosts) =>
@@ -695,7 +695,7 @@ const handleReplySubmit = async (parentCommentId) => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
+    const response = await fetch(`https://aadibgmg.onrender.com/api/image-posts/${selectedPost.id}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -722,7 +722,7 @@ const handleReplySubmit = async (parentCommentId) => {
     setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
     
 const repliesResponse = await fetch(
-  `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
+  `https://aadibgmg.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
 );
 const repliesData = await repliesResponse.json();
 
@@ -759,8 +759,8 @@ const handleCommentReaction = async (commentId, reactionType) => {
   try {
     const token = localStorage.getItem('token');
     const endpoint = reactionType === 'like' 
-      ? `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}/like`
-      : `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}/dislike`;
+      ? `https://aadibgmg.onrender.com/api/image-posts/comments/${commentId}/like`
+      : `https://aadibgmg.onrender.com/api/image-posts/comments/${commentId}/dislike`;
     
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -809,7 +809,7 @@ const handleReaction = async (postId, e) => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/${postId}/react`, {
+    const response = await fetch(`https://aadibgmg.onrender.com/api/image-posts/${postId}/react`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -885,7 +885,7 @@ const confirmDeleteComment = async () => {
   
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${commentId}`, {
+    const response = await fetch(`https://aadibgmg.onrender.com/api/image-posts/comments/${commentId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -916,7 +916,7 @@ const confirmDeleteComment = async () => {
           // Fallback: clear and refetch with cache busting
           setReplies(prev => ({ ...prev, [parentCommentId]: undefined }));
           const repliesResponse = await fetch(
-            `https://connectwithaaditiyamg2.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
+            `https://aadibgmg.onrender.com/api/image-posts/comments/${parentCommentId}/replies?bustCache=${Date.now()}`
           );
           const repliesData = await repliesResponse.json();
           setReplies(prev => ({ ...prev, [parentCommentId]: repliesData.replies }));

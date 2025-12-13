@@ -20,7 +20,7 @@ const handleSubmitQuery = async () => {
   setLoading(true);
   setError('');
   try {
-    const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/queries/create', {
+    const response = await fetch('https://aadibgmg.onrender.com/api/queries/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

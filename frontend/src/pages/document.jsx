@@ -248,7 +248,7 @@ const requestAccess = async () => {
     setSubmittingRequest(true);
     
     const response = await fetch(
-      `https://connectwithaaditiyamg2.onrender.com/api/user/request-access/${accessRequestItem._id}`,
+      `https://aadibgmg.onrender.com/api/user/request-access/${accessRequestItem._id}`,
       {
         method: 'POST',
         headers: {
@@ -342,8 +342,8 @@ const fetchFolderContents = async (parentId) => {
     const accessKey = urlParams.get('key');
     
     let url = parentId 
-      ? `https://connectwithaaditiyamg2.onrender.com/api/folder/contents?parentId=${parentId}`
-      : `https://connectwithaaditiyamg2.onrender.com/api/folder/contents`;
+      ? `https://aadibgmg.onrender.com/api/folder/contents?parentId=${parentId}`
+      : `https://aadibgmg.onrender.com/api/folder/contents`;
     
     if (accessKey) {
       url += `${parentId ? '&' : '?'}key=${accessKey}`;
@@ -391,7 +391,7 @@ const fetchFolderContents = async (parentId) => {
 
   const fetchBreadcrumb = async (itemId) => {
     try {
-      const response = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/item/${itemId}/breadcrumb`);
+      const response = await fetch(`https://aadibgmg.onrender.com/api/item/${itemId}/breadcrumb`);
       const data = await response.json();
       setBreadcrumb(data.breadcrumb || []);
     } catch (err) {
@@ -427,7 +427,7 @@ const handleSearch = async (query) => {
     }
     
     const response = await fetch(
-      `https://connectwithaaditiyamg2.onrender.com/api/search?${params.toString()}`
+      `https://aadibgmg.onrender.com/api/search?${params.toString()}`
     );
 
   
@@ -499,7 +499,7 @@ const handleSearch = async (query) => {
       const token = localStorage.getItem('token');
       
       try {
-        const res = await fetch(`https://connectwithaaditiyamg2.onrender.com/api/user/bookmark/${item._id}`, {
+        const res = await fetch(`https://aadibgmg.onrender.com/api/user/bookmark/${item._id}`, {
           method: currentlyBookmarked ? 'DELETE' : 'POST',
           headers: { 
             'Authorization': `Bearer ${token}`,
@@ -541,7 +541,7 @@ const handleSearch = async (query) => {
       
       try {
         const res = await fetch(
-          `https://connectwithaaditiyamg2.onrender.com/api/user/excel/${excelFileId}/checkmarks`,
+          `https://aadibgmg.onrender.com/api/user/excel/${excelFileId}/checkmarks`,
           { headers: { 'Authorization': `Bearer ${token}` } }
         );
         
@@ -576,7 +576,7 @@ const handleSearch = async (query) => {
       
       try {
         const res = await fetch(
-          `https://connectwithaaditiyamg2.onrender.com/api/user/excel/${excelId}/row-checkmark`,
+          `https://aadibgmg.onrender.com/api/user/excel/${excelId}/row-checkmark`,
           {
             method: 'POST',
             headers: {
@@ -611,7 +611,7 @@ const loadExcelDataById = async (id) => {
       const urlParams = new URLSearchParams(window.location.search);
       const accessKey = urlParams.get('key');
       
-      let url = `https://connectwithaaditiyamg2.onrender.com/api/excel/${id}/data`;
+      let url = `https://aadibgmg.onrender.com/api/excel/${id}/data`;
       if (accessKey) {
         url += `?key=${accessKey}`;
       }
@@ -721,7 +721,7 @@ const handleDownload = async (docId) => {
       // Send turnstile token as query param instead of header
       params.append('turnstileToken', token);
       
-      let url = `https://connectwithaaditiyamg2.onrender.com/api/download/${docId}?${params.toString()}`;
+      let url = `https://aadibgmg.onrender.com/api/download/${docId}?${params.toString()}`;
       
       const res = await fetch(url);
       
