@@ -1,8 +1,94 @@
 import React from 'react';
+import { useState } from 'react';
+import { Mail, Phone } from 'lucide-react';
 import '../pagesCSS/forbidden.css';
+
 const Forbidden = () => {
+  const [showPopup, setShowPopup] = useState(false);
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [ticketId, setTicketId] = useState('');
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState('');
+const [copied, setCopied] = useState(false);
+
+const handleSubmitQuery = async () => {
+  if (!name.trim() || !email.trim()) {
+    setError('Please fill all fields');
+    return;
+  }
+  setLoading(true);
+  setError('');
+  try {
+    const response = await fetch('https://connectwithaaditiyamg2.onrender.com/api/queries/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name.trim(),
+        email: email.trim(),
+        queryText: 'Security system falsely marks me suspicious'
+      })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      setTicketId(data.ticketId);
+      setName('');
+      setEmail('');
+    } else {
+      setError(data.message || 'Failed to submit query');
+    }
+  } catch (err) {
+    setError('Network error. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="forbidden-page">
+      {showPopup && (
+  <div className="popup-overlay">
+    <div className="popup-content">
+      <button className="popup-close" onClick={() => setShowPopup(false)}>×</button>
+      <h2 className="popup-heading">Security System Falsely Marks Me Suspicious</h2>
+      <input
+        type="text"
+        placeholder="Your Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="popup-input"
+      />
+      <input
+        type="email"
+        placeholder="Your Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="popup-input"
+      />
+      {!ticketId ? (
+        <button onClick={handleSubmitQuery} className="popup-button" disabled={loading}>
+          {loading ? 'Submitting...' : 'Submit Query'}
+        </button>
+      ) : (
+        <div className="ticket-success">
+  <label className="ticket-label">Your Ticket ID</label>
+  <div className="ticket-box">{ticketId}</div>
+
+  <button
+    onClick={() => {
+      navigator.clipboard.writeText(ticketId);
+      setCopied(true);
+    }}
+    className="popup-button"
+  >
+    {copied ? 'Copied!' : 'Copy Ticket ID'}
+  </button>
+</div>
+
+      )}
+      {error && <p className="error-message">{error}</p>}
+    </div>
+  </div>
+)}
       <svg 
         className="h-[50vh] aspect-video"
         xmlns="http://www.w3.org/2000/svg" 
@@ -396,8 +482,32 @@ const Forbidden = () => {
       <p className="text-xl text-center text-gray-600 max-w-md">
   Our security system flagged unusual activity and prevented access to this page.
   If you believe this was a mistake, please contact us at  
-  <span> aaditiyatyagi.dev@gmail.com</span>.
 </p>
+<div className="contact-info">
+  <a href="mailto:aaditiyatyagi.dev@gmail.com" className="contact-link">
+    <span className="contact-icon-box">
+      <Mail className="contact-icon" />
+    </span>
+    aaditiyatyagi.dev@gmail.com
+  </a>
+
+  <a href="tel:+917351102036" className="contact-link">
+    <span className="contact-icon-box">
+      <Phone className="contact-icon" />
+    </span>
+    +91 7351102036
+  </a>
+</div>
+
+
+<div className="action-buttons">
+  <button onClick={() => setShowPopup(true)} className="action-button">
+    Raise Query
+  </button>
+  <button onClick={() => window.location.href = '/contact'} className="action-button">
+    Check Status
+  </button>
+</div>
       </div>
     </div>
   );
