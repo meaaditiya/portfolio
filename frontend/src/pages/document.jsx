@@ -42,11 +42,11 @@ const Documents = () => {
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [activeCheckmarkFilters, setActiveCheckmarkFilters] = useState(new Set());
   const [showCheckmarkFilterMenu, setShowCheckmarkFilterMenu] = useState(false);
-  const [showTurnstileModal, setShowTurnstileModal] = useState(false);
-const [turnstileAction, setTurnstileAction] = useState(null);
-const [turnstileToken, setTurnstileToken] = useState(null);
-const [turnstilePending, setTurnstilePending] = useState(false);
-const turnstileWidgetId = useRef(null);
+const [showTurnstileModal, setShowTurnstileModal] = useState(false);
+const turnstileAction = useRef(null);
+const turnstileWidgetRef = useRef(null);
+const turnstileContainerRef = useRef(null);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
   const [showAccessRequestModal, setShowAccessRequestModal] = useState(false);
@@ -74,21 +74,42 @@ const [alertPopup, setAlertPopup] = useState({
     const IconComponent = CHECKMARK_ICON_MAP[type] || CheckSquare;
     return IconComponent;
   };
-useEffect(() => {
-  const script = document.createElement('script');
-  script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-  script.async = true;
-  script.defer = true;
-  document.body.appendChild(script);
-
-  return () => {
-    document.body.removeChild(script);
-  };
-}, []);
 
   useEffect(() => {
     checkAuthentication();
   }, []);
+
+useEffect(() => {
+  if (showTurnstileModal && window.turnstile && !turnstileWidgetRef.current && turnstileContainerRef.current) {
+    try {
+      turnstileWidgetRef.current = window.turnstile.render(turnstileContainerRef.current, {
+        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+        callback: (token) => {
+          if (turnstileAction.current) {
+            turnstileAction.current(token);
+            setShowTurnstileModal(false);
+          }
+        },
+        'error-callback': () => {
+          showAlert('Verification failed. Please try again.', 'error');
+          setShowTurnstileModal(false);
+        }
+      });
+    } catch (e) {
+      console.error('Turnstile render error:', e);
+    }
+  }
+  
+  return () => {
+    if (!showTurnstileModal && turnstileWidgetRef.current && window.turnstile) {
+      try {
+        window.turnstile.remove(turnstileWidgetRef.current);
+        turnstileWidgetRef.current = null;
+      } catch (e) {}
+    }
+  };
+}, [showTurnstileModal]);
+
 
   useEffect(() => {
     if (userId !== null) {
@@ -155,41 +176,7 @@ useEffect(() => {
     document.removeEventListener('mousedown', handleClickOutside);
   };
 }, [showCheckmarkFilterMenu]);
-const handleTurnstileVerify = (token) => {
-  setTurnstileToken(token);
-  setTurnstilePending(false);
-  
-  // Execute the pending action
-  if (turnstileAction) {
-    turnstileAction.callback(token);
-    setTurnstileAction(null);
-    setShowTurnstileModal(false);
-  }
-};
 
-// Initialize Turnstile widget when modal opens
-useEffect(() => {
-  if (showTurnstileModal && window.turnstile && !turnstileWidgetId.current) {
-    setTurnstilePending(true);
-    setTimeout(() => {
-      turnstileWidgetId.current = window.turnstile.render('#turnstile-widget', {
-        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
-        callback: handleTurnstileVerify,
-        theme: 'light'
-      });
-    }, 100);
-  }
-  return () => {
-    if (turnstileWidgetId.current && window.turnstile) {
-      try {
-        window.turnstile.remove(turnstileWidgetId.current);
-        turnstileWidgetId.current = null;
-      } catch (e) {
-        console.error('Error removing turnstile:', e);
-      }
-    }
-  };
-}, [showTurnstileModal]);
   const toggleCheckmarkFilter = (filterKey) => {
     setActiveCheckmarkFilters(prev => {
       const newFilters = new Set(prev);
@@ -661,14 +648,9 @@ const loadExcelDataById = async (id) => {
     }
   };
 
-  // Show Turnstile modal
-  setTurnstileAction({
-    type: 'excel',
-    excelId: id,
-    callback: executeLoadExcel
-  });
-  setShowTurnstileModal(true);
-  turnstileWidgetId.current = null;
+ turnstileAction.current = executeLoadExcel;
+setShowTurnstileModal(true);
+
 };
  
   const closeExcelView = () => {
@@ -718,7 +700,6 @@ const handleDownload = async (docId) => {
       if (userId) {
         params.append('userId', userId);
       }
-      // Send turnstile token as query param instead of header
       params.append('turnstileToken', token);
       
       let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}?${params.toString()}`;
@@ -736,7 +717,6 @@ const handleDownload = async (docId) => {
       const data = await res.json();
       if (!data.downloadUrl) throw new Error("No download URL");
       
-      // Navigate to download URL
       window.location.href = data.downloadUrl;
       
     } catch (err) {
@@ -745,14 +725,9 @@ const handleDownload = async (docId) => {
     }
   };
 
-  // Show Turnstile modal
-  setTurnstileAction({
-    type: 'download',
-    docId,
-    callback: executeDownload
-  });
-  setShowTurnstileModal(true);
-  turnstileWidgetId.current = null;
+  turnstileAction.current = executeDownload;
+setShowTurnstileModal(true);
+
 };
   const getFileIcon = (item) => {
     if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
@@ -1598,28 +1573,43 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
       </div>
       
       <div className="turnstile-modal-body">
-        <div id="turnstile-widget"></div>
-        {turnstilePending && (
-          <div className="turnstile-loading">
-            <div className="spinner4">
-              <div className="spinner4-ring"></div>
-              <div className="spinner4-ring"></div>
-              <div className="spinner4-ring"></div>
-            </div>
-            <p>Verifying your identity...</p>
-          </div>
-        )}
+        <div ref={turnstileContainerRef} style={{ display: 'flex', justifyContent: 'center' }}></div>
       </div>
-      
+          <div className="turnstile-loading">
+           <svg class="bike" viewBox="0 0 48 30" width="48px" height="30px">
+	<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1">
+		<g transform="translate(9.5,19)">
+			<circle class="bike__tire" r="9" stroke-dasharray="56.549 56.549" />
+			<g class="bike__spokes-spin" stroke-dasharray="31.416 31.416" stroke-dashoffset="-23.562">
+				<circle class="bike__spokes" r="5" />
+				<circle class="bike__spokes" r="5" transform="rotate(180,0,0)" />
+			</g>
+		</g>
+		<g transform="translate(24,19)">
+			<g class="bike__pedals-spin" stroke-dasharray="25.133 25.133" stroke-dashoffset="-21.991" transform="rotate(67.5,0,0)">
+				<circle class="bike__pedals" r="4" />
+				<circle class="bike__pedals" r="4" transform="rotate(180,0,0)" />
+			</g>
+		</g>
+		<g transform="translate(38.5,19)">
+			<circle class="bike__tire" r="9" stroke-dasharray="56.549 56.549" />
+			<g class="bike__spokes-spin" stroke-dasharray="31.416 31.416" stroke-dashoffset="-23.562">
+				<circle class="bike__spokes" r="5" />
+				<circle class="bike__spokes" r="5" transform="rotate(180,0,0)" />
+			</g>
+		</g>
+		<polyline class="bike__seat" points="14 3,18 3" stroke-dasharray="5 5" />
+		<polyline class="bike__body" points="16 3,24 19,9.5 19,18 8,34 7,24 19" stroke-dasharray="79 79" />
+		<path class="bike__handlebars" d="m30,2h6s1,0,1,1-1,1-1,1" stroke-dasharray="10 10" />
+		<polyline class="bike__front" points="32.5 2,38.5 19" stroke-dasharray="19 19" />
+	</g>
+</svg>
+          </div>
       <div className="turnstile-modal-footer">
         <button
           onClick={() => {
             setShowTurnstileModal(false);
-            setTurnstileAction(null);
-            if (turnstileWidgetId.current && window.turnstile) {
-              window.turnstile.remove(turnstileWidgetId.current);
-              turnstileWidgetId.current = null;
-            }
+            turnstileAction.current = null;
             window.history.back();
           }}
           className="usersubmit-btn-small2"
@@ -1634,6 +1624,137 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
 
 <style jsx>{`
 /* Full Screen Overlay */
+
+.bike {
+	display: block;
+	margin: auto;
+	width: 16em;
+	height: auto;
+}
+.bike__body,
+.bike__front,
+.bike__handlebars,
+.bike__pedals,
+.bike__pedals-spin,
+.bike__seat,
+.bike__spokes,
+.bike__spokes-spin,
+.bike__tire {
+	animation: bikeBody 3s ease-in-out infinite;
+	stroke: var(--primary);
+	transition: stroke var(--trans-dur);
+}
+.bike__front {
+	animation-name: bikeFront;
+}
+.bike__handlebars {
+	animation-name: bikeHandlebars;
+}
+.bike__pedals {
+	animation-name: bikePedals;
+}
+.bike__pedals-spin {
+	animation-name: bikePedalsSpin;
+}
+.bike__seat {
+	animation-name: bikeSeat;
+}
+.bike__spokes,
+.bike__tire {
+	stroke: currentColor;
+}
+.bike__spokes {
+	animation-name: bikeSpokes;
+}
+.bike__spokes-spin {
+	animation-name: bikeSpokesSpin;
+}
+.bike__tire {
+	animation-name: bikeTire;
+}
+
+
+/* Animations */
+@keyframes bikeBody {
+	from { stroke-dashoffset: 79; }
+	33%,
+	67% { stroke-dashoffset: 0; }
+	to { stroke-dashoffset: -79; }
+}
+@keyframes bikeFront {
+	from { stroke-dashoffset: 19; }
+	33%,
+	67% { stroke-dashoffset: 0; }
+	to { stroke-dashoffset: -19; }
+}
+@keyframes bikeHandlebars {
+	from { stroke-dashoffset: 10; }
+	33%,
+	67% { stroke-dashoffset: 0; }
+	to { stroke-dashoffset: -10; }
+}
+@keyframes bikePedals {
+	from {
+		animation-timing-function: ease-in;
+		stroke-dashoffset: -25.133;
+	}
+	33%,
+	67% {
+		animation-timing-function: ease-out;
+		stroke-dashoffset: -21.991;
+	}
+	to {
+		stroke-dashoffset: -25.133;
+	}
+}
+@keyframes bikePedalsSpin {
+	from { transform: rotate(0.1875turn); }
+	to { transform: rotate(3.1875turn); }
+}
+@keyframes bikeSeat {
+	from { stroke-dashoffset: 5; }
+	33%,
+	67% { stroke-dashoffset: 0; }
+	to { stroke-dashoffset: -5; }
+}
+@keyframes bikeSpokes {
+	from {
+		animation-timing-function: ease-in;
+		stroke-dashoffset: -31.416;
+	}
+	33%,
+	67% {
+		animation-timing-function: ease-out;
+		stroke-dashoffset: -23.562;
+	}
+	to {
+		stroke-dashoffset: -31.416;
+	}
+}
+@keyframes bikeSpokesSpin {
+	from { transform: rotate(0); }
+	to { transform: rotate(3turn); }
+}
+@keyframes bikeTire {
+	from {
+		animation-timing-function: ease-in;
+		stroke-dashoffset: 56.549;
+		transform: rotate(0);
+	}
+	33% {
+		stroke-dashoffset: 0;
+		transform: rotate(0.33turn);
+	}
+	67% {
+		animation-timing-function: ease-out;
+		stroke-dashoffset: 0;
+		transform: rotate(0.67turn);
+	}
+	to {
+		stroke-dashoffset: -56.549;
+		transform: rotate(1turn);
+	}
+}
 .turnstile-modal-overlay {
   position: fixed;
   inset: 0;
