@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock, AlertCircle, CheckCircle, FileLock } from 'lucide-react';
 import '../pagesCSS/document.css';
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -1299,11 +1299,14 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
         ) : (
           getFileIcon(item)
         )}
-        <span className="file-name">{item.name || item.originalName}</span>
-        {(item.hasAccess === false || item.accessLevel === 'locked') && (
-          <Lock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
+        <span className="file-name">{item.name || item.originalName}
+           {(item.hasAccess === false || item.accessLevel === 'locked') && (
+          <FileLock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
         )}
+        </span>
+       
       </div>
+      
     </td>
     <td className="td">{formatDate(item.createdAt)}</td>
     <td className="td">{getFileType(item)}</td>
@@ -1315,6 +1318,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     <td className="td action-column">
       <div className="action-buttons-container">
         {/* Only show action buttons if user has access */}
+        
         {item.hasAccess !== false && item.accessLevel !== 'locked' && (
           <>
             {item.bookmarkEnabled && (
@@ -1330,7 +1334,9 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
                 />
               </button>
             )}
+            
             {item.type === 'file' && (
+              
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1369,7 +1375,11 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
                 <ExternalLink size={16} />
               </button>
             )}
+            
           </>
+        )}
+         {(item.hasAccess === false || item.accessLevel === 'locked') && (
+          <Lock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
         )}
       </div>
     </td>
@@ -1439,7 +1449,8 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
           <div className="grid-item-name" title={item.name || item.originalName}>
             {item.name || item.originalName}
           </div>
-          
+         {(item.hasAccess === false || item.accessLevel === 'locked') &&(  
+          <div>
           {item.type === 'file' && (
             <button
               onClick={(e) => {
@@ -1478,6 +1489,8 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
               <ExternalLink size={14} />
             </button>
           )}
+          </div>
+        )}
         </div>
       ))}
     </div>
