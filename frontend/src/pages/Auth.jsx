@@ -287,12 +287,34 @@ export default function Auth() {
     }
   };
 
-  const handleLogout = () => {
+const handleLogout = async () => {
+  try {
+    const savedToken = localStorage.getItem('token');
+    
+   
+    await fetch(`${API_BASE}/user/logout`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${savedToken}`
+      }
+    });
+    
+   
     localStorage.removeItem('token');
+    localStorage.removeItem('redirect_after_login');
     setUser(null);
     setView('login');
     setLoginForm({ email: '', password: '' });
-  };
+    setMessage('');
+  } catch (error) {
+    console.error('Logout error:', error);
+    localStorage.removeItem('token');
+    localStorage.removeItem('redirect_after_login');
+    setUser(null);
+    setView('login');
+    setLoginForm({ email: '', password: '' });
+  }
+};
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
