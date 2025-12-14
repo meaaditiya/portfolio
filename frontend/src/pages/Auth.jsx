@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Edit2, CheckCircle, ChevronRight, X } from 'lucide-react';
 
-const API_BASE = 'https://aadibgmg.onrender.com/api';
+const API_BASE = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
 
 export default function Auth() {
   const [view, setView] = useState('loading');

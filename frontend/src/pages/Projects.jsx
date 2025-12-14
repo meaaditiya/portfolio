@@ -435,7 +435,7 @@ const Projects = () => {
   const [fetchedProjects, setFetchedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [zoomModal, setZoomModal] = useState({ show: false, images: [], index: 0 });
-  const API_URL = 'https://aadibgmg.onrender.com';
+  const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}`;
 
   const staticProjects = [
     {

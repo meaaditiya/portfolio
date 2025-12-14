@@ -96,7 +96,7 @@ const AccessRedirect = () => {
       
       try {
         const response = await fetch(
-          `https://aadibgmg.onrender.com/api/item/${documentId}?key=${key}`
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/item/${documentId}?key=${key}`
         );
         
         if (!response.ok) {

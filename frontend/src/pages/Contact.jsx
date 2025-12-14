@@ -338,11 +338,11 @@ const copyTicketId = () => {
     
     setOtpLoading(true);
     
- let otpEndpoint = 'https://aadibgmg.onrender.com/api/contact/send-otp';
+ let otpEndpoint = `${import.meta.env.VITE_APP_BACKEND_URL}/api/contact/send-otp`;
     if (isProject) {
-      otpEndpoint = 'https://aadibgmg.onrender.com/api/project/send-otp';
+      otpEndpoint = `${import.meta.env.VITE_APP_BACKEND_URL}/api/project/send-otp`;
     } else if (isAudio) {
-      otpEndpoint = 'https://aadibgmg.onrender.com/api/audio-contact/send-otp';
+      otpEndpoint = `${import.meta.env.VITE_APP_BACKEND_URL}/api/audio-contact/send-otp`;
     }
     
     try {
@@ -513,7 +513,7 @@ const copyTicketId = () => {
         });
         formDataToSend.append('audioFile', audioFile);
 
-        const response = await axios.post('https://aadibgmg.onrender.com/api/audio-contact', formDataToSend, {
+        const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/audio-contact`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -553,7 +553,7 @@ const copyTicketId = () => {
           }
         }
 
-        const response = await axios.post('https://aadibgmg.onrender.com/api/project/submit', formDataToSend, {
+        const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/project/submit`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -581,7 +581,7 @@ const copyTicketId = () => {
           true
         );
       } else {
-        const response = await axios.post('https://aadibgmg.onrender.com/api/contact', formData);
+        const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/contact`, formData);
         
         setFormData({
           name: '',
@@ -1261,7 +1261,7 @@ const handleQuerySubmit = async (e) => {
   });
   
   try {
-    const response = await axios.post('https://aadibgmg.onrender.com/api/queries/create', queryFormData);
+    const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/queries/create`, queryFormData);
     
     showqueryPopup(
      response.data.ticketId,
@@ -1330,7 +1330,7 @@ if (!/^QRY\d{12}$/.test(normalized)) {
   });
   
   try {
-    const response = await axios.get(`https://aadibgmg.onrender.com/api/queries/check/${ticketId}`);
+    const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/queries/check/${ticketId}`);
     setQueryResult(response.data);
     setQueryErrors({});
     

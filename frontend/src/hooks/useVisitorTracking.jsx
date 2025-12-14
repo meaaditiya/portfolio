@@ -25,7 +25,7 @@ export const useVisitorTracking = () => {
     sessionIdRef.current = sessionId;
 
     // Initialize socket connection
-    const socketInstance = io('https://aadibgmg.onrender.com', {
+    const socketInstance = io(`${import.meta.env.VITE_APP_BACKEND_URL}`, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 5,
@@ -59,7 +59,7 @@ export const useVisitorTracking = () => {
     // Fetch all visitor stats
     const fetchAllStats = async () => {
       try {
-        const response = await fetch('https://aadibgmg.onrender.com/api/visitors/stats/all');
+        const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/visitors/stats/all`);
         if (response.ok) {
           const data = await response.json();
           setVisitorStats({

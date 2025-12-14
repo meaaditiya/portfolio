@@ -18,7 +18,7 @@ const StreamApp = () => {
     try {
       setLoading(true);
       
-      const response = await fetch('https://aadibgmg.onrender.com/api/streams');
+      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/streams`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

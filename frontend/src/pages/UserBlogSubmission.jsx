@@ -4,7 +4,7 @@ import '../pagesCSS/UserBlogSubmission.css';
 
 const UserBlogSubmission = () => {
   const navigate = useNavigate();
-  const API_URL = 'https://aadibgmg.onrender.com';
+  const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}`;
 
   const [blogFormData, setblogFormData] = useState({
     userName: '',
