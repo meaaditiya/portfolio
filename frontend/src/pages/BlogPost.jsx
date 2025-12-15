@@ -113,6 +113,8 @@ const [reactionUsersTarget, setReactionUsersTarget] = useState(null); // { type:
 
 const [showCommentReactionUsersModal, setShowCommentReactionUsersModal] = useState(false);
 const [commentReactionUsers, setCommentReactionUsers] = useState({});
+const [reactionsLoaded, setReactionsLoaded] = useState(false);
+const [commentsReactionsLoaded, setCommentsReactionsLoaded] = useState(false);
   // Fetch blog post details
 useEffect(() => {
   const fetchBlogDetails = async () => {
@@ -130,13 +132,12 @@ useEffect(() => {
       
       const data = await response.json();
       
-      console.log('Blog data received:', data);
-      
-      // ✅ SET BLOG POST FIRST
+      // ✅ IMMEDIATELY SET BLOG POST - THIS SHOWS CONTENT INSTANTLY
       setBlogPost(data);
       setUniqueReaders(data.uniqueReaders || 0);
+      setIsLoading(false); // ✅ STOP LOADING SPINNER IMMEDIATELY
       
-      // Check if user has stored info in localStorage FIRST
+      // ✅ ALL BACKGROUND FETCHES (NON-BLOCKING)
       const storedInfo = localStorage.getItem('blogUserInfo');
       let parsedInfo = null;
       if (storedInfo) {
@@ -148,26 +149,20 @@ useEffect(() => {
         });
       }
       
-      // ✅ NOW fetch reactions/comments AFTER blogPost is set
+      // ✅ BACKGROUND FETCHES (Don't await - fire and forget)
       if (data._id) {
-        // Fetch reactions
-        fetchReactions(data._id);
+        fetchReactions(data._id).catch(err => console.log('Reactions failed:', err));
+        fetchBlogReactionUsers(data._id).catch(err => console.log('Reaction users failed:', err));
         
-        // ✅ FIXED: Pass data._id instead of blogPost._id (which is still null)
-        fetchBlogReactionUsers(data._id);
-        
-        // Check user reaction
         if (parsedInfo && parsedInfo.email) {
-          checkUserReaction(data._id, parsedInfo.email);
+          checkUserReaction(data._id, parsedInfo.email).catch(err => console.log('User reaction failed:', err));
         }
         
-        // Load comments
-        fetchCommentsWithReactions(data._id, 1, parsedInfo);
+        fetchCommentsWithReactions(data._id, 1, parsedInfo).catch(err => console.log('Comments failed:', err));
       }
     } catch (err) {
       setError('Failed to fetch blog details');
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -239,8 +234,17 @@ useEffect(() => {
     if (!blogPost || !blogPost.title) return;
     
     setRelatedBlogsLoading(true);
+    
+    // ✅ FETCH SIMPLE BLOGS FIRST (FAST - NO VECTOR SEARCH)
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/search`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/blogs?status=published&limit=4`);
+      const data = await response.json();
+      const otherBlogs = data.blogs.filter(blog => blog._id !== blogPost._id);
+      setBlogs(otherBlogs.slice(0, 3));
+      setRelatedBlogsLoading(false);
+      
+      // ✅ THEN TRY VECTOR SEARCH IN BACKGROUND (NON-BLOCKING)
+      fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -251,29 +255,21 @@ useEffect(() => {
           hybridSearch: true,
           generateSuggestions: false
         })
-      });
-
-      if (!response.ok) throw new Error('Search failed');
-
-      const data = await response.json();
-      // Filter out current blog and take top 3
-      const relatedBlogs = data.results
-        .filter(blog => blog._id !== blogPost._id)
-        .slice(0, 3);
-      
-      setBlogs(relatedBlogs);
+      })
+        .then(res => res.json())
+        .then(data => {
+          const relatedBlogs = data.results
+            .filter(blog => blog._id !== blogPost._id)
+            .slice(0, 3);
+          
+          if (relatedBlogs.length > 0) {
+            setBlogs(relatedBlogs); // ✅ UPGRADE TO BETTER RESULTS
+          }
+        })
+        .catch(err => console.log('Vector search failed, keeping fallback:', err));
+        
     } catch (err) {
-      console.error('Error fetching related blogs:', err);
-      // Fallback to regular fetch if vector search fails
-      try {
-        const response = await fetch( `${import.meta.env.VITE_APP_BACKEND_URL}/api/blogs?status=published&limit=4`);
-        const data = await response.json();
-        const otherBlogs = data.blogs.filter(blog => blog._id !== blogPost._id);
-        setBlogs(otherBlogs.slice(0, 3));
-      } catch (fallbackErr) {
-        console.error('Fallback fetch also failed:', fallbackErr);
-      }
-    } finally {
+      console.error('Error fetching blogs:', err);
       setRelatedBlogsLoading(false);
     }
   };
@@ -466,14 +462,15 @@ const canAccessFullContent = () => {
     setIsPausedReading(false);
   };
   // Fetch reaction counts
-  const fetchReactions = async (blogId) => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/blogs/${blogId}/reactions/count`);
-      setReactions(response.data);
-    } catch (err) {
-      console.error('Error fetching reactions:', err);
-    }
-  };
+const fetchReactions = async (blogId) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/blogs/${blogId}/reactions/count`);
+    setReactions(response.data);
+    setReactionsLoaded(true); // ✅ Mark as loaded
+  } catch (err) {
+    console.error('Error fetching reactions:', err);
+  }
+};
   
   // Check if user has already reacted
   const checkUserReaction = async (blogId, email) => {
@@ -1542,9 +1539,8 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
 };
   // Update your existing fetchComments function to also fetch reactions
 
-   const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => {
+const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => {
   setCommentsLoading(true);
-  setCommentDeletability({});
   
   try {
     const response = await axios.get(
@@ -1552,6 +1548,7 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
       { params: { page, limit: 5 } }
     );
     
+    // ✅ SHOW COMMENTS IMMEDIATELY
     setComments(response.data.comments);
     setVisibleCommentsCount(2);
     setCommentPagination({
@@ -1559,33 +1556,30 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
       pages: response.data.pagination.pages,
       total: response.data.pagination.total
     });
+    setCommentsLoading(false); // ✅ STOP SPINNER IMMEDIATELY
     
     const currentUserInfo = userInfo || 
                            storedUserInfo || 
                            (isLoggedIn && loggedInUser ? { email: loggedInUser.email, name: loggedInUser.name } : null);
     
-    // OPTIMIZED: Fetch everything in parallel instead of sequentially
+    // ✅ LOAD REACTIONS IN BACKGROUND (NON-BLOCKING)
     if (response.data.comments.length > 0) {
       const commentIds = response.data.comments.map(c => c._id);
       
-      // Create all promises
-      const reactionPromises = commentIds.map(id => fetchCommentReactions(id));
-      const userReactionPromises = currentUserInfo?.email 
-        ? commentIds.map(id => checkUserCommentReaction(id, currentUserInfo.email))
-        : [];
+      // Fire all promises without blocking
+      commentIds.forEach(id => {
+        fetchCommentReactions(id).catch(err => console.log('Comment reaction failed:', err));
+        
+        if (currentUserInfo?.email) {
+          checkUserCommentReaction(id, currentUserInfo.email).catch(err => console.log('User reaction check failed:', err));
+        }
+      });
       
-      // Execute ALL operations in parallel - don't wait for each one
-      Promise.all([
-        ...reactionPromises,
-        ...userReactionPromises,
-        batchVerifyCommentOwnership(response.data.comments, currentUserInfo)
-      ]).catch(err => console.error('Error in parallel operations:', err));
-      
-      // Don't await - let them load in background
+      batchVerifyCommentOwnership(response.data.comments, currentUserInfo)
+        .catch(err => console.log('Ownership verification failed:', err));
     }
   } catch (err) {
     console.error('Error fetching comments:', err);
-  } finally {
     setCommentsLoading(false);
   }
 };
@@ -2648,11 +2642,23 @@ const CodeBlock = ({ language, value }) => {
 )}
              <div className="comments-scrollable-container">
             {/* Comments list */}
-            {commentsLoading ? (
-              <div className="loading comments-loading">
-                <div className="spinner"></div>
-              </div>
-            ) : comments.length === 0 ? (
+           {commentsLoading ? (
+  <div className="comments-skeleton">
+    {[1, 2, 3].map(i => (
+      <div key={i} className="comment-skeleton-card">
+        <div className="skeleton-header">
+          <div className="skeleton-avatar"></div>
+          <div className="skeleton-info">
+            <div className="skeleton-line skeleton-name"></div>
+            <div className="skeleton-line skeleton-date"></div>
+          </div>
+        </div>
+        <div className="skeleton-line skeleton-content"></div>
+        <div className="skeleton-line skeleton-content short"></div>
+      </div>
+    ))}
+  </div>
+) : comments.length === 0 ? (
               <div className="no-comments">
                 <p>No comments yet. Be the first to comment!</p>
               </div>
@@ -3059,54 +3065,71 @@ const CodeBlock = ({ language, value }) => {
           </div>
           </div>
          
-      {blogs.length > 0 && (
+  {(blogs.length > 0 || relatedBlogsLoading) && (
   <div className="simplified-other-blogs-wrapper">
     <h3 className="checkout-other-blogs-heading">Checkout Other Blogs</h3>
-    <div className="minimalist-blogs-grid-container">
-      {blogs.slice(0, 4).map((blog) => (
-       <div
-              key={blog._id}
-              className="blog-card-small"
-              onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
-            >
-          <div className="small-image-wrapper">
-                {blog.featuredImage ? (
-                  <img src={blog.featuredImage} alt={blog.title} className="small-image" />
-                ) : (
-                  <div className="small-placeholder">
-                    <span className="placeholder-text">AT</span>
-                  </div>
-                )}
-              </div>
-         <div className="small-content">
-                <div className="small-meta">
-                  <span className="small-author">{blog.author?.name || 'Anonymous'}</span>
-                  <span className="meta-divider">•</span>
-                  <span className="small-date">
-                    {new Date(blog.publishedAt).toLocaleDateString('en-US', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </span>
+    
+    {/* Show skeleton while loading AND no blogs yet */}
+    {relatedBlogsLoading && blogs.length === 0 ? (
+      <div className="minimalist-blogs-grid-container">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="blog-card-small skeleton-card">
+            <div className="small-image-wrapper skeleton-image"></div>
+            <div className="small-content">
+              <div className="skeleton-line" style={{width: '60%', height: '12px', marginBottom: '8px'}}></div>
+              <div className="skeleton-line" style={{width: '100%', height: '16px', marginBottom: '8px'}}></div>
+              <div className="skeleton-line" style={{width: '80%', height: '12px'}}></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      /* Show actual blogs when loaded */
+      <div className="minimalist-blogs-grid-container">
+        {blogs.slice(0, 4).map((blog) => (
+         <div
+                key={blog._id}
+                className="blog-card-small"
+                onClick={() => navigate(`/blog/${blog.slug || blog._id}`)}
+              >
+            <div className="small-image-wrapper">
+                  {blog.featuredImage ? (
+                    <img src={blog.featuredImage} alt={blog.title} className="small-image" />
+                  ) : (
+                    <div className="small-placeholder">
+                      <span className="placeholder-text">AT</span>
+                    </div>
+                  )}
                 </div>
-                <h3 className="small-title">{blog.title}</h3>
-                <p className="small-summary">{blog.summary}</p>
-                <div className="small-footer">
-                  <div className="small-tags">
-                    {blog.tags && blog.tags.slice(0, 2).map((tag, index) => (
-                      <span key={index} className="small-tag">{tag}</span>
-                    ))}
+           <div className="small-content">
+                  <div className="small-meta">
+                    <span className="small-author">{blog.author?.name || 'Anonymous'}</span>
+                    <span className="meta-divider">•</span>
+                    <span className="small-date">
+                      {new Date(blog.publishedAt).toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </div>
+                  <h3 className="small-title">{blog.title}</h3>
+                  <p className="small-summary">{blog.summary}</p>
+                  <div className="small-footer">
+                    <div className="small-tags">
+                      {blog.tags && blog.tags.slice(0, 2).map((tag, index) => (
+                        <span key={index} className="small-tag">{tag}</span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+            
+          </div>
           
-        </div>
-        
-      ))}
-    </div>
+        ))}
+      </div>
+    )}
   </div>
-  
 )}
 </>
         )}
