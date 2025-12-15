@@ -42,7 +42,7 @@
   margin:auto;
   margin-top:50px;
   position:relative;
-  top:100px;
+  top:50px;
   cursor:pointer;
   height:60px;
 }
@@ -115,15 +115,7 @@
   transform: skew(-15deg, 0)
 }
 
-p{
-  color:#fff;
-  position:absolute;
-  left: -3px;
-  top:45px;
-  font-family:Arial;
-  text-align:center;
-  font-size:10px;
-}
+
 
 @keyframes trans1{ 
   from { 
