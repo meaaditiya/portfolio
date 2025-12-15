@@ -33,10 +33,11 @@ export default function Auth() {
       setRedirectPath(storedRedirect);
     }
     const urlToken = params.get('token');
-    const googleLogin = params.get('google_login');
-    const authError = params.get('error');
+  const googleLogin = params.get('google_login');
+const githubLogin = params.get('github_login');
+const authError = params.get('error');
 
-    if (googleLogin === 'success' && urlToken) {
+if ((googleLogin === 'success' || githubLogin === 'success') && urlToken) {
       localStorage.setItem('token', urlToken);
       fetchProfile(urlToken);
       window.history.replaceState({}, '', window.location.pathname);
@@ -154,7 +155,9 @@ const fetchProfile = async (authToken) => {
   const handleGoogleLogin = () => {
     window.location.href = `${API_BASE}/google`;
   };
-
+const handleGithubLogin = () => {
+  window.location.href = `${API_BASE}/auth/github`;
+};
   const handleRegister = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -1008,6 +1011,39 @@ const fetchProfile = async (authToken) => {
 .auth-avatar:not(.premium).has-image::after {
   display: none;
 }
+  .github-button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  background-color: #24292e;
+  color: white;
+  border: 1px solid #24292e;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.github-button:hover {
+  background-color: #1a1e22;
+  border-color: #000;
+}
+
+.github-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.github-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
     `}</style>
 
       <div className="auth-wrapper">
@@ -1179,6 +1215,12 @@ const fetchProfile = async (authToken) => {
 </svg>
 Continue with Google
 </button>
+<button onClick={handleGithubLogin} disabled={loading} className="github-button">
+  <svg className="github-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+  </svg>
+  Continue with GitHub
+</button>
 <div className="auth-divider">
             <span>OR</span>
           </div>
@@ -1224,7 +1266,12 @@ Continue with Google
             </svg>
             Continue with Google
           </button>
-
+<button onClick={handleGithubLogin} disabled={loading} className="github-button">
+  <svg className="github-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+  </svg>
+  Continue with GitHub
+</button>
           <div className="auth-divider">
             <span>OR</span>
           </div>
