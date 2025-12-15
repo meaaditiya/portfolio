@@ -591,66 +591,80 @@ const handleSearch = async (query) => {
     }
   };
 const loadExcelDataById = async (id) => {
-  const executeLoadExcel = async (token) => {
+  let isPremium = false;
+  const token = localStorage.getItem('token');
+  if (token && isAuthenticated) {
     try {
-      setLoading(true);
-      
-      const urlParams = new URLSearchParams(window.location.search);
-      const accessKey = urlParams.get('key');
-      
-      let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/excel/${id}/data`;
-      if (accessKey) {
-        url += `?key=${accessKey}`;
-      }
-      
-      const tokenObj = localStorage.getItem('token');
-      const headers = {
-        'X-Turnstile-Token': token
-      };
-      
-      if (tokenObj) {
-        headers['Authorization'] = `Bearer ${tokenObj}`;
-      }
-      
-      const res = await fetch(url, { headers });
-      
-      if (res.status === 403) {
-        const data = await res.json();
-        if (data.requiresTurnstile) {
-          showAlert('Verification failed. Please try again.', 'error');
-          navigate('/resources');
-          return;
-        }
-      }
-      
-      if (res.status === 404 || !res.ok) {
-        throw new Error('Failed to load Excel file');
-      }
-      
-      const data = await res.json();
-      
-      setExcelData(data);
-      setViewingExcel({ _id: id, name: data.name || 'Excel File' });
-      setSelectedSheet(data.sheetNames?.[0] || null);
-      setCheckmarkColumns(data.checkmarkFields || []);
-      
-      if (isAuthenticated && data.userCheckmarks) {
-        setExcelCheckmarks(data.userCheckmarks);
-      } else {
-        await loadExcelCheckmarks(id);
-      }
-    } catch (err) {
-      console.error('Error loading List data:', err);
-      showAlert('Failed to load file. Access denied or file not found.', 'error');
-      navigate('/resources');
-    } finally {
-      setLoading(false);
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      isPremium = payload.isPremium || false;
+    } catch (e) {
+      isPremium = false;
     }
-  };
-
- turnstileAction.current = executeLoadExcel;
-setShowTurnstileModal(true);
-
+  }
+ const executeLoadExcel = async (token) => {
+  try {
+    setLoading(true);
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    
+    let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/excel/${id}/data`;
+    if (accessKey) {
+      url += `?key=${accessKey}`;
+    }
+    
+    const tokenObj = localStorage.getItem('token');
+    const headers = {};
+    
+    if (tokenObj) {
+      headers['Authorization'] = `Bearer ${tokenObj}`;
+    }
+    
+    if (token) {
+      headers['X-Turnstile-Token'] = token;
+    }
+    
+    const res = await fetch(url, { headers });
+    
+    if (res.status === 403) {
+      const data = await res.json();
+      if (data.requiresTurnstile) {
+        showAlert('Verification failed. Please try again.', 'error');
+        navigate('/resources');
+        return;
+      }
+    }
+    
+    if (res.status === 404 || !res.ok) {
+      throw new Error('Failed to load Excel file');
+    }
+    
+    const data = await res.json();
+    
+    setExcelData(data);
+    setViewingExcel({ _id: id, name: data.name || 'Excel File' });
+    setSelectedSheet(data.sheetNames?.[0] || null);
+    setCheckmarkColumns(data.checkmarkFields || []);
+    
+    if (isAuthenticated && data.userCheckmarks) {
+      setExcelCheckmarks(data.userCheckmarks);
+    } else {
+      await loadExcelCheckmarks(id);
+    }
+  } catch (err) {
+    console.error('Error loading List data:', err);
+    showAlert('Failed to load file. Access denied or file not found.', 'error');
+    navigate('/resources');
+  } finally {
+    setLoading(false);
+  }
+};
+if (isAuthenticated && isPremium) {
+  executeLoadExcel(null);
+} else {
+  turnstileAction.current = executeLoadExcel;
+  setShowTurnstileModal(true);
+}
 };
  
   const closeExcelView = () => {
@@ -658,8 +672,18 @@ setShowTurnstileModal(true);
   };
 
  const handleItemClick = (item) => {
-  // Check if item has access restrictions
-  if (item.hasAccess === false || item.accessLevel === 'locked') {
+  let isPremium = false;
+  const token = localStorage.getItem('token');
+  if (token && isAuthenticated) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      isPremium = payload.isPremium || false;
+    } catch (e) {
+      isPremium = false;
+    }
+  }
+
+ if ((item.hasAccess === false || item.accessLevel === 'locked') && !isPremium) {
     if (item.canRequestAccess) {
       // Show access request modal
       setShowAccessRequestModal(true);
@@ -687,46 +711,73 @@ setShowTurnstileModal(true);
 };
 
 const handleDownload = async (docId) => {
-  const executeDownload = async (token) => {
+   let isPremium = false;
+  const token = localStorage.getItem('token');
+  if (token && isAuthenticated) {
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const accessKey = urlParams.get('key');
-      
-      const params = new URLSearchParams();
-      
-      if (accessKey) {
-        params.append('key', accessKey);
-      }
-      if (userId) {
-        params.append('userId', userId);
-      }
-      params.append('turnstileToken', token);
-      
-      let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}?${params.toString()}`;
-      
-      const res = await fetch(url);
-      
-      if (res.status === 403) {
-        const data = await res.json();
-        if (data.requiresTurnstile) {
-          showAlert('Verification failed. Please try again.', 'error');
-          return;
-        }
-      }
-      
-      const data = await res.json();
-      if (!data.downloadUrl) throw new Error("No download URL");
-      
-      window.location.href = data.downloadUrl;
-      
-    } catch (err) {
-      console.error("Error downloading:", err);
-      showAlert("Failed to download file. Access denied or file not found.", 'error');
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      isPremium = payload.isPremium || false;
+    } catch (e) {
+      isPremium = false;
     }
-  };
+  }
 
-  turnstileAction.current = executeDownload;
-setShowTurnstileModal(true);
+const executeDownload = async (token) => {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    
+    const params = new URLSearchParams();
+    
+    if (accessKey) {
+      params.append('key', accessKey);
+    }
+    if (userId) {
+      params.append('userId', userId);
+    }
+    if (token) {
+      params.append('turnstileToken', token);
+    }
+    
+    let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}`;
+    const queryString = params.toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+    
+    const authToken = localStorage.getItem('token');  // ✅ GET AUTH TOKEN
+    const headers = {};
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;  // ✅ ADD TO HEADERS
+    }
+    
+    const res = await fetch(url, { headers });  // ✅ PASS HEADERS
+    
+    if (res.status === 403) {
+      const data = await res.json();
+      if (data.requiresTurnstile) {
+        showAlert('Verification failed. Please try again.', 'error');
+        return;
+      }
+    }
+    
+    const data = await res.json();
+    if (!data.downloadUrl) throw new Error("No download URL");
+    
+    window.location.href = data.downloadUrl;
+    
+  } catch (err) {
+    console.error("Error downloading:", err);
+    showAlert("Failed to download file. Access denied or file not found.", 'error');
+  }
+};
+
+if (isAuthenticated && isPremium) {
+    executeDownload(null);
+  } else {
+    turnstileAction.current = executeDownload;
+    setShowTurnstileModal(true);
+  }
 
 };
   const getFileIcon = (item) => {
@@ -1257,10 +1308,27 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
           </tr>
         </thead>
         <tbody>
-       {filteredItems.map((item) => (
+       {(() => {
+              const getIsPremium = () => {
+                let isPremium = false;
+                const token = localStorage.getItem('token');
+                if (token && isAuthenticated) {
+                  try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    isPremium = payload.isPremium || false;
+                  } catch (e) {
+                    isPremium = false;
+                  }
+                }
+                return isPremium;
+              };
+              
+              const isPremiumUser = getIsPremium();
+              
+              return filteredItems.map((item) => (
   <tr 
     key={item._id} 
-    className={`table-row ${(item.hasAccess === false || item.accessLevel === 'locked') ? 'locked-row' : ''}`}
+    className={`table-row ${(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser ? 'locked-row' : ''}`}
     onDoubleClick={() => handleItemClick(item)}
   >
     <td className="td name-cell">
@@ -1275,9 +1343,9 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
           getFileIcon(item)
         )}
         <span className="file-name">{item.name || item.originalName}
-           {(item.hasAccess === false || item.accessLevel === 'locked') && (
-          <FileLock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
-        )}
+        {(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser && (
+  <FileLock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
+)}
         </span>
        
       </div>
@@ -1294,7 +1362,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
       <div className="action-buttons-container">
         {/* Only show action buttons if user has access */}
         
-        {item.hasAccess !== false && item.accessLevel !== 'locked' && (
+        {(item.hasAccess !== false || isPremiumUser) && item.accessLevel !== 'locked' && (
           <>
             {item.bookmarkEnabled && (
               <button
@@ -1353,22 +1421,41 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
             
           </>
         )}
-         {(item.hasAccess === false || item.accessLevel === 'locked') && (
-          <Lock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
-        )}
+        {(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser && (
+  <FileLock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
+)}
       </div>
     </td>
   </tr>
-))}
+       ));
+      })()}
+
         </tbody>
       </table>
     </div>
   ) : (
-    <div className="grid-container">
-      {filteredItems.map((item) => (
+   <div className="grid-container">
+  {(() => {
+    const getIsPremium = () => {
+      let isPremium = false;
+      const token = localStorage.getItem('token');
+      if (token && isAuthenticated) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          isPremium = payload.isPremium || false;
+        } catch (e) {
+          isPremium = false;
+        }
+      }
+      return isPremium;
+    };
+    
+    const isPremiumUser = getIsPremium();
+    
+    return filteredItems.map((item) => (
         <div 
     key={item._id} 
-    className={`grid-item ${(item.hasAccess === false || item.accessLevel === 'locked') ? 'locked-item' : ''}`}
+    className={`grid-item ${(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser ? 'locked-item' : ''}`}
     onDoubleClick={() => handleItemClick(item)}
   >
           {item.bookmarkEnabled && (
@@ -1387,8 +1474,8 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
 
        
 <div className="grid-icon">
-  {item.hasAccess === false || item.accessLevel === 'locked' ? (
-    <div className="locked-item-indicator">
+ {(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser ? (
+  <div className="locked-item-indicator">
       {item.type === 'folder' ? (
         <Folder size={48} className="folder-icon-large locked-icon" />
       ) : item.type === 'link' ? (
@@ -1467,7 +1554,8 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
           </div>
         )}
         </div>
-      ))}
+    ));
+  })()}
     </div>
   )}
   {/* Access Request Modal */}

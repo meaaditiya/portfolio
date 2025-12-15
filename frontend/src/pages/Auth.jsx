@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Edit2, CheckCircle, ChevronRight, X } from 'lucide-react';
+import { Edit2, CheckCircle, ChevronRight,  Crown } from 'lucide-react';
 
 const API_BASE = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
 
@@ -66,32 +66,32 @@ export default function Auth() {
       }
     }
   }, []);
-
-  const fetchProfile = async (authToken) => {
-    try {
-      const response = await fetch(`${API_BASE}/user/profile`, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setUser(data);
-        
-        if (redirectPath) {
-          window.location.href = redirectPath;
-        } else {
-          setView('profile');
-        }
+const fetchProfile = async (authToken) => {
+  try {
+    const response = await fetch(`${API_BASE}/user/profile`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    const data = await response.json();
+    if (response.ok) {
+      setUser(data);
+      
+      if (redirectPath) {
+        localStorage.removeItem("redirect_after_login");
+        window.location.href = redirectPath;
       } else {
-        localStorage.removeItem('token');
-        setView('login');
+        setView('profile');
       }
-    } catch (error) {
-      console.error('Profile fetch failed:', error);
+    } else {
       localStorage.removeItem('token');
       setView('login');
     }
-  };
+  } catch (error) {
+    console.error('Profile fetch failed:', error);
+    localStorage.removeItem('token');
+    setView('login');
+  }
+};
 
   const verifyEmailAuto = async (verifyToken) => {
     try {
@@ -120,39 +120,36 @@ export default function Auth() {
     }
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
-    fetch(`${API_BASE}/user/login`, {
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage('');
+  
+  try {
+    const response = await fetch(`${API_BASE}/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginForm)
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          setUser(data.user);
-          setLoginForm({ email: '', password: '' });
-          
-          if (redirectPath) {
-            localStorage.removeItem("redirect_after_login");
-            window.location.href = redirectPath;
-            
-          } else {
-            setView('profile');
-          }
-        } else {
-          setMessage(data.message || 'Login failed');
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setMessage('Login failed');
-        setLoading(false);
-      });
-  };
+    });
+    
+    const data = await response.json();
+    
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      
+      // Fetch full profile data instead of using partial login response
+      await fetchProfile(data.token);
+      
+      setLoginForm({ email: '', password: '' });
+    } else {
+      setMessage(data.message || 'Login failed');
+    }
+  } catch (error) {
+    setMessage('Login failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGoogleLogin = () => {
     window.location.href = `${API_BASE}/google`;
@@ -287,40 +284,12 @@ export default function Auth() {
     }
   };
 
-const handleLogout = async () => {
-  try {
-    const savedToken = localStorage.getItem('token');
-    
-
-    const response = await fetch(`${API_BASE}/user/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${savedToken}`
-      }
-    });
-
-    const data = await response.json();
-    
-   
+  const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('redirect_after_login');
-    
-   
     setUser(null);
     setView('login');
     setLoginForm({ email: '', password: '' });
-    setMessage('');
-  } catch (error) {
-    console.error('Logout error:', error);
-  
-    localStorage.removeItem('token');
-    localStorage.removeItem('redirect_after_login');
-    setUser(null);
-    setView('login');
-    setLoginForm({ email: '', password: '' });
-  }
-};
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -935,6 +904,110 @@ const handleLogout = async () => {
     font-size: 10px;
   }
 }
+  /* Avatar wrapper to center everything */
+/* Avatar wrapper to center everything */
+.avatar-wrapper {
+  position: relative;
+  display: block;
+  width: fit-content;
+  margin: 0 auto 24px;
+}
+/* Premium ring around avatar */
+/* Premium ring around avatar */
+.auth-avatar.premium {
+  padding: 3px;
+  background: linear-gradient(135deg, #FFD700 0%, #FFED4E 25%, #FFA500 50%, #FFED4E 75%, #FFD700 100%);
+  box-shadow: 
+    0 0 30px rgba(255, 215, 0, 0.6),
+    0 4px 15px rgba(255, 165, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: premiumGlow 3s ease-in-out infinite;
+}
+
+@keyframes premiumGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 30px rgba(255, 215, 0, 0.6),
+      0 4px 15px rgba(255, 165, 0, 0.4),
+      inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 
+      0 0 40px rgba(255, 215, 0, 0.8),
+      0 6px 20px rgba(255, 165, 0, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  }
+}
+
+.auth-avatar.premium::before,
+.auth-avatar.premium::after {
+  display: none;
+}
+
+.auth-avatar.premium .auth-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.auth-avatar.premium.has-image .auth-avatar-inner {
+  background-color: transparent;
+}
+
+/* Premium crown badge - positioned OUTSIDE avatar */
+.premium-crown-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.6);
+  z-index: 10;
+  border: 3px solid white;
+}
+
+.premium-crown-icon {
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Non-premium avatar - keep original structure */
+.auth-avatar:not(.premium)::before {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background-color: #999;
+  border-radius: 50%;
+  top: 10px;
+  z-index: 1;
+}
+
+.auth-avatar:not(.premium)::after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 28px;
+  background-color: #999;
+  border-radius: 50% 50% 0 0;
+  bottom: 14px;
+  z-index: 1;
+}
+
+.auth-avatar:not(.premium).has-image::before,
+.auth-avatar:not(.premium).has-image::after {
+  display: none;
+}
     `}</style>
 
       <div className="auth-wrapper">
@@ -954,15 +1027,36 @@ const handleLogout = async () => {
             <div className="auth-card">
             
 
-              <div className={`auth-avatar ${user.profilePicture ? 'has-image' : ''}`}>
-                {user.profilePicture ? (
-                  <img 
-                    src={user.profilePicture} 
-                    alt={user.name}
-                    className="auth-avatar-image"
-                  />
-                ) : null}
-              </div>
+             <div className="avatar-wrapper">
+  <div className={`auth-avatar ${user.profilePicture ? 'has-image' : ''} ${user.isPremium ? 'premium' : ''}`}>
+    {user.isPremium ? (
+      <div className="auth-avatar-inner">
+        {user.profilePicture ? (
+          <img 
+            src={user.profilePicture} 
+            alt={user.name}
+            className="auth-avatar-image"
+          />
+        ) : null}
+      </div>
+    ) : (
+      <>
+        {user.profilePicture ? (
+          <img 
+            src={user.profilePicture} 
+            alt={user.name}
+            className="auth-avatar-image"
+          />
+        ) : null}
+      </>
+    )}
+  </div>
+  {user.isPremium && (
+    <div className="premium-crown-badge">
+      <Crown size={18} className="premium-crown-icon" />
+    </div>
+  )}
+</div>
 
               <div className="auth-profile-field">
                 <p className="auth-profile-label">Name</p>
