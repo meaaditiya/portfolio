@@ -1637,13 +1637,13 @@ const renderComment = (comment, isReply = false) => {
             <Globe className="pst-icon-sm" />
             <span>Social Media</span>
           </button>
-          <button
+          {/* <button
             className={`pst-tab-button ${activeTab === 'community' ? 'pst-tab-active' : ''}`}
             onClick={() => handleTabChange('community')}
           >
             <User className="pst-icon-sm" />
             <span>Community</span>
-          </button>
+          </button> */}
 
         </div>
       

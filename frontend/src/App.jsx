@@ -50,7 +50,7 @@ const AppContent = () => {
             <Route path="/streampost/:id" element={<StreamPost/>}/>
             <Route path="/posts/:postId" element={<Posts />} />
             <Route path="/social" element={<Posts />} />
-            <Route path="/community" element={<Posts />} />
+            {/* <Route path="/community" element={<Posts />} /> */}
             <Route path="/pagenotfound" element={<NotFound/>}/>
             <Route path="/blogsubmission" element={<UserBlogSubmission/>}/>
             <Route path="/blog/subscribe" element={<Auth/>}/>
