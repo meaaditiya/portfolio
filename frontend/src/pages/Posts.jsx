@@ -166,12 +166,12 @@ useEffect(() => {
   checkAuth();
 }, []);
 const getUserProfilePicture = (comment) => {
-  if (comment.isAuthorComment && comment.authorAdminId) {
-    if (comment.authorHasProfileImage || comment.authorAdminId.profileImage?.data) {
-      return `${API_BASE_URL}/api/admins/${comment.authorAdminId._id}/image`;
-    }
+  // ✅ USE DIRECT URL FROM BACKEND
+  if (comment.isAuthorComment && comment.authorProfileImageUrl) {
+    return comment.authorProfileImageUrl;
   }
-
+  
+  // Fallback for regular users
   if (comment.user?.profilePicture) {
     return comment.user.profilePicture;
   }

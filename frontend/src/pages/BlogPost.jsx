@@ -3549,35 +3549,43 @@ const CodeBlock = ({ language, value }) => {
       ) : authorData ? (
         <div className="author-profile-content">
           {/* Profile Header */}
-          <div className="author-profile-header">
-            {authorData.profileImage?.hasImage ? (
-              <img 
-                src={`${import.meta.env.VITE_APP_BACKEND_URL}/api/admins/${blogPost.author._id}/image`}
-                alt={authorData.name}
-                className="author-profile-image1"
-              />
-            ) : (
-              <div className="author-profile-placeholder1">
-                {authorData.name.charAt(0).toUpperCase()}
-              </div>
-            )}
-            
-            <div className="author-profile-info">
-              <h2 className="author-profile-name">{authorData.name}</h2>
-              {authorData.designation && (
-                <p className="author-profile-designation">{authorData.designation}</p>
-              )}
-              {authorData.location && (
-                <p className="author-profile-location">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                  {authorData.location}
-                </p>
-              )}
-            </div>
-          </div>
+          {/* Profile Header */}
+<div className="author-profile-header">
+  {authorData.profileImage?.url ? (
+    <img 
+      src={authorData.profileImage.url}
+      alt={authorData.name}
+      className="author-profile-image1"
+      onError={(e) => {
+        console.error('Failed to load author image:', authorData.profileImage.url);
+        e.target.style.display = 'none';
+        e.target.nextSibling.style.display = 'flex';
+      }}
+    />
+  ) : null}
+  <div 
+    className="author-profile-placeholder1"
+    style={{ display: authorData.profileImage?.url ? 'none' : 'flex' }}
+  >
+    {authorData.name.charAt(0).toUpperCase()}
+  </div>
+  
+  <div className="author-profile-info">
+    <h2 className="author-profile-name">{authorData.name}</h2>
+    {authorData.designation && (
+      <p className="author-profile-designation">{authorData.designation}</p>
+    )}
+    {authorData.location && (
+      <p className="author-profile-location">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        {authorData.location}
+      </p>
+    )}
+  </div>
+</div>
           
           {/* Bio */}
           {authorData.bio && (

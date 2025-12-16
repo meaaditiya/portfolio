@@ -49,6 +49,8 @@
   color: var(--text-primary);
   line-height: 1.5;
   margin-top:-60px;
+  margin-left:3px;
+  margin-right:3px;
 }
 
 /* Loading Styles */
@@ -3468,6 +3470,7 @@ border: 1px solid rgba(255, 255, 255, 0.2);
   .pst-grid.pst-posts-grid {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 12px !important;
+    
   }
 }
 
