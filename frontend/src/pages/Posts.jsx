@@ -1671,7 +1671,7 @@ const renderComment = (comment, isReply = false) => {
 
       {activeTab === 'posts' && renderPostsContent()}
       {activeTab === 'social' && renderSocialContent()}
-      {activeTab === 'community' && <Community />}
+      {/* {activeTab === 'community' && <Community />} */}
 
       {postLoading && (
         <div className="pst-post-modal">

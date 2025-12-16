@@ -102,8 +102,6 @@ const [commentReactionInProgress, setCommentReactionInProgress] = useState({});
 // Add these state variables at the top of BlogPost component
 const [isLoggedIn, setIsLoggedIn] = useState(false);
 const [loggedInUser, setLoggedInUser] = useState(null);
-const [commentDeletability, setCommentDeletability] = useState({});
-const [authCheckComplete, setAuthCheckComplete] = useState(false);
 // Add these new state variables after your existing state declarations
 const [showReactionUsersModal, setShowReactionUsersModal] = useState(false);
 const [reactionUsers, setReactionUsers] = useState([]);
@@ -115,7 +113,7 @@ const [showCommentReactionUsersModal, setShowCommentReactionUsersModal] = useSta
 const [commentReactionUsers, setCommentReactionUsers] = useState({});
 const [reactionsLoaded, setReactionsLoaded] = useState(false);
 const [commentsReactionsLoaded, setCommentsReactionsLoaded] = useState(false);
-  // Fetch blog post details
+
 useEffect(() => {
   const fetchBlogDetails = async () => {
     setIsLoading(true);
@@ -132,12 +130,10 @@ useEffect(() => {
       
       const data = await response.json();
       
-      // ✅ IMMEDIATELY SET BLOG POST - THIS SHOWS CONTENT INSTANTLY
+    
       setBlogPost(data);
       setUniqueReaders(data.uniqueReaders || 0);
-      setIsLoading(false); // ✅ STOP LOADING SPINNER IMMEDIATELY
-      
-      // ✅ ALL BACKGROUND FETCHES (NON-BLOCKING)
+      setIsLoading(false); 
       const storedInfo = localStorage.getItem('blogUserInfo');
       let parsedInfo = null;
       if (storedInfo) {
@@ -280,61 +276,75 @@ useEffect(() => {
 }, [blogPost]);
 // Add this useEffect after your existing useEffects
 // Check authentication on component mount
+// REPLACE your checkAuth useEffect in BlogPost.jsx with this:
+
 useEffect(() => {
   const checkAuth = async () => {
-    const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
-    
-    if (token) {
-      try {
-        // Verify token with your backend
-        const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/verify`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        if (response.data.user) {
-          setIsLoggedIn(true);
-          setLoggedInUser(response.data.user);
-          
-          // Pre-fill forms with logged-in user data
-          setUserForm({
-            name: response.data.user.name,
-            email: response.data.user.email
-          });
-          setCommentForm(prev => ({
-            ...prev,
-            name: response.data.user.name,
-            email: response.data.user.email
-          }));
-          setReplyForm(prev => ({
-            ...prev,
-            name: response.data.user.name,
-            email: response.data.user.email
-          }));
-          
-          console.log('User authenticated:', response.data.user.name);
-        }
-      } catch (err) {
-        console.log('Not authenticated or token expired');
+    try {
+      const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      
+      console.log('🔍 Checking auth, token:', token ? 'EXISTS' : 'NOT FOUND');
+      
+      if (!token) {
+        console.log('❌ No token');
         setIsLoggedIn(false);
         setLoggedInUser(null);
-        
-        // Clear token if invalid
-        localStorage.removeItem('token');
-        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        return;
       }
+
+      // Call your /verify endpoint
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/verify`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 5000
+        }
+      );
+
+      console.log('📡 Verify response:', response.data);
+
+      if (response.data.isValid && response.data.user) {
+        console.log('✅ User authenticated:', response.data.user.name);
+        setIsLoggedIn(true);
+        setLoggedInUser({
+          userId: response.data.user.id,
+          _id: response.data.user.id,
+          name: response.data.user.name,
+          email: response.data.user.email
+        });
+        
+        // Also set comment form
+        setCommentForm(prev => ({
+          ...prev,
+          name: response.data.user.name,
+          email: response.data.user.email
+        }));
+      } else {
+        console.log('❌ Token invalid');
+        setIsLoggedIn(false);
+        setLoggedInUser(null);
+      }
+    } catch (err) {
+      console.error('❌ Auth check error:', err.message);
+      setIsLoggedIn(false);
+      setLoggedInUser(null);
     }
   };
   
   checkAuth();
 }, []);
 const getUserProfilePicture = (comment) => {
-  
+  // For author comments - use the profile image URL directly
   if (comment.isAuthorComment && comment.authorAdminId) {
-    if (comment.authorHasProfileImage || comment.authorAdminId.profileImage?.data) {
-      return `${import.meta.env.VITE_APP_BACKEND_URL}/api/admins/${comment.authorAdminId._id}/image`;
+    if (comment.authorAdminId.profileImage?.secureUrl) {
+      return comment.authorAdminId.profileImage.secureUrl;
+    }
+    if (comment.authorAdminId.profileImage?.url) {
+      return comment.authorAdminId.profileImage.url;
     }
   }
- 
+  
+  // For regular user comments - use their profile picture
   if (comment.user?.profilePicture) {
     return comment.user.profilePicture;
   }
@@ -737,26 +747,18 @@ const handleCommentSubmit = async (e) => {
     setCommentSubmitting(false);
   }
 };
-  // Add this function to handle comment deletion
-  const handleDeleteComment = async () => {
+ const handleDeleteComment = async () => {
   if (!commentToDelete) return;
 
   setDeleteCommentLoading(commentToDelete.id);
   
-  // Get token for authenticated users
   const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
-  
-  // Determine which email to use
-  let emailToUse = commentToDelete.email;
-  if (isLoggedIn && loggedInUser) {
-    emailToUse = loggedInUser.email;
-  }
   
   try {
     await axios.delete(
       `${import.meta.env.VITE_APP_BACKEND_URL}/api/comments/${commentToDelete.id}/user`,
       { 
-        data: { email: emailToUse },
+        data: { email: commentToDelete.email },
         headers: {
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` })
@@ -764,25 +766,21 @@ const handleCommentSubmit = async (e) => {
       }
     );
     
-    // Find if this is a reply being deleted
     const isReply = Object.values(commentReplies).some(replies => 
       replies.some(reply => reply._id === commentToDelete.id)
     );
     
     if (isReply) {
-      // Find the parent comment and refresh its replies
       const parentCommentId = Object.keys(commentReplies).find(commentId =>
         commentReplies[commentId].some(reply => reply._id === commentToDelete.id)
       );
       
       if (parentCommentId) {
-        // Remove the deleted reply from state immediately
         setCommentReplies(prev => ({
           ...prev,
           [parentCommentId]: prev[parentCommentId].filter(reply => reply._id !== commentToDelete.id)
         }));
         
-        // Update the reply count in the main comments list
         setComments(prevComments => 
           prevComments.map(comment => 
             comment._id === parentCommentId 
@@ -791,11 +789,9 @@ const handleCommentSubmit = async (e) => {
           )
         );
         
-        // Also refresh the parent comment to get accurate reply count from server
         fetchReplies(parentCommentId);
       }
     } else {
-      // This is a main comment, refresh the main comments list
       if (blogPost && blogPost._id) {
         const userInfoForRefresh = isLoggedIn ? {
           name: loggedInUser.name,
@@ -805,15 +801,13 @@ const handleCommentSubmit = async (e) => {
       }
     }
     
-    // Close modal and reset state
     setShowDeleteModal(false);
     setCommentToDelete(null);
   } catch (err) {
     console.error('Error deleting comment:', err);
     
-    // Show appropriate error message
     const errorMessage = err.response?.status === 403 
-      ? 'You can only delete your own comments.'
+      ? err.response?.data?.message || 'You can only delete your own comments.'
       : err.response?.data?.message || 'Failed to delete comment. Please try again.';
     
     alert(errorMessage);
@@ -822,7 +816,7 @@ const handleCommentSubmit = async (e) => {
   }
 };
 
- const loadRepliesReactions = async (replies) => {
+const loadRepliesReactions = async (replies) => {
   if (replies && replies.length > 0) {
     const currentStoredInfo = localStorage.getItem('blogUserInfo');
     let currentUserInfo = null;
@@ -850,6 +844,7 @@ const handleCommentSubmit = async (e) => {
     ]).catch(err => console.error('Error loading reply reactions:', err));
   }
 };
+
 
   // Add this function to cancel deletion
   const cancelDelete = () => {
@@ -1189,19 +1184,17 @@ Read the full article here 👇`
     };
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
-
-  const toggleReplies = (commentId) => {
-    setShowReplies(prev => {
-      const newState = { ...prev, [commentId]: !prev[commentId] };
-      
-      // If showing replies and not loaded yet, fetch them
-      if (newState[commentId] && !commentReplies[commentId]) {
-        fetchReplies(commentId);
-      }
-      
-      return newState;
-    });
-  };
+const toggleReplies = (commentId) => {
+  setShowReplies(prev => {
+    const newState = { ...prev, [commentId]: !prev[commentId] };
+    
+    if (newState[commentId] && !commentReplies[commentId]) {
+      fetchReplies(commentId);
+    }
+    
+    return newState;
+  });
+};
 
   // Handle reply form change
   const handleReplyFormChange = (e) => {
@@ -1345,15 +1338,27 @@ const handleReplySubmit = async (e, commentId) => {
       [commentId]: response.data.replies
     }));
     
-    // Load reactions for the replies
-    await loadRepliesReactions(response.data.replies);
+    // Load reactions for replies in background
+    if (response.data.replies.length > 0) {
+      const replyIds = response.data.replies.map(r => r._id);
+      const currentUserInfo = isLoggedIn && loggedInUser 
+        ? { email: loggedInUser.email, name: loggedInUser.name }
+        : storedUserInfo;
+      
+      replyIds.forEach(id => {
+        fetchCommentReactions(id).catch(err => console.log('Reply reaction failed:', err));
+        
+        if (currentUserInfo?.email) {
+          checkUserCommentReaction(id, currentUserInfo.email).catch(err => console.log('User reaction check failed:', err));
+        }
+      });
+    }
   } catch (err) {
     console.error('Error fetching replies:', err);
   } finally {
     setRepliesLoading(prev => ({ ...prev, [commentId]: false }));
   }
 };
-
   // Fetch comment reactions
   const fetchCommentReactions = async (commentId) => {
     try {
@@ -1537,8 +1542,65 @@ const submitCommentReaction = async (commentId, type, userInfo) => {
     setCommentReactionLoading(null);
   }
 };
-  // Update your existing fetchComments function to also fetch reactions
 
+
+
+const canUserDeleteComment = (comment) => {
+  // Don't allow deleting author comments
+  if (comment.isAuthorComment) {
+    return false;
+  }
+  
+  // If user is logged in
+  if (isLoggedIn && loggedInUser) {
+    const loggedInUserId = String(loggedInUser.userId || loggedInUser._id || loggedInUser.user_id || '').trim();
+    const commentUserId = String(comment.user.userId || '').trim();
+    const loggedInEmail = String(loggedInUser.email || '').toLowerCase().trim();
+    const commentEmail = String(comment.user.email || '').toLowerCase().trim();
+    
+    // ✅ DETAILED LOGGING FOR DEBUGGING
+    console.log('🔍 DELETE PERMISSION CHECK:', {
+      loggedInUserId,
+      commentUserId,
+      userIdMatch: loggedInUserId === commentUserId,
+      loggedInEmail,
+      commentEmail,
+      emailMatch: loggedInEmail === commentEmail,
+      canDelete: loggedInUserId === commentUserId || (commentEmail && loggedInEmail === commentEmail)
+    });
+    
+    // Check if user owns this comment (by userId OR email)
+    if (loggedInUserId && commentUserId && loggedInUserId === commentUserId) {
+      return true; // Owns by user ID
+    }
+    
+    if (loggedInEmail && commentEmail && loggedInEmail === commentEmail) {
+      return true; // Owns by email
+    }
+    
+    return false;
+  }
+  
+  // Guest user can only delete guest comments with matching email
+  if (!isLoggedIn && storedUserInfo?.email) {
+    const storedEmail = String(storedUserInfo.email || '').toLowerCase().trim();
+    const commentEmail = String(comment.user.email || '').toLowerCase().trim();
+    
+    // Can only delete if:
+    // 1. Comment is NOT from an authenticated user (no userId)
+    // 2. Email matches
+    if (!comment.user.userId && storedEmail === commentEmail) {
+      return true;
+    }
+    return false;
+  }
+  
+  return false;
+};
+
+// ADD THIS HERE - RIGHT AFTER THE FUNCTION
+console.log('loggedInUser structure:', loggedInUser);
+  // Update your existing fetchComments function to also fetch reactions
 const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => {
   setCommentsLoading(true);
   
@@ -1548,7 +1610,6 @@ const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => 
       { params: { page, limit: 5 } }
     );
     
-    // ✅ SHOW COMMENTS IMMEDIATELY
     setComments(response.data.comments);
     setVisibleCommentsCount(2);
     setCommentPagination({
@@ -1556,17 +1617,15 @@ const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => 
       pages: response.data.pagination.pages,
       total: response.data.pagination.total
     });
-    setCommentsLoading(false); // ✅ STOP SPINNER IMMEDIATELY
+    setCommentsLoading(false);
     
     const currentUserInfo = userInfo || 
                            storedUserInfo || 
                            (isLoggedIn && loggedInUser ? { email: loggedInUser.email, name: loggedInUser.name } : null);
     
-    // ✅ LOAD REACTIONS IN BACKGROUND (NON-BLOCKING)
     if (response.data.comments.length > 0) {
       const commentIds = response.data.comments.map(c => c._id);
       
-      // Fire all promises without blocking
       commentIds.forEach(id => {
         fetchCommentReactions(id).catch(err => console.log('Comment reaction failed:', err));
         
@@ -1574,15 +1633,13 @@ const fetchCommentsWithReactions = async (blogId, page = 1, userInfo = null) => 
           checkUserCommentReaction(id, currentUserInfo.email).catch(err => console.log('User reaction check failed:', err));
         }
       });
-      
-      batchVerifyCommentOwnership(response.data.comments, currentUserInfo)
-        .catch(err => console.log('Ownership verification failed:', err));
     }
   } catch (err) {
     console.error('Error fetching comments:', err);
     setCommentsLoading(false);
   }
 };
+
   // Handle report form change
 const handleReportFormChange = (e) => {
   const { name, value } = e.target;
@@ -1681,59 +1738,8 @@ const closeSummaryPopup = () => {
   setGeneratedSummary('');
   setSummaryError(null);
 };
-// NEW: Verify comment ownership securely
-const verifyCommentOwnership = async (commentId, userEmail) => {
-  try {
-    const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
-    
-    const response = await axios.post(
-      `${import.meta.env.VITE_APP_BACKEND_URL}/api/comments/${commentId}/verify-ownership`,
-      { email: userEmail },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        withCredentials: true
-      }
-    );
-    
-    return response.data.canDelete;
-  } catch (error) {
-    console.error('Error verifying comment ownership:', error);
-    return false;
-  }
-};
-const batchVerifyCommentOwnership = async (comments, userInfo = null) => {
-  const userEmail = userInfo?.email || 
-                    (isLoggedIn && loggedInUser ? loggedInUser.email : null) || 
-                    storedUserInfo?.email;
-  console.log('🔍 Batch verifying comments for email:', userEmail);
-  
-  if (!userEmail) {
-    console.log('❌ No user email available for verification');
-    return; 
-  }
-  const verificationPromises = comments.map(async (comment) => {
-    const canDelete = await verifyCommentOwnership(comment._id, userEmail);
-    console.log(`Comment ${comment._id} deletable:`, canDelete);
-    return { commentId: comment._id, canDelete };
-  });
-  const results = await Promise.all(verificationPromises);
-  
-  const deletabilityMap = {};
-  results.forEach(({ commentId, canDelete }) => {
-    deletabilityMap[commentId] = canDelete;
-  });
-  
-  console.log('✅ New deletability entries:', deletabilityMap);
-  
-  // MERGE with existing state instead of replacing
-  setCommentDeletability(prev => ({
-    ...prev,
-    ...deletabilityMap
-  }));
-};
+
+
   // Custom component to render content with inline images and videos
   const renderContentWithMedia = (content) => {
     if (!content) return null;
@@ -2003,6 +2009,7 @@ const fetchAuthorProfile = async (authorId) => {
       `${import.meta.env.VITE_APP_BACKEND_URL}/api/admins/${authorId}/public`
     );
     setAuthorData(response.data.admin);
+   
   } catch (err) {
     console.error('Error fetching author profile:', err);
     setAuthorData(null);
@@ -2546,6 +2553,8 @@ const CodeBlock = ({ language, value }) => {
               >
                 {showCommentForm ? 'Cancel' : 'Add Comment'}
               </button>
+              {/* TEMPORARY DEBUG BUTTON */}
+
             </div>
             
             {/* Comment form */}
@@ -2707,9 +2716,7 @@ const CodeBlock = ({ language, value }) => {
         <span className="comment-date">{formatDate(comment.createdAt)}</span>
       </div>
     </div>
-                          
-                        {/* Show delete button only for non-author comments and if verified ownership */}
-{!comment.isAuthorComment && commentDeletability[comment._id] === true && (
+{canUserDeleteComment(comment) && (
   <button
     className="delete-comment-btn"
     onClick={() => showDeleteConfirmation(comment._id, comment.user.email)}
@@ -2945,7 +2952,7 @@ const CodeBlock = ({ language, value }) => {
       </div>
     </div>
                                        {/* Delete button for user's own replies with verified ownership */}
-{!reply.isAuthorComment && commentDeletability[reply._id] === true && (
+{canUserDeleteComment(reply) && (
   <button
     className="delete-reply-btn"
     onClick={() => showDeleteConfirmation(reply._id, reply.user.email)}
@@ -2969,15 +2976,16 @@ const CodeBlock = ({ language, value }) => {
                                             disabled={commentReactionLoading === reply._id}
                                           >
                                             {userCommentReactions[reply._id] === 'like' ? <FaThumbsUp /> : <FaRegThumbsUp />}
-                                            <span>{commentReactions[reply._id]?.likes || 0}</span>
+                                           
                                           </button>
+                                           <span className='like-count3'>{commentReactions[reply._id]?.likes || 0}</span>
                                           <button
                                             className={`reaction-btn2 ${userCommentReactions[reply._id] === 'dislike' ? 'active' : ''}`}
                                             onClick={() => handleCommentReaction(reply._id, 'dislike')}
                                             disabled={commentReactionLoading === reply._id}
                                           >
                                             {userCommentReactions[reply._id] === 'dislike' ? <FaThumbsDown /> : <FaRegThumbsDown />}
-                                            <span>{commentReactions[reply._id]?.dislikes || 0}</span>
+                                            
                                           </button>
                                         </div>
                                       </div>

@@ -195,9 +195,10 @@
 
 .blog-reactions {
   display: flex;
-  margin: 0rem 2rem 2rem;
-  padding-top: 1.5rem;
  
+  padding-top: 1.5rem;
+ position: relative;
+
    justify-content: center;
   width: 100%;
 }
@@ -589,7 +590,7 @@
   .blog-post-meta,
   .blog-post-tags,
   .blog-post-content,
-  .blog-reactions,
+ 
   .blog-comments {
     margin-left: 1.5rem;
     margin-right: 1.5rem;
@@ -1395,7 +1396,7 @@
   }
   
   .reply-form-actions {
-    flex-direction: column;
+   
     gap: 0.5rem;
   }
   
@@ -3795,11 +3796,6 @@ body.modal-open {
   }
 
  
-  .blog-reactions {
-    max-width: 850px;
-    margin: 3rem auto 2rem;
-    padding: 1.5rem 2rem 0;
-  }
 
  
   .blog-comments {
@@ -3819,7 +3815,7 @@ body.modal-open {
   .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
-  .blog-reactions,
+  
   .blog-comments {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -3860,7 +3856,7 @@ body.modal-open {
   .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
-  .blog-reactions,
+
   .blog-comments {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
@@ -3901,7 +3897,7 @@ body.modal-open {
   .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
-  .blog-reactions,
+ 
   .blog-comments {
     padding-left: 3rem;
     padding-right: 3rem;
@@ -3982,7 +3978,7 @@ body.modal-open {
   .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
-  .blog-reactions,
+ 
   .blog-comments {
     max-width: 918px;
     padding-left: 3rem;
@@ -4000,7 +3996,7 @@ body.modal-open {
   .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
-  .blog-reactions,
+  
   .blog-comments {
     max-width: 1000px;
     padding-left: 3rem;
@@ -4043,7 +4039,7 @@ body.modal-open {
   .cnt-actions2,
   .cnt-query-buttons,
   .blog-share,
-  .blog-reactions,
+ 
   .blog-comments {
     max-width: 1100px;
     padding-left: 3.5rem;
@@ -5222,6 +5218,11 @@ code:not(.minimal-code-text) {
   position: relative;
   top:-1px;
 }
+.like-count3{
+  font-weight:600;
+  position: relative;
+  right:5px;
+}
 .blog-post-content h2 {
   font-size: 1.8rem;
   margin: 2rem 0 1rem;
@@ -5300,5 +5301,294 @@ code:not(.minimal-code-text) {
   }
   50% {
     opacity: 0.5;
+  }
+}
+/* ===================================
+   MINIMAL COMMENT & REPLY FORMS
+   =================================== */
+
+/* Comment Form - Ultra Minimal */
+.comment-form {
+  background-color: transparent !important;
+  padding: 1rem !important;
+  border-radius: 0 !important;
+  margin-bottom: 1.5rem !important;
+  border: none !important;
+ 
+}
+
+/* Reply Form - Ultra Minimal */
+.reply-form {
+  margin-top: 0.75rem !important;
+  padding: 1rem !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-top: 1px solid #e9ecef !important;
+  border-radius: 0 !important;
+}
+
+/* Form Groups - Tighter Spacing */
+.comment-form .form-group,
+.reply-form .form-group {
+  margin-bottom: 0.75rem !important;
+}
+
+/* Labels - Smaller, Minimal */
+.comment-form .form-group label,
+.reply-form .form-group label {
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  color: #666 !important;
+  margin-bottom: 0.35rem !important;
+}
+
+/* Input Fields - Minimal Style */
+.comment-form .form-group input,
+.comment-form .form-group textarea,
+.reply-form .form-group input,
+.reply-form .form-group textarea {
+  padding: 0.5rem 0.65rem !important;
+  font-size: 0.85rem !important;
+ font-weight: 550;
+  border-radius: 4px !important;
+  background-color: #fff !important;
+}
+
+.comment-form .form-group textarea,
+.reply-form .form-group textarea {
+  min-height: 70px !important;
+}
+
+/* Character Count - Smaller */
+.character-count {
+  font-size: 0.7rem !important;
+  color: #999 !important;
+  margin-top: 0.25rem !important;
+}
+
+/* Submit Buttons - VERY SMALL */
+.submit-comment,
+.reply-form-actions .btn {
+  padding: 0.4rem 0.9rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+  border: 1px solid #dee2e6 !important;
+  background: #fff !important;
+  color: #333 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.submit-comment:hover,
+.reply-form-actions .btn:hover {
+  background: #f8f9fa !important;
+  border-color: #000 !important;
+  color: #000 !important;
+}
+
+.submit-comment.btn-primary,
+.reply-form-actions .btn.btn-primary {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+
+.submit-comment.btn-primary:hover,
+.reply-form-actions .btn.btn-primary:hover {
+  background: #333 !important;
+  border-color: #333 !important;
+}
+
+/* Reply Form Actions - Aligned Right, Small Gap */
+.reply-form-actions {
+  display: flex !important;
+  gap: 0.4rem !important;
+  justify-content: flex-end !important;
+  margin-top: 0.75rem !important;
+}
+
+/* User Badge - Minimal */
+.logged-in-user-info {
+  margin-bottom: 0.75rem !important;
+  padding: 0.5rem 0.75rem !important;
+  background: transparent !important;
+  border: 1px solid #e9ecef !important;
+  border-radius: 4px !important;
+}
+
+.user-badge {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  font-size: 0.8rem !important;
+  color: #666 !important;
+}
+
+.user-badge svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.user-badge strong {
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+/* Guest Login Prompt - Minimal */
+.guest-login-prompt {
+  margin: 0.75rem 0 !important;
+  text-align: center !important;
+}
+
+.login-link-btn {
+  padding: 0.4rem 0.8rem !important;
+  font-size: 0.75rem !important;
+  gap: 0.35rem !important;
+  border: 1px solid #dee2e6 !important;
+  background: #fff !important;
+  color: #333 !important;
+  border-radius: 4px !important;
+}
+
+.login-link-btn:hover {
+  background: #f8f9fa !important;
+  border-color: #000 !important;
+  color: #000 !important;
+}
+
+.login-link-btn svg {
+  width: 13px !important;
+  height: 13px !important;
+}
+
+/* Comment Card - Proper Avatar Alignment */
+.comment-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  margin-bottom: 0.6rem !important;
+}
+
+.comment-author-info {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  gap: 0 !important;
+  flex: 1 !important;
+}
+
+
+
+
+.comment-author-text {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  align-items: flex-start !important;
+}
+
+.comment-author {
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  color: #212529 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.comment-date {
+  font-size: 0.75rem !important;
+  color: #868e96 !important;
+}
+
+/* Reply Card - Proper Avatar Alignment */
+.reply-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  margin-bottom: 0.6rem !important;
+}
+
+
+
+.reply-date {
+  font-size: 0.7rem !important;
+  color: #868e96 !important;
+}
+
+/* Error/Success Messages - Minimal */
+.error-message,
+.success-message {
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 4px !important;
+  margin-bottom: 0.75rem !important;
+  font-size: 0.8rem !important;
+}
+
+/* ===================================
+   MOBILE RESPONSIVE
+   =================================== */
+
+@media (max-width: 768px) {
+  .comment-form,
+  .reply-form {
+    padding: 0.75rem !important;
+  }
+  
+  .submit-comment,
+  .reply-form-actions .btn {
+    padding: 0.35rem 0.75rem !important;
+    font-size: 0.7rem !important;
+  }
+  
+  .comment-user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    margin-right: 8px !important;
+  }
+  
+  .comment-avatar-placeholder {
+    font-size: 13px !important;
+  }
+  
+  .reply-user-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    margin-right: 7px !important;
+  }
+  
+  .reply-avatar-placeholder {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .comment-form,
+  .reply-form {
+    padding: 0.5rem !important;
+  }
+  
+  .submit-comment,
+  .reply-form-actions .btn {
+    padding: 0.3rem 0.65rem !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .reply-form-actions {
+    gap: 0.3rem !important;
+  }
+  
+  .comment-form .form-group label,
+  .reply-form .form-group label {
+    font-size: 0.7rem !important;
+  }
+  
+  .comment-form .form-group input,
+  .comment-form .form-group textarea,
+  .reply-form .form-group input,
+  .reply-form .form-group textarea {
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.55rem !important;
   }
 }
