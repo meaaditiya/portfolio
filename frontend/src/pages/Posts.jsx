@@ -219,8 +219,8 @@ const getInitials = (name) => {
     }
 const post = {
   ...detailData.post,
-  media: `${API_BASE_URL}${detailData.post.media}`,
-  thumbnail: detailData.post.thumbnail ? `${API_BASE_URL}${detailData.post.thumbnail}` : null,
+  media: detailData.post.mediaUrl, 
+  thumbnail: detailData.post.thumbnailUrl,
   comments: detailData.comments,
   hasReacted: hasReacted,
 };
@@ -359,14 +359,13 @@ const fetchPosts = async () => {
           }
         }
 
-        return {
-          ...detailData.post,
-          // Prepend API base URL to media paths
-          media: `${API_BASE_URL}${detailData.post.media}`,
-          thumbnail: detailData.post.thumbnail ? `${API_BASE_URL}${detailData.post.thumbnail}` : null,
-          comments: detailData.comments,
-          hasReacted: hasReacted,
-        };
+       return {
+  ...detailData.post,
+  media: detailData.post.mediaUrl, 
+  thumbnail: detailData.post.thumbnailUrl,
+  comments: detailData.comments,
+  hasReacted: hasReacted,
+};
       })
     );
       
