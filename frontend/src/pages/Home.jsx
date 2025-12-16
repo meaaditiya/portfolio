@@ -57,7 +57,7 @@ const { liveCount, visitorStats, isConnected } = useVisitor();
       }
     };
 
-  const fetchAnnouncements = async (isManualOpen = false) => {
+ const fetchAnnouncements = async (isManualOpen = false) => {
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/announcement/active`);
     if (response.ok) {
@@ -65,40 +65,23 @@ const { liveCount, visitorStats, isConnected } = useVisitor();
       console.log('Announcements data:', data);
       
       if (data.announcements && data.announcements.length > 0) {
-        // Sort announcements by priority
         const sortedAnnouncements = [...data.announcements].sort((a, b) => {
           const priorityA = a.priority || 999;
           const priorityB = b.priority || 999;
           return priorityA - priorityB;
         });
         
-        // Store announcements WITH renderedCaption
         setAnnouncements(sortedAnnouncements);
         setHasAnnouncements(true);
         
-        // Create direct image URLs
-        const imageMap = {};
-        sortedAnnouncements.forEach(announcement => {
-          if (announcement.hasImage) {
-            imageMap[announcement._id] = `${import.meta.env.VITE_APP_BACKEND_URL}/api/announcement/${announcement._id}/image`;
-            console.log(`Image URL set for ${announcement._id}:`, imageMap[announcement._id]);
-          }
-        });
-        
-        console.log('Final image map:', imageMap);
-        setAnnouncementImages(imageMap);
-        
-        // Only auto-show if NOT manually opened AND not blocked by snooze
         if (!isManualOpen && !isAutoPopupBlocked()) {
           setShowAnnouncementOverlay(true);
           setCurrentAnnouncementIndex(0);
           
-          // Auto-hide after 30 seconds
           setTimeout(() => {
             setShowAnnouncementOverlay(false);
           }, 30000);
         } else if (isManualOpen) {
-          // Manual open - always show
           setShowAnnouncementOverlay(true);
           setCurrentAnnouncementIndex(0);
         } else {
@@ -582,15 +565,19 @@ const renderAnnouncementContent = (announcement) => {
           {renderAnnouncementContent(currentAnnouncement)}
           
           {/* Featured Image */}
-          {currentAnnouncement.hasImage && announcementImages[currentAnnouncement._id] && (
-            <div className="announcement_image_wrapper_unique_2024">
-              <img 
-                src={announcementImages[currentAnnouncement._id]}
-                alt={currentAnnouncement.title}
-                className="announcement_image_unique_2024"
-              />
-            </div>
-          )}
+       {currentAnnouncement.imageUrl && (
+  <div className="announcement_image_wrapper_unique_2024">
+    <img 
+      src={currentAnnouncement.imageUrl}
+      alt={currentAnnouncement.title}
+      className="announcement_image_unique_2024"
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.style.display = 'none';
+      }}
+    />
+  </div>
+)}
           <div className="announcement_links_container_2024">
   
   {/* External Link */}
@@ -606,16 +593,17 @@ const renderAnnouncementContent = (announcement) => {
   )}
 
   {/* Document Download */}
-  {currentAnnouncement.hasDocument && (
-    <a 
-      href={`${import.meta.env.VITE_APP_BACKEND_URL}/api/announcement/${currentAnnouncement._id}/document`}
-      download
-      className="announcement_document_link_unique_2024"
-    >
-      <FileText size={16} />
-      Download Document
-    </a>
-  )}
+  {currentAnnouncement.documentUrl && (
+  <a 
+    href={currentAnnouncement.documentUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="announcement_document_link_unique_2024"
+  >
+    <FileText size={16} />
+    Download Document
+  </a>
+)}
 
 </div>
 
