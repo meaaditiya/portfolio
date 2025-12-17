@@ -38,18 +38,19 @@ createRoot(document.getElementById('root')).render(
   <App/>
 );
 window.OneSignalDeferred.push(async function (OneSignal) {
-  const isSubscribed = await OneSignal.isPushNotificationsEnabled();
+  const optedIn = OneSignal.User?.PushSubscription?.optedIn;
 
-  if (!isSubscribed) {
+  if (!optedIn) {
     const modal = document.getElementById("push-modal");
     if (modal) modal.style.display = "block";
   }
 });
+
 document.addEventListener("click", (e) => {
   if (e.target.id === "push-allow") {
     window.OneSignalDeferred.push(async function (OneSignal) {
       OneSignal.setConsentGiven(true);
-      OneSignal.showSlidedownPrompt();
+      await OneSignal.User.PushSubscription.optIn();
     });
 
     document.getElementById("push-modal")?.remove();
@@ -59,3 +60,4 @@ document.addEventListener("click", (e) => {
     document.getElementById("push-modal")?.remove();
   }
 });
+
