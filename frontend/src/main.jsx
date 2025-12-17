@@ -37,27 +37,3 @@ if ('serviceWorker' in navigator) {
 createRoot(document.getElementById('root')).render(
   <App/>
 );
-window.OneSignalDeferred.push(async function (OneSignal) {
-  const optedIn = OneSignal.User?.PushSubscription?.optedIn;
-
-  if (!optedIn) {
-    const modal = document.getElementById("push-modal");
-    if (modal) modal.style.display = "block";
-  }
-});
-
-document.addEventListener("click", (e) => {
-  if (e.target.id === "push-allow") {
-    window.OneSignalDeferred.push(async function (OneSignal) {
-      OneSignal.setConsentGiven(true);
-      await OneSignal.User.PushSubscription.optIn();
-    });
-
-    document.getElementById("push-modal")?.remove();
-  }
-
-  if (e.target.id === "push-later") {
-    document.getElementById("push-modal")?.remove();
-  }
-});
-
