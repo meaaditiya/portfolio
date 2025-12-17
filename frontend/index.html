@@ -55,99 +55,144 @@
    <div id="push-modal" style="
   display: none;
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  padding: 28px;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f5f3f0 0%, #faf8f6 100%);
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.08);
   z-index: 9999;
-  max-width: 380px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  width: 90%;
+  max-width: 680px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-  animation: slideInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: slideInDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 ">
   <style>
-    @keyframes slideInUp {
+    @keyframes slideInDown {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateX(-50%) translateY(-30px);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(-50%) translateY(0);
       }
     }
-
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
-
-    #push-modal p {
+    .push-container {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    .push-image {
+      flex-shrink: 0;
+    }
+    .push-image img {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    .push-content {
+      flex: 1;
+    }
+    #push-modal h2 {
       margin: 0 0 8px 0;
-      font-size: 16px;
-      font-weight: 500;
-      color: #1a1a1a;
+      font-size: 18px;
+      font-weight: 700;
+      color: #2a2a2a;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.4px;
     }
-
-    #push-modal::before {
-      content: '🔔';
-      display: block;
-      font-size: 32px;
-      margin-bottom: 12px;
-      animation: pulse 2s ease-in-out infinite;
+    #push-modal p {
+      margin: 0 0 16px 0;
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
     }
-
+    .push-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
     #push-allow, #push-later {
       font-family: inherit;
       border: none;
-      border-radius: 10px;
-      padding: 12px 20px;
-      font-size: 14px;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-      margin-right: 10px;
-      margin-top: 16px;
     }
-
     #push-allow {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #1a1a1a;
       color: white;
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      flex: 0;
+      min-width: auto;
     }
-
     #push-allow:hover {
+      background: #333;
       transform: translateY(-2px);
-      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
     }
-
     #push-allow:active {
       transform: translateY(0px);
     }
-
     #push-later {
-      background: rgba(0, 0, 0, 0.04);
-      color: #666;
+      background: #2a2a2a;
+      color: white;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      flex: 0;
+      min-width: auto;
     }
-
     #push-later:hover {
-      background: rgba(0, 0, 0, 0.08);
-      color: #333;
+      background: #444;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
     }
-
     #push-later:active {
-      background: rgba(0, 0, 0, 0.06);
+      background: #333;
+      transform: translateY(0px);
     }
   </style>
-
-  <p>Get updates and notifications.</p>
-  <button id="push-allow">Subscribe</button>
-  <button id="push-later">Later</button>
+  <div class="push-container">
+    <div class="push-image">
+      <img src="https://res.cloudinary.com/dd6sedo9n/image/upload/v1765902366/uploads/images/pwycue37vxgpvxusim57.jpg" alt="Notification">
+    </div>
+    <div class="push-content">
+      <h2>Enable Notifications</h2>
+      <p>Get the latest updates and important notifications delivered directly to your device.</p>
+      <div class="push-buttons">
+        <button id="push-allow">Subscribe</button>
+        <button id="push-later">Later</button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  setTimeout(() => {
+    document.getElementById('push-modal').style.display = 'block';
+  }, 3000);
+
+  document.getElementById('push-allow').addEventListener('click', () => {
+    document.getElementById('push-modal').style.display = 'none';
+  });
+
+  document.getElementById('push-later').addEventListener('click', () => {
+    document.getElementById('push-modal').style.display = 'none';
+  });
+</script>
 
   </body>
 </html>
