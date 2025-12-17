@@ -21,7 +21,7 @@ import Auth from './pages/Auth.jsx';
 import ScrollToTop from './ScrollTop.jsx';
 import Document from './pages/document.jsx';
 import Forbidden from './pages/Forbidden.jsx';
-
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import "./api/globalFetch";
 import { setFetchNavigator } from "./api/globalFetch";
 
@@ -66,7 +66,9 @@ const AppContent = () => {
             <Route path="/resources/list/:excelId" element={<Document />} />
             <Route path="/access/:id" element={<AccessRedirect />} />
             <Route path="/forbidden" element={<Forbidden />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="*" element={<NotFound/>}/>
+           
           </Routes>
         </main>
         

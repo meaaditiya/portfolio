@@ -1,6 +1,8 @@
 import React from 'react';
 import { Github, Instagram, Twitter, Mail, Linkedin , Download} from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../pagesCSS/Footer.css';
+
 const Footer = () => {
   const socialLinks = [
     {
@@ -49,6 +51,14 @@ const Footer = () => {
         <div className="footer-brand">
           <span className="footer-year">Aaditiya Tyagi © 2024 All Rights Reserved</span>
         </div>
+         <div className="footer-policy">
+          <Link to="/privacy-policy" className="policy-link">
+            Privacy Policy
+          </Link>
+        </div>
+      
+      
+      
         <div className="footer-socials1">
           {socialLinks.map((social, index) => {
             const IconComponent = social.icon;
@@ -73,10 +83,9 @@ const Footer = () => {
           <span className="location-text">Remote / Global</span>
         </div>
           {/*download section*/}
-         <div className="about-resume-row1">
-          
-        </div>
-      </div>
+        
+         </div>
+      
       
      
     </footer>

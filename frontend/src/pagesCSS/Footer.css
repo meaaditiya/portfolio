@@ -253,3 +253,18 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+.policy-link {
+  color: black;
+ 
+  font-size: 14px;
+  font-weight: 900;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.policy-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
