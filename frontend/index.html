@@ -37,15 +37,117 @@
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "f70744cf-82bc-4aa1-bd0a-b6e6b65a1311",
-    });
+ OneSignalDeferred.push(async function(OneSignal) {
+  await OneSignal.init({
+    appId: "f70744cf-82bc-4aa1-bd0a-b6e6b65a1311",
+    notifyButton: { enable: false },
+    promptOptions: { slidedown: { enabled: false } }
   });
+
+  OneSignal.setConsentRequired(true);
+});
+
 </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+   <div id="push-modal" style="
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 28px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  max-width: 380px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  animation: slideInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+">
+  <style>
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    #push-modal p {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      letter-spacing: -0.3px;
+    }
+
+    #push-modal::before {
+      content: '🔔';
+      display: block;
+      font-size: 32px;
+      margin-bottom: 12px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    #push-allow, #push-later {
+      font-family: inherit;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+      margin-right: 10px;
+      margin-top: 16px;
+    }
+
+    #push-allow {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    #push-allow:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+    }
+
+    #push-allow:active {
+      transform: translateY(0px);
+    }
+
+    #push-later {
+      background: rgba(0, 0, 0, 0.04);
+      color: #666;
+    }
+
+    #push-later:hover {
+      background: rgba(0, 0, 0, 0.08);
+      color: #333;
+    }
+
+    #push-later:active {
+      background: rgba(0, 0, 0, 0.06);
+    }
+  </style>
+
+  <p>Get updates and notifications.</p>
+  <button id="push-allow">Subscribe</button>
+  <button id="push-later">Later</button>
+</div>
+
   </body>
 </html>
