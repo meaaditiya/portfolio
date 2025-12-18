@@ -426,63 +426,10 @@ const fetchAudioBlog = async () => {
     setIsAudioLoading(false);
   }
 };
-const handleAudioPlay = () => {
-  if (audioElementRef.current) {
-    audioElementRef.current.play();
-    setIsPlayingAudio(true);
-  }
-};
-
-const handleAudioPause = () => {
-  if (audioElementRef.current) {
-    audioElementRef.current.pause();
-    setIsPlayingAudio(false);
-  }
-};
 
 
 
-const formatAudioTime = (time) => {
-  if (!time || isNaN(time)) return '0:00';
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
 
-const handleAudioTimeUpdate = () => {
-  if (audioElementRef.current) {
-    setAudioCurrentTime(audioElementRef.current.currentTime);
-  }
-};
-
-const handleAudioToggle = () => {
-  if (audioElementRef.current) {
-    if (isPlayingAudio) {
-      audioElementRef.current.pause();
-      setIsPlayingAudio(false);
-    } else {
-      audioElementRef.current.play();
-      setIsPlayingAudio(true);
-    }
-  }
-};
-const handleAudioSeek = (e) => {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const percentage = x / rect.width;
-  const newTime = percentage * audioDurationRef.current;
-  if (audioElementRef.current) {
-    audioElementRef.current.currentTime = newTime;
-    audioCurrentTimeRef.current = newTime;
-    updateWaveformUI(); // Immediate visual feedback
-  }
-};
-
-const handleSpeedChange = (e) => {
-  if (audioElementRef.current) {
-    audioElementRef.current.playbackRate = parseFloat(e.target.value);
-  }
-};
 const formatTime = (time = null) => {
   const timeValue = time !== null ? time : audioCurrentTimeRef.current;
   if (!timeValue || isNaN(timeValue)) return '00:00';
@@ -2522,78 +2469,73 @@ const CodeBlock = ({ language, value }) => {
   ))}
 </div>
       
-         <div className="blog-controls-minimal">
-  <button
-    className="generate-summary-btn2 summarybtn"
-    onClick={(e) => handleGenerateSummary(blogPost, e)}
-  >
-    AI Summary
-  </button>
-
-  <div className="read-along-controls">
-   <button
-  className={`read-along-minimal-btn ${isReadingAloud ? 'playing' : ''} ${isPausedReading ? 'paused' : ''}`}
-  onClick={() => {
-    if (isReadingAloud || isPausedReading) {
-      if (isPausedReading) handlePlayReading();
-      else handlePauseReading();
-    } else {
-      handlePlayReading();
-    }
-  }}
-  title={isPausedReading ? 'resume' : isReadingAloud ? 'pause' : 'Voice'}
->
-  {isReadingAloud ? (
-    <Pause size={18} strokeWidth={2} />
-  ) : isPausedReading ? (
-    <Play size={18} strokeWidth={2} />
-  ) : (
-    <Volume2 size={18} strokeWidth={2} />
-  )}
-</button>
-
-<button 
-  className="voice-selector-btn" 
-  onClick={() => setShowVoiceSelector(!showVoiceSelector)}
-  title="Change voice"
->
-  Select Voice <ChevronDown className='dropdown-btn' size={18} strokeWidth={2} />
-</button>
-
-{(isReadingAloud || isPausedReading) && (
-  <>
-    <button className="read-along-stop-btn" onClick={handleStopReading}>
-      <Square size={18} strokeWidth={2} />
+    <div className="blog-controls-minimal">
+  <div className="controls-row-1">
+    <button
+      className="button7 summarybtn"
+      onClick={(e) => handleGenerateSummary(blogPost, e)}
+    >
+      AI Summary
     </button>
-  </>
+    <button 
+      className="button7 summarybtn" 
+      onClick={() => setShowVoiceSelector(!showVoiceSelector)}
+      title="Change voice"
+    >
+      Read Along <ChevronDown className='dropdown-btn' size={18} strokeWidth={2} />
+    </button>
+  </div>
+
+  <div className="controls-row-2">
+    <div className="read-along-controls">
+      {(isReadingAloud || isPausedReading) && (
+  <button
+    className={`read-along-minimal-btn ${isPausedReading ? 'paused' : 'playing'}`}
+    onClick={isPausedReading ? handlePlayReading : handlePauseReading}
+    title={isPausedReading ? 'resume' : 'pause'}
+  >
+    {isPausedReading ? (
+      <Play size={18} strokeWidth={2} />
+    ) : (
+      <Pause size={18} strokeWidth={2} />
+    )}
+  </button>
 )}
 
-    {/* Voice Selector Dropdown */}
-    {showVoiceSelector &&(
-      <div className="voice-selector-dropdown">
-        <div className="voice-list">
-          {availableVoices
-            .filter(v => v.lang.includes('en') || v.lang.includes('hi'))
-            .slice(0, 15)
-            .map((voice, i) => (
-              <div
-                key={i}
-                className={`voice-option ${selectedVoice?.name === voice.name ? 'selected' : ''}`}
-                onClick={() => {
-                 setSelectedVoice(voice);   // update voice
-  setShowVoiceSelector(false);
-  setShouldRestartReading(true);  // <-- new flag
-                 
-                }}
-              >
-                <span className="voice-name">{voice.name.replace('Microsoft ', '').replace('Google ', '')}</span>
-                <small>{voice.lang}</small>
-              </div>
-            ))}
-        </div>
-      </div>
-    )}
+      {(isReadingAloud || isPausedReading) && (
+        <>
+          <button className="read-along-stop-btn" onClick={handleStopReading}>
+            <Square size={18} strokeWidth={2} />
+          </button>
+        </>
+      )}
+    </div>
   </div>
+
+  {/* Voice Selector Dropdown */}
+  {showVoiceSelector && (
+    <div className="voice-selector-dropdown">
+      <div className="voice-list">
+        {availableVoices
+          .filter(v => v.lang.includes('en') || v.lang.includes('hi'))
+          .slice(0, 15)
+          .map((voice, i) => (
+            <div
+              key={i}
+              className={`voice-option ${selectedVoice?.name === voice.name ? 'selected' : ''}`}
+              onClick={() => {
+                setSelectedVoice(voice);
+                setShowVoiceSelector(false);
+                setShouldRestartReading(true);
+              }}
+            >
+              <span className="voice-name">{voice.name.replace('Microsoft ', '').replace('Google ', '')}</span>
+              <small>{voice.lang}</small>
+            </div>
+          ))}
+      </div>
+    </div>
+  )}
 </div>
     {blogPost.featuredImage && (
       <div className="featured-image-container">
@@ -2606,19 +2548,12 @@ const CodeBlock = ({ language, value }) => {
   </>
 ) : null}
 
+
 {blogPost.audioBlog?.isAudioAvailable && (
   <div className="audio-player-modern-wrapper">
     <div className="audio-player-modern">
       {/* Cover Art */}
-      <div className="audio-cover-art">
-        {blogPost.featuredImage ? (
-          <img src={blogPost.featuredImage} alt={blogPost.title} />
-        ) : (
-          <div className="audio-cover-placeholder">
-            <Volume2 size={48} color="#8B7355" strokeWidth={1.5} />
-          </div>
-        )}
-      </div>
+   
 
       {/* Main Content Area */}
       <div className="audio-content-area">
@@ -2653,7 +2588,6 @@ const CodeBlock = ({ language, value }) => {
               }
             }}
             onPlay={(e) => {
-              // Update play count or analytics here if needed
               console.log('Audio started playing');
             }}
             onPause={(e) => {
@@ -2723,10 +2657,16 @@ const CodeBlock = ({ language, value }) => {
             1x
           </button>
 
-        
-
-          {/* Download Button */}
-         
+          {/* Login Button - Only if audio is subscriber-only AND user is not logged in */}
+          {blogPost.audioBlog?.audioAccess?.isSubscriberOnly && !isLoggedIn && (
+            <button 
+              className="audio-login-btn"
+              onClick={() => navigate('/userauth')}
+              title="Login to access subscriber audio"
+            >
+              Login to access
+            </button>
+          )}
         </div>
 
         {/* Audio Metadata */}
@@ -2738,24 +2678,21 @@ const CodeBlock = ({ language, value }) => {
           >
             Loading...
           </span>
-          {blogPost.audioBlog.audioMetadata?.language && (
+          {blogPost.audioBlog?.audioMetadata?.language && (
             <span className="audio-language">
               {blogPost.audioBlog.audioMetadata.language.toUpperCase()}
             </span>
           )}
-          {blogPost.audioBlog.audioMetadata?.narrator && (
+          {blogPost.audioBlog?.audioMetadata?.narrator && (
             <span className="audio-narrator">
               {blogPost.audioBlog.audioMetadata.narrator}
             </span>
           )}
-         
         </div>
       </div>
     </div>
   </div>
 )}
-
-     
 
           
           {/* Render content with inline images and videos */}
