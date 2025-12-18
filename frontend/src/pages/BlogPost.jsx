@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
-import { MessageCircleReply, SkipBack, SkipForward } from 'lucide-react';
+import { MessageCircleReply, SkipBack, SkipForward, Download, } from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
@@ -118,6 +118,9 @@ const [audioCurrentTime, setAudioCurrentTime] = useState(0);
 const [audioDuration, setAudioDuration] = useState(0);
 const [audioError, setAudioError] = useState(null);
 const audioElementRef = useRef(null);
+const audioCurrentTimeRef = useRef(0);      // Track current time WITHOUT state
+const audioDurationRef = useRef(0);         // Track duration WITHOUT state
+const waveformContainerRef = useRef(null);  
 const [isAudioLoading, setIsAudioLoading] = useState(false);
 const [showAudioMore, setShowAudioMore] = useState(false);
 useEffect(() => {
@@ -341,38 +344,80 @@ useEffect(() => {
     fetchAudioBlog();
   }
 }, [blogPost?._id]);
+// FIND THIS useEffect (around line 260-280) and REPLACE it
 
 useEffect(() => {
   const audio = audioElementRef.current;
   if (!audio) return;
 
-  const updateTime = () => setAudioCurrentTime(audio.currentTime);
+  const updateTime = () => {
+    // Update ref instead of state - NO re-render
+    audioCurrentTimeRef.current = audio.currentTime;
+    
+    // Manually update waveform DOM elements AND time display
+    updateWaveformUI();
+    updateTimeDisplay(); // ADD THIS NEW FUNCTION CALL
+  };
+
   const handleEnded = () => setIsPlayingAudio(false);
+  const handleLoadedMetadata = () => {
+    audioDurationRef.current = audio.duration;
+    updateWaveformUI(); // Update duration display
+    updateTimeDisplay(); // ADD THIS LINE
+  };
 
   audio.addEventListener('timeupdate', updateTime);
   audio.addEventListener('ended', handleEnded);
+  audio.addEventListener('loadedmetadata', handleLoadedMetadata);
 
   return () => {
     audio.removeEventListener('timeupdate', updateTime);
     audio.removeEventListener('ended', handleEnded);
+    audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
   };
 }, []);
+
+// ADD THIS NEW FUNCTION right after updateWaveformUI()
+
+const updateWaveformUI = () => {
+  const bars = document.querySelectorAll('.waveform-bar');
+  if (!bars.length) return;
+
+  const progress = audioDurationRef.current 
+    ? (audioCurrentTimeRef.current / audioDurationRef.current) * 100 
+    : 0;
+
+  bars.forEach((bar, index) => {
+    const barProgress = (index / bars.length) * 100;
+    const isActive = barProgress <= progress;
+    bar.style.backgroundColor = isActive ? '#3b82f6' : '#e5e7eb';
+  });
+};
+const updateTimeDisplay = () => {
+  const currentTimeElement = document.querySelector('.audio-current-time');
+  const totalTimeElement = document.querySelector('.audio-total-time');
+  
+  if (currentTimeElement) {
+    currentTimeElement.textContent = formatTime();
+  }
+  
+  if (totalTimeElement) {
+    totalTimeElement.textContent = formatTime(audioDurationRef.current);
+  }
+};
 const fetchAudioBlog = async () => {
   if (!blogPost?._id) return;
-  
   setIsAudioLoading(true);
   try {
     const token = localStorage.getItem('token');
     const response = await axios.get(
       `${import.meta.env.VITE_APP_BACKEND_URL}/api/blogs/${blogPost._id}/audio`,
-      {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      }
+      { headers: token ? { Authorization: `Bearer ${token}` } : {} }
     );
-    
     if (audioElementRef.current) {
       audioElementRef.current.src = response.data.audio.url;
-      setAudioDuration(response.data.audio.duration || 0);
+      // Set duration in ref, not state
+      audioDurationRef.current = response.data.audio.duration || 0;
     }
   } catch (err) {
     console.error('Error fetching audio:', err);
@@ -421,16 +466,15 @@ const handleAudioToggle = () => {
     }
   }
 };
-
 const handleAudioSeek = (e) => {
   const rect = e.currentTarget.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const percentage = x / rect.width;
-  const newTime = percentage * audioDuration;
-  
+  const newTime = percentage * audioDurationRef.current;
   if (audioElementRef.current) {
     audioElementRef.current.currentTime = newTime;
-    setAudioCurrentTime(newTime);
+    audioCurrentTimeRef.current = newTime;
+    updateWaveformUI(); // Immediate visual feedback
   }
 };
 
@@ -439,11 +483,11 @@ const handleSpeedChange = (e) => {
     audioElementRef.current.playbackRate = parseFloat(e.target.value);
   }
 };
-
-const formatTime = (time) => {
-  if (!time || isNaN(time)) return '00:00';
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
+const formatTime = (time = null) => {
+  const timeValue = time !== null ? time : audioCurrentTimeRef.current;
+  if (!timeValue || isNaN(timeValue)) return '00:00';
+  const minutes = Math.floor(timeValue / 60);
+  const seconds = Math.floor(timeValue % 60);
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
@@ -2562,7 +2606,7 @@ const CodeBlock = ({ language, value }) => {
   </>
 ) : null}
 
-   {blogPost.audioBlog?.isAudioAvailable && (
+{blogPost.audioBlog?.isAudioAvailable && (
   <div className="audio-player-modern-wrapper">
     <div className="audio-player-modern">
       {/* Cover Art */}
@@ -2588,112 +2632,129 @@ const CodeBlock = ({ language, value }) => {
           </div>
         </div>
 
-        {/* Waveform Progress Bar */}
-        <div className="audio-waveform-container">
-          <div 
-            className="audio-waveform-track"
-            onClick={handleAudioSeek}
+        {/* Native Audio Player with Enhanced Controls */}
+        <div className="audio-native-player">
+          <audio
+            id={`audio-player-${blogPost._id}`}
+            controls
+            controlsList="nodownload noplaybackrate"
+            preload="metadata"
+            className="native-audio-controls"
+            onLoadedMetadata={(e) => {
+              const duration = e.target.duration;
+              if (duration && !isNaN(duration)) {
+                const durationEl = document.getElementById(`audio-duration-${blogPost._id}`);
+                if (durationEl) {
+                  const minutes = Math.floor(duration / 60);
+                  const seconds = Math.floor(duration % 60);
+                  durationEl.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
+                  durationEl.style.display = 'inline-block';
+                }
+              }
+            }}
+            onPlay={(e) => {
+              // Update play count or analytics here if needed
+              console.log('Audio started playing');
+            }}
+            onPause={(e) => {
+              console.log('Audio paused');
+            }}
+            onEnded={(e) => {
+              console.log('Audio ended');
+            }}
+            onError={(e) => {
+              console.error('Audio error:', e);
+            }}
           >
-            {/* Generate waveform bars */}
-            {Array.from({ length: 80 }).map((_, index) => {
-              const height = Math.random() * 60 + 20;
-              const progress = audioDuration ? (audioCurrentTime / audioDuration) * 100 : 0;
-              const barProgress = (index / 80) * 100;
-              const isActive = barProgress <= progress;
-              
-              return (
-                <div 
-                  key={index}
-                  className={`waveform-bar ${isActive ? 'active' : ''}`}
-                  style={{ 
-                    height: `${height}%`,
-                    opacity: isActive ? 1 : 0.3
-                  }}
-                />
-              );
-            })}
-          </div>
-
-          {/* Time Display */}
-          <div className="audio-time-display">
-            <span className="audio-current-time">{formatTime(audioCurrentTime)}</span>
-            <span className="audio-divider">|</span>
-            <span className="audio-total-time">{formatTime(audioDuration)}</span>
-          </div>
+            <source src={blogPost.audioBlog.audioFile?.url} type="audio/mpeg" />
+            <source src={blogPost.audioBlog.audioFile?.url} type="audio/mp3" />
+            Your browser does not support the audio element.
+          </audio>
         </div>
 
-        {/* Controls - Centered */}
-        <div className="audio-controls-row">
+        {/* Custom Controls Row */}
+        <div className="audio-custom-controls">
           {/* Skip Backward 15s */}
           <button
             className="audio-control-btn skip-btn"
             onClick={() => {
-              if (audioElementRef.current) {
-                audioElementRef.current.currentTime = Math.max(0, audioElementRef.current.currentTime - 15);
+              const audio = document.getElementById(`audio-player-${blogPost._id}`);
+              if (audio) {
+                audio.currentTime = Math.max(0, audio.currentTime - 15);
               }
             }}
             title="Rewind 15 seconds"
           >
-            <SkipBack size={14} />
-            <span className="skip-time">15</span>
-          </button>
-
-          {/* Play/Pause */}
-          <button
-            className="audio-control-btn play-btn"
-            onClick={handleAudioToggle}
-            title={isPlayingAudio ? 'Pause' : 'Play'}
-          >
-            {isPlayingAudio ? (
-              <Pause size={18} fill="currentColor" />
-            ) : (
-              <Play size={18} fill="currentColor" />
-            )}
+            <SkipBack size={16} />
+            <span className="skip-time">15s</span>
           </button>
 
           {/* Skip Forward 30s */}
           <button
             className="audio-control-btn skip-btn"
             onClick={() => {
-              if (audioElementRef.current) {
-                audioElementRef.current.currentTime = Math.min(audioDuration, audioElementRef.current.currentTime + 30);
+              const audio = document.getElementById(`audio-player-${blogPost._id}`);
+              if (audio) {
+                audio.currentTime = Math.min(audio.duration, audio.currentTime + 30);
               }
             }}
             title="Forward 30 seconds"
           >
-            <SkipForward size={14} />
-            <span className="skip-time">30</span>
+            <SkipForward size={16} />
+            <span className="skip-time">30s</span>
           </button>
 
           {/* Playback Speed */}
           <button
             className="audio-control-btn speed-btn"
-            onClick={() => {
-              const speeds = [1, 1.25, 1.5, 1.75, 2];
-              const currentSpeed = audioElementRef.current?.playbackRate || 1;
-              const currentIndex = speeds.indexOf(currentSpeed);
-              const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
-              if (audioElementRef.current) {
-                audioElementRef.current.playbackRate = nextSpeed;
+            onClick={(e) => {
+              const audio = document.getElementById(`audio-player-${blogPost._id}`);
+              if (audio) {
+                const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+                const currentSpeed = audio.playbackRate || 1;
+                const currentIndex = speeds.indexOf(currentSpeed);
+                const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
+                audio.playbackRate = nextSpeed;
+                e.target.textContent = `${nextSpeed}x`;
               }
             }}
             title="Playback speed"
           >
-            {audioElementRef.current?.playbackRate || 1}x
+            1x
           </button>
+
+        
+
+          {/* Download Button */}
+         
+        </div>
+
+        {/* Audio Metadata */}
+        <div className="audio-metadata">
+          <span 
+            id={`audio-duration-${blogPost._id}`} 
+            className="audio-duration"
+            style={{ display: 'none' }}
+          >
+            Loading...
+          </span>
+          {blogPost.audioBlog.audioMetadata?.language && (
+            <span className="audio-language">
+              {blogPost.audioBlog.audioMetadata.language.toUpperCase()}
+            </span>
+          )}
+          {blogPost.audioBlog.audioMetadata?.narrator && (
+            <span className="audio-narrator">
+              {blogPost.audioBlog.audioMetadata.narrator}
+            </span>
+          )}
+         
         </div>
       </div>
-
-      {/* Hidden Audio Element */}
-      <audio
-        ref={audioElementRef}
-        onTimeUpdate={handleAudioTimeUpdate}
-        onLoadedMetadata={handleAudioLoadedMetadata}
-        onEnded={() => setIsPlayingAudio(false)}
-      />
     </div>
   </div>
 )}
+
      
 
           
