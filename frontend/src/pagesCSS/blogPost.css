@@ -5592,3 +5592,341 @@ code:not(.minimal-code-text) {
     padding: 0.4rem 0.55rem !important;
   }
 }
+/* ============================================
+   MODERN PODCAST AUDIO PLAYER STYLES
+   Compact Square Design
+============================================ */
+
+.audio-player-modern-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 30px 20px;
+  margin: 20px 0;
+}
+
+.audio-player-modern {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #FAF8F3 0%, #F5F1E8 100%);
+  border-radius: 16px;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 6px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* ============================================
+   COVER ART - SMALLER
+============================================ */
+
+.audio-cover-art {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #E8DCC4 0%, #D4C4A8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.audio-cover-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.audio-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E8DCC4 0%, #D4C4A8 100%);
+}
+
+/* ============================================
+   CONTENT AREA - CENTERED
+============================================ */
+
+.audio-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* ============================================
+   HEADER / TITLE - CENTERED
+============================================ */
+
+.audio-header {
+  text-align: center;
+}
+
+.audio-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.audio-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.audio-podcast-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================
+   WAVEFORM - CENTERED & COMPACT
+============================================ */
+
+.audio-waveform-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.audio-waveform-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 40px;
+  width: 100%;
+  cursor: pointer;
+  padding: 6px 0;
+  position: relative;
+  background: transparent;
+}
+
+.waveform-bar {
+  flex: 1;
+  min-width: 2px;
+  max-width: 4px;
+  background: #D4C4A8;
+  border-radius: 2px;
+  transition: all 0.15s ease;
+  opacity: 0.3;
+}
+
+.waveform-bar.active {
+  background: linear-gradient(180deg, #8B7355 0%, #6B5745 100%);
+  opacity: 1;
+}
+
+.waveform-bar:hover {
+  transform: scaleY(1.1);
+  opacity: 0.8;
+}
+
+/* ============================================
+   TIME DISPLAY - CENTERED
+============================================ */
+
+.audio-time-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.audio-current-time {
+  color: #1a1a1a;
+}
+
+.audio-divider {
+  color: #ccc;
+  font-weight: 400;
+}
+
+.audio-total-time {
+  color: #999;
+}
+
+/* ============================================
+   CONTROLS ROW - CENTERED & COMPACT
+============================================ */
+
+.audio-controls-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* ============================================
+   CONTROL BUTTONS - SMALLER
+============================================ */
+
+.audio-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 2px solid #E5E0D8;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+  font-weight: 700;
+  position: relative;
+}
+
+.audio-control-btn:hover {
+  background: #FAFAF8;
+  border-color: #D4C4A8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.audio-control-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Skip Buttons - SMALLER */
+.skip-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 10px;
+  flex-direction: column;
+  gap: 1px;
+  padding: 3px;
+}
+
+.skip-time {
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+/* Play/Pause Button - SMALLER */
+.play-btn {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #8B7355 0%, #6B5745 100%);
+  border: 2px solid #D4C4A8;
+  color: white;
+  margin: 0 6px;
+}
+
+.play-btn:hover {
+  background: linear-gradient(135deg, #9B8365 0%, #7B6755 100%);
+  border-color: #E5D5C8;
+  transform: scale(1.05);
+}
+
+.play-btn:active {
+  transform: scale(0.98);
+}
+
+/* Speed Button - SMALLER */
+.speed-btn {
+  width: 38px;
+  height: 38px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+============================================ */
+
+@media (max-width: 768px) {
+  .audio-player-modern {
+    flex-direction: column;
+    gap: 18px;
+    padding: 20px 20px;
+    max-width: 500px;
+  }
+
+  .audio-cover-art {
+    width: 100px;
+    height: 100px;
+  }
+
+  .audio-title {
+    font-size: 16px;
+  }
+
+  .audio-podcast-name {
+    font-size: 12px;
+  }
+
+  .audio-waveform-track {
+    height: 35px;
+  }
+
+  .play-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .skip-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .speed-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .audio-player-modern {
+    padding: 16px 16px;
+  }
+
+  .audio-cover-art {
+    width: 90px;
+    height: 90px;
+  }
+
+  .audio-title {
+    font-size: 15px;
+  }
+
+  .waveform-bar {
+    min-width: 1.5px;
+    max-width: 3px;
+  }
+
+  .audio-controls-row {
+    gap: 8px;
+  }
+}

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
-import { MessageCircleReply } from 'lucide-react';
+import { MessageCircleReply, SkipBack, SkipForward } from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
@@ -113,7 +113,13 @@ const [showCommentReactionUsersModal, setShowCommentReactionUsersModal] = useSta
 const [commentReactionUsers, setCommentReactionUsers] = useState({});
 const [reactionsLoaded, setReactionsLoaded] = useState(false);
 const [commentsReactionsLoaded, setCommentsReactionsLoaded] = useState(false);
-
+const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+const [audioCurrentTime, setAudioCurrentTime] = useState(0);
+const [audioDuration, setAudioDuration] = useState(0);
+const [audioError, setAudioError] = useState(null);
+const audioElementRef = useRef(null);
+const [isAudioLoading, setIsAudioLoading] = useState(false);
+const [showAudioMore, setShowAudioMore] = useState(false);
 useEffect(() => {
   const fetchBlogDetails = async () => {
     setIsLoading(true);
@@ -274,9 +280,6 @@ useEffect(() => {
     fetchRelatedBlogs();
   }
 }, [blogPost]);
-// Add this useEffect after your existing useEffects
-// Check authentication on component mount
-// REPLACE your checkAuth useEffect in BlogPost.jsx with this:
 
 useEffect(() => {
   const checkAuth = async () => {
@@ -333,6 +336,123 @@ useEffect(() => {
   
   checkAuth();
 }, []);
+useEffect(() => {
+  if (blogPost?._id && audioElementRef.current) {
+    fetchAudioBlog();
+  }
+}, [blogPost?._id]);
+
+useEffect(() => {
+  const audio = audioElementRef.current;
+  if (!audio) return;
+
+  const updateTime = () => setAudioCurrentTime(audio.currentTime);
+  const handleEnded = () => setIsPlayingAudio(false);
+
+  audio.addEventListener('timeupdate', updateTime);
+  audio.addEventListener('ended', handleEnded);
+
+  return () => {
+    audio.removeEventListener('timeupdate', updateTime);
+    audio.removeEventListener('ended', handleEnded);
+  };
+}, []);
+const fetchAudioBlog = async () => {
+  if (!blogPost?._id) return;
+  
+  setIsAudioLoading(true);
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_BACKEND_URL}/api/blogs/${blogPost._id}/audio`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      }
+    );
+    
+    if (audioElementRef.current) {
+      audioElementRef.current.src = response.data.audio.url;
+      setAudioDuration(response.data.audio.duration || 0);
+    }
+  } catch (err) {
+    console.error('Error fetching audio:', err);
+    setAudioError('Audio not available');
+  } finally {
+    setIsAudioLoading(false);
+  }
+};
+const handleAudioPlay = () => {
+  if (audioElementRef.current) {
+    audioElementRef.current.play();
+    setIsPlayingAudio(true);
+  }
+};
+
+const handleAudioPause = () => {
+  if (audioElementRef.current) {
+    audioElementRef.current.pause();
+    setIsPlayingAudio(false);
+  }
+};
+
+
+
+const formatAudioTime = (time) => {
+  if (!time || isNaN(time)) return '0:00';
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
+const handleAudioTimeUpdate = () => {
+  if (audioElementRef.current) {
+    setAudioCurrentTime(audioElementRef.current.currentTime);
+  }
+};
+
+const handleAudioToggle = () => {
+  if (audioElementRef.current) {
+    if (isPlayingAudio) {
+      audioElementRef.current.pause();
+      setIsPlayingAudio(false);
+    } else {
+      audioElementRef.current.play();
+      setIsPlayingAudio(true);
+    }
+  }
+};
+
+const handleAudioSeek = (e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const percentage = x / rect.width;
+  const newTime = percentage * audioDuration;
+  
+  if (audioElementRef.current) {
+    audioElementRef.current.currentTime = newTime;
+    setAudioCurrentTime(newTime);
+  }
+};
+
+const handleSpeedChange = (e) => {
+  if (audioElementRef.current) {
+    audioElementRef.current.playbackRate = parseFloat(e.target.value);
+  }
+};
+
+const formatTime = (time) => {
+  if (!time || isNaN(time)) return '00:00';
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
+
+const handleAudioLoadedMetadata = () => {
+  if (audioElementRef.current) {
+    setAudioDuration(audioElementRef.current.duration);
+  }
+};
+
 const getUserProfilePicture = (comment) => {
   // For author comments - use the profile image URL directly
   if (comment.isAuthorComment && comment.authorAdminId) {
@@ -2436,9 +2556,144 @@ const CodeBlock = ({ language, value }) => {
         <img src={blogPost.featuredImage} alt={blogPost.title} className="blog-post-image" />
       </div>
     )}
-          
+     {!isSubscriberOnlyBlog() || canAccessFullContent() ? (
+  <>
+   
+  </>
+) : null}
 
-          
+   {blogPost.audioBlog?.isAudioAvailable && (
+  <div className="audio-player-modern-wrapper">
+    <div className="audio-player-modern">
+      {/* Cover Art */}
+      <div className="audio-cover-art">
+        {blogPost.featuredImage ? (
+          <img src={blogPost.featuredImage} alt={blogPost.title} />
+        ) : (
+          <div className="audio-cover-placeholder">
+            <Volume2 size={48} color="#8B7355" strokeWidth={1.5} />
+          </div>
+        )}
+      </div>
+
+      {/* Main Content Area */}
+      <div className="audio-content-area">
+        {/* Title and Metadata */}
+        <div className="audio-header">
+          <div className="audio-title-section">
+            <h3 className="audio-title">{blogPost.title}</h3>
+            <p className="audio-podcast-name">
+              {blogPost.author?.name || 'Aaditiya Tyagi'}
+            </p>
+          </div>
+        </div>
+
+        {/* Waveform Progress Bar */}
+        <div className="audio-waveform-container">
+          <div 
+            className="audio-waveform-track"
+            onClick={handleAudioSeek}
+          >
+            {/* Generate waveform bars */}
+            {Array.from({ length: 80 }).map((_, index) => {
+              const height = Math.random() * 60 + 20;
+              const progress = audioDuration ? (audioCurrentTime / audioDuration) * 100 : 0;
+              const barProgress = (index / 80) * 100;
+              const isActive = barProgress <= progress;
+              
+              return (
+                <div 
+                  key={index}
+                  className={`waveform-bar ${isActive ? 'active' : ''}`}
+                  style={{ 
+                    height: `${height}%`,
+                    opacity: isActive ? 1 : 0.3
+                  }}
+                />
+              );
+            })}
+          </div>
+
+          {/* Time Display */}
+          <div className="audio-time-display">
+            <span className="audio-current-time">{formatTime(audioCurrentTime)}</span>
+            <span className="audio-divider">|</span>
+            <span className="audio-total-time">{formatTime(audioDuration)}</span>
+          </div>
+        </div>
+
+        {/* Controls - Centered */}
+        <div className="audio-controls-row">
+          {/* Skip Backward 15s */}
+          <button
+            className="audio-control-btn skip-btn"
+            onClick={() => {
+              if (audioElementRef.current) {
+                audioElementRef.current.currentTime = Math.max(0, audioElementRef.current.currentTime - 15);
+              }
+            }}
+            title="Rewind 15 seconds"
+          >
+            <SkipBack size={14} />
+            <span className="skip-time">15</span>
+          </button>
+
+          {/* Play/Pause */}
+          <button
+            className="audio-control-btn play-btn"
+            onClick={handleAudioToggle}
+            title={isPlayingAudio ? 'Pause' : 'Play'}
+          >
+            {isPlayingAudio ? (
+              <Pause size={18} fill="currentColor" />
+            ) : (
+              <Play size={18} fill="currentColor" />
+            )}
+          </button>
+
+          {/* Skip Forward 30s */}
+          <button
+            className="audio-control-btn skip-btn"
+            onClick={() => {
+              if (audioElementRef.current) {
+                audioElementRef.current.currentTime = Math.min(audioDuration, audioElementRef.current.currentTime + 30);
+              }
+            }}
+            title="Forward 30 seconds"
+          >
+            <SkipForward size={14} />
+            <span className="skip-time">30</span>
+          </button>
+
+          {/* Playback Speed */}
+          <button
+            className="audio-control-btn speed-btn"
+            onClick={() => {
+              const speeds = [1, 1.25, 1.5, 1.75, 2];
+              const currentSpeed = audioElementRef.current?.playbackRate || 1;
+              const currentIndex = speeds.indexOf(currentSpeed);
+              const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
+              if (audioElementRef.current) {
+                audioElementRef.current.playbackRate = nextSpeed;
+              }
+            }}
+            title="Playback speed"
+          >
+            {audioElementRef.current?.playbackRate || 1}x
+          </button>
+        </div>
+      </div>
+
+      {/* Hidden Audio Element */}
+      <audio
+        ref={audioElementRef}
+        onTimeUpdate={handleAudioTimeUpdate}
+        onLoadedMetadata={handleAudioLoadedMetadata}
+        onEnded={() => setIsPlayingAudio(false)}
+      />
+    </div>
+  </div>
+)}
      
 
           
