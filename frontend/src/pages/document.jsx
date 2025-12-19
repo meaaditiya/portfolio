@@ -710,8 +710,8 @@ if (isAuthenticated && isPremium) {
   }
 };
 
-const handleDownload = async (docId) => {
-   let isPremium = false;
+const handleDownload = async (docId, shouldDownload = false) => {
+  let isPremium = false;
   const token = localStorage.getItem('token');
   if (token && isAuthenticated) {
     try {
@@ -722,64 +722,76 @@ const handleDownload = async (docId) => {
     }
   }
 
-const executeDownload = async (token) => {
-  try {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessKey = urlParams.get('key');
-    
-    const params = new URLSearchParams();
-    
-    if (accessKey) {
-      params.append('key', accessKey);
-    }
-    if (userId) {
-      params.append('userId', userId);
-    }
-    if (token) {
-      params.append('turnstileToken', token);
-    }
-    
-    let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}`;
-    const queryString = params.toString();
-    if (queryString) {
-      url += `?${queryString}`;
-    }
-    
-    const authToken = localStorage.getItem('token');  // ✅ GET AUTH TOKEN
-    const headers = {};
-    if (authToken) {
-      headers['Authorization'] = `Bearer ${authToken}`;  // ✅ ADD TO HEADERS
-    }
-    
-    const res = await fetch(url, { headers });  // ✅ PASS HEADERS
-    
-    if (res.status === 403) {
-      const data = await res.json();
-      if (data.requiresTurnstile) {
-        showAlert('Verification failed. Please try again.', 'error');
-        return;
+  const executeDownload = async (token) => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const accessKey = urlParams.get('key');
+      
+      const params = new URLSearchParams();
+      
+      if (accessKey) {
+        params.append('key', accessKey);
       }
+      if (userId) {
+        params.append('userId', userId);
+      }
+      if (token) {
+        params.append('turnstileToken', token);
+      }
+      
+      let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}`;
+      const queryString = params.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+      
+      const authToken = localStorage.getItem('token');
+      const headers = {};
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
+      const res = await fetch(url, { headers });
+      
+      if (res.status === 403) {
+        const data = await res.json();
+        if (data.requiresTurnstile) {
+          showAlert('Verification failed. Please try again.', 'error');
+          return;
+        }
+      }
+      
+      const data = await res.json();
+      if (!data.downloadUrl) throw new Error("No download URL");
+      
+      // Open in new tab for viewing
+      if (!shouldDownload) {
+        window.open(data.downloadUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        // Force download
+        const link = document.createElement('a');
+        link.href = data.downloadUrl;
+        link.download = data.filename || 'download';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      
+    } catch (err) {
+      console.error("Error downloading:", err);
+      showAlert("Failed to download file. Access denied or file not found.", 'error');
     }
-    
-    const data = await res.json();
-    if (!data.downloadUrl) throw new Error("No download URL");
-    
-    window.location.href = data.downloadUrl;
-    
-  } catch (err) {
-    console.error("Error downloading:", err);
-    showAlert("Failed to download file. Access denied or file not found.", 'error');
-  }
-};
+  };
 
-if (isAuthenticated && isPremium) {
+  if (isAuthenticated && isPremium) {
     executeDownload(null);
   } else {
     turnstileAction.current = executeDownload;
     setShowTurnstileModal(true);
   }
-
 };
+
   const getFileIcon = (item) => {
     if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
     if (item.type === 'excel') return <ListIcon size={16} className="file-icon-excel" />;
@@ -1377,20 +1389,19 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
                 />
               </button>
             )}
-            
             {item.type === 'file' && (
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDownload(item._id);
-                }}
-                className="download-button"
-                title="Download"
-              >
-                <Download size={16} />
-              </button>
-            )}
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      handleDownload(item._id, false); // false = open in new tab
+    }}
+    className="download-button"
+    title="Open File"
+  >
+    <Download size={16} />
+  </button>
+)}
+           
             {item.type === 'link' && (
               <button
                 onClick={(e) => {
@@ -1513,18 +1524,18 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
           </div>
          {(item.hasAccess === false || item.accessLevel === 'locked') &&(  
           <div>
-          {item.type === 'file' && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDownload(item._id);
-              }}
-              className="grid-download-button"
-              title="Download"
-            >
-              <Download size={14} />
-            </button>
-          )}
+         {item.type === 'file' && (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      handleDownload(item._id, false); // false = open in new tab
+    }}
+    className="grid-download-button"
+    title="Open File"
+  >
+    <Download size={14} />
+  </button>
+)}
           
           {item.type === 'link' && (
             <button
