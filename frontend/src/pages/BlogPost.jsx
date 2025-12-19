@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
-import { MessageCircleReply, SkipBack, SkipForward, Download, } from 'lucide-react';
+import { MessageCircleReply, SkipBack, SkipForward, Download,RotateCcw ,RotateCw} from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
@@ -10,7 +10,8 @@ import { Volume2, Pause, Play, Square , ChevronDown} from 'lucide-react';
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
 import { Copy, Check } from 'lucide-react';
-
+import AudioPlayerWave from './AudioCard';
+import AuthorProfileModal from './AuthorModal';
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -112,17 +113,15 @@ const [reactionUsersTarget, setReactionUsersTarget] = useState(null); // { type:
 const [showCommentReactionUsersModal, setShowCommentReactionUsersModal] = useState(false);
 const [commentReactionUsers, setCommentReactionUsers] = useState({});
 const [reactionsLoaded, setReactionsLoaded] = useState(false);
-const [commentsReactionsLoaded, setCommentsReactionsLoaded] = useState(false);
 const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-const [audioCurrentTime, setAudioCurrentTime] = useState(0);
 const [audioDuration, setAudioDuration] = useState(0);
 const [audioError, setAudioError] = useState(null);
 const audioElementRef = useRef(null);
 const audioCurrentTimeRef = useRef(0);      // Track current time WITHOUT state
 const audioDurationRef = useRef(0);         // Track duration WITHOUT state
-const waveformContainerRef = useRef(null);  
+;  
 const [isAudioLoading, setIsAudioLoading] = useState(false);
-const [showAudioMore, setShowAudioMore] = useState(false);
+
 useEffect(() => {
   const fetchBlogDetails = async () => {
     setIsLoading(true);
@@ -2547,151 +2546,13 @@ const CodeBlock = ({ language, value }) => {
    
   </>
 ) : null}
-
-
 {blogPost.audioBlog?.isAudioAvailable && (
-  <div className="audio-player-modern-wrapper">
-    <div className="audio-player-modern">
-      {/* Cover Art */}
-   
-
-      {/* Main Content Area */}
-      <div className="audio-content-area">
-        {/* Title and Metadata */}
-        <div className="audio-header">
-          <div className="audio-title-section">
-            <h3 className="audio-title">{blogPost.title}</h3>
-            <p className="audio-podcast-name">
-              {blogPost.author?.name || 'Aaditiya Tyagi'}
-            </p>
-          </div>
-        </div>
-
-        {/* Native Audio Player with Enhanced Controls */}
-        <div className="audio-native-player">
-          <audio
-            id={`audio-player-${blogPost._id}`}
-            controls
-            controlsList="nodownload noplaybackrate"
-            preload="metadata"
-            className="native-audio-controls"
-            onLoadedMetadata={(e) => {
-              const duration = e.target.duration;
-              if (duration && !isNaN(duration)) {
-                const durationEl = document.getElementById(`audio-duration-${blogPost._id}`);
-                if (durationEl) {
-                  const minutes = Math.floor(duration / 60);
-                  const seconds = Math.floor(duration % 60);
-                  durationEl.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
-                  durationEl.style.display = 'inline-block';
-                }
-              }
-            }}
-            onPlay={(e) => {
-              console.log('Audio started playing');
-            }}
-            onPause={(e) => {
-              console.log('Audio paused');
-            }}
-            onEnded={(e) => {
-              console.log('Audio ended');
-            }}
-            onError={(e) => {
-              console.error('Audio error:', e);
-            }}
-          >
-            <source src={blogPost.audioBlog.audioFile?.url} type="audio/mpeg" />
-            <source src={blogPost.audioBlog.audioFile?.url} type="audio/mp3" />
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-
-        {/* Custom Controls Row */}
-        <div className="audio-custom-controls">
-          {/* Skip Backward 15s */}
-          <button
-            className="audio-control-btn skip-btn"
-            onClick={() => {
-              const audio = document.getElementById(`audio-player-${blogPost._id}`);
-              if (audio) {
-                audio.currentTime = Math.max(0, audio.currentTime - 15);
-              }
-            }}
-            title="Rewind 15 seconds"
-          >
-            <SkipBack size={16} />
-            <span className="skip-time">15s</span>
-          </button>
-
-          {/* Skip Forward 30s */}
-          <button
-            className="audio-control-btn skip-btn"
-            onClick={() => {
-              const audio = document.getElementById(`audio-player-${blogPost._id}`);
-              if (audio) {
-                audio.currentTime = Math.min(audio.duration, audio.currentTime + 30);
-              }
-            }}
-            title="Forward 30 seconds"
-          >
-            <SkipForward size={16} />
-            <span className="skip-time">30s</span>
-          </button>
-
-          {/* Playback Speed */}
-          <button
-            className="audio-control-btn speed-btn"
-            onClick={(e) => {
-              const audio = document.getElementById(`audio-player-${blogPost._id}`);
-              if (audio) {
-                const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-                const currentSpeed = audio.playbackRate || 1;
-                const currentIndex = speeds.indexOf(currentSpeed);
-                const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
-                audio.playbackRate = nextSpeed;
-                e.target.textContent = `${nextSpeed}x`;
-              }
-            }}
-            title="Playback speed"
-          >
-            1x
-          </button>
-
-          {/* Login Button - Only if audio is subscriber-only AND user is not logged in */}
-          {blogPost.audioBlog?.audioAccess?.isSubscriberOnly && !isLoggedIn && (
-            <button 
-              className="audio-login-btn"
-              onClick={() => navigate('/auth')}
-              title="Login to access subscriber audio"
-            >
-              Login to access
-            </button>
-          )}
-        </div>
-
-        {/* Audio Metadata */}
-        <div className="audio-metadata">
-          <span 
-            id={`audio-duration-${blogPost._id}`} 
-            className="audio-duration"
-            style={{ display: 'none' }}
-          >
-            Loading...
-          </span>
-          {blogPost.audioBlog?.audioMetadata?.language && (
-            <span className="audio-language">
-              {blogPost.audioBlog.audioMetadata.language.toUpperCase()}
-            </span>
-          )}
-          {blogPost.audioBlog?.audioMetadata?.narrator && (
-            <span className="audio-narrator">
-              {blogPost.audioBlog.audioMetadata.narrator}
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  </div>
+  <AudioPlayerWave 
+    blogPost={blogPost}
+    isLoggedIn={isLoggedIn}
+    loggedInUser={loggedInUser}
+    navigate={navigate}
+  />
 )}
 
           
@@ -3792,164 +3653,20 @@ const CodeBlock = ({ language, value }) => {
     </div>
   </div>
 )}
-{showAuthorModal && (
-  <div className="author-modal-overlay" onClick={() => setShowAuthorModal(false)}>
-    <div className="author-modal-content" onClick={(e) => e.stopPropagation()}>
-      <button 
-        className="author-modal-close"
-        onClick={() => setShowAuthorModal(false)}
-      >
-        ×
-      </button>
-      
-      {authorLoading ? (
-        <div className="author-modal-loading">
-          <div className="spinner"></div>
-          <p>Loading profile...</p>
-        </div>
-      ) : authorData ? (
-        <div className="author-profile-content">
-          {/* Profile Header */}
-          {/* Profile Header */}
-<div className="author-profile-header">
-  {authorData.profileImage?.url ? (
-    <img 
-      src={authorData.profileImage.url}
-      alt={authorData.name}
-      className="author-profile-image1"
-      onError={(e) => {
-        console.error('Failed to load author image:', authorData.profileImage.url);
-        e.target.style.display = 'none';
-        e.target.nextSibling.style.display = 'flex';
-      }}
-    />
-  ) : null}
-  <div 
-    className="author-profile-placeholder1"
-    style={{ display: authorData.profileImage?.url ? 'none' : 'flex' }}
-  >
-    {authorData.name.charAt(0).toUpperCase()}
-  </div>
-  
-  <div className="author-profile-info">
-    <h2 className="author-profile-name">{authorData.name}</h2>
-    {authorData.designation && (
-      <p className="author-profile-designation">{authorData.designation}</p>
-    )}
-    {authorData.location && (
-      <p className="author-profile-location">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-          <circle cx="12" cy="10" r="3"></circle>
-        </svg>
-        {authorData.location}
-      </p>
-    )}
-  </div>
-</div>
-          
-          {/* Bio */}
-          {authorData.bio && (
-            <div className="author-profile-bio">
-              <p>{authorData.bio}</p>
-            </div>
-          )}
-          
-          {/* Expertise */}
-          {authorData.expertise && authorData.expertise.length > 0 && (
-            <div className="author-profile-section">
-              <h3 className="author-section-title">Expertise</h3>
-              <div className="author-tags">
-                {authorData.expertise.map((skill, index) => (
-                  <span key={index} className="author-tag">{skill}</span>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Interests */}
-          {authorData.interests && authorData.interests.length > 0 && (
-            <div className="author-profile-section">
-              <h3 className="author-section-title">Interests</h3>
-              <div className="author-tags">
-                {authorData.interests.map((interest, index) => (
-                  <span key={index} className="author-tag">{interest}</span>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {authorData.socialLinks &&
-  Object.entries(authorData.socialLinks).some(([_, url]) => url) && (
-    <div className="author-profile-section">
-      <h3 className="author-section-title">Connect</h3>
-      <div className="author-social-links">
-        {Object.entries(authorData.socialLinks).map(([platform, url]) => {
-          if (!url) return null;
-          return (
-            <a
-              key={platform}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="author-social-link"
-              title={platform.charAt(0).toUpperCase() + platform.slice(1)}
-            >
-              <img
-                src={getSocialIcon(platform)}
-                alt={platform}
-                className="author-social-icon"
-              />
-            </a>
-          );
-        })}
-      </div>
-    </div>
-  )}
-{authorData && (
-  <div className="author-profile-section">
-    <button
-      className="author-blogs-btn"
-      onClick={() => {
-        setShowAuthorModal(false);
-        navigate('/blog', { 
-          state: { 
-            filterAuthor: {
-              id: blogPost.author._id,
-              name: authorData.name
-            }
-          } 
-        });
-      }}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-      </svg>
-      See Other Blogs by {authorData.name}
-    </button>
-  </div>
-)}
-       {/* Member Since */}
-          {authorData.joinedDate && (
-            <div className="author-profile-footer">
-              <p className="author-joined-date">
-                Joined {new Date(authorData.joinedDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long'
-                })}
-              </p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="author-modal-error">
-          <p>Unable to load author profile</p>
-        </div>
-      )}
-    </div>
-  </div>
-)} 
+<AuthorProfileModal
+  show={showAuthorModal}
+  onClose={() => setShowAuthorModal(false)}
+  authorData={authorData}
+  loading={authorLoading}
+  blogPost={blogPost}
+  onNavigateToBlog={(name, id) => {
+    navigate('/blog', { 
+      state: { 
+        filterAuthor: { id, name }
+      } 
+    });
+  }}
+/>
 {/* Moderation Error Modal */}
 {showModerationModal && (
   <div className="moderation-modal-overlay">

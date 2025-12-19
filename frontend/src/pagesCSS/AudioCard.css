@@ -1,0 +1,644 @@
+.audio-player-modern-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  margin: 0;
+}
+
+/* ============================================
+   MAIN AUDIO PLAYER CARD
+============================================ */
+
+.audio-player-modern {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 700px;
+  background: linear-gradient(135deg, #f5f3ed 0%, #ebe8e0 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  padding: 18px;
+  border: none;
+}
+
+.audio-player-modern:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================
+   CONTENT SECTION
+============================================ */
+
+.audio-content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* ============================================
+   HEADER / TITLE SECTION
+============================================ */
+
+.audio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.audio-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.audio-title {
+  color: #000000;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  font-size: 22px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  letter-spacing: -0.6px;
+}
+
+.audio-podcast-name {
+  color: #000000;
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+}
+
+.audio-artist {
+  color: #1a1a1a;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 11px;
+  margin: 0;
+  letter-spacing: 0.4px;
+}
+
+/* Heart Icon */
+.heart-icon {
+  height: 22px;
+  width: 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  color: #8a8a8a;
+}
+
+.heart-icon:hover {
+  fill: #d4a574;
+  color: #d4a574;
+  transform: scale(1.15);
+}
+
+/* ============================================
+   WAVEFORM AUDIO PLAYER
+============================================ */
+
+.audio-native-player {
+  width: 100%;
+  padding: 8px 0;
+  margin: 4px 0;
+}
+
+/* Wave Progress Container */
+.wave-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Play Button */
+.wave-play-btn {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #b5a85d;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #ffffff;
+}
+
+.wave-play-btn:hover {
+  transform: scale(1.05);
+  background: #a09650;
+}
+
+.wave-play-btn:active {
+  transform: scale(0.98);
+}
+
+.wave-play-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wave-play-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Wave Bars Wrapper */
+.wave-bars-wrapper {
+  flex: 1;
+  position: relative;
+  height: 40px;
+  min-width: 0;
+}
+
+/* Wave Bars Container */
+.wave-bars-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1px;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  padding: 0;
+}
+
+/* Individual Wave Bar */
+.wave-bar {
+  flex: 1;
+  min-width: 1px;
+  max-width: 3px;
+  background: #d4c5a8;
+  border-radius: 1px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  position: relative;
+}
+
+.wave-bar:hover {
+  background: #b5a85d;
+}
+
+/* Active wave bar (played portion) */
+.wave-bar.active {
+  background: #b5a85d;
+}
+
+.wave-bar.active:hover {
+  background: #a09650;
+}
+
+/* Playing animation */
+.wave-bar.playing {
+  animation: none;
+}
+
+/* Hidden range slider for accessibility */
+.wave-progress-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Time Display */
+.wave-time-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000000;
+  letter-spacing: 0;
+  flex-shrink: 0;
+  font-family: "Raleway", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.wave-current-time {
+  color: #000000;
+}
+
+.wave-divider {
+  color: #8a8a8a;
+}
+
+.wave-total-time {
+  color: #6a6a6a;
+}
+
+/* ============================================
+   CONTROL BUTTONS
+============================================ */
+
+.audio-custom-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.audio-control-btn {
+  outline: 0;
+  border: 1px solid #d4c5a8;
+  background: rgba(245, 243, 237, 0.9);
+  padding: 7px 12px;
+  margin: 0;
+  color: #000000;
+  text-transform: uppercase;
+  font-family: "Raleway", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 32px;
+  letter-spacing: 0.4px;
+}
+
+.audio-control-btn:hover:not(:disabled) {
+  border: 1px solid #b5a85d;
+  background: rgba(181, 168, 93, 0.08);
+  color: #000000;
+  box-shadow: 0 2px 6px rgba(181, 168, 93, 0.15);
+  transform: translateY(-1px);
+}
+
+.audio-control-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.audio-control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.skip-btn {
+  min-width: 58px;
+}
+
+.skip-time {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.speed-btn {
+  min-width: 50px;
+  background: rgba(245, 243, 237, 0.9);
+  border-color: #d4c5a8;
+  color: #000000;
+}
+
+.speed-btn:hover:not(:disabled) {
+  border-color: #b5a85d;
+  background: rgba(181, 168, 93, 0.08);
+  color: #000000;
+}
+
+.audio-login-btn {
+  outline: 0;
+  border: 1px solid #d4c5a8;
+  background: rgba(245, 243, 237, 0.9);
+  padding: 7px 12px;
+  color: #000000;
+  text-transform: uppercase;
+  font-family: "Raleway", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  letter-spacing: 0.4px;
+}
+
+.audio-login-btn:hover {
+  border: 1px solid #b5a85d;
+  background: rgba(181, 168, 93, 0.08);
+  color: #000000;
+  box-shadow: 0 2px 6px rgba(181, 168, 93, 0.15);
+  transform: translateY(-1px);
+}
+
+.audio-login-btn:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   AUDIO METADATA
+============================================ */
+
+.audio-metadata {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 10px;
+  font-weight: 700;
+  color: #000000;
+  padding: 6px 0;
+}
+
+.audio-metadata span {
+  padding: 4px 10px;
+  background: rgba(181, 168, 93, 0.08);
+  border-radius: 3px;
+  border: 1px solid #cfc5a8;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+}
+
+.audio-duration {
+  color: #000000;
+  font-weight: 700;
+  background: rgba(181, 168, 93, 0.12);
+  border-color: #cfc5a8;
+}
+
+.audio-language {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.audio-narrator {
+  color: #1a1a1a;
+  text-transform: capitalize;
+}
+
+/* ============================================
+   ERROR & LOADING STATES
+============================================ */
+
+.audio-error-message,
+.audio-loading-message {
+  text-align: center;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.audio-error-message {
+  color: #c44536;
+  background: rgba(196, 69, 54, 0.08);
+  border: 1px solid rgba(196, 69, 54, 0.2);
+}
+
+.audio-loading-message {
+  color: #6a6a6a;
+  background: rgba(181, 168, 93, 0.08);
+  border: 1px solid #cfc5a8;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - TABLET
+============================================ */
+
+@media (max-width: 768px) {
+  .audio-player-modern {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .audio-title {
+    font-size: 20px;
+  }
+
+  .audio-podcast-name,
+  .audio-artist {
+    font-size: 10px;
+  }
+
+  .wave-play-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .wave-play-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .wave-bars-wrapper {
+    height: 50px;
+  }
+
+  .wave-bars-container {
+    gap: 1.5px;
+  }
+
+  .wave-time-display {
+    font-size: 10px;
+  }
+
+  .audio-control-btn,
+  .audio-login-btn {
+    padding: 6px 12px;
+    min-height: 32px;
+    font-size: 9px;
+  }
+
+  .skip-btn {
+    min-width: 52px;
+  }
+
+  .speed-btn {
+    min-width: 48px;
+  }
+
+  .audio-metadata {
+    font-size: 9px;
+    gap: 6px;
+  }
+
+  .audio-metadata span {
+    padding: 3px 8px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - MOBILE
+============================================ */
+
+@media (max-width: 480px) {
+  .audio-player-modern {
+    max-width: 100%;
+    border-radius: 6px;
+    padding: 18px;
+  }
+
+  .audio-player-modern-wrapper {
+    padding: 12px;
+    margin: 0;
+  }
+
+  .audio-header {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .heart-icon {
+    align-self: flex-start;
+    height: 20px;
+    width: 20px;
+  }
+
+  .audio-title {
+    font-size: 18px;
+  }
+
+  .audio-podcast-name,
+  .audio-artist {
+    font-size: 9px;
+  }
+
+  .wave-progress-container {
+    gap: 8px;
+  }
+
+  .wave-play-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .wave-play-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .wave-bars-wrapper {
+    height: 45px;
+  }
+
+  .wave-bars-container {
+    gap: 1px;
+    padding: 0 2px;
+  }
+
+  .wave-bar {
+    min-width: 1.5px;
+    max-width: 6px;
+  }
+
+  .wave-time-display {
+    font-size: 9px;
+    gap: 3px;
+  }
+
+  .audio-custom-controls {
+    gap: 6px;
+    padding: 8px 0;
+    justify-content: center;
+  }
+
+  .audio-control-btn,
+  .audio-login-btn {
+    padding: 5px 10px;
+    min-height: 30px;
+    font-size: 8px;
+    min-width: 48px;
+  }
+
+  .skip-btn {
+    min-width: 48px;
+  }
+
+  .speed-btn {
+    min-width: 44px;
+  }
+
+  .audio-login-btn {
+    min-width: 48px;
+  }
+
+  .audio-metadata {
+    font-size: 8px;
+    gap: 4px;
+  }
+
+  .audio-metadata span {
+    padding: 2px 6px;
+  }
+}
+
+/* ============================================
+   EXTRA SMALL DEVICES
+============================================ */
+
+@media (max-width: 360px) {
+  .audio-player-modern {
+    padding: 14px;
+  }
+
+  .audio-title {
+    font-size: 16px;
+  }
+
+  .wave-play-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .wave-play-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .wave-bars-wrapper {
+    height: 40px;
+  }
+
+  .wave-time-display {
+    font-size: 8px;
+  }
+
+  .audio-control-btn,
+  .audio-login-btn {
+    padding: 4px 8px;
+    min-height: 28px;
+    font-size: 8px;
+  }
+
+  .audio-custom-controls {
+    gap: 4px;
+  }
+
+  .audio-metadata span {
+    padding: 2px 4px;
+    font-size: 7px;
+  }
+}
