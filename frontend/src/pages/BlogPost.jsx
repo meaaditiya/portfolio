@@ -2661,7 +2661,7 @@ const CodeBlock = ({ language, value }) => {
           {blogPost.audioBlog?.audioAccess?.isSubscriberOnly && !isLoggedIn && (
             <button 
               className="audio-login-btn"
-              onClick={() => navigate('/userauth')}
+              onClick={() => navigate('/auth')}
               title="Login to access subscriber audio"
             >
               Login to access
