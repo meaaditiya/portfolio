@@ -709,8 +709,7 @@ if (isAuthenticated && isPremium) {
     handleDownload(item._id);
   }
 };
-
-const handleDownload = async (docId, shouldDownload = false) => {
+const handleDownload = async (docId) => {
   let isPremium = false;
   const token = localStorage.getItem('token');
   if (token && isAuthenticated) {
@@ -722,71 +721,128 @@ const handleDownload = async (docId, shouldDownload = false) => {
     }
   }
 
-  const executeDownload = async (token) => {
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const accessKey = urlParams.get('key');
-      
-      const params = new URLSearchParams();
-      
-      if (accessKey) {
-        params.append('key', accessKey);
-      }
-      if (userId) {
-        params.append('userId', userId);
-      }
-      if (token) {
-        params.append('turnstileToken', token);
-      }
-      if (shouldDownload) {
-        params.append('forceDownload', 'true');
-      }
-      
-      let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}`;
-      const queryString = params.toString();
-      if (queryString) {
-        url += `?${queryString}`;
-      }
-      
-      const authToken = localStorage.getItem('token');
-      const headers = {};
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const res = await fetch(url, { headers });
-      
-      if (res.status === 403) {
-        const data = await res.json();
-        if (data.requiresTurnstile) {
-          showAlert('Verification failed. Please try again.', 'error');
-          return;
+  // For non-premium users, show Turnstile FIRST
+  if (!isAuthenticated || !isPremium) {
+    const executeAfterVerification = async (token) => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const accessKey = urlParams.get('key');
+        
+        const params = new URLSearchParams();
+        
+        if (accessKey) {
+          params.append('key', accessKey);
         }
+        if (userId) {
+          params.append('userId', userId);
+        }
+        if (token) {
+          params.append('turnstileToken', token);
+        }
+        
+        let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}`;
+        const queryString = params.toString();
+        if (queryString) {
+          url += `?${queryString}`;
+        }
+        
+        const authToken = localStorage.getItem('token');
+        const headers = {};
+        if (authToken) {
+          headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
+        const res = await fetch(url, { headers });
+        
+        if (res.status === 403) {
+          const data = await res.json();
+          if (data.requiresTurnstile) {
+            showAlert('Verification failed. Please try again.', 'error');
+            return;
+          }
+        }
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        
+        // Use viewUrl only
+        const targetUrl = data.viewUrl;
+        
+        if (!targetUrl) {
+          throw new Error("No view URL available");
+        }
+        
+        console.log('Redirecting to view URL:', targetUrl);
+        
+        // Redirect in same tab
+        window.location.href = targetUrl;
+        
+      } catch (err) {
+        console.error("Error accessing file:", err);
+        showAlert("Failed to access file. Access denied or file not found.", 'error');
       }
-      
-      const data = await res.json();
-      
-      // Use viewUrl for opening, downloadUrl for downloading
-      const targetUrl = shouldDownload ? (data.downloadUrl || data.viewUrl) : data.viewUrl;
-      
-      if (!targetUrl) throw new Error("No URL available");
-      
-      // Always open in new tab
-      window.open(targetUrl, '_blank', 'noopener,noreferrer');
-      
-    } catch (err) {
-      console.error("Error accessing file:", err);
-      showAlert("Failed to access file. Access denied or file not found.", 'error');
-    }
-  };
-
-  if (isAuthenticated && isPremium) {
-    executeDownload(null);
-  } else {
-    turnstileAction.current = executeDownload;
+    };
+    
+    turnstileAction.current = executeAfterVerification;
     setShowTurnstileModal(true);
+    return;
+  }
+
+  // For premium/authenticated users, execute directly
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    
+    const params = new URLSearchParams();
+    
+    if (accessKey) {
+      params.append('key', accessKey);
+    }
+    if (userId) {
+      params.append('userId', userId);
+    }
+    
+    let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}`;
+    const queryString = params.toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+    
+    const authToken = localStorage.getItem('token');
+    const headers = {};
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    const res = await fetch(url, { headers });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    
+    // Use viewUrl only
+    const targetUrl = data.viewUrl;
+    
+    if (!targetUrl) {
+      throw new Error("No view URL available");
+    }
+    
+    console.log('Redirecting to view URL (premium):', targetUrl);
+    
+    // Redirect in same tab
+    window.location.href = targetUrl;
+    
+  } catch (err) {
+    console.error("Error accessing file:", err);
+    showAlert("Failed to access file. Access denied or file not found.", 'error');
   }
 };
+
 
   const getFileIcon = (item) => {
     if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
@@ -1389,7 +1445,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   <button
     onClick={(e) => {
       e.stopPropagation();
-      handleDownload(item._id, false); // false = open in new tab
+      handleDownload(item._id); // false = open in new tab
     }}
     className="download-button"
     title="Open File"
@@ -1524,7 +1580,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   <button
     onClick={(e) => {
       e.stopPropagation();
-      handleDownload(item._id, false); // false = open in new tab
+      handleDownload(item._id); // false = open in new tab
     }}
     className="grid-download-button"
     title="Open File"
