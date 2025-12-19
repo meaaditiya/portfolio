@@ -738,6 +738,9 @@ const handleDownload = async (docId, shouldDownload = false) => {
       if (token) {
         params.append('turnstileToken', token);
       }
+      if (shouldDownload) {
+        params.append('forceDownload', 'true');
+      }
       
       let url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/download/${docId}`;
       const queryString = params.toString();
@@ -762,25 +765,18 @@ const handleDownload = async (docId, shouldDownload = false) => {
       }
       
       const data = await res.json();
-      if (!data.downloadUrl) throw new Error("No download URL");
       
-      // Open in new tab for viewing
-      if (!shouldDownload) {
-        window.open(data.downloadUrl, '_blank', 'noopener,noreferrer');
-      } else {
-        // Force download
-        const link = document.createElement('a');
-        link.href = data.downloadUrl;
-        link.download = data.filename || 'download';
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+      // Use viewUrl for opening, downloadUrl for downloading
+      const targetUrl = shouldDownload ? (data.downloadUrl || data.viewUrl) : data.viewUrl;
+      
+      if (!targetUrl) throw new Error("No URL available");
+      
+      // Always open in new tab
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
       
     } catch (err) {
-      console.error("Error downloading:", err);
-      showAlert("Failed to download file. Access denied or file not found.", 'error');
+      console.error("Error accessing file:", err);
+      showAlert("Failed to access file. Access denied or file not found.", 'error');
     }
   };
 
