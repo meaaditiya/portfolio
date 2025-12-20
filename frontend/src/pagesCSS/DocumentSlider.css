@@ -38,29 +38,32 @@
   background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
 }
 
-/* Document Info Track */
+/* Document Info Track - OPTIMIZED FOR SMOOTH SLIDING */
 .doc-info-track {
   display: flex;
-  animation: docInfoScroll 60s linear infinite;
   width: fit-content;
   gap: 0;
   padding: 0;
+  margin: 0;
   height: 100%;
   align-items: center;
+  animation: docInfoScroll 60s linear infinite;
+  will-change: transform;
 }
 
+/* Simple, performant animation */
 @keyframes docInfoScroll {
-  0% {
+  from {
     transform: translateX(0);
   }
-  100% {
+  to {
     transform: translateX(-50%);
   }
 }
 
 /* Document Info Item */
 .doc-info-item {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   height: 50px;
   padding: 0 40px;
   display: flex;
@@ -69,7 +72,6 @@
   position: relative;
   background: #fafafa;
   border-right: 1px solid #ddd;
-  transition: none;
   cursor: default;
 }
 

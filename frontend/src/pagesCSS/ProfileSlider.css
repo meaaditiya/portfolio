@@ -37,33 +37,34 @@
   background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
 }
 
-/* Profile Carousel Rail */
+/* Profile Carousel Rail - ULTRA OPTIMIZED */
 .profile-carousel-rail {
   display: flex;
-  animation: profileCarouselScroll 40s linear infinite;
   width: fit-content;
   gap: 0;
   padding: 0;
+  margin: 0;
+  animation: profileCarouselScroll 40s linear infinite;
+  will-change: transform;
+  transform: translateX(0);
 }
 
-
-
+/* Simple, clean animation - MOST PERFORMANT */
 @keyframes profileCarouselScroll {
-  0% {
+  from {
     transform: translateX(0);
   }
-  100% {
+  to {
     transform: translateX(-50%);
   }
 }
 
 /* Profile Carousel Tile */
 .profile-carousel-tile {
-  flex-shrink: 0;
+  flex: 0 0 300px;
   width: 300px;
   height: 200px;
   cursor: pointer;
-  transition: none;
 }
 
 /* Profile Tile Frame */
@@ -75,7 +76,6 @@
   position: relative;
   background: #fff;
   border-right: 1px solid #ddd;
-  transition: none;
 }
 
 /* Profile Tile Body */
@@ -101,6 +101,7 @@
   transform: translate(-50%, -50%);
   z-index: 0;
   pointer-events: none;
+  opacity: 1;
 }
 
 .profile-mark-icon {
@@ -163,6 +164,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .profile-carousel-tile {
+    flex: 0 0 250px;
     width: 250px;
     height: 180px;
   }
@@ -207,6 +209,7 @@
 
 @media (max-width: 480px) {
   .profile-carousel-tile {
+    flex: 0 0 200px;
     width: 200px;
     height: 150px;
   }

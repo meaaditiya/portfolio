@@ -37,35 +37,33 @@
   background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
 }
 
-/* Slider Track */
+/* Slider Track - OPTIMIZED FOR SMOOTH SLIDING */
 .slider-track-custom {
   display: flex;
-  animation: slideScroll 40s linear infinite;
   width: fit-content;
   gap: 0;
   padding: 0;
+  margin: 0;
+  animation: slideScroll 40s linear infinite;
+  will-change: transform;
 }
 
-.slider-track-custom:hover {
-  animation-play-state: paused;
-}
-
+/* Simple, performant animation */
 @keyframes slideScroll {
-  0% {
+  from {
     transform: translateX(0);
   }
-  100% {
+  to {
     transform: translateX(-50%);
   }
 }
 
 /* Slider Item */
 .slider-item {
-  flex-shrink: 0;
+  flex: 0 0 300px;
   width: 300px;
   height: 200px;
   cursor: pointer;
-  transition: none;
 }
 
 /* Slider Card */
@@ -77,7 +75,6 @@
   position: relative;
   background: #fff;
   border-right: 1px solid #ddd;
-  transition: none;
 }
 
 /* Media */
@@ -232,6 +229,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .slider-item {
+    flex: 0 0 250px;
     width: 250px;
     height: 180px;
   }
@@ -260,6 +258,7 @@
 
 @media (max-width: 480px) {
   .slider-item {
+    flex: 0 0 200px;
     width: 200px;
     height: 150px;
   }

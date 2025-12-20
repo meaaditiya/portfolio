@@ -15,30 +15,56 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 700px;
-  background: linear-gradient(135deg, #f5f3ed 0%, #ebe8e0 100%);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 750px;
+  background: linear-gradient(135deg, #faf8f3 0%, #f5f1e8 100%);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(139, 115, 85, 0.1);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
-  padding: 18px;
-  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 20px;
+  border: 1px solid rgba(139, 115, 85, 0.08);
 }
 
 .audio-player-modern:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(139, 115, 85, 0.15);
+ 
 }
 
 /* ============================================
-   CONTENT SECTION
+   CONTENT SECTION WITH COVER
 ============================================ */
 
 .audio-content-area {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 20px;
   width: 100%;
+}
+
+/* Cover Image */
+.audio-cover-image {
+  flex-shrink: 0;
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(139, 115, 85, 0.2);
+}
+
+.audio-cover-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Right Content Area */
+.audio-right-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
 }
 
 /* ============================================
@@ -49,7 +75,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
 }
 
 .audio-title-section {
@@ -58,51 +84,26 @@
 }
 
 .audio-title {
-  color: #000000;
+  color: #1a1a1a;
   font-weight: 600;
-  margin: 0 0 4px 0;
-  font-size: 22px;
+  margin: 0 0 6px 0;
+  font-size: 19px;
   line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.3px;
 }
 
 .audio-podcast-name {
-  color: #000000;
+  color: #6b5d4f;
   margin: 0;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.6px;
-}
-
-.audio-artist {
-  color: #1a1a1a;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 11px;
-  margin: 0;
-  letter-spacing: 0.4px;
-}
-
-/* Heart Icon */
-.heart-icon {
-  height: 22px;
-  width: 22px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  color: #8a8a8a;
-}
-
-.heart-icon:hover {
-  fill: #d4a574;
-  color: #d4a574;
-  transform: scale(1.15);
+  letter-spacing: 0.8px;
 }
 
 /* ============================================
@@ -111,58 +112,55 @@
 
 .audio-native-player {
   width: 100%;
-  padding: 8px 0;
-  margin: 4px 0;
+  padding: 0;
+  margin: 0;
 }
 
 /* Wave Progress Container */
 .wave-progress-container {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
 }
 
 /* Play Button */
 .wave-play-btn {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: #b5a85d;
+  background: #1a1a1a;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #faf8f3;
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.2);
 }
 
-.wave-play-btn:hover {
+.wave-play-btn:hover:not(:disabled) {
   transform: scale(1.05);
-  background: #a09650;
+  background: #2d2d2d;
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.3);
 }
 
-.wave-play-btn:active {
+.wave-play-btn:active:not(:disabled) {
   transform: scale(0.98);
 }
 
 .wave-play-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
-}
-
-.wave-play-btn svg {
-  width: 20px;
-  height: 20px;
 }
 
 /* Wave Bars Wrapper */
 .wave-bars-wrapper {
   flex: 1;
   position: relative;
-  height: 40px;
+  height: 32px;
   min-width: 0;
 }
 
@@ -171,7 +169,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1px;
+  gap: 2px;
   height: 100%;
   width: 100%;
   position: relative;
@@ -181,31 +179,28 @@
 /* Individual Wave Bar */
 .wave-bar {
   flex: 1;
-  min-width: 1px;
-  max-width: 3px;
-  background: #d4c5a8;
-  border-radius: 1px;
+  min-width: 2px;
+  max-width: 2px;
+  background: #e8dfd0;
+  border-radius: 2px;
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
 .wave-bar:hover {
-  background: #b5a85d;
+  background: #c4b5a0;
+  transform: scaleY(1.1);
 }
 
 /* Active wave bar (played portion) */
 .wave-bar.active {
-  background: #b5a85d;
+  background: #1a1a1a;
 }
 
 .wave-bar.active:hover {
-  background: #a09650;
-}
-
-/* Playing animation */
-.wave-bar.playing {
-  animation: none;
+  background: #2d2d2d;
+  transform: scaleY(1.15);
 }
 
 /* Hidden range slider for accessibility */
@@ -225,24 +220,26 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: #000000;
-  letter-spacing: 0;
+  color: #1a1a1a;
+  letter-spacing: -0.2px;
   flex-shrink: 0;
-  font-family: "Raleway", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-variant-numeric: tabular-nums;
 }
 
 .wave-current-time {
-  color: #000000;
+  color: #1a1a1a;
 }
 
 .wave-divider {
-  color: #8a8a8a;
+  color: #a89580;
+  font-weight: 400;
 }
 
 .wave-total-time {
-  color: #6a6a6a;
+  color: #6b5d4f;
 }
 
 /* ============================================
@@ -256,96 +253,98 @@
   gap: 10px;
   flex-wrap: wrap;
   width: 100%;
-  padding: 10px 0;
+  padding: 4px 0 0 0;
 }
 
 .audio-control-btn {
   outline: 0;
-  border: 1px solid #d4c5a8;
-  background: rgba(245, 243, 237, 0.9);
-  padding: 7px 12px;
+  border: none;
+  background: transparent;
+  padding: 10px;
   margin: 0;
-  color: #000000;
-  text-transform: uppercase;
-  font-family: "Raleway", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 700;
-  font-size: 9px;
+  color: #4a4238;
   cursor: pointer;
-  transition: all 0.25s ease;
-  border-radius: 3px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-height: 32px;
-  letter-spacing: 0.4px;
+  gap: 0;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .audio-control-btn:hover:not(:disabled) {
-  border: 1px solid #b5a85d;
-  background: rgba(181, 168, 93, 0.08);
-  color: #000000;
-  box-shadow: 0 2px 6px rgba(181, 168, 93, 0.15);
-  transform: translateY(-1px);
+  background: #f0e9dc;
+  color: #1a1a1a;
+  transform: scale(1.08);
 }
 
 .audio-control-btn:active:not(:disabled) {
-  transform: translateY(0);
+  transform: scale(0.95);
 }
 
 .audio-control-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
+/* Skip Button with Badge */
 .skip-btn {
-  min-width: 58px;
+  position: relative;
 }
 
-.skip-time {
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.speed-btn {
-  min-width: 50px;
-  background: rgba(245, 243, 237, 0.9);
-  border-color: #d4c5a8;
-  color: #000000;
-}
-
-.speed-btn:hover:not(:disabled) {
-  border-color: #b5a85d;
-  background: rgba(181, 168, 93, 0.08);
-  color: #000000;
-}
-
-.audio-login-btn {
-  outline: 0;
-  border: 1px solid #d4c5a8;
-  background: rgba(245, 243, 237, 0.9);
-  padding: 7px 12px;
-  color: #000000;
-  text-transform: uppercase;
-  font-family: "Raleway", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 700;
-  font-size: 9px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  border-radius: 3px;
+.skip-icon-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 4px;
-  min-height: 32px;
-  letter-spacing: 0.4px;
+  justify-content: center;
+}
+
+.skip-badge {
+  position: absolute;
+  font-size: 9px;
+  font-weight: 700;
+  color: inherit;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Speed Button */
+.speed-btn {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 50px;
+  letter-spacing: -0.2px;
+}
+
+/* Login Button */
+.audio-login-btn {
+  outline: 0;
+  border: 1px solid #d4c5b0;
+  background: #ffffff;
+  padding: 8px 16px;
+  color: #1a1a1a;
+  text-transform: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  letter-spacing: -0.2px;
 }
 
 .audio-login-btn:hover {
-  border: 1px solid #b5a85d;
-  background: rgba(181, 168, 93, 0.08);
-  color: #000000;
-  box-shadow: 0 2px 6px rgba(181, 168, 93, 0.15);
+  border-color: #1a1a1a;
+  background: #faf8f3;
   transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.1);
 }
 
 .audio-login-btn:active {
@@ -362,39 +361,33 @@
   justify-content: center;
   gap: 8px;
   flex-wrap: wrap;
-  font-size: 10px;
-  font-weight: 700;
-  color: #000000;
-  padding: 6px 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: #4a4238;
+  padding: 0;
 }
 
 .audio-metadata span {
   padding: 4px 10px;
-  background: rgba(181, 168, 93, 0.08);
-  border-radius: 3px;
-  border: 1px solid #cfc5a8;
-  letter-spacing: 0.3px;
+  background: #f0e9dc;
+  border-radius: 6px;
+  border: none;
+  letter-spacing: 0.2px;
   display: flex;
   align-items: center;
   gap: 4px;
   text-transform: uppercase;
 }
 
-.audio-duration {
-  color: #000000;
-  font-weight: 700;
-  background: rgba(181, 168, 93, 0.12);
-  border-color: #cfc5a8;
-}
-
 .audio-language {
   color: #1a1a1a;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .audio-narrator {
-  color: #1a1a1a;
+  color: #4a4238;
   text-transform: capitalize;
+  font-weight: 500;
 }
 
 /* ============================================
@@ -404,24 +397,24 @@
 .audio-error-message,
 .audio-loading-message {
   text-align: center;
-  padding: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  border-radius: 4px;
-  margin-top: 8px;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.1px;
+  border-radius: 8px;
+  margin-top: 4px;
 }
 
 .audio-error-message {
-  color: #c44536;
-  background: rgba(196, 69, 54, 0.08);
-  border: 1px solid rgba(196, 69, 54, 0.2);
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
 }
 
 .audio-loading-message {
-  color: #6a6a6a;
-  background: rgba(181, 168, 93, 0.08);
-  border: 1px solid #cfc5a8;
+  color: #6b5d4f;
+  background: #f0e9dc;
+  border: 1px solid #d4c5b0;
 }
 
 /* ============================================
@@ -431,62 +424,47 @@
 @media (max-width: 768px) {
   .audio-player-modern {
     max-width: 100%;
-    padding: 20px;
+    padding: 18px;
+  }
+
+  .audio-content-area {
+    gap: 16px;
+  }
+
+  .audio-cover-image {
+    width: 120px;
+    height: 120px;
   }
 
   .audio-title {
-    font-size: 20px;
-  }
-
-  .audio-podcast-name,
-  .audio-artist {
-    font-size: 10px;
+    font-size: 17px;
   }
 
   .wave-play-btn {
-    width: 40px;
-    height: 40px;
-  }
-
-  .wave-play-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 38px;
+    height: 38px;
   }
 
   .wave-bars-wrapper {
-    height: 50px;
-  }
-
-  .wave-bars-container {
-    gap: 1.5px;
+    height: 30px;
   }
 
   .wave-time-display {
-    font-size: 10px;
+    font-size: 12px;
   }
 
-  .audio-control-btn,
-  .audio-login-btn {
-    padding: 6px 12px;
-    min-height: 32px;
-    font-size: 9px;
+  .audio-control-btn {
+    min-height: 42px;
+    min-width: 42px;
   }
 
-  .skip-btn {
-    min-width: 52px;
+  .skip-icon-wrapper svg {
+    width: 24px;
+    height: 24px;
   }
 
-  .speed-btn {
-    min-width: 48px;
-  }
-
-  .audio-metadata {
-    font-size: 9px;
-    gap: 6px;
-  }
-
-  .audio-metadata span {
-    padding: 3px 8px;
+  .skip-badge {
+    font-size: 8px;
   }
 }
 
@@ -497,37 +475,43 @@
 @media (max-width: 480px) {
   .audio-player-modern {
     max-width: 100%;
-    border-radius: 6px;
-    padding: 18px;
+    border-radius: 12px;
+    padding: 16px;
   }
 
   .audio-player-modern-wrapper {
     padding: 12px;
-    margin: 0;
   }
 
-  .audio-header {
-    flex-direction: row;
-    gap: 8px;
+  .audio-content-area {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
   }
 
-  .heart-icon {
-    align-self: flex-start;
-    height: 20px;
-    width: 20px;
+  .audio-cover-image {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .audio-right-content {
+    width: 100%;
   }
 
   .audio-title {
-    font-size: 18px;
+    font-size: 17px;
+    text-align: center;
   }
 
-  .audio-podcast-name,
-  .audio-artist {
-    font-size: 9px;
+  .audio-podcast-name {
+    font-size: 10px;
+    text-align: center;
   }
 
   .wave-progress-container {
-    gap: 8px;
+    gap: 10px;
   }
 
   .wave-play-btn {
@@ -535,63 +519,57 @@
     height: 36px;
   }
 
-  .wave-play-btn svg {
-    width: 16px;
-    height: 16px;
-  }
-
   .wave-bars-wrapper {
-    height: 45px;
+    height: 28px;
   }
 
   .wave-bars-container {
-    gap: 1px;
-    padding: 0 2px;
+    gap: 1.5px;
   }
 
   .wave-bar {
     min-width: 1.5px;
-    max-width: 6px;
+    max-width: 1.5px;
   }
 
   .wave-time-display {
-    font-size: 9px;
-    gap: 3px;
+    font-size: 11px;
   }
 
   .audio-custom-controls {
-    gap: 6px;
-    padding: 8px 0;
-    justify-content: center;
+    gap: 8px;
   }
 
-  .audio-control-btn,
-  .audio-login-btn {
-    padding: 5px 10px;
-    min-height: 30px;
+  .audio-control-btn {
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  .skip-icon-wrapper svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .skip-badge {
     font-size: 8px;
-    min-width: 48px;
-  }
-
-  .skip-btn {
-    min-width: 48px;
   }
 
   .speed-btn {
-    min-width: 44px;
+    font-size: 13px;
+    min-width: 46px;
   }
 
   .audio-login-btn {
-    min-width: 48px;
+    font-size: 12px;
+    padding: 7px 14px;
   }
 
   .audio-metadata {
-    font-size: 8px;
-    gap: 4px;
+    font-size: 10px;
   }
 
   .audio-metadata span {
-    padding: 2px 6px;
+    padding: 3px 8px;
   }
 }
 
@@ -604,41 +582,38 @@
     padding: 14px;
   }
 
+  .audio-cover-image {
+    max-width: 180px;
+  }
+
   .audio-title {
     font-size: 16px;
   }
 
   .wave-play-btn {
-    width: 32px;
-    height: 32px;
-  }
-
-  .wave-play-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 34px;
+    height: 34px;
   }
 
   .wave-bars-wrapper {
-    height: 40px;
+    height: 26px;
   }
 
   .wave-time-display {
-    font-size: 8px;
+    font-size: 10px;
   }
 
-  .audio-control-btn,
-  .audio-login-btn {
-    padding: 4px 8px;
-    min-height: 28px;
-    font-size: 8px;
+  .audio-control-btn {
+    min-height: 38px;
+    min-width: 38px;
   }
 
-  .audio-custom-controls {
-    gap: 4px;
+  .skip-icon-wrapper svg {
+    width: 20px;
+    height: 20px;
   }
 
-  .audio-metadata span {
-    padding: 2px 4px;
+  .skip-badge {
     font-size: 7px;
   }
 }
