@@ -28,7 +28,6 @@
 
 .audio-player-modern:hover {
   box-shadow: 0 4px 16px rgba(139, 115, 85, 0.15);
- 
 }
 
 /* ============================================
@@ -432,8 +431,8 @@
   }
 
   .audio-cover-image {
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
   }
 
   .audio-title {
@@ -485,13 +484,13 @@
 
   .audio-content-area {
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     align-items: center;
   }
 
   .audio-cover-image {
     width: 100%;
-    max-width: 200px;
+    max-width: 140px;
     height: auto;
     aspect-ratio: 1;
   }
@@ -501,7 +500,7 @@
   }
 
   .audio-title {
-    font-size: 17px;
+    font-size: 16px;
     text-align: center;
   }
 
@@ -543,6 +542,7 @@
   .audio-control-btn {
     min-height: 40px;
     min-width: 40px;
+    padding: 8px;
   }
 
   .skip-icon-wrapper svg {
@@ -582,12 +582,20 @@
     padding: 14px;
   }
 
+  .audio-content-area {
+    gap: 12px;
+  }
+
   .audio-cover-image {
-    max-width: 180px;
+    max-width: 120px;
   }
 
   .audio-title {
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  .audio-podcast-name {
+    font-size: 9px;
   }
 
   .wave-play-btn {
@@ -603,9 +611,14 @@
     font-size: 10px;
   }
 
+  .audio-custom-controls {
+    gap: 6px;
+  }
+
   .audio-control-btn {
     min-height: 38px;
     min-width: 38px;
+    padding: 7px;
   }
 
   .skip-icon-wrapper svg {
@@ -615,5 +628,16 @@
 
   .skip-badge {
     font-size: 7px;
+  }
+
+  .speed-btn {
+    font-size: 12px;
+    min-width: 44px;
+  }
+
+  .audio-login-btn {
+    font-size: 11px;
+    padding: 6px 12px;
+    min-height: 36px;
   }
 }

@@ -1,0 +1,184 @@
+/* Font Size Controller Styles */
+.font-size-controller {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.font-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.font-size-selector:hover {
+  border-color: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.font-icon {
+  color: #555;
+  flex-shrink: 0;
+}
+
+.font-size-dropdown {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+.font-size-dropdown:focus {
+  outline: none;
+}
+
+/* Font size adjustment classes - ONLY apply when user selects */
+.blog-post-content.font-size-adjusted {
+  font-size: calc(1em * var(--font-size-multiplier));
+}
+
+.blog-post-content.font-size-adjusted p {
+  font-size: inherit;
+}
+
+.blog-post-content.font-size-adjusted h2 {
+  font-size: calc(1.8rem * var(--font-size-multiplier));
+}
+
+.blog-post-content.font-size-adjusted h3 {
+  font-size: calc(1.5rem * var(--font-size-multiplier));
+}
+
+.blog-post-content.font-size-adjusted ul,
+.blog-post-content.font-size-adjusted ol {
+  font-size: inherit;
+}
+
+.blog-post-content.font-size-adjusted li {
+  font-size: inherit;
+}
+
+.blog-post-content.font-size-adjusted blockquote {
+  font-size: calc(1.05rem * var(--font-size-multiplier));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .font-size-controller {
+    margin-left: 8px;
+  }
+  
+  .font-size-selector {
+    padding: 6px 10px;
+  }
+  
+  .font-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .font-size-dropdown {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .font-size-controller {
+    margin-left: 6px;
+  }
+  
+  .font-size-selector {
+    padding: 5px 8px;
+    gap: 6px;
+  }
+  
+  .font-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .font-size-dropdown {
+    font-size: 12px;
+  }
+}
+.controls-row-1 {
+  display: flex;
+  gap: 0.5rem;
+ 
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  
+  > * {
+    flex-shrink: 0;
+    height: 2.2rem;
+    min-height: 2.5rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+  }
+  
+  .font-size-controller {
+    .button7 {
+      height: 100%;
+      padding: 0;
+    }
+  }
+  
+  .font-size-dropdown {
+    height: 100%;
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    padding: 0 0.75rem;
+  }
+}
+.btn6{
+    margin-left:-9px;
+
+}
+.font-size-controller {
+  .font-size-dropdown {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    &::-ms-expand {
+      display: none;
+    }
+  }
+}
+.font-size-controller {
+  .button7 {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    justify-content: center;
+    padding: 0;
+  }
+  
+  .font-size-dropdown {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-align: center;
+    
+    &::-ms-expand {
+      display: none;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
-import { MessageCircleReply, SkipBack, SkipForward, Download,RotateCcw ,RotateCw} from 'lucide-react';
+import { MessageCircleReply, Sparkles} from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
@@ -12,6 +12,8 @@ import ReactMarkdown from 'react-markdown';
 import { Copy, Check } from 'lucide-react';
 import AudioPlayerWave from './AudioCard';
 import AuthorProfileModal from './AuthorModal';
+import FontSizeController from './FontSizeController';
+import '../pagesCSS/FontSizeController.css';
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -2474,7 +2476,7 @@ const CodeBlock = ({ language, value }) => {
       className="button7 summarybtn"
       onClick={(e) => handleGenerateSummary(blogPost, e)}
     >
-      AI Summary
+      <Sparkles />
     </button>
     <button 
       className="button7 summarybtn" 
@@ -2483,6 +2485,7 @@ const CodeBlock = ({ language, value }) => {
     >
       Read Along <ChevronDown className='dropdown-btn' size={18} strokeWidth={2} />
     </button>
+     <FontSizeController />
   </div>
 
   <div className="controls-row-2">

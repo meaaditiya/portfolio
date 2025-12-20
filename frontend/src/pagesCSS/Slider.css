@@ -27,15 +27,7 @@
   pointer-events: none;
 }
 
-.slider-container-custom::before {
-  left: 0;
-  background: linear-gradient(to right, rgba(250, 248, 245, 1), transparent);
-}
 
-.slider-container-custom::after {
-  right: 0;
-  background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
-}
 
 /* Slider Track - OPTIMIZED FOR SMOOTH SLIDING */
 .slider-track-custom {
@@ -44,7 +36,7 @@
   gap: 0;
   padding: 0;
   margin: 0;
-  animation: slideScroll 40s linear infinite;
+  animation: slideScroll 400s linear infinite;
   will-change: transform;
 }
 

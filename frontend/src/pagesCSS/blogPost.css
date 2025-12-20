@@ -5242,20 +5242,20 @@ code:not(.minimal-code-text) {
 
 
 .button7 {
-  background: transparent;
+  background: #F1F2E9;
   position: relative;
   padding: 7px 15px;
   display: flex;
   align-items: center;
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 15.5px;
+  font-weight: 200;
   text-decoration: none;
   cursor: pointer;
-  border: 1px solid rgb(40, 144, 241);
+  border: 1px solid black;
   border-radius: 25px;
   outline: none;
   overflow: hidden;
-  color: rgb(40, 144, 241);
+  color:black;
   transition: color 0.3s 0.1s ease-out;
   text-align: center;
 }
@@ -5496,6 +5496,8 @@ code:not(.minimal-code-text) {
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;
+  position: relative;
+  
 }
 
 .controls-row-2 {
