@@ -1,0 +1,203 @@
+/* Document Info Strip */
+.doc-info-strip {
+  width: 100%;
+  margin: 0;
+  position: relative;
+  height: 50px;
+}
+
+/* Document Info Container */
+.doc-info-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.doc-info-container::before,
+.doc-info-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.doc-info-container::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(250, 248, 245, 1), transparent);
+}
+
+.doc-info-container::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
+}
+
+/* Document Info Track */
+.doc-info-track {
+  display: flex;
+  animation: docInfoScroll 60s linear infinite;
+  width: fit-content;
+  gap: 0;
+  padding: 0;
+  height: 100%;
+  align-items: center;
+}
+
+@keyframes docInfoScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Document Info Item */
+.doc-info-item {
+  flex-shrink: 0;
+  height: 50px;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  background: #fafafa;
+  border-right: 1px solid #ddd;
+  transition: none;
+  cursor: default;
+}
+
+/* Background Icon Watermark */
+.doc-info-bg-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.doc-bg-icon {
+  width: 60px;
+  height: 60px;
+}
+
+/* Icon Circle */
+.doc-info-icon-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.doc-info-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Info Text */
+.doc-info-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  line-height: 1.4;
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .doc-info-strip {
+    height: 45px;
+    margin: 15px 0;
+  }
+
+  .doc-info-item {
+    height: 45px;
+    padding: 0 30px;
+    gap: 10px;
+  }
+
+  .doc-info-icon-circle {
+    width: 26px;
+    height: 26px;
+  }
+
+  .doc-info-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .doc-info-text {
+    font-size: 12px;
+  }
+
+  .doc-bg-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .doc-info-container::before,
+  .doc-info-container::after {
+    width: 50px;
+  }
+
+  .doc-info-track {
+    animation: docInfoScroll 50s linear infinite;
+  }
+}
+
+@media (max-width: 480px) {
+  .doc-info-strip {
+    height: 40px;
+    margin: 12px 0;
+  }
+
+  .doc-info-item {
+    height: 40px;
+    padding: 0 20px;
+    gap: 8px;
+  }
+
+  .doc-info-icon-circle {
+    width: 24px;
+    height: 24px;
+  }
+
+  .doc-info-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .doc-info-text {
+    font-size: 11px;
+  }
+
+  .doc-bg-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .doc-info-container::before,
+  .doc-info-container::after {
+    width: 30px;
+  }
+
+  .doc-info-track {
+    animation: docInfoScroll 40s linear infinite;
+  }
+}

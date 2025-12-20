@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock, AlertCircle, CheckCircle, FileLock } from 'lucide-react';
 import '../pagesCSS/document.css';
+import DocumentSlider from './documentslider';
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -1304,7 +1305,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
       </button>
     </div>
   </div>
-
+<DocumentSlider/>
   {!searchMode && breadcrumb.length > 0 && (
     <div className="breadcrumb-container">
       <Link to="/resources" className="breadcrumb-item">

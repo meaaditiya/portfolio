@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import '../pagesCSS/about.css';
 import profileImage from '../images/java2.png';
-
+import ProfileSlider from './ProfileSlider';
 const About = () => {
   const [currentSlide, setCurrentSlide] = useState(5);
 
@@ -91,10 +91,11 @@ const About = () => {
                 <img src={profileImage} alt="Aaditiya Tyagi" className="about-profile-image" />
                 <div className="about-image-overlay"></div>
               </div>
+              
             </div>
           </div>
         </div>
-
+<ProfileSlider />
         {/* Single Row Layout */}
         <div className="about-single-row">
           {/* Professional Summary */}

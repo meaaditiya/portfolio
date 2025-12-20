@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../pagesCSS/Posts.css';
+import PostsSlider from './PostsSlider.jsx';
+import SocialSlider from './SocialPostsSlider.jsx';
 import axios from 'axios';
 
 import Community from './Community.jsx';
@@ -1351,6 +1353,12 @@ const renderComment = (comment, isReply = false) => {
   </div>
 
 </div>
+  {posts.length > 0 && (
+        <PostsSlider 
+          posts={posts} 
+          onPostClick={openPostModal}
+        />
+      )}
         <div className="pst-grid pst-posts-grid">
          {posts.map((post) => (
   <div 
@@ -1551,6 +1559,12 @@ const renderComment = (comment, isReply = false) => {
     From trending topics to personal insights, stay connected with diverse content that sparks conversations. Experience the digital presence across multiple platforms in one place.
   </p>
 </div>
+{socialEmbeds.length > 0 && (
+        <SocialSlider 
+          socialEmbeds={socialEmbeds} 
+          onEmbedClick={openSocialEmbedModal}
+        />
+      )}
         <div className="pst-grid">
           {socialEmbeds.map((embed) => {
             const platformIcon = platforms.find(p => p.id === embed.platform)?.icon || Globe;

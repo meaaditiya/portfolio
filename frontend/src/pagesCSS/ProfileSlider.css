@@ -1,0 +1,254 @@
+/* Profile Carousel Wrapper */
+.profile-carousel-wrapper {
+  width: 100%;
+  margin: 40px 0;
+  position: relative;
+}
+
+/* Profile Carousel Box */
+.profile-carousel-box {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+  padding: 0;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.profile-carousel-box::before,
+.profile-carousel-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.profile-carousel-box::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(250, 248, 245, 1), transparent);
+}
+
+.profile-carousel-box::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
+}
+
+/* Profile Carousel Rail */
+.profile-carousel-rail {
+  display: flex;
+  animation: profileCarouselScroll 40s linear infinite;
+  width: fit-content;
+  gap: 0;
+  padding: 0;
+}
+
+
+
+@keyframes profileCarouselScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Profile Carousel Tile */
+.profile-carousel-tile {
+  flex-shrink: 0;
+  width: 300px;
+  height: 200px;
+  cursor: pointer;
+  transition: none;
+}
+
+/* Profile Tile Frame */
+.profile-tile-frame {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  transition: none;
+}
+
+/* Profile Tile Body */
+.profile-tile-body {
+  padding: 20px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #fafafa;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Profile Background Mark */
+.profile-bg-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.profile-mark-icon {
+  width: 120px;
+  height: 120px;
+}
+
+/* Profile Icon Circle */
+.profile-icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.profile-circle-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Profile Tile Heading */
+.profile-tile-heading {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+}
+
+/* Profile Tile Text */
+.profile-tile-text {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+  margin: 0 0 8px 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Profile Tile Badge */
+.profile-tile-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-carousel-tile {
+    width: 250px;
+    height: 180px;
+  }
+
+  .profile-carousel-rail {
+    animation: profileCarouselScroll 35s linear infinite;
+  }
+
+  .profile-carousel-box::before,
+  .profile-carousel-box::after {
+    width: 60px;
+  }
+
+  .profile-tile-body {
+    padding: 16px 12px;
+  }
+
+  .profile-icon-circle {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 10px;
+  }
+
+  .profile-circle-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .profile-tile-heading {
+    font-size: 14px;
+  }
+
+  .profile-tile-text {
+    font-size: 11px;
+  }
+
+  .profile-mark-icon {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-carousel-tile {
+    width: 200px;
+    height: 150px;
+  }
+
+  .profile-carousel-rail {
+    animation: profileCarouselScroll 30s linear infinite;
+  }
+
+  .profile-carousel-wrapper {
+    margin: 30px 0;
+  }
+
+  .profile-carousel-box::before,
+  .profile-carousel-box::after {
+    width: 40px;
+  }
+
+  .profile-tile-body {
+    padding: 12px 10px;
+  }
+
+  .profile-icon-circle {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .profile-circle-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .profile-tile-heading {
+    font-size: 13px;
+  }
+
+  .profile-tile-text {
+    font-size: 10px;
+  }
+
+  .profile-mark-icon {
+    width: 80px;
+    height: 80px;
+  }
+}
