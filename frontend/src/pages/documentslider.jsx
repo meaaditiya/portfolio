@@ -55,7 +55,6 @@ const DocumentSlider = () => {
     }
   ];
 
-  // Duplicate for seamless loop
   const duplicatedItems = [...infoItems, ...infoItems];
 
   return (

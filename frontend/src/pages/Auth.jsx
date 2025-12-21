@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Edit2, CheckCircle, ChevronRight,  Crown } from 'lucide-react';
-
+import AuthWarning from '../components/AuthWarning';
 const API_BASE = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
 
 export default function Auth() {
@@ -1082,7 +1082,7 @@ const handleDiscordLogin = () => {
   flex-shrink: 0;
 }
     `}</style>
-
+ <AuthWarning /> 
       <div className="auth-wrapper">
         {view === 'loading' ? (
           <div className="auth-card">
@@ -1348,24 +1348,7 @@ Continue with Google
           </p>
         </div>
 
-        <div className="benefits-section">
-          <div className="benefit-card">
-            <div className="benefit-title">Share Ideas</div>
-            <div className="benefit-text">Express yourself through writing</div>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-title">Build Audience</div>
-            <div className="benefit-text">Grow your readership</div>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-title">Connect</div>
-            <div className="benefit-text">Engage with readers</div>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-title">Create</div>
-            <div className="benefit-text">Write and publish freely</div>
-          </div>
-        </div>
+       
       </>
     ) : view === 'forgot' ? (
       <>

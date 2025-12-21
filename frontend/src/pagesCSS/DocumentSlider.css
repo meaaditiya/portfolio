@@ -1,20 +1,18 @@
-/* Document Info Strip */
 .doc-info-strip {
   width: 100%;
   margin: 0;
   position: relative;
-  height: 50px;
+  height: 38px;
 }
 
-/* Document Info Container */
 .doc-info-container {
   width: 100%;
   height: 100%;
   overflow: hidden;
   position: relative;
-  background: transparent;
-  border-top: 1px solid #e5e5e5;
-  border-bottom: 1px solid #e5e5e5;
+  background: #8B1538;
+  border-top: 1px solid #6B0F2B;
+  border-bottom: 1px solid #6B0F2B;
 }
 
 .doc-info-container::before,
@@ -30,15 +28,14 @@
 
 .doc-info-container::before {
   left: 0;
-  background: linear-gradient(to right, rgba(250, 248, 245, 1), transparent);
+  background: linear-gradient(to right, rgba(139, 21, 56, 1), transparent);
 }
 
 .doc-info-container::after {
   right: 0;
-  background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
+  background: linear-gradient(to left, rgba(139, 21, 56, 1), transparent);
 }
 
-/* Document Info Track - OPTIMIZED FOR SMOOTH SLIDING */
 .doc-info-track {
   display: flex;
   width: fit-content;
@@ -51,7 +48,6 @@
   will-change: transform;
 }
 
-/* Simple, performant animation */
 @keyframes docInfoScroll {
   from {
     transform: translateX(0);
@@ -61,21 +57,19 @@
   }
 }
 
-/* Document Info Item */
 .doc-info-item {
   flex: 0 0 auto;
-  height: 50px;
-  padding: 0 40px;
+  height: 38px;
+  padding: 0 35px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   position: relative;
-  background: #fafafa;
-  border-right: 1px solid #ddd;
+  background: #8B1538;
+  border-right: 1px solid #6B0F2B;
   cursor: default;
 }
 
-/* Background Icon Watermark */
 .doc-info-bg-icon {
   position: absolute;
   left: 50%;
@@ -86,14 +80,13 @@
 }
 
 .doc-bg-icon {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
 }
 
-/* Icon Circle */
 .doc-info-icon-circle {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -102,55 +95,53 @@
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .doc-info-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
-/* Info Text */
 .doc-info-text {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  color: #333;
+  color: #fff;
   white-space: nowrap;
   line-height: 1.4;
   position: relative;
   z-index: 1;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .doc-info-strip {
-    height: 45px;
+    height: 35px;
     margin: 15px 0;
   }
 
   .doc-info-item {
-    height: 45px;
-    padding: 0 30px;
-    gap: 10px;
+    height: 35px;
+    padding: 0 28px;
+    gap: 8px;
   }
 
   .doc-info-icon-circle {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
   }
 
   .doc-info-icon {
-    width: 15px;
-    height: 15px;
+    width: 13px;
+    height: 13px;
   }
 
   .doc-info-text {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .doc-bg-icon {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
   }
 
   .doc-info-container::before,
@@ -165,33 +156,33 @@
 
 @media (max-width: 480px) {
   .doc-info-strip {
-    height: 40px;
+    height: 32px;
     margin: 12px 0;
   }
 
   .doc-info-item {
-    height: 40px;
+    height: 32px;
     padding: 0 20px;
-    gap: 8px;
+    gap: 7px;
   }
 
   .doc-info-icon-circle {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 
   .doc-info-icon {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
   }
 
   .doc-info-text {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .doc-bg-icon {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
   }
 
   .doc-info-container::before,

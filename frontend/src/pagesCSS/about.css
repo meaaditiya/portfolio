@@ -1370,3 +1370,258 @@ body {
     font-size: 1.75rem;
   }
 }
+/* Enhanced Minimal Cards */
+.about-single-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.about-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.about-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.about-card::before {
+  display: none;
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Tech/Edu Logos */
+.tech-logos,
+.edu-logos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tech-logo,
+.edu-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.card-icon {
+  display: none;
+}
+
+/* Card Content */
+.card-content {
+  color: #374151;
+}
+
+.summary-text {
+  margin-bottom: 0.875rem;
+  line-height: 1.6;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.summary-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Education Timeline */
+.education-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.education-item {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+}
+
+.education-icon-wrapper {
+  display: none;
+}
+
+.education-content {
+  flex: 1;
+}
+
+.education-degree {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.education-school {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0 0 0.375rem 0;
+}
+
+.education-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.education-duration {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #6b7280;
+}
+
+.education-grade {
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .about-single-row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-card {
+    padding: 1rem 1.25rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tech-logos,
+  .edu-logos {
+    order: -1;
+  }
+
+  .card-title {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-card {
+    padding: 0.875rem 1rem;
+    border-radius: 6px;
+  }
+
+  .summary-text {
+    font-size: 0.8125rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .education-degree {
+    font-size: 0.875rem;
+  }
+
+  .education-school {
+    font-size: 0.75rem;
+  }
+
+  .tech-logo,
+  .edu-logo {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-card {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .card-header {
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.625rem;
+  }
+
+  .education-timeline {
+    gap: 0.875rem;
+  }
+
+  .tech-logo,
+  .edu-logo {
+    width: 18px;
+    height: 18px;
+  }
+}
+/* Inline Education Logos - Add to your CSS */
+.education-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.education-item-logos {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.inline-edu-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+  .inline-edu-logo {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .education-item {
+    gap: 0.625rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .inline-edu-logo {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .education-item {
+    gap: 0.5rem;
+  }
+  
+  .education-item-logos {
+    gap: 0.25rem;
+  }
+}

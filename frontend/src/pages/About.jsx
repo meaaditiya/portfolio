@@ -96,64 +96,76 @@ const About = () => {
           </div>
         </div>
 <ProfileSlider />
-        {/* Single Row Layout */}
-        <div className="about-single-row">
-          {/* Professional Summary */}
-          <div className="about-card about-summary-card">
-            <div className="card-header">
-              <div className="card-icon">
-                <User size={20} />
-              </div>
-              <h3 className="card-title">Professional Summary</h3>
-            </div>
-            <div className="card-content">
-              <p className="summary-text">
-                As a Computer Science student with hands-on experience in full-stack web development, I leverage 
-                my skills in modern web technologies like React.js, Node.js, and MongoDB to build innovative software solutions.
-              </p>
-              <p className="summary-text">
-                Through my case management e-Portal project, I've demonstrated expertise in building scalable, secure 
-                web applications with robust features like role-based authentication and real-time communication.
-              </p>
-              <p className="summary-text">
-                I'm passionate about solving complex technological challenges while delivering high-quality, user-centric 
-                solutions that make a meaningful impact.
-              </p>
-            </div>
-          </div>
+      {/* Single Row Layout */}
+<div className="about-single-row">
+  {/* Professional Summary */}
+  <div className="about-card about-summary-card">
+    <div className="card-header">
+      <div className="tech-logos">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" className="tech-logo" />
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="Spring" className="tech-logo" />
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" className="tech-logo" />
+      </div>
+      <h3 className="card-title">Professional Summary</h3>
+    </div>
+    <div className="card-content">
+      <p className="summary-text">
+        Computer Science student with hands-on experience in full-stack web development, leveraging 
+        modern technologies like React.js, Node.js, and MongoDB to build innovative solutions.
+      </p>
+      <p className="summary-text">
+        Demonstrated expertise in building scalable, secure web applications with robust features 
+        like role-based authentication and real-time communication through case management e-Portal project.
+      </p>
+      <p className="summary-text">
+        Passionate about solving complex technological challenges while delivering high-quality, 
+        user-centric solutions that make a meaningful impact.
+      </p>
+    </div>
+  </div>
 
-          {/* Education */}
-          <div className="about-card about-education-card">
-            <div className="card-header">
-              <div className="card-icon">
-                <GraduationCap size={20} />
-              </div>
-              <h3 className="card-title">Education</h3>
+  {/* Education */}
+ <div className="about-card about-education-card">
+    <div className="card-header">
+      <div className="edu-logos">
+        <img src="https://static.wikia.nocookie.net/logopedia/images/4/40/Uptu_logo.png" alt="AKTU" className="edu-logo" />
+        <img src="https://vectorseek.com/wp-content/uploads/2023/08/CBSE-Logo-Vector.svg-.png" alt="CBSE" className="edu-logo" />
+        <img src="https://www.kiet.edu/assets/images/logo/dark_logo.png" alt="KIET" className="edu-logo" />
+      </div>
+      <h3 className="card-title">Education</h3>
+    </div>
+    <div className="card-content">
+      <div className="education-timeline">
+        {educationData.map((edu, index) => (
+          <div key={index} className="education-item">
+            <div className="education-item-logos">
+              {index === 0 && (
+                <>
+                 
+                  <img src="https://static.wikia.nocookie.net/logopedia/images/4/40/Uptu_logo.png" alt="AKTU" className="inline-edu-logo" />
+                </>
+              )}
+              {(index === 1 || index === 2) && (
+                <img src="https://vectorseek.com/wp-content/uploads/2023/08/CBSE-Logo-Vector.svg-.png" alt="CBSE" className="inline-edu-logo" />
+              )}
             </div>
-            <div className="card-content">
-              <div className="education-timeline">
-                {educationData.map((edu, index) => (
-                  <div key={index} className="education-item">
-                    <div className="education-icon-wrapper">
-                      {edu.icon}
-                    </div>
-                    <div className="education-content">
-                      <h4 className="education-degree">{edu.degree}</h4>
-                      <p className="education-school">{edu.school}</p>
-                      <div className="education-meta">
-                        <span className="education-duration">
-                          <Calendar size={14} />
-                          {edu.duration}
-                        </span>
-                        <span className="education-grade">{edu.grade}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            <div className="education-content">
+              <h4 className="education-degree">{edu.degree}</h4>
+              <p className="education-school">{edu.school}</p>
+              <div className="education-meta">
+                <span className="education-duration">
+                  <Calendar size={12} />
+                  {edu.duration}
+                </span>
+                <span className="education-grade">{edu.grade}</span>
               </div>
             </div>
           </div>
-        </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
 
         {/* Technical Skills Slider Section */}
         <div className="expertise-section">
