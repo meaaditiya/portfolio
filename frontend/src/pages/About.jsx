@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import '../pagesCSS/about.css';
 import profileImage from '../images/java2.png';
-import ProfileSlider from './ProfileSlider';
+import ProfileSlider from '../components/ProfileSlider';
 const About = () => {
   const [currentSlide, setCurrentSlide] = useState(5);
 

@@ -5,14 +5,15 @@ import { MessageCircleReply, Sparkles} from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
-import Dots from './DotsLoader';
+import Dots from '../components/DotsLoader';
+import Subscriber from '../components/Subscriber';
 import { Volume2, Pause, Play, Square , ChevronDown} from 'lucide-react';
 // Import ReactMarkdown for proper markdown rendering
 import ReactMarkdown from 'react-markdown';
 import { Copy, Check } from 'lucide-react';
-import AudioPlayerWave from './AudioCard';
-import AuthorProfileModal from './AuthorModal';
-import FontSizeController from './FontSizeController';
+import AudioPlayerWave from '../components/AudioCard';
+import AuthorProfileModal from '../components/AuthorModal';
+import FontSizeController from '../components/FontSizeController';
 import '../pagesCSS/FontSizeController.css';
 const BlogPost = () => {
   const { slug } = useParams();
@@ -2561,7 +2562,11 @@ const CodeBlock = ({ language, value }) => {
           
           {/* Render content with inline images and videos */}
           {renderContentWithMedia(blogPost.content)}
-          
+   <Subscriber
+  blogId={blogPost._id}
+  isLoggedIn={isLoggedIn}
+  userEmail={loggedInUser?.email}
+/>       
           {/* Reactions section */}
     {/* Reactions section - UPDATED */}
      <h3 className='reaction-heading'>Vote this up if you like this post</h3>

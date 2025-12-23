@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import '../pagesCSS/Community.css';
-import Dots from './DotsLoader';
+import Dots from '../components/DotsLoader';
 
 const Community = () => {
   const [userInfo, setUserInfo] = useState(null);

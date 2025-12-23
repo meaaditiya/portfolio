@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Heart, ArrowLeft, MessageCircle, X, Send, Trash2, User, ChevronLeft, ChevronRight, Globe, Twitter, Facebook, Linkedin, Share2, Copy, Check, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../pagesCSS/Posts.css';
-import PostsSlider from './PostsSlider.jsx';
-import SocialSlider from './SocialPostsSlider.jsx';
+import PostsSlider from '../components/PostsSlider.jsx';
+import SocialSlider from '../components/SocialPostsSlider.jsx';
 import axios from 'axios';
 
 import Community from './Community.jsx';
-import SkeletonLoader from './PostSkeleton.jsx';
-import Error from './Error.jsx';
+import SkeletonLoader from '../components/PostSkeleton.jsx';
+import Error from '../components/Error.jsx';
 import {LogIn } from 'lucide-react'; 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

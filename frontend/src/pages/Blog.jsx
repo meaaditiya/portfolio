@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import BlogSkeletonLoader from './BlogSkeletonLoader';
+import BlogSkeletonLoader from '../components/BlogSkeletonLoader';
 import { Crown } from 'lucide-react';
-import Error from './Error.jsx';
+import Error from '../components/Error.jsx';
 import '../pagesCSS/blog.css';
 
 const Blog = () => {
