@@ -15,6 +15,7 @@ import { marked } from 'marked';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'isomorphic-dompurify';
 ;
+
 import { useVisitor } from '../context/VisitorContext';
 const Home = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Home = () => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
 const [firstBlog, setFirstBlog] = useState(null);
 const [isBlogLoading, setIsBlogLoading] = useState(true);
+const [showDocViewer, setShowDocViewer] = useState(false);
 const { liveCount, visitorStats, isConnected } = useVisitor();
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100);
@@ -197,6 +199,35 @@ const handlePrevAnnouncement = () => {
 
 const handleNextAnnouncement = () => {
   setCurrentAnnouncementIndex(prev => Math.min(announcements.length - 1, prev + 1));
+};
+const getFileExtension = (url) => {
+  return url?.split('.').pop().toLowerCase() || '';
+};
+
+const renderDocument = (docUrl) => {
+  const extension = getFileExtension(docUrl);
+  
+  if (extension === 'pdf') {
+    return (
+      <iframe
+        src={docUrl}
+        className="minimal-doc-frame"
+        title="Document"
+      />
+    );
+  }
+  
+  if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
+    return (
+      <iframe
+        src={`https://docs.google.com/viewer?url=${encodeURIComponent(docUrl)}&embedded=true`}
+        className="minimal-doc-frame"
+        title="Document"
+      />
+    );
+  }
+  
+  return <div className="minimal-doc-error">Preview unavailable</div>;
 };
   const currentAnnouncement = announcements[currentAnnouncementIndex];
 
@@ -594,15 +625,33 @@ const renderAnnouncementContent = (announcement) => {
 
   {/* Document Download */}
   {currentAnnouncement.documentUrl && (
-  <a 
-    href={currentAnnouncement.documentUrl}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="announcement_document_link_unique_2024"
-  >
-    <FileText size={16} />
-    Download Document
-  </a>
+  <>
+    <button
+      onClick={() => setShowDocViewer(!showDocViewer)}
+      className="announcement_document_link_unique_2024"
+    >
+      <FileText size={16} />
+      {showDocViewer ? 'Hide Document' : 'View Document'}
+    </button>
+
+    {showDocViewer && (
+      <div className="minimal-doc-container">
+        <div className="minimal-doc-header">
+          <span className="minimal-doc-title">
+            <FileText size={14} />
+            {currentAnnouncement.documentName || 'Document'}
+          </span>
+          <button 
+            className="minimal-doc-close"
+            onClick={() => setShowDocViewer(false)}
+          >
+            <X size={16} />
+          </button>
+        </div>
+        {renderDocument(currentAnnouncement.documentUrl)}
+      </div>
+    )}
+  </>
 )}
 
 </div>

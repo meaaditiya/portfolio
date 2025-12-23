@@ -1069,3 +1069,64 @@ a:focus-visible {
     font-size: 10px;
   }
 }
+/* Minimal Document Viewer */
+.minimal-doc-container {
+  margin-top: 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  width: 100%;
+}
+
+.minimal-doc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #fafafa;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.minimal-doc-title {
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.minimal-doc-close {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.minimal-doc-close:hover {
+  color: #333;
+}
+
+.minimal-doc-frame {
+  width: 100%;
+  height: 600px;
+  border: none;
+  display: block;
+}
+
+.minimal-doc-error {
+  padding: 40px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .minimal-doc-frame {
+    height: 400px;
+  }
+}
