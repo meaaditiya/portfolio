@@ -1082,7 +1082,7 @@ const handleDiscordLogin = () => {
   flex-shrink: 0;
 }
     `}</style>
- <AuthWarning /> 
+
       <div className="auth-wrapper">
         {view === 'loading' ? (
           <div className="auth-card">
