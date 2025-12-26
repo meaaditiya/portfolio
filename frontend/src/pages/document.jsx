@@ -668,9 +668,12 @@ if (isAuthenticated && isPremium) {
 }
 };
  
-  const closeExcelView = () => {
-    navigate('/resources');
-  };
+const closeExcelView = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const accessKey = urlParams.get('key');
+  const keyParam = accessKey ? `?key=${accessKey}` : '';
+  navigate(`/resources${keyParam}`);
+};
 
  const handleItemClick = (item) => {
   let isPremium = false;
@@ -1088,10 +1091,10 @@ const filteredRows = getFilteredExcelRows(sheetData);
 return (
   <div className="excel-view-container">
     <div className="excel-header">
-      <button onClick={closeExcelView} className="excel-back-btn">
-        <ArrowLeft size={20} />
-        <span>Back to Files</span>
-      </button>
+    <button onClick={closeExcelView} className="excel-back-btn">
+  <ArrowLeft size={20} />
+  <span>Back to Files</span>
+</button>
       <h2 className="excel-title">
         <ListIcon size={24} style={{ marginRight: '10px', position: 'relative', top: '6px' }} />
         {viewingExcel.name}
@@ -1306,22 +1309,22 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     </div>
   </div>
 <DocumentSlider/>
-  {!searchMode && breadcrumb.length > 0 && (
-    <div className="breadcrumb-container">
-      <Link to="/resources" className="breadcrumb-item">
-        <Home size={14} />
-        <span>Documents</span>
-      </Link>
-      {breadcrumb.map((crumb, index) => (
-        <React.Fragment key={crumb.id}>
-          <ChevronRight size={14} className="breadcrumb-separator" />
-          <Link to={`/resources/folder/${crumb.id}`} className="breadcrumb-item">
-            {crumb.name}
-          </Link>
-        </React.Fragment>
-      ))}
-    </div>
-  )}
+ {!searchMode && breadcrumb.length > 0 && (
+  <div className="breadcrumb-container">
+    <Link to={`/resources${window.location.search}`} className="breadcrumb-item">
+      <Home size={14} />
+      <span>Documents</span>
+    </Link>
+    {breadcrumb.map((crumb, index) => (
+      <React.Fragment key={crumb.id}>
+        <ChevronRight size={14} className="breadcrumb-separator" />
+        <Link to={`/resources/folder/${crumb.id}${window.location.search}`} className="breadcrumb-item">
+          {crumb.name}
+        </Link>
+      </React.Fragment>
+    ))}
+  </div>
+)}
 
   <div className="search-container">
     <div className="search-box">
