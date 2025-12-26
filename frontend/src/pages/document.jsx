@@ -21,7 +21,11 @@ const useDebounce = (value, delay) => {
 const Documents = () => {
   const { folderId, excelId } = useParams();
   const navigate = useNavigate();
-  
+  const customIcons = {
+    pdf: 'https://cdn-icons-png.flaticon.com/512/4726/4726010.png',
+    word: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Microsoft_Office_Word_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Word_%282025%E2%80%93present%29.svg.png',
+    folder: 'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/512/folder-icon.png'
+  };
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -847,19 +851,26 @@ const handleDownload = async (docId) => {
   }
 };
 
+const getFileIcon = (item) => {
+  if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
+  if (item.type === 'excel') return <ListIcon size={16} className="file-icon-excel" />;
+  
+  const mime = item.mimeType;
+  if (!mime) return <File size={16} />;
+ 
+  if (mime.includes("pdf")) {
+    return <img src={customIcons.pdf} alt="PDF" style={{width: '16px', height: '16px'}} />;
+  }
+  
+  if (mime.includes("image")) return <File size={16} className="file-icon-image" />;
 
-  const getFileIcon = (item) => {
-    if (item.type === 'link') return <LinkIcon size={16} className="file-icon-link" />;
-    if (item.type === 'excel') return <ListIcon size={16} className="file-icon-excel" />;
-    
-    const mime = item.mimeType;
-    if (!mime) return <File size={16} />;
-    if (mime.includes("pdf")) return <File size={16} className="file-icon-pdf" />;
-    if (mime.includes("image")) return <File size={16} className="file-icon-image" />;
-    if (mime.includes("word")) return <File size={16} className="file-icon-word" />;
-    if (mime.includes("excel") || mime.includes("spreadsheet")) return <File size={16} className="file-icon-excel" />;
-    return <File size={16} />;
-  };
+  if (mime.includes("word")) {
+    return <img src={customIcons.word} alt="Word" style={{width: '16px', height: '16px'}} />;
+  }
+  
+  if (mime.includes("excel") || mime.includes("spreadsheet")) return <File size={16} className="file-icon-excel" />;
+  return <File size={16} />;
+};
 
   const formatFileSize = (bytes) => {
     if (!bytes) return "";
@@ -1240,10 +1251,10 @@ return (
 <div className="documents-container">
 <div className="documents-header">
 <div className="title-section">
-<Folder size={24} className="folder-icon" />
-<h1 className="title">
-{searchMode ? 'Search Results' : (currentFolder?.name || 'Documents')}
-</h1>
+  <img src={customIcons.folder} alt="Folder" style={{width: '24px', height: '24px'}} className="folder-icon" />
+  <h1 className="title">
+    {searchMode ? 'Search Results' : (currentFolder?.name || 'Documents')}
+  </h1>
 </div>
 <div className="header-actions">
 <div className="item-count">{filteredItems.length} items</div>
@@ -1353,16 +1364,16 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   </div>
 
   {loading ? (
-    <div className="loading">
-      <div className="spinner"></div>
-    </div>
-  ) : filteredItems.length === 0 ? (
-    <div className="empty">
-      <Folder size={48} className="empty-icon" />
-      <p className="empty-text">
-        {searchMode ? 'No results found' : 'This folder is empty'}
-      </p>
-    </div>
+  <div className="loading">
+    <div className="spinner"></div>
+  </div>
+) : filteredItems.length === 0 ? (
+  <div className="empty">
+    <img src={customIcons.folder} alt="Folder" style={{width: '48px', height: '48px'}} className="empty-icon" />
+    <p className="empty-text">
+      {searchMode ? 'No results found' : 'This folder is empty'}
+    </p>
+  </div>
   ) : viewMode === 'list' ? (
     <div className="table-container">
       <table className="documents-table">
@@ -1399,26 +1410,24 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     className={`table-row ${(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser ? 'locked-row' : ''}`}
     onDoubleClick={() => handleItemClick(item)}
   >
-    <td className="td name-cell">
-      <div className="name-content">
-        {item.type === 'folder' ? (
-          <Folder size={16} className="folder-icon-small" />
-        ) : item.type === 'link' ? (
-          <LinkIcon size={16} className="file-icon-link" />
-        ) : item.type === 'excel' ? (
-          <List size={16} className="file-icon-excel" />
-        ) : (
-          getFileIcon(item)
-        )}
-        <span className="file-name">{item.name || item.originalName}
-        {(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser && (
-  <FileLock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
-)}
-        </span>
-       
-      </div>
-      
-    </td>
+  <td className="td name-cell">
+  <div className="name-content">
+    {item.type === 'folder' ? (
+      <img src={customIcons.folder} alt="Folder" style={{width: '16px', height: '16px'}} className="folder-icon-small" />
+    ) : item.type === 'link' ? (
+      <LinkIcon size={16} className="file-icon-link" />
+    ) : item.type === 'excel' ? (
+      <List size={16} className="file-icon-excel" />
+    ) : (
+      getFileIcon(item)
+    )}
+    <span className="file-name">{item.name || item.originalName}
+    {(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser && (
+      <FileLock size={14} style={{ marginLeft: '8px', color: '#605E5C' }} />
+    )}
+    </span>
+  </div>
+</td>
     <td className="td">{formatDate(item.createdAt)}</td>
     <td className="td">{getFileType(item)}</td>
     <td className="td">
@@ -1541,10 +1550,10 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
 
        
 <div className="grid-icon">
- {(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser ? (
-  <div className="locked-item-indicator">
+  {(item.hasAccess === false || item.accessLevel === 'locked') && !isPremiumUser ? (
+    <div className="locked-item-indicator">
       {item.type === 'folder' ? (
-        <Folder size={48} className="folder-icon-large locked-icon" />
+        <img src={customIcons.folder} alt="Folder" style={{width: '48px', height: '48px'}} className="folder-icon-large locked-icon" />
       ) : item.type === 'link' ? (
         <LinkIcon size={48} className="link-icon-large locked-icon" />
       ) : item.type === 'excel' ? (
@@ -1561,7 +1570,7 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
   ) : (
     <>
       {item.type === 'folder' ? (
-        <Folder size={48} className="folder-icon-large" />
+        <img src={customIcons.folder} alt="Folder" style={{width: '48px', height: '48px'}} className="folder-icon-large" />
       ) : item.type === 'link' ? (
         <LinkIcon size={48} className="link-icon-large" />
       ) : item.type === 'excel' ? (

@@ -1401,3 +1401,132 @@
     font-size: 16px;
   }
 }
+/* Table View - Custom Icon Styles */
+
+
+.name-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Custom PNG Icons in Table View */
+.name-content img {
+  width: 24px !important;
+  height: 24px !important;
+  object-fit: contain;
+  background: none !important;
+  border: none !important;
+  flex-shrink: 0;
+}
+
+/* Remove any background from icon containers */
+.folder-icon-small,
+.file-icon-pdf,
+.file-icon-word,
+.file-icon-image,
+.file-icon-excel,
+.file-icon-link {
+  background: none !important;
+  padding: 0 !important;
+}
+
+/* Ensure Lucide icons (for links and excel) align properly */
+.name-content svg {
+  flex-shrink: 0;
+  background: none !important;
+}
+
+/* Locked icon inside file name */
+.file-name svg {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Table row hover effect - don't add background to icons */
+.table-row:hover .name-content img,
+.table-row:hover .name-content svg {
+  background: none !important;
+}
+
+/* Locked row styling - maintain icon clarity */
+.locked-row .name-content img,
+.locked-row .name-content svg {
+  opacity: 0.7;
+  background: none !important;
+}
+
+.locked-row:hover .name-content img,
+.locked-row:hover .name-content svg {
+  opacity: 0.85;
+  background: none !important;
+}
+
+/* Empty state folder icon */
+.empty-icon {
+  width: 64px !important;
+  height: 64px !important;
+  object-fit: contain;
+  background: none !important;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* Header folder icon */
+.title-section img.folder-icon {
+  width: 28px !important;
+  height: 28px !important;
+  object-fit: contain;
+  background: none !important;
+  margin-right: 12px;
+}
+
+/* Grid View - Custom Icon Styles */
+.grid-icon img {
+  width: 56px !important;
+  height: 56px !important;
+  object-fit: contain;
+  background: none !important;
+  border: none !important;
+}
+
+/* Locked grid items */
+.locked-item-indicator img {
+  width: 56px !important;
+  height: 56px !important;
+  object-fit: contain;
+  background: none !important;
+  opacity: 0.6;
+}
+
+/* File icon in getFileIcon function */
+.file-icon-large img {
+  width: 56px !important;
+  height: 56px !important;
+  object-fit: contain;
+  background: none !important;
+}
+
+/* Responsive adjustments for table view */
+@media (max-width: 768px) {
+  .name-content img {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  .title-section img.folder-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .name-content img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  .name-content {
+    gap: 8px;
+  }
+}
