@@ -61,10 +61,10 @@ const handleBack = () => {
           top: 0;
           left: 0;
           right: 0;
-          background: rgba(255, 255, 255, 0.95);
+          background: ;
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+         background: var(--color-white);
           z-index: 1000;
           height: 55px;
           display: flex;
@@ -165,11 +165,7 @@ const handleBack = () => {
           white-space: nowrap;
         }
 
-        .nav-item:hover {
-          color: #000;
-          box-shadow: inset 0px -20px 0px -18.5px #000;
-          outline: none;
-        }
+      
 
         .nav-item::after {
           content: '✔';

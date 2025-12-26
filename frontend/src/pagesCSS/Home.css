@@ -252,7 +252,7 @@ body {
 }
 .about-section{
   position: relative;
-  top:50px;
+  top:40px;
   max-width: 1800px;
  
 }
@@ -991,7 +991,7 @@ a:focus-visible {
   }
 }
 .newabout-section{
-  margin-top:-0px;
+  margin-top:-40px;
 }
 /* Visitor Stats in Hero Section - Minimal Design */
 .hero-visitor-stats {

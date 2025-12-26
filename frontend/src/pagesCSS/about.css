@@ -55,6 +55,7 @@ body {
   align-items: center;
   background: var(--color-white);
   margin-top: -50px;
+  margin-bottom:50px;
 }
 
 /* About Container */
@@ -113,16 +114,12 @@ body {
   background-clip: text;
 }
 
-.about-description {
-  font-size: 1.125rem;
-  color: var(--color-black);
-  line-height: 1.8;
-  margin-bottom: 2rem;
-}
+
 
 .about-image-container {
   position: relative;
-  top:-40px;
+  top:-60px;
+  right:-200px;
   width: 300px;
   height: 300px;
  
@@ -645,6 +642,8 @@ body {
   }
 
   .about-image-container {
+     position: relative;
+  top:-40px;
     width: 240px;
     height: 240px;
     margin: 0 auto;
@@ -699,6 +698,8 @@ body {
   }
 
   .about-image-container {
+     position: relative;
+  top:-40px;
     width: 220px;
     height: 220px;
   }
@@ -787,6 +788,8 @@ body {
   }
 
   .about-image-container {
+     position: relative;
+  top:-40px;
     width: 200px;
     height: 200px;
   }
@@ -882,6 +885,8 @@ body {
   }
 
   .about-image-container {
+     position: relative;
+  top:-40px;
     width: 180px;
     height: 180px;
   }
@@ -988,6 +993,8 @@ body {
   }
 
   .about-image-container {
+     position: relative;
+  top:-40px;
     width: 150px;
     height: 150px;
   }
@@ -1017,6 +1024,8 @@ body {
   }
 
   .about-image-container {
+     position: relative;
+  top:-40px;
     width: 140px;
     height: 140px;
   }
@@ -1269,10 +1278,12 @@ body {
 /* Body text - clear, flowing, readable */
 .about-description,
 .summary-text {
-  font-weight: 450;
+  font-style: normal;
+  font-weight: 400;
   letter-spacing: 0.005em;
   line-height: 1.75;
   color: #1a1a1a;
+  text-align: center;
 }
 
 /* Education text */
@@ -1317,7 +1328,7 @@ body {
   margin: 0 0 1.5rem 0;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  text-align: left;
+  text-align: center;
   color: var(--color-black);
 }
 
@@ -1623,5 +1634,388 @@ body {
   
   .education-item-logos {
     gap: 0.25rem;
+  }
+}
+/* Technical Expertise Section - Clean & Simple */
+.minimal-expertise-section {
+  margin-bottom: 4rem;
+}
+
+.minimal-section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3.5rem;
+  color: var(--color-black);
+  letter-spacing: -0.02em;
+}
+
+.minimal-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3rem 2rem;
+  padding: 0 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.minimal-skill-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0;
+}
+
+.minimal-skill-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  opacity: 0.85;
+}
+
+.minimal-skill-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Responsive - Expertise Section */
+@media (max-width: 1200px) {
+  .minimal-skills-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .minimal-skills-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem 1.5rem;
+    padding: 0 1.5rem;
+  }
+  
+  .minimal-skill-logo {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (max-width: 768px) {
+  .minimal-section-title {
+    font-size: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .minimal-skills-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem 1.25rem;
+    padding: 0 1rem;
+  }
+  
+  .minimal-skill-logo {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .minimal-skill-name {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .minimal-skills-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem 1rem;
+  }
+  
+  .minimal-skill-logo {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .minimal-section-title {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .minimal-skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 1rem;
+    padding: 0 0.75rem;
+  }
+  
+  .minimal-skill-logo {
+    width: 42px;
+    height: 42px;
+  }
+  
+  .minimal-skill-name {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .minimal-skill-logo {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 360px) {
+  .minimal-skill-logo {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .minimal-skills-grid {
+    gap: 1.25rem 0.75rem;
+  }
+}
+.minimal-skill-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  opacity: 0.85;
+  transition: transform 0.3s ease;
+}
+
+.minimal-skill-item:hover .minimal-skill-logo {
+  transform: translateY(-4px);
+}
+.about-hero {
+  margin-bottom: 4rem;
+  padding: 0 2rem;
+}
+
+.about-hero-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  max-width: 900px !important;
+  margin: 0 auto !important;
+  gap: 2rem !important;
+}
+
+.about-text-content {
+  max-width: 800px !important;
+  width: 100% !important;
+  position: relative !important;
+  top: 0 !important;
+  padding: 0 !important;
+}
+
+/* Badge - Stylish Centered */
+.about-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  color: var(--color-white) !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 50px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 2rem !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2) !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+
+.about-badge:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3) !important;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+}
+
+/* Title - Large & Stylish */
+.hero-main-title {
+  font-size: 3.5rem !important;
+  font-weight: 800 !important;
+  margin: 0 0 2rem 0 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.03em !important;
+  text-align: center !important;
+  color: var(--color-black) !important;
+}
+
+.hero-gradient-text {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  display: inline-block !important;
+  animation: gradient-shift 3s ease infinite !important;
+  background-size: 200% 200% !important;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Description - Elegant & Readable */
+.about-description {
+  font-size: 1.125rem !important;
+  line-height: 1.8 !important;
+  color: #4b5563 !important;
+  text-align: center !important;
+  margin: 0 auto !important;
+  max-width: 700px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
+  padding: 0 1rem !important;
+}
+
+/* Add subtle emphasis to certain words */
+.about-description strong {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .hero-main-title {
+    font-size: 3rem !important;
+  }
+
+  .about-description {
+    font-size: 1.0625rem !important;
+    max-width: 650px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    padding: 0 1.5rem !important;
+  }
+
+  .hero-main-title {
+    font-size: 2.75rem !important;
+    margin-bottom: 1.75rem !important;
+  }
+
+  .about-description {
+    font-size: 1rem !important;
+    padding: 0 0.75rem !important;
+  }
+
+  .about-badge {
+    padding: 0.625rem 1.25rem !important;
+    font-size: 0.8125rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-hero {
+    padding: 0 1rem !important;
+    margin-bottom: 3rem !important;
+  }
+
+  .hero-main-title {
+    font-size: 2.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .about-description {
+    font-size: 0.9375rem !important;
+    line-height: 1.7 !important;
+  }
+
+  .about-badge {
+    padding: 0.5rem 1rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero {
+    padding: 0 0.75rem !important;
+  }
+
+  .hero-main-title {
+    font-size: 2.25rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .about-description {
+    font-size: 0.875rem !important;
+    padding: 0 0.5rem !important;
+  }
+
+  .about-hero-content {
+    gap: 1.5rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-main-title {
+    font-size: 2rem !important;
+  }
+
+  .about-description {
+    font-size: 0.8125rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-main-title {
+    font-size: 1.75rem !important;
+  }
+
+  .about-description {
+    font-size: 0.75rem !important;
+  }
+
+  .about-badge {
+    font-size: 0.75rem !important;
+    padding: 0.4375rem 0.875rem !important;
+  }
+}
+
+/* ========================================
+   OPTIONAL: ADD DECORATIVE ELEMENTS
+   ======================================== */
+
+/* Subtle background pattern */
+.about-hero::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 400px !important;
+ 
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+.about-hero-content {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Add subtle animation on load */
+.about-text-content {
+  animation: fadeInUp 0.8s ease-out !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

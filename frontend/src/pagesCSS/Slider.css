@@ -12,8 +12,7 @@
   position: relative;
   background: transparent;
   padding: 0;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+  
 }
 
 .slider-container-custom::before,
@@ -40,6 +39,10 @@
   will-change: transform;
 }
 
+.slider-track-custom:hover {
+  animation-play-state: paused;
+}
+
 /* Simple, performant animation */
 @keyframes slideScroll {
   from {
@@ -52,9 +55,9 @@
 
 /* Slider Item */
 .slider-item {
-  flex: 0 0 300px;
-  width: 300px;
-  height: 200px;
+  flex: 0 0 350px;
+  width: 350px;
+  height: 240px;
   cursor: pointer;
 }
 
@@ -65,8 +68,7 @@
   border-radius: 0;
   overflow: hidden;
   position: relative;
-  background: #fff;
-  border-right: 1px solid #ddd;
+  
 }
 
 /* Media */
@@ -135,7 +137,7 @@
 
 /* Social Card Specific Styles */
 .slider-social-card {
-  background: #fff;
+ 
   display: flex;
   flex-direction: column;
 }
@@ -168,7 +170,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: #f9f9f9;
+ 
   height: 100%;
   position: relative;
   overflow: hidden;

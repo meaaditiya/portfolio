@@ -179,12 +179,7 @@ const ProfileSlider = () => {
                         style={{ color: item.color, opacity: 0.1 }}
                       />
                     </div>
-                    <div 
-                      className="profile-icon-circle"
-                      style={{ backgroundColor: item.color }}
-                    >
-                      <IconComponent className="profile-circle-icon" />
-                    </div>
+                   
                     <h4 className="profile-tile-heading">
                       {item.title}
                     </h4>

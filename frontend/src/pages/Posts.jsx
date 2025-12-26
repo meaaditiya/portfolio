@@ -5,7 +5,7 @@ import '../pagesCSS/Posts.css';
 import PostsSlider from '../components/PostsSlider.jsx';
 import SocialSlider from '../components/SocialPostsSlider.jsx';
 import axios from 'axios';
-
+import filmreel from '../images/Filmreel2.png';
 import Community from './Community.jsx';
 import SkeletonLoader from '../components/PostSkeleton.jsx';
 import Error from '../components/Error.jsx';
@@ -1353,135 +1353,14 @@ const renderComment = (comment, isReply = false) => {
   </div>
 
 </div>
+<img className="filmreel" src= {filmreel} alt="" />
   {posts.length > 0 && (
         <PostsSlider 
           posts={posts} 
           onPostClick={openPostModal}
         />
       )}
-        <div className="pst-grid pst-posts-grid">
-         {posts.map((post) => (
-  <div 
-    key={post.id} 
-    className="pst-post pst-post2"
-    onClick={() => openPostModal(post)}
-    onMouseEnter={() => setHoveredVideo(post.id)}
-    onMouseLeave={() => setHoveredVideo(null)}
-  >
-    <div className="pst-post-card">
-      <div className="pst-post-image">
-        {post.mediaType === 'video' ? (
-          <div className="pst-video-container">
-            <video
-              ref={el => videoRefs.current[post.id] = el}
-              src={post.media}
-              poster={post.thumbnail || ''}
-              className="pst-video"
-              loop
-              muted
-              playsInline
-              onLoadedMetadata={(e) => {
-                setVideoStates(prev => ({
-                  ...prev,
-                  [post.id]: { 
-                    ...prev[post.id], 
-                    duration: e.target.duration 
-                  }
-                }));
-              }}
-              onPlay={() => {
-                setVideoStates(prev => ({
-                  ...prev,
-                  [post.id]: { ...prev[post.id], playing: true }
-                }));
-              }}
-              onPause={() => {
-                setVideoStates(prev => ({
-                  ...prev,
-                  [post.id]: { ...prev[post.id], playing: false }
-                }));
-              }}
-              onTimeUpdate={() => handleVideoTimeUpdate(post.id)}
-              onEnded={() => handleVideoEnded(post.id)}
-            />
-
-            {hoveredVideo === post.id && (
-              <div className="pst-video-overlay-controls">
-                <button
-                  className="pst-video-play-btn"
-                  onClick={(e) => toggleVideoPlayPause(post.id, e)}
-                >
-                  {videoStates[post.id]?.playing ? (
-                    <Pause className="pst-icon-md" />
-                  ) : (
-                    <Play className="pst-icon-md" />
-                  )}
-                </button>
-              </div>
-            )}
-
-            <div className="pst-video-duration-badge">
-              video post : {formatVideoDuration(post.videoDuration)}
-            </div>
-          </div>
-        ) : (
-          <>
-            {imageLoadStates[post.id] !== 'loaded' && imageLoadStates[post.id] !== 'error' && (
-              <div className="pst-image-loading">
-                <div className="pst-image-spinner"></div>
-              </div>
-            )}
-            {imageLoadStates[post.id] === 'error' ? (
-              <div className="pst-image-error">
-                <div className="pst-image-error-content">
-                  <div className="pst-image-error-icon">🖼️</div>
-                  <p className="pst-image-error-text">Image unavailable</p>
-                </div>
-              </div>
-            ) : (
-              <img 
-                src={post.media} 
-                alt={post.caption || 'Post image'} 
-                className="pst-image"
-                onLoad={() => handleImageLoad(post.id)}
-                onError={() => handleImageError(post.id)}
-              />
-            )}
-          </>
-        )}
-        <div className="pst-post-overlay">
-          {/* CAPTION AND DATE AT TOP */}
-          <div className="pst-overlay-caption-section">
-            <p className="pst-overlay-caption">
-              {post.caption.length > 60 
-                ? post.caption.substring(0, 60) + '...' 
-                : post.caption}
-            </p>
-            <p className="pst-overlay-date">{formatDate(post.createdAt)}</p>
-          </div>
-
-          {/* STATS IN MIDDLE */}
-          <div className="pst-post-stats">
-            {post.mediaType === 'video' && (
-              <div className="pst-video-duration-badge">
-                video post : {formatVideoDuration(post.videoDuration)}
-              </div>
-            )}
-            <div className="pst-stat">
-              <Heart className="pst-icon-sm" />
-              <span className="pst-stat-count">{post.reactionCount || 0}</span>
-            </div>
-            <div className="pst-stat">
-              <MessageCircle className="pst-icon-sm" />
-              <span className="pst-stat-count">{post.commentCount || 0}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-))}
-        </div>
+     
 
         {totalPages > 1 && (
           <div className="pst-pagination">
@@ -1588,9 +1467,25 @@ const renderComment = (comment, isReply = false) => {
                     <p className="pst-modal-date1">
                       {formatDate(embed.createdAt)}
                     </p>
-                    <div className="pst-social-preview">
-                      {renderNativeEmbed(embed)}
-                    </div>
+                   <div className="pst-social-preview">
+  {embed.platform === 'linkedin' ? (
+    <div className="pst-linkedin-placeholder">
+      <img 
+        src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+        alt="LinkedIn"
+        className="pst-linkedin-logo-image"
+      />
+      <p className="pst-linkedin-preview-text">
+        LinkedIn Post
+      </p>
+      <p className="pst-linkedin-click-text">
+        Click to view full post
+      </p>
+    </div>
+  ) : (
+    renderNativeEmbed(embed)
+  )}
+</div>
                   </div>
                 </div>
               </div>

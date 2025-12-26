@@ -7,6 +7,7 @@ import {
 import '../pagesCSS/about.css';
 import profileImage from '../images/java2.png';
 import ProfileSlider from '../components/ProfileSlider';
+
 const About = () => {
   const [currentSlide, setCurrentSlide] = useState(5);
 
@@ -22,19 +23,20 @@ const About = () => {
   };
 
   const skills = [
-    { name: "React.js", icon: <Globe size={20} />, color: "#61DAFB" },
-    { name: "Node.js", icon: <Server size={20} />, color: "#339933" },
-    { name: "Spring Boot", icon: <Layers size={20} />, color: "#6DB33F" },
-    { name: "Javascript", icon: <FileCode size={20} />, color: "#F7DF1E" },
-    { name: "MongoDB", icon: <Database size={20} />, color: "#47A248" },
-    { name: "Java", icon: <Code size={20} />, color: "#007396" },
-    { name: "SQL", icon: <Database size={20} />, color: "#4479A1" },
-    { name: "Express.js", icon: <Server size={20} />, color: "#000000" },
-    { name: "AWS", icon: <Cloud size={20} />, color: "#FF9900" },
-    { name: "HTML", icon: <FileCode size={20} />, color: "#E34F26" },
-    { name: "CSS", icon: <Palette size={20} />, color: "#1572B6" },
-    { name: "Git", icon: <GitBranch size={20} />, color: "#F05032" }
+    { name: "React.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+    { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+    { name: "Spring Boot", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" },
+    { name: "JavaScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
+    { name: "MongoDB", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+    { name: "Java", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" },
+    { name: "MySQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
+    { name: "Express.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" },
+    { name: "AWS", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg" },
+    { name: "HTML5", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
+    { name: "CSS3", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
+    { name: "Git", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" }
   ];
+
 
   const educationData = [
     {
@@ -72,30 +74,36 @@ const About = () => {
     <section className="about-section">
       <div className="about-container">
         {/* Hero Section */}
-        <div className="about-hero">
-          <div className="about-hero-content">
-            <div className="about-text-content">
-             <h1 className="hero-main-title">
+            <h1 className="hero-main-title">
   Full-Stack
   <span className="hero-gradient-text"> Developer</span>
 </h1>
-      <p className="about-description">
-              Full-stack developer with strong expertise in Java, Spring Boot, SQL, and modern backend engineering. 
-              Skilled in building scalable APIs, secure architectures, and high-performance systems with clean, 
-              maintainable code. Passionate about robust backend design, database optimization, and creating seamless,
-               reliable user experiences that deliver real-world impact.
-              </p>
-            </div>
-            <div className="about-image-wrapper">
-              <div className="about-image-container">
-                <img src={profileImage} alt="Aaditiya Tyagi" className="about-profile-image" />
-                <div className="about-image-overlay"></div>
-              </div>
-              
-            </div>
-          </div>
-        </div>
+       {/* Technical Expertise Section */}
+<div className="minimal-expertise-section">
+ 
+  
+  <div className="minimal-skills-grid">
+    {skills.map((skill, index) => (
+      <div key={index} className="minimal-skill-item">
+        <img src={skill.logo} alt={skill.name} className="minimal-skill-logo" />
+        <span className="minimal-skill-name">{skill.name}</span>
+      </div>
+    ))}
+  </div>
+</div>
+       
+        
 <ProfileSlider />
+ <div className="about-resume-row">
+          <button 
+            className="super-button" 
+            onClick={handleDownloadResume}
+            aria-label="Download Resume"
+          >
+            <Download size={20} />
+            <span>Download Resume</span>
+          </button>
+        </div>
       {/* Single Row Layout */}
 <div className="about-single-row">
   {/* Professional Summary */}
@@ -167,78 +175,10 @@ const About = () => {
   </div>
 </div>
 
-        {/* Technical Skills Slider Section */}
-        <div className="expertise-section">
-         <h1 className="section-heading tyagi-hero-title">
-          Technical
-              <span className="tyagi-hero-gradient"> Expertise</span>
-            </h1>
-          
-          <div className="slider-container">
-            <button className="slider-nav prev" onClick={prevSlide} aria-label="Previous slide">
-              <ChevronLeft size={24} />
-            </button>
 
-            <div className="slider-wrapper">
-              {skills.map((skill, index) => {
-                const offset = index - currentSlide;
-                const isActive = offset === 0;
-                const absOffset = Math.abs(offset);
-                
-                return (
-                  <div
-                    key={index}
-                    className={`expertise-card-small ${isActive ? 'active' : ''}`}
-                    style={{
-                      transform: `translateX(${offset * 35}%) translateZ(${-absOffset * 100}px) scale(${1 - absOffset * 0.15})`,
-                      opacity: absOffset > 2 ? 0 : 1 - absOffset * 0.3,
-                      zIndex: 20 - absOffset,
-                      pointerEvents: isActive ? 'auto' : 'none'
-                    }}
-                  >
-                    <div className="card-gradient-small" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}></div>
-                    <div className="card-glass-small">
-                      <div className="skill-card-content">
-                        <div className="skill-icon-large" style={{ color: skill.color }}>
-                          {skill.icon}
-                        </div>
-                        <h3 className="skill-name-large">{skill.name}</h3>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <button className="slider-nav next" onClick={nextSlide} aria-label="Next slide">
-              <ChevronRight size={24} />
-            </button>
-          </div>
-
-          {/* Slider Dots */}
-          <div className="slider-dots">
-            {skills.map((_, index) => (
-              <button
-                key={index}
-                className={`dot ${currentSlide === index ? 'active' : ''}`}
-                onClick={() => setCurrentSlide(index)}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
 
         {/* Download Resume Button */}
-        <div className="about-resume-row">
-          <button 
-            className="super-button" 
-            onClick={handleDownloadResume}
-            aria-label="Download Resume"
-          >
-            <Download size={20} />
-            <span>Download Resume</span>
-          </button>
-        </div>
+       
 
       
       </div>

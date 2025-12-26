@@ -12,8 +12,7 @@
   position: relative;
   background: transparent;
   padding: 0;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+ 
 }
 
 .profile-carousel-box::before,
@@ -29,12 +28,12 @@
 
 .profile-carousel-box::before {
   left: 0;
-  background: linear-gradient(to right, rgba(250, 248, 245, 1), transparent);
+ 
 }
 
 .profile-carousel-box::after {
   right: 0;
-  background: linear-gradient(to left, rgba(250, 248, 245, 1), transparent);
+ 
 }
 
 /* Profile Carousel Rail - ULTRA OPTIMIZED */
@@ -74,8 +73,7 @@
   border-radius: 0;
   overflow: hidden;
   position: relative;
-  background: #fff;
-  border-right: 1px solid #ddd;
+background-color: var(--color-white);
 }
 
 /* Profile Tile Body */
@@ -87,7 +85,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: #fafafa;
+ 
   height: 100%;
   position: relative;
   overflow: hidden;

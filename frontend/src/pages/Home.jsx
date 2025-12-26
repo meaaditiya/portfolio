@@ -749,7 +749,7 @@ const renderAnnouncementContent = (announcement) => {
 </div>
 
 {/* Hero Section */}
-/* Replace your Hero Section with this updated version */
+
 
 <section className="aaditiya-hero-stage">
   <div className="aaditiya-hero-orchestration">
