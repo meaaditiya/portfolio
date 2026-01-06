@@ -4,7 +4,7 @@ import { Github, Linkedin, Mail, ArrowRight,ArrowUpRight, Code, Database, Globe,
 import About from './About';
 import Projects from './Projects';
 import Contact from './Contact';
-import profileImage from '../images/aadiprofile.png';
+import profileImage from '../images/aadiprofile2.png';
 import profileImage2 from '../images/livestream.png';
 import blogImage from '../images/blogimage.jpeg';
 import weatherBackground from '../images/home.png';

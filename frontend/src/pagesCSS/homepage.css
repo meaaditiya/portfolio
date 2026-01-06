@@ -212,8 +212,8 @@
   width: 100%;
   overflow: visible;
   background: transparent;
-  border: 1.5px solid rgba(80, 80, 80, 0.3);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  
+  
   backdrop-filter: blur(3px);
   position: relative;
   padding: 5px;
@@ -245,41 +245,8 @@
   display: none;
 }
 
-/* Corner Accents */
-.aaditiya-corner-accent {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 1.5px solid #1a1a1a;
-}
 
-.aaditiya-corner-top-left {
-  top: -1px;
-  left: -1px;
-  border-right: none;
-  border-bottom: none;
-}
 
-.aaditiya-corner-top-right {
-  top: -1px;
-  right: -1px;
-  border-left: none;
-  border-bottom: none;
-}
-
-.aaditiya-corner-bottom-left {
-  bottom: -1px;
-  left: -1px;
-  border-right: none;
-  border-top: none;
-}
-
-.aaditiya-corner-bottom-right {
-  bottom: -1px;
-  right: -1px;
-  border-left: none;
-  border-top: none;
-}
 
 /* ===================================
    Wisdom Block (Quote Section)
