@@ -24,7 +24,7 @@ const Documents = () => {
   const customIcons = {
     pdf: 'https://cdn-icons-png.flaticon.com/512/4726/4726010.png',
     word: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Microsoft_Office_Word_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Word_%282025%E2%80%93present%29.svg.png',
-    folder: 'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/512/folder-icon.png'
+    folder: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAqdPt7kCXb4lAIupeg1nYKfvlqiuqtIjB3w&s'
   };
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
