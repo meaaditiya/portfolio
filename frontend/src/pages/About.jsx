@@ -42,7 +42,7 @@ const About = () => {
       degree: "B.Tech. - Computer Science & Engineering",
       school: "KIET Group of Institutions",
       duration: "2022 - 2026",
-      grade: "CGPA: 8.73 | 84.95%",
+      grade: "CGPA: 8.84 | 85.70%",
       icon: <GraduationCap className="education-icon" />
     },
     {
