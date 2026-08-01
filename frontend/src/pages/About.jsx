@@ -128,22 +128,40 @@ const About = () => {
             </div>
 
             <div className="card-content">
+               <div className="education-item" style={{ marginBottom: '14px' }}>
+                <div className="education-item-logos">
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrjQ5oj4UZ5QBvRzToWR54n_b5l2yGv9xaLw&s" alt="Cognizant" className="inline-edu-logo" />
+                </div>
+                
+                <div className="education-content">
+                  <h4 className="education-degree">Programmer Analyst - GN</h4>
+                  <p className="education-school">Cognizant Technology Solutions</p>
+                  <div className="education-meta">
+                    <span className="education-duration">
+                      <Calendar size={12} />
+                      21 Jul 2026 – Present
+                    </span>
+                  </div>
+                </div>
+              </div>
               {/* Cognizant Internship Block */}
               <div className="education-item" style={{ marginBottom: '14px' }}>
                 <div className="education-item-logos">
                   <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrjQ5oj4UZ5QBvRzToWR54n_b5l2yGv9xaLw&s" alt="Cognizant" className="inline-edu-logo" />
                 </div>
+                
                 <div className="education-content">
                   <h4 className="education-degree">Programmer Analyst Intern</h4>
                   <p className="education-school">Cognizant Technology Solutions</p>
                   <div className="education-meta">
                     <span className="education-duration">
                       <Calendar size={12} />
-                      17 Feb 2025 – Present
+                      17 Feb 2026 – 12 Jun 2026
                     </span>
                   </div>
                 </div>
               </div>
+              
 
               {/* Bullet Point Summary */}
               <ul className="summary-list">
