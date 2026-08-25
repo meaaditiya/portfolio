@@ -896,6 +896,9 @@ const getFileIcon = (item) => {
     if (item.type === 'folder') return 'File folder';
     if (item.type === 'link') return 'Link';
     if (item.type === 'excel') return 'List';
+    if(item.mimeType && item.mimeType.includes('pdf')) return 'PDF';
+    if(item.mimeType && (item.mimeType.includes('word') || item.mimeType.includes('document') || item.mimeType.includes('msword') || item.mimeType.includes('docx') || item.mimeType.includes('doc') || item.mimeType.includes('Docx') || item.mimeType.includes('Doc') || item.mimeType.includes('DOCX') || item.mimeType.includes('DOC'))) return 'Word Document';
+    if(item.mimeType && (item.mimeType.includes('excel') || item.mimeType.includes('spreadsheet'))) return 'Excel Spreadsheet';
     return item.mimeType?.split('/')[1]?.toUpperCase() || 'File';
   };
 
