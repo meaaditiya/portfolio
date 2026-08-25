@@ -864,7 +864,7 @@ const getFileIcon = (item) => {
   
   if (mime.includes("image")) return <File size={16} className="file-icon-image" />;
 
-  if (mime.includes("word")) {
+  if (mime.includes("word") || mime.includes("document") || mime.includes("msword") || mime.includes("docx") || mime.includes("doc") || mime.includes("Docx") || mime.includes("Doc") || mime.includes("DOCX") || mime.includes("DOC")) {
     return <img src={customIcons.word} alt="Word" style={{width: '16px', height: '16px'}} />;
   }
   
