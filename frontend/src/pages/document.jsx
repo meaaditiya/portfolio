@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock, AlertCircle, CheckCircle, FileLock } from 'lucide-react';
+import { Search, Folder, File, Download, X, ChevronRight, Home, List, Grid, Star, ArrowUpDown, Link as LinkIcon, ExternalLink, ListIcon, ArrowLeft, Code2, Terminal, CheckSquare, Check, Circle, Heart, Lock, AlertCircle, CheckCircle, FileLock, Eye } from 'lucide-react';
 import '../pagesCSS/document.css';
 import DocumentSlider from '../components/documentslider';
 const useDebounce = (value, delay) => {
@@ -62,6 +62,10 @@ const [requestFormData, setRequestFormData] = useState({
   message: ''
 });
 const [submittingRequest, setSubmittingRequest] = useState(false);
+const [previewItem, setPreviewItem] = useState(null);
+const [showPreviewModal, setShowPreviewModal] = useState(false);
+const [previewUrl, setPreviewUrl] = useState(null);
+const [previewLoading, setPreviewLoading] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 800);
   const CHECKMARK_ICON_MAP = {
     'checkbox': CheckSquare,
@@ -271,6 +275,52 @@ const requestAccess = async () => {
   } finally {
     setSubmittingRequest(false);
   }
+};
+const openPreview = async (item, e) => {
+  e.stopPropagation();
+  setPreviewItem(item);
+  setShowPreviewModal(true);
+  setPreviewLoading(true);
+  setPreviewUrl(null);
+
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessKey = urlParams.get('key');
+    const params = new URLSearchParams();
+    if (accessKey) params.append('key', accessKey);
+
+    const authToken = localStorage.getItem('token');
+    const headers = {};
+    if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
+    const queryString = params.toString();
+    const url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/preview/${item._id}${queryString ? `?${queryString}` : ''}`;
+
+    const res = await fetch(url, { headers });
+
+    if (!res.ok) {
+      setPreviewLoading(false);
+      showAlert('Preview not available', 'error');
+      setShowPreviewModal(false);
+      return;
+    }
+
+    const blob = await res.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    setPreviewUrl(objectUrl);
+    setPreviewLoading(false);
+  } catch (err) {
+    setPreviewLoading(false);
+    showAlert('Preview not available', 'error');
+    setShowPreviewModal(false);
+  }
+};
+
+const closePreview = () => {
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  setPreviewUrl(null);
+  setPreviewItem(null);
+  setShowPreviewModal(false);
 };
   const sortItems = (itemsToSort) => {
     return itemsToSort.sort((a, b) => {
@@ -1469,6 +1519,15 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     <Download size={16} />
   </button>
 )}
+            {item.type === 'file' && item.previewEnabled && (
+  <button
+    onClick={(e) => openPreview(item, e)}
+    className="download-button"
+    title="Preview"
+  >
+    <Eye size={16} />
+  </button>
+)}
            
             {item.type === 'link' && (
               <button
@@ -1604,6 +1663,15 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
     <Download size={14} />
   </button>
 )}
+         {item.type === 'file' && item.previewEnabled && (
+  <button
+    onClick={(e) => openPreview(item, e)}
+    className="grid-download-button"
+    title="Preview"
+  >
+    <Eye size={14} />
+  </button>
+)}
           
           {item.type === 'link' && (
             <button
@@ -1705,6 +1773,35 @@ title={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}
         >
           {submittingRequest ? 'Submitting...' : 'Submit Request'}
         </button>
+      </div>
+    </div>
+  </div>
+)}
+{showPreviewModal && (
+  <div className="qzn7-preview-backdrop" onClick={closePreview}>
+    <div className="qzn7-preview-shell" onClick={(e) => e.stopPropagation()}>
+      <button className="qzn7-preview-dismiss" onClick={closePreview} aria-label="Close preview">
+        <X size={18} />
+      </button>
+
+      <div className="qzn7-preview-body">
+        {previewLoading && (
+          <div className="qzn7-preview-loading-state">
+            <div className="qzn7-preview-loading-ring"></div>
+          </div>
+        )}
+
+        {!previewLoading && previewUrl && (
+          <embed
+            src={previewUrl}
+            type="application/pdf"
+            className="qzn7-preview-embed"
+          />
+        )}
+
+        {!previewLoading && !previewUrl && (
+          <p className="qzn7-preview-fallback-text">Preview not available.</p>
+        )}
       </div>
     </div>
   </div>
