@@ -1434,8 +1434,8 @@ body {
 
 .tech-logo,
 .edu-logo {
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   border-radius: 4px;
 }
@@ -1605,16 +1605,16 @@ body {
 }
 
 .inline-edu-logo {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   border-radius: 3px;
 }
 
 @media (max-width: 640px) {
   .inline-edu-logo {
-    width: 18px;
-    height: 18px;
+    width: 36px;
+    height: 36px;
   }
   
   .education-item {
@@ -1624,8 +1624,8 @@ body {
 
 @media (max-width: 480px) {
   .inline-edu-logo {
-    width: 16px;
-    height: 16px;
+    width: 36px;
+    height: 36px;
   }
   
   .education-item {
@@ -2057,4 +2057,41 @@ body {
 .summary-list-item:hover::before {
   transform: translateX(4px);
   filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+}
+/* Loading state — typewriter name */
+.about-loading-wrap {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-typewriter {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #334155 45%, #f59e0b 75%, #fbbf24 100%);
+  background-size: 250% 250%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: loading-shimmer 3.5s ease infinite;
+}
+
+.loading-cursor {
+  display: inline-block;
+  margin-left: 4px;
+  color: #f59e0b;
+  font-weight: 700;
+  animation: loading-cursor-blink 0.9s steps(1) infinite;
+}
+
+@keyframes loading-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes loading-cursor-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
 }

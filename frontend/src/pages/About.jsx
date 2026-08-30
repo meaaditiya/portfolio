@@ -1,206 +1,226 @@
-import React, { useState } from 'react';
-import { 
-  Mail, Phone, MapPin, User, GraduationCap, Code, Award, Calendar,
-  Globe, Database, Server, Smartphone, GitBranch, Layers, FileCode, Palette, Download,
-  ChevronLeft, ChevronRight, Cloud
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Calendar, Download } from 'lucide-react';
 import '../pagesCSS/about.css';
-import profileImage from '../images/java2.png';
-import ProfileSlider from '../components/ProfileSlider';
+import '../pagesCSS/jobStatusSlider.css';
+import JobStatusSlider from '../components/JobStatusSlider';
+
+const API_BASE_URL = `${import.meta.env.VITE_APP_BACKEND_URL}`;
+
+const FULL_NAME = 'Aaditiya Tyagi';
+const TYPE_SPEED = 110;
+const ERASE_SPEED = 55;
+const HOLD_MS = 1200;
+const RESTART_DELAY = 400;
 
 const About = () => {
-  const [currentSlide, setCurrentSlide] = useState(5);
+  const [about, setAbout] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [typedName, setTypedName] = useState('');
+  const [minLoadDone, setMinLoadDone] = useState(false);
+
+  const showLoader = loading || !minLoadDone;
+
+  useEffect(() => {
+    const fetchAbout = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/about`);
+        if (!res.ok) throw new Error('Failed to load about details');
+        const data = await res.json();
+        setAbout(data.about);
+      } catch (err) {
+        console.error('Error fetching about details:', err);
+        setError('Could not load details right now.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAbout();
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(
+      () => setMinLoadDone(true),
+      TYPE_SPEED * FULL_NAME.length + HOLD_MS
+    );
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!showLoader) return;
+
+    let charIndex = 0;
+    let phase = 'typing';
+    let timeoutId;
+
+    const tick = () => {
+      if (phase === 'typing') {
+        charIndex += 1;
+        setTypedName(FULL_NAME.slice(0, charIndex));
+        if (charIndex >= FULL_NAME.length) {
+          phase = 'holding';
+          timeoutId = setTimeout(tick, HOLD_MS);
+        } else {
+          timeoutId = setTimeout(tick, TYPE_SPEED);
+        }
+      } else if (phase === 'holding') {
+        phase = 'erasing';
+        timeoutId = setTimeout(tick, ERASE_SPEED);
+      } else if (phase === 'erasing') {
+        charIndex -= 1;
+        setTypedName(FULL_NAME.slice(0, charIndex));
+        if (charIndex <= 0) {
+          phase = 'pausing';
+          timeoutId = setTimeout(tick, RESTART_DELAY);
+        } else {
+          timeoutId = setTimeout(tick, ERASE_SPEED);
+        }
+      } else if (phase === 'pausing') {
+        phase = 'typing';
+        timeoutId = setTimeout(tick, TYPE_SPEED);
+      }
+    };
+
+    timeoutId = setTimeout(tick, TYPE_SPEED);
+    return () => clearTimeout(timeoutId);
+  }, [showLoader]);
 
   const handleDownloadResume = () => {
-    window.open('/resume.pdf', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-    
+    if (!about?.resume?.url) return;
     const link = document.createElement('a');
-    link.href = '/resume.pdf';
-    link.download = 'Aaditiya_Tyagi_Resume.pdf';
+    link.href = about.resume.url;
+    link.download = about.resume.originalName || 'Resume.pdf';
+    link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const skills = [
-    { name: "React.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
-    { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
-    { name: "Spring Boot", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" },
-    { name: "JavaScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
-    { name: "MongoDB", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
-    { name: "Java", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" },
-    { name: "MySQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
-    { name: "Express.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" },
-    { name: "AWS", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg" },
-    { name: "HTML5", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
-    { name: "CSS3", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
-    { name: "Git", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" }
-  ];
+  if (showLoader) {
+    return (
+      <section className="about-section">
+        <div className="about-container about-loading-wrap">
+          <h1 className="hero-main-title loading-typewriter">
+            {typedName}
+            <span className="loading-cursor">|</span>
+          </h1>
+        </div>
+      </section>
+    );
+  }
 
-  const educationData = [
-    {
-      degree: "B.Tech. - Computer Science & Engineering",
-      school: "KIET Group of Institutions",
-      duration: "2022 - 2026",
-      grade: "CGPA: 8.84 | 85.70%",
-      icon: <GraduationCap className="education-icon" />
-    },
-    {
-      degree: "Higher Secondary Education",
-      school: "Vidhaan Public School, Ghaziabad",
-      duration: "2021",
-      grade: "93%",
-      icon: <Award className="education-icon" />
-    },
-    {
-      degree: "Secondary Education",
-      school: "SSK Public School, Ghaziabad",
-      duration: "2019",
-      grade: "91.20%",
-      icon: <Award className="education-icon" />
-    }
-  ];
+  if (error || !about) {
+    return (
+      <section className="about-section">
+        <div className="about-container about-loading">{error || 'No details found.'}</div>
+      </section>
+    );
+  }
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % skills.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + skills.length) % skills.length);
-  };
+  const sortedSkills = [...(about.skills || [])].sort((a, b) => a.order - b.order);
+  const sortedExperience = [...(about.experience || [])].sort((a, b) => a.order - b.order);
+  const sortedEducation = [...(about.education || [])].sort((a, b) => a.order - b.order);
+  const sortedStatuses = [...(about.jobStatuses || [])].sort((a, b) => a.order - b.order);
 
   return (
     <section className="about-section">
       <div className="about-container">
-        {/* Hero Section */}
         <h1 className="hero-main-title">
-          Full-Stack
-          <span className="hero-gradient-text"> Developer</span>
+          {about.heroTitlePrefix}
+          <span className="hero-gradient-text"> {about.heroTitleHighlight}</span>
         </h1>
 
-        {/* Technical Expertise Section */}
         <div className="minimal-expertise-section">
           <div className="minimal-skills-grid">
-            {skills.map((skill, index) => (
-              <div key={index} className="minimal-skill-item">
-                <img src={skill.logo} alt={skill.name} className="minimal-skill-logo" />
+            {sortedSkills.map((skill) => (
+              <div key={skill._id} className="minimal-skill-item">
+                {skill.logo?.url && (
+                  <img src={skill.logo.url} alt={skill.name} className="minimal-skill-logo" />
+                )}
                 <span className="minimal-skill-name">{skill.name}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <ProfileSlider />
+        {sortedStatuses.length > 0 && <JobStatusSlider statuses={sortedStatuses} />}
 
-        <div className="about-resume-row">
-          <button 
-            className="super-button" 
+        <div className="about-resume-row about-resume-row-stacked">
+          <button
+            className="super-button"
             onClick={handleDownloadResume}
             aria-label="Download Resume"
+            disabled={!about.resume?.url}
           >
             <Download size={20} />
-            <span>Download Resume</span>
+            <span>{about.resume?.url ? 'Download Resume' : 'Resume unavailable'}</span>
           </button>
         </div>
 
-        {/* Single Row Layout */}
         <div className="about-single-row">
-
-          {/* Professional Summary */}
           <div className="about-card about-summary-card">
             <div className="card-header">
               <div className="tech-logos">
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="Spring" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="Node.js" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" alt="Express.js" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="MongoDB" className="tech-logo" />
-                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="Git" className="tech-logo" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg" alt="AWS" className="tech-logo" />
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrjQ5oj4UZ5QBvRzToWR54n_b5l2yGv9xaLw&s" alt="Cognizant" className="tech-logo" />
+                {sortedSkills.map(
+                  (skill) =>
+                    skill.logo?.url && (
+                      <img key={skill._id} src={skill.logo.url} alt={skill.name} className="tech-logo" />
+                    )
+                )}
               </div>
               <h3 className="card-title">Professional Summary</h3>
             </div>
 
             <div className="card-content">
-               <div className="education-item" style={{ marginBottom: '14px' }}>
-                <div className="education-item-logos">
-                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrjQ5oj4UZ5QBvRzToWR54n_b5l2yGv9xaLw&s" alt="Cognizant" className="inline-edu-logo" />
-                </div>
-                
-                <div className="education-content">
-                  <h4 className="education-degree">Programmer Analyst - GN</h4>
-                  <p className="education-school">Cognizant Technology Solutions</p>
-                  <div className="education-meta">
-                    <span className="education-duration">
-                      <Calendar size={12} />
-                      21 Jul 2026 – Present
-                    </span>
+              {sortedExperience.map((exp) => (
+                <div key={exp._id} className="education-item" style={{ marginBottom: '14px' }}>
+                  <div className="education-item-logos">
+                    {exp.companyLogo?.url && (
+                      <img src={exp.companyLogo.url} alt={exp.company} className="inline-edu-logo" />
+                    )}
+                  </div>
+                  <div className="education-content">
+                    <h4 className="education-degree">{exp.role}</h4>
+                    <p className="education-school">{exp.company}</p>
+                    <div className="education-meta">
+                      <span className="education-duration">
+                        <Calendar size={12} />
+                        {exp.startDate} – {exp.endDate}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* Cognizant Internship Block */}
-              <div className="education-item" style={{ marginBottom: '14px' }}>
-                <div className="education-item-logos">
-                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrjQ5oj4UZ5QBvRzToWR54n_b5l2yGv9xaLw&s" alt="Cognizant" className="inline-edu-logo" />
-                </div>
-                
-                <div className="education-content">
-                  <h4 className="education-degree">Programmer Analyst Intern</h4>
-                  <p className="education-school">Cognizant Technology Solutions</p>
-                  <div className="education-meta">
-                    <span className="education-duration">
-                      <Calendar size={12} />
-                      17 Feb 2026 – 12 Jun 2026
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
+              ))}
 
-              {/* Bullet Point Summary */}
               <ul className="summary-list">
-                <li className="summary-list-item">
-                  Computer Science student with hands-on experience in full-stack web development, leveraging
-                  modern technologies like React.js, Node.js, and MongoDB to build innovative solutions.
-                </li>
-                <li className="summary-list-item">
-                  Demonstrated expertise in building scalable, secure web applications with robust features
-                  like role-based authentication and real-time communication through case management e-Portal project.
-                </li>
-                <li className="summary-list-item">
-                  Passionate about solving complex technological challenges while delivering high-quality,
-                  user-centric solutions that make a meaningful impact.
-                </li>
+                {(about.summaryPoints || []).map((point, idx) => (
+                  <li key={idx} className="summary-list-item">
+                    {point}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
 
-          {/* Education */}
           <div className="about-card about-education-card">
             <div className="card-header">
               <div className="edu-logos">
-                <img src="https://static.wikia.nocookie.net/logopedia/images/4/40/Uptu_logo.png" alt="AKTU" className="edu-logo" />
-                <img src="https://vectorseek.com/wp-content/uploads/2023/08/CBSE-Logo-Vector.svg-.png" alt="CBSE" className="edu-logo" />
-                <img src="https://www.kiet.edu/assets/images/logo/dark_logo.png" alt="KIET" className="edu-logo" />
+                {sortedEducation.map(
+                  (edu) =>
+                    edu.schoolLogo?.url && (
+                      <img key={edu._id} src={edu.schoolLogo.url} alt={edu.school} className="edu-logo" />
+                    )
+                )}
               </div>
               <h3 className="card-title">Education</h3>
             </div>
             <div className="card-content">
               <div className="education-timeline">
-                {educationData.map((edu, index) => (
-                  <div key={index} className="education-item">
+                {sortedEducation.map((edu) => (
+                  <div key={edu._id} className="education-item">
                     <div className="education-item-logos">
-                      {index === 0 && (
-                        <img src="https://static.wikia.nocookie.net/logopedia/images/4/40/Uptu_logo.png" alt="AKTU" className="inline-edu-logo" />
-                      )}
-                      {(index === 1 || index === 2) && (
-                        <img src="https://vectorseek.com/wp-content/uploads/2023/08/CBSE-Logo-Vector.svg-.png" alt="CBSE" className="inline-edu-logo" />
+                      {edu.schoolLogo?.url && (
+                        <img src={edu.schoolLogo.url} alt={edu.school} className="inline-edu-logo" />
                       )}
                     </div>
                     <div className="education-content">
@@ -211,7 +231,7 @@ const About = () => {
                           <Calendar size={12} />
                           {edu.duration}
                         </span>
-                        <span className="education-grade">{edu.grade}</span>
+                        {edu.grade && <span className="education-grade">{edu.grade}</span>}
                       </div>
                     </div>
                   </div>
@@ -219,7 +239,6 @@ const About = () => {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

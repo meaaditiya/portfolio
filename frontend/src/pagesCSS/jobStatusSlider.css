@@ -1,0 +1,70 @@
+.job-status-slider {
+  position: relative;
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: rgba(52, 199, 89, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.job-status-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation-name: job-status-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.job-status-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.job-status-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 24px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #000;
+  flex-shrink: 0;
+}
+
+@keyframes job-status-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .job-status-item {
+    font-size: 0.75rem;
+    padding: 0 16px;
+  }
+}
