@@ -1,3 +1,6 @@
+if (window.location.hostname === "connectwithaaditiya.onrender.com") {
+  window.location.replace("https://aaditiyatyagi.in");
+}
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
