@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Edit2, CheckCircle, ChevronRight,  Crown } from 'lucide-react';
 import AuthWarning from '../components/AuthWarning';
 const API_BASE = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
-
+//aaditiyatyagi.in
 export default function Auth() {
   const [view, setView] = useState('loading');
   const [user, setUser] = useState(null);
@@ -153,14 +153,14 @@ const fetchProfile = async (authToken) => {
   }
 };
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${API_BASE}/google`;
-  };
+const handleGoogleLogin = () => {
+  window.location.href = `${API_BASE}/google?origin=${encodeURIComponent(window.location.origin)}`;
+};
 const handleGithubLogin = () => {
-  window.location.href = `${API_BASE}/auth/github`;
+  window.location.href = `${API_BASE}/auth/github?origin=${encodeURIComponent(window.location.origin)}`;
 };
 const handleDiscordLogin = () => {
-  window.location.href = `${API_BASE}/auth/discord`;
+  window.location.href = `${API_BASE}/auth/discord?origin=${encodeURIComponent(window.location.origin)}`;
 };
   const handleRegister = (e) => {
     e.preventDefault();
