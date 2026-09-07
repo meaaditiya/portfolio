@@ -6,20 +6,93 @@ import JobStatusSlider from '../components/JobStatusSlider';
 
 const API_BASE_URL = `${import.meta.env.VITE_APP_BACKEND_URL}`;
 
-const FULL_NAME = 'Aaditiya Tyagi';
-const TYPE_SPEED = 110;
-const ERASE_SPEED = 55;
-const HOLD_MS = 1200;
-const RESTART_DELAY = 400;
+// Static fallback data — shown instantly, replaced silently if/when the backend responds.
+const DEFAULT_ABOUT = {
+  heroTitlePrefix: 'Full-Stack',
+  heroTitleHighlight: 'Developer',
+  summaryPoints: [
+    'Full-stack Software Engineer skilled in Java, Spring Boot, React.js, Node.js, Express.js, and Angular.',
+    'Experience with MongoDB, PostgreSQL, Redis, AWS, and Docker.',
+    'Hands-on experience in testing and API validation using Selenium, TestNG, Postman, and SoapUI.',
+    'Familiar with Git, Agile methodologies, SDLC, and STLC.',
+    'Passionate about continuous learning, open-source contributions, DSA, and building scalable, high-quality software solutions.',
+  ],
+  skills: [
+    { _id: 'skill-node', name: 'Node.js', order: 1, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788073946/uploads/images/fnpykdnrahdlwdn35z08.png' } },
+    { _id: 'skill-spring', name: 'Spring Boot', order: 2, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074011/uploads/images/s9eoixyrs57qgiedwivm.png' } },
+    { _id: 'skill-js', name: 'JavaScript', order: 3, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074089/uploads/images/dck37prdv3gzchlk7eek.png' } },
+    { _id: 'skill-mongo', name: 'MongoDB', order: 4, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074138/uploads/images/k6qebux9cv1mdaufotxp.png' } },
+    { _id: 'skill-react', name: 'React.js', order: 4, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074243/uploads/images/p9cpfmp0mljqa6kdgq08.png' } },
+    { _id: 'skill-java', name: 'Java', order: 5, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074299/uploads/images/fyid3sohv6begz4zvxht.png' } },
+    { _id: 'skill-mysql', name: 'MySQL', order: 6, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074336/uploads/images/suxofeyuwvk0rncslgyt.png' } },
+    { _id: 'skill-express', name: 'Express.js', order: 7, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074442/uploads/images/lbuotwvprpnd8qfb9vtd.png' } },
+    { _id: 'skill-aws', name: 'AWS', order: 8, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074478/uploads/images/xonkcohegahwgyrngjqo.jpg' } },
+    { _id: 'skill-html', name: 'HTML 5', order: 9, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074536/uploads/images/mv41csedypn5vi3sj0tc.webp' } },
+    { _id: 'skill-css', name: 'CSS3', order: 10, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074591/uploads/images/ow68zwvwivx5ieghunpj.png' } },
+    { _id: 'skill-git', name: 'Git', order: 11, logo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074648/uploads/images/xdn1roqgpcc7x9qccdm4.png' } },
+  ],
+  experience: [
+    {
+      _id: 'exp-1',
+      role: 'Programmer Analyst - GN',
+      company: 'Cognizant Technology Solutions',
+      companyLogo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788025270/uploads/images/vs9xjriwpuzw6uueetsc.png' },
+      startDate: '21 Jul 2026',
+      endDate: 'Present',
+      order: 0,
+    },
+    {
+      _id: 'exp-2',
+      role: 'Programmer Analyst Intern',
+      company: 'Cognizant Technology Solutions',
+      companyLogo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788025343/uploads/images/tizkmk6gisuxqgyinwi5.png' },
+      startDate: '17 Feb 2026',
+      endDate: '12 June 2026',
+      order: 1,
+    },
+  ],
+  education: [
+    {
+      _id: 'edu-1',
+      degree: 'B.Tech in Computer Science',
+      school: 'KIET Group of Institutions',
+      schoolLogo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788074991/uploads/images/kb2axf9ejrmk73vpshlz.webp' },
+      duration: '2022 - 2026',
+      grade: 'CGPA 8.84 | 85.70%',
+      order: 0,
+    },
+    {
+      _id: 'edu-2',
+      degree: 'Higher Secondary Education',
+      school: 'Vidhaan Public School',
+      schoolLogo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788075072/uploads/images/bsakp9wtfijv5nutptyq.jpg' },
+      duration: '2021',
+      grade: '| 93%',
+      order: 1,
+    },
+    {
+      _id: 'edu-3',
+      degree: 'Higher Education',
+      school: 'SSK Public School',
+      schoolLogo: { url: 'https://res.cloudinary.com/dd6sedo9n/image/upload/v1788075131/uploads/images/eoujekujadxzdmsfbv3h.jpg' },
+      duration: '2019',
+      grade: '| 91.2%',
+      order: 2,
+    },
+  ],
+  jobStatuses: [
+    { _id: 'status-1', label: 'Open to Work', color: '#21c442', order: 1 },
+  ],
+  resume: {
+    url: 'https://res.cloudinary.com/dd6sedo9n/raw/upload/v1788776555/portfolio/resume/resume-1788776554206.pdf',
+    publicId: 'portfolio/resume/resume-1788776554206.pdf',
+    originalName: 'Aaditiya_Tyagi_Resume (40).pdf',
+  },
+};
 
 const About = () => {
-  const [about, setAbout] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [typedName, setTypedName] = useState('');
-  const [minLoadDone, setMinLoadDone] = useState(false);
-
-  const showLoader = loading || !minLoadDone;
+  // Start with the fallback data already populated — no loading screen needed.
+  const [about, setAbout] = useState(DEFAULT_ABOUT);
 
   useEffect(() => {
     const fetchAbout = async () => {
@@ -27,63 +100,16 @@ const About = () => {
         const res = await fetch(`${API_BASE_URL}/api/about`);
         if (!res.ok) throw new Error('Failed to load about details');
         const data = await res.json();
-        setAbout(data.about);
+        if (data?.about) {
+          setAbout(data.about);
+        }
       } catch (err) {
-        console.error('Error fetching about details:', err);
-        setError('Could not load details right now.');
-      } finally {
-        setLoading(false);
+        // Backend not reachable yet — keep showing the static fallback data.
+        console.error('Error fetching about details, using fallback data:', err);
       }
     };
     fetchAbout();
   }, []);
-
-  useEffect(() => {
-    const t = setTimeout(
-      () => setMinLoadDone(true),
-      TYPE_SPEED * FULL_NAME.length + HOLD_MS
-    );
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    if (!showLoader) return;
-
-    let charIndex = 0;
-    let phase = 'typing';
-    let timeoutId;
-
-    const tick = () => {
-      if (phase === 'typing') {
-        charIndex += 1;
-        setTypedName(FULL_NAME.slice(0, charIndex));
-        if (charIndex >= FULL_NAME.length) {
-          phase = 'holding';
-          timeoutId = setTimeout(tick, HOLD_MS);
-        } else {
-          timeoutId = setTimeout(tick, TYPE_SPEED);
-        }
-      } else if (phase === 'holding') {
-        phase = 'erasing';
-        timeoutId = setTimeout(tick, ERASE_SPEED);
-      } else if (phase === 'erasing') {
-        charIndex -= 1;
-        setTypedName(FULL_NAME.slice(0, charIndex));
-        if (charIndex <= 0) {
-          phase = 'pausing';
-          timeoutId = setTimeout(tick, RESTART_DELAY);
-        } else {
-          timeoutId = setTimeout(tick, ERASE_SPEED);
-        }
-      } else if (phase === 'pausing') {
-        phase = 'typing';
-        timeoutId = setTimeout(tick, TYPE_SPEED);
-      }
-    };
-
-    timeoutId = setTimeout(tick, TYPE_SPEED);
-    return () => clearTimeout(timeoutId);
-  }, [showLoader]);
 
   const handleDownloadResume = () => {
     if (!about?.resume?.url) return;
@@ -95,27 +121,6 @@ const About = () => {
     link.click();
     document.body.removeChild(link);
   };
-
-  if (showLoader) {
-    return (
-      <section className="about-section">
-        <div className="about-container about-loading-wrap">
-          <h1 className="hero-main-title loading-typewriter">
-            {typedName}
-            <span className="loading-cursor">|</span>
-          </h1>
-        </div>
-      </section>
-    );
-  }
-
-  if (error || !about) {
-    return (
-      <section className="about-section">
-        <div className="about-container about-loading">{error || 'No details found.'}</div>
-      </section>
-    );
-  }
 
   const sortedSkills = [...(about.skills || [])].sort((a, b) => a.order - b.order);
   const sortedExperience = [...(about.experience || [])].sort((a, b) => a.order - b.order);
