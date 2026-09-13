@@ -3535,10 +3535,7 @@ border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px !important;
 }
 
-/* Social media grid remains untouched - use default .pst-grid styles */
-.pst-grid:not(.pst-posts-grid) {
-  /* Will use existing social media grid styles */
-}
+
 /* ============================================
    SOCIAL MEDIA GRID FIXES - OVERRIDE
    ============================================ */

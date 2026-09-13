@@ -22,6 +22,7 @@ import ScrollToTop from './ScrollTop.jsx';
 import Document from './pages/document.jsx';
 import Forbidden from './components/Forbidden.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import ReferJobSection from './pages/Referjobsection.jsx';
 import "./api/globalFetch";
 import { setFetchNavigator } from "./api/globalFetch";
 
@@ -68,7 +69,7 @@ const AppContent = () => {
             <Route path="/forbidden" element={<Forbidden />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="*" element={<NotFound/>}/>
-           
+            <Route path="/referme" element={<ReferJobSection />} />
           </Routes>
         </main>
         

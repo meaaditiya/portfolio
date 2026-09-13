@@ -36,6 +36,7 @@ const handleBack = () => {
     { name: 'Gallery', path: '/posts' },
     { name: 'Projects', path: '/projects' },
     { name: 'Resources', path: '/resources' },
+    {name: 'Refer Me', path : '/referme'},
     { name: 'Blogs', path: '/blog' },
     { name: 'Contact', path: '/contact' },
     { name: 'Stream', path: '/stream' },
