@@ -246,128 +246,127 @@ const handleBack = () => {
           transform: rotate(-45deg) translate(7px, -7px);
         }
 
-        /* Circular Mobile Menu */
-        .circular-menu-overlay {
+        /* Mobile Navigation — frosted glass overlay */
+        .mobile-nav-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(5px);
-          -webkit-backdrop-filter: blur(5px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          background: rgba(255, 255, 255, 0.6);
+          backdrop-filter: blur(26px) saturate(160%);
+          -webkit-backdrop-filter: blur(26px) saturate(160%);
           z-index: 999;
+          display: flex;
+          flex-direction: column;
           opacity: 0;
           pointer-events: none;
-          transition: opacity 0.3s ease;
+          transition: opacity 0.35s ease;
         }
 
-        .circular-menu-overlay.active {
+        .mobile-nav-overlay.active {
           opacity: 1;
           pointer-events: all;
         }
 
-        .circular-menu-container {
-          position: relative;
-          width: 320px;
-          height: 320px;
-          transform: scale(0.8);
-          opacity: 0;
-          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .circular-menu-overlay.active .circular-menu-container {
-          transform: scale(1);
-          opacity: 1;
-        }
-
-        .menu-center {
-          position: relative;
-          top: 10%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 90px;
-          height: 90px;
-          background: white;
-          border-radius: 50%;
+        .mobile-nav-header {
           display: flex;
           align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-          cursor: pointer;
-          z-index: 10;
+          justify-content: space-between;
+          padding: 1.25rem 1.5rem;
+          flex-shrink: 0;
         }
 
-        .close-icon {
-          font-size: 38px;
-          color: #000;
-          font-weight: 350;
+        .mobile-nav-title {
+          font-family: 'Great Vibes', cursive;
+          font-size: 24px;
+          color: rgba(0, 0, 0, 0.4);
+        }
+
+        .mobile-nav-close {
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 26px;
+          font-weight: 200;
           line-height: 1;
-          position:relative;
-          top:-2px;
+          color: #111;
+          padding: 0.25rem 0.5rem;
+          transition: transform 0.25s ease, opacity 0.2s ease;
         }
 
-        .circular-nav-item {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 90px;
-          height: 90px;
-          margin: -45px 0 0 -45px;
-          background: white;
-          border-radius: 50%;
+        .mobile-nav-close:active {
+          transform: rotate(90deg);
+          opacity: 0.6;
+        }
+
+        .mobile-nav-list {
+          list-style: none;
+          flex: 1;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
+          gap: 0.4rem;
+          padding: 1rem 1.5rem 3rem;
+          overflow-y: auto;
+        }
+
+        .mobile-nav-list-item {
+          opacity: 0;
+          transform: translateY(12px);
+          transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .mobile-nav-overlay.active .mobile-nav-list-item {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .mobile-nav-link {
+          background: none;
+          border: none;
           cursor: pointer;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-          transition: all 0.3s ease;
-          border: 2px solid transparent;
-        }
-
-        .circular-nav-item:hover {
-          transform: scale(1.1);
-          box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-          border-color: #000;
-        }
-
-        .circular-nav-item.active {
-          background: #000;
-          color: white;
-        }
-
-        .circular-nav-item span {
           font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-          font-size: 13px;
-          font-weight: 600;
-          text-align: center;
+          font-size: 21px;
+          font-weight: 500;
+          letter-spacing: 0.2px;
+          color: rgba(17, 17, 17, 0.65);
+          padding: 0.5rem 0.25rem;
+          position: relative;
+          transition: color 0.25s ease;
         }
 
-        .circular-nav-item.active span {
-          color: white;
+        .mobile-nav-link::after {
+          content: '';
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          width: 0;
+          height: 1px;
+          background: #111;
+          transform: translateX(-50%);
+          transition: width 0.3s ease;
         }
 
-        /* Position items in a circle */
-        .circular-nav-item:nth-child(1) { transform: translate(0, -130px); }
-        .circular-nav-item:nth-child(2) { transform: translate(92px, -92px); }
-        .circular-nav-item:nth-child(3) { transform: translate(130px, 0); }
-        .circular-nav-item:nth-child(4) { transform: translate(92px, 92px); }
-        .circular-nav-item:nth-child(5) { transform: translate(0, 130px); }
-        .circular-nav-item:nth-child(6) { transform: translate(-92px, 92px); }
-        .circular-nav-item:nth-child(7) { transform: translate(-130px, 0); }
-        .circular-nav-item:nth-child(8) { transform: translate(-92px, -92px); }
+        .mobile-nav-link:active {
+          color: #111;
+        }
 
-        .circular-nav-item:nth-child(1):hover { transform: translate(0, -130px) scale(1.1); }
-        .circular-nav-item:nth-child(2):hover { transform: translate(92px, -92px) scale(1.1); }
-        .circular-nav-item:nth-child(3):hover { transform: translate(130px, 0) scale(1.1); }
-        .circular-nav-item:nth-child(4):hover { transform: translate(92px, 92px) scale(1.1); }
-        .circular-nav-item:nth-child(5):hover { transform: translate(0, 130px) scale(1.1); }
-        .circular-nav-item:nth-child(6):hover { transform: translate(-92px, 92px) scale(1.1); }
-        .circular-nav-item:nth-child(7):hover { transform: translate(-130px, 0) scale(1.1); }
-        .circular-nav-item:nth-child(8):hover { transform: translate(-92px, -92px) scale(1.1); }
+        .mobile-nav-link.active {
+          color: #111;
+          font-weight: 700;
+        }
+
+        .mobile-nav-link.active::after {
+          width: 60%;
+        }
+
+        @media (min-width: 769px) {
+          .mobile-nav-overlay {
+            display: none;
+          }
+        }
 
         /* Responsive Design */
         @media (max-width: 1024px) {
@@ -411,14 +410,7 @@ const handleBack = () => {
   padding: 0.4rem;
   margin-right: 0.3rem;
 }
-  .back-button {
-  pointer-events: none;
-}
 
-.back-button > * {
-  pointer-events: auto;
-}
-   
           .main-navigation {
             display: none;
           }
@@ -445,38 +437,9 @@ const handleBack = () => {
             font-size: 20px;
           }
 
-          .circular-menu-container {
-            width: 280px;
-            height: 280px;
+          .mobile-nav-panel {
+            width: min(82vw, 300px);
           }
-
-          .circular-nav-item {
-            width: 75px;
-            height: 75px;
-            margin: -37.5px 0 0 -37.5px;
-          }
-
-          .circular-nav-item span {
-            font-size: 11px;
-          }
-
-          .circular-nav-item:nth-child(1) { transform: translate(0, -110px); }
-          .circular-nav-item:nth-child(2) { transform: translate(78px, -78px); }
-          .circular-nav-item:nth-child(3) { transform: translate(110px, 0); }
-          .circular-nav-item:nth-child(4) { transform: translate(78px, 78px); }
-          .circular-nav-item:nth-child(5) { transform: translate(0, 110px); }
-          .circular-nav-item:nth-child(6) { transform: translate(-78px, 78px); }
-          .circular-nav-item:nth-child(7) { transform: translate(-110px, 0); }
-          .circular-nav-item:nth-child(8) { transform: translate(-78px, -78px); }
-
-          .circular-nav-item:nth-child(1):hover { transform: translate(0, -110px) scale(1.1); }
-          .circular-nav-item:nth-child(2):hover { transform: translate(78px, -78px) scale(1.1); }
-          .circular-nav-item:nth-child(3):hover { transform: translate(110px, 0) scale(1.1); }
-          .circular-nav-item:nth-child(4):hover { transform: translate(78px, 78px) scale(1.1); }
-          .circular-nav-item:nth-child(5):hover { transform: translate(0, 110px) scale(1.1); }
-          .circular-nav-item:nth-child(6):hover { transform: translate(-78px, 78px) scale(1.1); }
-          .circular-nav-item:nth-child(7):hover { transform: translate(-110px, 0) scale(1.1); }
-          .circular-nav-item:nth-child(8):hover { transform: translate(-78px, -78px) scale(1.1); }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -562,24 +525,36 @@ const handleBack = () => {
         </div>
       </header>
 
-      {/* Circular Mobile Menu */}
-      <div className={`circular-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`}>
-        <div className="circular-menu-container">
-          
-          
-          {navItems.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigateToPage(item.path)}
-              className={`circular-nav-item ${currentPath === item.path ? 'active' : ''}`}
-            >
-              <span>{item.name}</span>
-            </button>
-          ))}
-          <div className="circular-nav-item" onClick={toggleMobileMenu}>
-            <span className="close-icon">Close</span>
-          </div>
+      {/* Mobile Navigation — frosted glass overlay */}
+      <div
+        className={`mobile-nav-overlay ${isMobileMenuOpen ? 'active' : ''}`}
+        onClick={toggleMobileMenu}
+      >
+        <div className="mobile-nav-header">
+          <span className="mobile-nav-title">Menu</span>
+          <button className="mobile-nav-close" onClick={toggleMobileMenu} aria-label="Close menu">
+            ×
+          </button>
         </div>
+        <ul className="mobile-nav-list">
+          {navItems.map((item, index) => (
+            <li
+              key={item.path}
+              className="mobile-nav-list-item"
+              style={{ transitionDelay: isMobileMenuOpen ? `${index * 40}ms` : '0ms' }}
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateToPage(item.path);
+                }}
+                className={`mobile-nav-link ${currentPath === item.path ? 'active' : ''}`}
+              >
+                {item.name}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     </>
   );
