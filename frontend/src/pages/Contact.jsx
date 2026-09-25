@@ -105,6 +105,27 @@ const [queryPopupData, setQueryPopupData] = useState({
 });
 
 const successAudioRef = useRef(null);
+
+// ---- zqf83n envelope-delivery modal refs (main confirmation/failure modal) ----
+const zqf83nMainEnvelopeRef = useRef(null);
+const zqf83nMainFlapARef = useRef(null);
+const zqf83nMainFlapBRef = useRef(null);
+const zqf83nMainIconRef = useRef(null);
+const zqf83nMainCloseBtnRef = useRef(null);
+const zqf83nMainTitleRef = useRef(null);
+const zqf83nMainSubRef = useRef(null);
+const zqf83nMainTimersRef = useRef([]);
+
+// ---- zqf83n envelope-delivery modal refs (query-submitted modal) ----
+const zqf83nQueryEnvelopeRef = useRef(null);
+const zqf83nQueryFlapARef = useRef(null);
+const zqf83nQueryFlapBRef = useRef(null);
+const zqf83nQueryIconRef = useRef(null);
+const zqf83nQueryCloseBtnRef = useRef(null);
+const zqf83nQueryTitleRef = useRef(null);
+const zqf83nQuerySubRef = useRef(null);
+const zqf83nQueryTimersRef = useRef([]);
+
   // Auto-close popup after 8 seconds
   useEffect(() => {
     let timer;
@@ -174,6 +195,152 @@ const closeQueryPopup = () => {
 const copyTicketId = () => {
   navigator.clipboard.writeText(queryPopupData.ticketId);
 };
+
+  // ---- zqf83n envelope-delivery animation: main confirmation / failure modal ----
+  useEffect(() => {
+    const clearTimers = () => {
+      zqf83nMainTimersRef.current.forEach(clearTimeout);
+      zqf83nMainTimersRef.current = [];
+    };
+    const after = (ms, fn) => {
+      zqf83nMainTimersRef.current.push(setTimeout(fn, ms));
+    };
+
+    if (!showPopup) {
+      clearTimers();
+      return;
+    }
+
+    const envelope = zqf83nMainEnvelopeRef.current;
+    const flapA = zqf83nMainFlapARef.current;
+    const flapB = zqf83nMainFlapBRef.current;
+    const icon = zqf83nMainIconRef.current;
+    const closeBtn = zqf83nMainCloseBtnRef.current;
+    const titleEl = zqf83nMainTitleRef.current;
+    const subEl = zqf83nMainSubRef.current;
+    if (!envelope || !flapA || !flapB || !icon || !closeBtn || !titleEl || !subEl) return;
+
+    const isError = popupData.type === 'error';
+
+    const setStatus = (title, sub) => {
+      titleEl.classList.add('zqf83n-text-fade');
+      subEl.classList.add('zqf83n-text-fade');
+      after(160, () => {
+        titleEl.textContent = title;
+        subEl.textContent = sub;
+        titleEl.classList.remove('zqf83n-text-fade');
+        subEl.classList.remove('zqf83n-text-fade');
+      });
+    };
+
+    // reset
+    envelope.classList.remove('zqf83n-envelope-go', 'zqf83n-envelope-go-fail');
+    flapA.classList.remove('zqf83n-flap-open', 'zqf83n-flap-close');
+    flapB.classList.remove('zqf83n-flap-open', 'zqf83n-flap-close');
+    icon.classList.remove('zqf83n-result-icon-show');
+    closeBtn.classList.remove('zqf83n-close-btn-show');
+    titleEl.classList.remove('zqf83n-text-fade');
+    subEl.classList.remove('zqf83n-text-fade');
+    titleEl.textContent = isError ? 'Sending your request' : 'Sending your message';
+    subEl.textContent = 'Just a moment…';
+    void envelope.offsetWidth; // restart CSS animation cleanly
+
+    if (!isError) {
+      // success: envelope travels all the way, destination flap opens
+      after(150, () => flapA.classList.add('zqf83n-flap-open'));
+      after(300, () => envelope.classList.add('zqf83n-envelope-go'));
+      after(500, () => flapA.classList.add('zqf83n-flap-close'));
+      after(1550, () => flapB.classList.add('zqf83n-flap-open'));
+      after(1800, () => {
+        flapB.classList.add('zqf83n-flap-close');
+        setStatus(popupData.title || 'Message sent', popupData.message || 'Delivered just now.');
+      });
+      after(2000, () => {
+        icon.classList.add('zqf83n-result-icon-show');
+        closeBtn.classList.add('zqf83n-close-btn-show');
+      });
+    } else {
+      // failure: envelope only travels partway, shakes, and returns — destination flap never opens
+      after(150, () => flapA.classList.add('zqf83n-flap-open'));
+      after(300, () => envelope.classList.add('zqf83n-envelope-go-fail'));
+      after(500, () => flapA.classList.add('zqf83n-flap-close'));
+      after(1300, () => {
+        setStatus(popupData.title || 'Something went wrong', popupData.message || 'Please try again.');
+      });
+      after(1550, () => {
+        icon.classList.add('zqf83n-result-icon-show');
+        closeBtn.classList.add('zqf83n-close-btn-show');
+      });
+    }
+
+    return clearTimers;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showPopup, popupData.type]);
+
+  // ---- zqf83n envelope-delivery animation: query-submitted modal ----
+  useEffect(() => {
+    const clearTimers = () => {
+      zqf83nQueryTimersRef.current.forEach(clearTimeout);
+      zqf83nQueryTimersRef.current = [];
+    };
+    const after = (ms, fn) => {
+      zqf83nQueryTimersRef.current.push(setTimeout(fn, ms));
+    };
+
+    if (!showQueryPopup) {
+      clearTimers();
+      return;
+    }
+
+    const envelope = zqf83nQueryEnvelopeRef.current;
+    const flapA = zqf83nQueryFlapARef.current;
+    const flapB = zqf83nQueryFlapBRef.current;
+    const icon = zqf83nQueryIconRef.current;
+    const closeBtn = zqf83nQueryCloseBtnRef.current;
+    const titleEl = zqf83nQueryTitleRef.current;
+    const subEl = zqf83nQuerySubRef.current;
+    if (!envelope || !flapA || !flapB || !icon || !closeBtn || !titleEl || !subEl) return;
+
+    const setStatus = (title, sub) => {
+      titleEl.classList.add('zqf83n-text-fade');
+      subEl.classList.add('zqf83n-text-fade');
+      after(160, () => {
+        titleEl.textContent = title;
+        subEl.textContent = sub;
+        titleEl.classList.remove('zqf83n-text-fade');
+        subEl.classList.remove('zqf83n-text-fade');
+      });
+    };
+
+    // reset
+    envelope.classList.remove('zqf83n-envelope-go', 'zqf83n-envelope-go-fail');
+    flapA.classList.remove('zqf83n-flap-open', 'zqf83n-flap-close');
+    flapB.classList.remove('zqf83n-flap-open', 'zqf83n-flap-close');
+    icon.classList.remove('zqf83n-result-icon-show');
+    closeBtn.classList.remove('zqf83n-close-btn-show');
+    titleEl.classList.remove('zqf83n-text-fade');
+    subEl.classList.remove('zqf83n-text-fade');
+    titleEl.textContent = 'Submitting your query';
+    subEl.textContent = 'Just a moment…';
+    void envelope.offsetWidth;
+
+    after(150, () => flapA.classList.add('zqf83n-flap-open'));
+    after(300, () => envelope.classList.add('zqf83n-envelope-go'));
+    after(500, () => flapA.classList.add('zqf83n-flap-close'));
+    after(1550, () => flapB.classList.add('zqf83n-flap-open'));
+    after(1800, () => {
+      flapB.classList.add('zqf83n-flap-close');
+      setStatus('Query Submitted Successfully!', queryPopupData.message || 'Your query has been received.');
+    });
+    after(2000, () => {
+      icon.classList.add('zqf83n-result-icon-show');
+      closeBtn.classList.add('zqf83n-close-btn-show');
+    });
+
+    return clearTimers;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showQueryPopup]);
+
   const validateEmail = (email) => {
     const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return emailRegex.test(email);
@@ -1144,72 +1311,165 @@ const copyTicketId = () => {
     </>
   );
 
-  const renderFullScreenPopup = () => (
-  <div className="usersubmit-overlay" onClick={closePopup}>
-    <div className="usersubmit-modal" onClick={(e) => e.stopPropagation()}>
-   
-      
-      <div className={`usersubmit-successicon ${popupData.type}`}>
-        {popupData.type === 'success' ? (
-          <FaCheckCircle size={60} />
-        ) : (
-          <FaExclamationTriangle size={60} />
-        )}
-      </div>
-      
-      <h3 className="usersubmit-title">{popupData.title}</h3>
-      <p className="usersubmit-message">{popupData.message}</p>
-      
-      <div className="usersubmit-actions">
-        <button className="usersubmit-btn-small" onClick={closePopup}>
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-);
-const renderQueryPopup = () => (
-  <div className="usersubmit-overlay" onClick={closeQueryPopup}>
-    <div className="usersubmit-modal" onClick={(e) => e.stopPropagation()}>
-    
-      <div className="usersubmit-successicon success">
-        <FaCheckCircle size={60} />
-      </div>
-      
-      <h3 className="usersubmit-title">Query Submitted Successfully!</h3>
-      <p className="usersubmit-message">{queryPopupData.message}</p>
-      
-      <div className="cnt-ticket-id-section">
-        <label className="cnt-ticket-label">Your Ticket Reference ID:</label>
-        <div className="cnt-ticket-display">
-          <span className="usersubmit-modalid">{queryPopupData.ticketId}</span>
+  // ==============================
+  // zqf83n envelope-delivery modal — main confirmation / failure
+  // ==============================
+  const renderFullScreenPopup = () => {
+    const isError = popupData.type === 'error';
+    return (
+      <div className="zqf83n-overlay" onClick={closePopup}>
+        <div className="zqf83n-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="zqf83n-scene">
+            <svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
+              <line x1="20" y1="150" x2="300" y2="150" stroke="var(--zqf83n-line)" strokeWidth="2" />
+
+              <path
+                d="M76,100 A84,84 0 0,1 244,100"
+                fill="none"
+                stroke="var(--zqf83n-line)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray="1 9"
+              />
+
+              <g>
+                <rect x="68" y="140" width="16" height="20" rx="2" fill="var(--zqf83n-post)" />
+                <rect x="50" y="96" width="52" height="44" rx="9" fill="var(--zqf83n-clay)" />
+                <rect x="50" y="96" width="52" height="10" rx="5" fill="#c66a4f" />
+                <g ref={zqf83nMainFlapARef} className="zqf83n-flap" style={{ transformOrigin: '92px 113px' }}>
+                  <rect x="62" y="104" width="30" height="18" rx="3" fill="var(--zqf83n-clay-dark)" />
+                </g>
+              </g>
+
+              <g>
+                <rect x="236" y="140" width="16" height="20" rx="2" fill="var(--zqf83n-post)" />
+                <rect x="218" y="96" width="52" height="44" rx="9" fill="var(--zqf83n-clay)" />
+                <rect x="218" y="96" width="52" height="10" rx="5" fill="#c66a4f" />
+                <g ref={zqf83nMainFlapBRef} className="zqf83n-flap" style={{ transformOrigin: '260px 113px' }}>
+                  <rect x="230" y="104" width="30" height="18" rx="3" fill="var(--zqf83n-clay-dark)" />
+                </g>
+              </g>
+
+              <g ref={zqf83nMainEnvelopeRef} className="zqf83n-envelope">
+                <rect x="-11" y="-8" width="22" height="16" rx="2" fill="var(--zqf83n-cream)" stroke="var(--zqf83n-ink-soft)" strokeWidth="1.2" />
+                <path d="M-10,-7 L0,2 L10,-7" fill="none" stroke="var(--zqf83n-ink-soft)" strokeWidth="1.2" />
+              </g>
+            </svg>
+          </div>
+
+          <svg
+            ref={zqf83nMainIconRef}
+            className={`zqf83n-result-icon ${isError ? 'zqf83n-result-icon-error' : 'zqf83n-result-icon-success'}`}
+            viewBox="0 0 30 30"
+          >
+            <circle cx="15" cy="15" r="14" fill={isError ? 'var(--zqf83n-red)' : 'var(--zqf83n-sage)'} />
+            {isError ? (
+              <path d="M10 10 L20 20 M20 10 L10 20" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
+            ) : (
+              <path d="M8 15.5 L13 20 L22 10" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+            )}
+          </svg>
+
+          <div ref={zqf83nMainTitleRef} className="zqf83n-status-title">
+            Sending your message
+          </div>
+          <div ref={zqf83nMainSubRef} className="zqf83n-status-sub">
+            Just a moment…
+          </div>
+
+          <button ref={zqf83nMainCloseBtnRef} className="zqf83n-close-btn" onClick={closePopup}>
+            Close
+          </button>
         </div>
-        <button
-          className="usersubmit-btn-small"
-          onClick={(e) => {
-            copyTicketId();
-            e.target.innerText = "Copied";
-            setTimeout(() => {
-              e.target.innerText = "Copy";
-            }, 10000);
-          }}
-          title="Copy Ticket ID"
-        >
-          Copy
-        </button>
-        <p className="cnt-ticket-note">
-          Please save this Ticket ID. You'll need it to check your query status.
-        </p>
       </div>
-      
-      <div className="usersubmit-actions">
-        <button className="usersubmit-btn-small" onClick={closeQueryPopup}>
+    );
+  };
+
+  // ==============================
+  // zqf83n envelope-delivery modal — query submitted
+  // ==============================
+  const renderQueryPopup = () => (
+    <div className="zqf83n-overlay" onClick={closeQueryPopup}>
+      <div className="zqf83n-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="zqf83n-scene">
+          <svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
+            <line x1="20" y1="150" x2="300" y2="150" stroke="var(--zqf83n-line)" strokeWidth="2" />
+
+            <path
+              d="M76,100 A84,84 0 0,1 244,100"
+              fill="none"
+              stroke="var(--zqf83n-line)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray="1 9"
+            />
+
+            <g>
+              <rect x="68" y="140" width="16" height="20" rx="2" fill="var(--zqf83n-post)" />
+              <rect x="50" y="96" width="52" height="44" rx="9" fill="var(--zqf83n-clay)" />
+              <rect x="50" y="96" width="52" height="10" rx="5" fill="#c66a4f" />
+              <g ref={zqf83nQueryFlapARef} className="zqf83n-flap" style={{ transformOrigin: '92px 113px' }}>
+                <rect x="62" y="104" width="30" height="18" rx="3" fill="var(--zqf83n-clay-dark)" />
+              </g>
+            </g>
+
+            <g>
+              <rect x="236" y="140" width="16" height="20" rx="2" fill="var(--zqf83n-post)" />
+              <rect x="218" y="96" width="52" height="44" rx="9" fill="var(--zqf83n-clay)" />
+              <rect x="218" y="96" width="52" height="10" rx="5" fill="#c66a4f" />
+              <g ref={zqf83nQueryFlapBRef} className="zqf83n-flap" style={{ transformOrigin: '260px 113px' }}>
+                <rect x="230" y="104" width="30" height="18" rx="3" fill="var(--zqf83n-clay-dark)" />
+              </g>
+            </g>
+
+            <g ref={zqf83nQueryEnvelopeRef} className="zqf83n-envelope">
+              <rect x="-11" y="-8" width="22" height="16" rx="2" fill="var(--zqf83n-cream)" stroke="var(--zqf83n-ink-soft)" strokeWidth="1.2" />
+              <path d="M-10,-7 L0,2 L10,-7" fill="none" stroke="var(--zqf83n-ink-soft)" strokeWidth="1.2" />
+            </g>
+          </svg>
+        </div>
+
+        <svg ref={zqf83nQueryIconRef} className="zqf83n-result-icon zqf83n-result-icon-success" viewBox="0 0 30 30">
+          <circle cx="15" cy="15" r="14" fill="var(--zqf83n-sage)" />
+          <path d="M8 15.5 L13 20 L22 10" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+
+        <div ref={zqf83nQueryTitleRef} className="zqf83n-status-title">
+          Submitting your query
+        </div>
+        <div ref={zqf83nQuerySubRef} className="zqf83n-status-sub">
+          Just a moment…
+        </div>
+
+        <div className="zqf83n-ticket-box">
+          <label className="zqf83n-ticket-label">Your Ticket Reference ID:</label>
+          <div className="zqf83n-ticket-display">
+            <span className="zqf83n-ticket-value">{queryPopupData.ticketId}</span>
+          </div>
+          <button
+            className="zqf83n-ticket-copy-btn"
+            onClick={(e) => {
+              copyTicketId();
+              e.target.innerText = 'Copied';
+              setTimeout(() => {
+                e.target.innerText = 'Copy';
+              }, 10000);
+            }}
+            title="Copy Ticket ID"
+          >
+            Copy
+          </button>
+          <p className="zqf83n-ticket-note">
+            Please save this Ticket ID. You'll need it to check your query status.
+          </p>
+        </div>
+
+        <button ref={zqf83nQueryCloseBtnRef} className="zqf83n-close-btn" onClick={closeQueryPopup}>
           Close
         </button>
       </div>
     </div>
-  </div>
-);
+  );
   const handleQueryChange = (e) => {
   const { id, value } = e.target;
   setQueryFormData(prev => ({
