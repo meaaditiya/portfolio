@@ -297,8 +297,7 @@ const handleLogout = async () => {
   try {
     await fetch(`${API_BASE}/user/logout`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${savedToken}` },
-      credentials: 'include'
+      headers: { 'Authorization': `Bearer ${savedToken}` }
     });
   } catch (error) {
     console.error('Logout request failed:', error);
