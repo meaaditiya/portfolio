@@ -291,7 +291,17 @@ const handleDiscordLogin = () => {
     }
   };
 
-  const handleLogout = () => {
+const handleLogout = async () => {
+  const savedToken = localStorage.getItem('token');
+  setLoading(true);
+  try {
+    await fetch(`${API_BASE}/user/logout`, {
+      method: 'POST',
+      headers: {  'Content-Type': 'application/json','Authorization': `Bearer ${savedToken}` }
+    });
+  } catch (error) {
+    console.error('Logout request failed:', error);
+  } finally {
     localStorage.removeItem('token');
     setUser(null);
     setView('login');
