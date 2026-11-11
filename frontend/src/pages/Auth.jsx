@@ -291,12 +291,26 @@ const handleDiscordLogin = () => {
     }
   };
 
-  const handleLogout = () => {
+const handleLogout = async () => {
+  const savedToken = localStorage.getItem('token');
+  setLoading(true);
+  try {
+    await fetch(`${API_BASE}/user/logout`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${savedToken}` },
+      credentials: 'include'
+    });
+  } catch (error) {
+    console.error('Logout request failed:', error);
+  } finally {
     localStorage.removeItem('token');
+    localStorage.removeItem('redirect_after_login');
     setUser(null);
     setView('login');
     setLoginForm({ email: '', password: '' });
-  };
+    setLoading(false);
+  }
+};
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -1205,7 +1219,7 @@ const handleDiscordLogin = () => {
 
               {message && <p className={`auth-message ${message.includes('successfully') ? 'success' : 'error'}`}>{message}</p>}
 
-              <button className="auth-button" onClick={handleLogout}>Logout</button>
+              <button className="auth-button" onClick={handleLogout} disabled={loading}>Logout</button>
             </div>
             
             <div className="auth-buttons-row">
