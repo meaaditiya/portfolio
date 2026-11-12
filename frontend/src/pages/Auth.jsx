@@ -297,7 +297,11 @@ const handleLogout = async () => {
   try {
     await fetch(`${API_BASE}/user/logout`, {
       method: 'POST',
-      headers: {  'Content-Type': 'application/json','Authorization': `Bearer ${savedToken}` }
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${savedToken}`
+      },
+      body: JSON.stringify({})
     });
   } catch (error) {
     console.error('Logout request failed:', error);
@@ -306,8 +310,9 @@ const handleLogout = async () => {
     setUser(null);
     setView('login');
     setLoginForm({ email: '', password: '' });
-  };
-}
+    setLoading(false);   // this was missing
+  }
+};
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
