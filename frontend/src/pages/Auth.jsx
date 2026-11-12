@@ -1215,7 +1215,7 @@ const handleLogout = async () => {
 
               {message && <p className={`auth-message ${message.includes('successfully') ? 'success' : 'error'}`}>{message}</p>}
 
-              <button className="auth-button" onClick={handleLogout}>Logout</button>
+              <button className="auth-button" onClick={handleLogout}>SignOut</button>
             </div>
             
             <div className="auth-buttons-row">
