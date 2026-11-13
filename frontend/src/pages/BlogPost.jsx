@@ -342,6 +342,47 @@ useEffect(() => {
   checkAuth();
 }, []);
 useEffect(() => {
+  const checkBookmark = async () => {
+    if (!blogPost?._id || !isLoggedIn) {
+      setIsBookmarked(false);
+      return;
+    }
+    const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${blogPost._id}/status`,
+        { headers: { 'Content-Type': 'application/json', 'Authorization' : `Bearer ${token}` } }
+      );
+      setIsBookmarked(res.data.bookmarked);
+    } catch (err) {
+      setIsBookmarked(false);
+    }
+  };
+  checkBookmark();
+}, [blogPost?._id, isLoggedIn]);
+
+const handleBookmarkToggle = async () => {
+  if (!isLoggedIn || !blogPost?._id || bookmarkLoading) return;
+
+  const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+  const previous = isBookmarked;
+
+  setBookmarkLoading(true);
+  setIsBookmarked(!previous);
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${blogPost._id}`, {
+      method: previous ? 'DELETE' : 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Bookmark failed');
+  } catch (err) {
+    setIsBookmarked(previous);
+  } finally {
+    setBookmarkLoading(false);
+  }
+};
+useEffect(() => {
   if (blogPost?._id && audioElementRef.current) {
     fetchAudioBlog();
   }
