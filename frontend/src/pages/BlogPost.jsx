@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
-import { MessageCircleReply, Sparkles} from 'lucide-react';
+import { MessageCircleReply, Sparkles,Bookmark} from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
@@ -124,7 +124,8 @@ const audioCurrentTimeRef = useRef(0);      // Track current time WITHOUT state
 const audioDurationRef = useRef(0);         // Track duration WITHOUT state
 ;  
 const [isAudioLoading, setIsAudioLoading] = useState(false);
-
+const [isBookmarked, setIsBookmarked] = useState(false);
+const [bookmarkLoading, setBookmarkLoading] = useState(false);
 useEffect(() => {
   const fetchBlogDetails = async () => {
     setIsLoading(true);
@@ -2520,6 +2521,16 @@ const CodeBlock = ({ language, value }) => {
     >
       <Sparkles />
     </button>
+    {isLoggedIn && (
+  <button
+    className={`button7 summarybtn ${isBookmarked ? 'bookmark-active' : ''}`}
+    onClick={handleBookmarkToggle}
+    disabled={bookmarkLoading}
+    title={isBookmarked ? 'Remove bookmark' : 'Bookmark this blog'}
+  >
+    <Bookmark fill={isBookmarked ? 'currentColor' : 'none'} />
+  </button>
+)}
     <button 
       className="button7 summarybtn" 
       onClick={() => setShowVoiceSelector(!showVoiceSelector)}
