@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaThumbsUp, FaThumbsDown, FaRegThumbsUp, FaRegThumbsDown, FaShare, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaCopy, FaTelegramPlane, FaPinterest,FaFlag } from 'react-icons/fa';
-import { MessageCircleReply, Sparkles} from 'lucide-react';
+import { MessageCircleReply, Sparkles,Bookmark} from 'lucide-react';
 import axios from 'axios';
 import '../pagesCSS/blogPost.css';
 import '../pagesCSS/commentmoderation.css';
@@ -124,7 +124,8 @@ const audioCurrentTimeRef = useRef(0);      // Track current time WITHOUT state
 const audioDurationRef = useRef(0);         // Track duration WITHOUT state
 ;  
 const [isAudioLoading, setIsAudioLoading] = useState(false);
-
+const [isBookmarked, setIsBookmarked] = useState(false);
+const [bookmarkLoading, setBookmarkLoading] = useState(false);
 useEffect(() => {
   const fetchBlogDetails = async () => {
     setIsLoading(true);
@@ -341,6 +342,47 @@ useEffect(() => {
   
   checkAuth();
 }, []);
+useEffect(() => {
+  const checkBookmark = async () => {
+    if (!blogPost?._id || !isLoggedIn) {
+      setIsBookmarked(false);
+      return;
+    }
+    const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${blogPost._id}/status`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setIsBookmarked(res.data.bookmarked);
+    } catch (err) {
+      setIsBookmarked(false);
+    }
+  };
+  checkBookmark();
+}, [blogPost?._id, isLoggedIn]);
+
+const handleBookmarkToggle = async () => {
+  if (!isLoggedIn || !blogPost?._id || bookmarkLoading) return;
+
+  const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
+  const previous = isBookmarked;
+
+  setBookmarkLoading(true);
+  setIsBookmarked(!previous);
+
+  try {
+    await axios({
+      method: previous ? 'delete' : 'post',
+      url: `${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${blogPost._id}`,
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  } catch (err) {
+    setIsBookmarked(previous);
+  } finally {
+    setBookmarkLoading(false);
+  }
+};
 useEffect(() => {
   if (blogPost?._id && audioElementRef.current) {
     fetchAudioBlog();
@@ -2479,6 +2521,16 @@ const CodeBlock = ({ language, value }) => {
     >
       <Sparkles />
     </button>
+    {isLoggedIn && (
+  <button
+    className={`button7 summarybtn ${isBookmarked ? 'bookmark-active' : ''}`}
+    onClick={handleBookmarkToggle}
+    disabled={bookmarkLoading}
+    title={isBookmarked ? 'Remove bookmark' : 'Bookmark this blog'}
+  >
+    <Bookmark fill={isBookmarked ? 'currentColor' : 'none'} />
+  </button>
+)}
     <button 
       className="button7 summarybtn" 
       onClick={() => setShowVoiceSelector(!showVoiceSelector)}

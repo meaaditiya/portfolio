@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BlogSkeletonLoader from '../components/BlogSkeletonLoader';
-import { Crown } from 'lucide-react';
+import { Crown, Bookmark} from 'lucide-react';
 import Error from '../components/Error.jsx';
 import '../pagesCSS/blog.css';
-
+const getToken = () =>
+  localStorage.getItem('token') ||
+  document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] ||
+  null;
 const Blog = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
@@ -37,6 +40,12 @@ const Blog = () => {
   const [isVectorSearchActive, setIsVectorSearchActive] = useState(false);
 const [isVectorLoading, setIsVectorLoading] = useState(false);
 
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
+const [bookmarkedBlogs, setBookmarkedBlogs] = useState([]);
+const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
+const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
+
   useEffect(() => {
     if (blogs.length > 0) {
       const tags = new Set();
@@ -52,7 +61,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
   useEffect(() => {
     if (isVectorSearchActive) return;
     
-    let result = [...blogs];
+   let result = showBookmarksOnly ? [...bookmarkedBlogs] : [...blogs];
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -96,7 +105,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     }
 
     setFilteredBlogs(result);
-  }, [blogs, searchQuery, selectedTags, sortOption, selectedAuthor, isVectorSearchActive]);
+  }, [blogs, searchQuery, selectedTags, sortOption, selectedAuthor, isVectorSearchActive, showBookmarksOnly, bookmarkedBlogs]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -123,6 +132,35 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     }
   }, [location]);
 
+  useEffect(() => {
+  const token = getToken();
+  if (!token) return;
+
+  const init = async () => {
+    try {
+      const verifyRes = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/verify`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyData.isValid || !verifyData.user) return;
+
+      setIsLoggedIn(true);
+
+      const idsRes = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/ids`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (idsRes.ok) {
+        const idsData = await idsRes.json();
+        setBookmarkedIds(new Set(idsData.ids));
+      }
+    } catch (err) {
+      setIsLoggedIn(false);
+    }
+  };
+
+  init();
+}, []);
+
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
     const newLimit = limit + 2;
@@ -146,16 +184,16 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     );
   };
 
-  const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedTags([]);
-    setSortOption('newest');
-    setSelectedAuthor(null);
-    clearVectorSearch();
-  };
+const clearFilters = () => {
+  setSearchQuery('');
+  setSelectedTags([]);
+  setSortOption('newest');
+  setSelectedAuthor(null);
+  setShowBookmarksOnly(false);
+  clearVectorSearch();
+};
 
-  const hasActiveFilters = searchQuery || selectedTags.length > 0 || sortOption !== 'newest' || selectedAuthor || isVectorSearchActive;
-
+const hasActiveFilters = searchQuery || selectedTags.length > 0 || sortOption !== 'newest' || selectedAuthor || isVectorSearchActive || showBookmarksOnly;
   const handleGenerateSummary = async (blog, event) => {
     event.stopPropagation();
     setSelectedBlog(blog);
@@ -214,6 +252,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     const data = await response.json();
     setFilteredBlogs(data.results);
     setIsVectorSearchActive(true);
+    setShowBookmarksOnly(false);
     setShowVectorSearch(false);
   } catch (error) {
     setFilteredBlogs([]);
@@ -228,7 +267,71 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
     setIsVectorSearchActive(false);
     setFilteredBlogs(blogs);
   };
+const toggleBookmark = async (blog, event) => {
+  event.stopPropagation();
+  const token = getToken();
+  if (!isLoggedIn || !token) return;
 
+  const id = blog._id;
+  const wasBookmarked = bookmarkedIds.has(id);
+
+  setBookmarkedIds(prev => {
+    const next = new Set(prev);
+    if (wasBookmarked) next.delete(id);
+    else next.add(id);
+    return next;
+  });
+
+  if (wasBookmarked && showBookmarksOnly) {
+    setBookmarkedBlogs(prev => prev.filter(b => b._id !== id));
+  }
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${id}`, {
+      method: wasBookmarked ? 'DELETE' : 'POST',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Bookmark failed');
+  } catch (err) {
+    setBookmarkedIds(prev => {
+      const next = new Set(prev);
+      if (wasBookmarked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+    if (wasBookmarked && showBookmarksOnly) {
+      setBookmarkedBlogs(prev => [blog, ...prev]);
+    }
+  }
+};
+
+const handleBookmarkView = async () => {
+  if (showBookmarksOnly) {
+    setShowBookmarksOnly(false);
+    return;
+  }
+
+  const token = getToken();
+  if (!token) return;
+
+  setIsVectorSearchActive(false);
+  setVectorSearchQuery('');
+  setShowBookmarksOnly(true);
+  setIsBookmarkLoading(true);
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to load bookmarks');
+    const data = await res.json();
+    setBookmarkedBlogs(data.blogs);
+  } catch (err) {
+    setBookmarkedBlogs([]);
+  } finally {
+    setIsBookmarkLoading(false);
+  }
+};
   if (error) return <Error />;
 
   if (isInitialLoading) {
@@ -288,7 +391,15 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
                 <circle cx="11" cy="11" r="2"></circle>
               </svg>
             </button>
-
+      {isLoggedIn && (
+  <button
+    title={showBookmarksOnly ? 'show all blogs' : 'show bookmarked blogs'}
+    className="vector-search-btn"
+    onClick={handleBookmarkView}
+  >
+    <Bookmark size={29} color="black" fill={showBookmarksOnly ? 'black' : 'none'} />
+  </button>
+)}
             {/* Filter Button */}
             <button 
             title="apply filters"
@@ -326,7 +437,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
           </form>
         </div>
       )}
-    {isVectorLoading && (
+ {(isVectorLoading || isBookmarkLoading) && (
   <div className="vector-progress-bar">
     <div className="vector-progress-fill"></div>
   </div>
@@ -423,12 +534,12 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
         </div>
       )}
 
-      {filteredBlogs.length === 0 && (
-        <div className="empty-state-new">
-          <p>No blog posts found.</p>
-          {isVectorSearchActive && <button className="clear-search-btn" onClick={clearVectorSearch}>Clear Search</button>}
-        </div>
-      )}
+{filteredBlogs.length === 0 && !isBookmarkLoading && (
+  <div className="empty-state-new">
+    <p>{showBookmarksOnly ? 'No bookmarked blogs yet.' : 'No blog posts found.'}</p>
+    {isVectorSearchActive && <button className="clear-search-btn" onClick={clearVectorSearch}>Clear Search</button>}
+  </div>
+)}
 
       <div className="blog-grid-new">
         {filteredBlogs.length > 0 && (
@@ -456,6 +567,15 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
               <span className='premium-text'>Subscibers</span>
                 </>
               )}
+              {isLoggedIn && (
+  <button
+    className={`bookmark-btn-small ${bookmarkedIds.has(filteredBlogs[0]._id) ? 'active' : ''}`}
+    title={bookmarkedIds.has(filteredBlogs[0]._id) ? 'remove bookmark' : 'bookmark this blog'}
+    onClick={(e) => toggleBookmark(filteredBlogs[0], e)}
+  >
+    <Bookmark size={18} fill={bookmarkedIds.has(filteredBlogs[0]._id) ? 'currentColor' : 'none'} />
+  </button>
+)}
               </div>
               <h3 className="featured-title">{filteredBlogs[0].title}</h3>
               <p className="featured-summary">{filteredBlogs[0].summary}</p>
@@ -497,6 +617,15 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
               <span className='premium-text'>Subscibers</span>
                 </>
               )}
+              {isLoggedIn && (
+  <button
+    className={`bookmark-btn-small ${bookmarkedIds.has(blog._id) ? 'active' : ''}`}
+    title={bookmarkedIds.has(blog._id) ? 'remove bookmark' : 'bookmark this blog'}
+    onClick={(e) => toggleBookmark(blog, e)}
+  >
+    <Bookmark size={16} fill={bookmarkedIds.has(blog._id) ? 'currentColor' : 'none'} />
+  </button>
+)}
                 </div>
                 <h3 className="small-title">{blog.title}</h3>
                 <p className="small-summary">{blog.summary}</p>
@@ -513,7 +642,7 @@ const [isVectorLoading, setIsVectorLoading] = useState(false);
         </div>
       </div>
 
-      {hasMore && !searchQuery && selectedTags.length === 0 && !isVectorSearchActive && (
+     {hasMore && !searchQuery && selectedTags.length === 0 && !isVectorSearchActive && !showBookmarksOnly && (
         <div className="load-more-container">
           <button className="load-more-button" onClick={handleLoadMore} disabled={isLoadingMore}>
             {isLoadingMore ? 'Loading...' : 'Load More'}
