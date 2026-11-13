@@ -352,7 +352,7 @@ useEffect(() => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${blogPost._id}/status`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { 'Content-Type': 'application/json', 'Authorization' : `Bearer ${token}` } }
       );
       setIsBookmarked(res.data.bookmarked);
     } catch (err) {
@@ -365,18 +365,18 @@ useEffect(() => {
 const handleBookmarkToggle = async () => {
   if (!isLoggedIn || !blogPost?._id || bookmarkLoading) return;
 
-  const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0];
+  const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
   const previous = isBookmarked;
 
   setBookmarkLoading(true);
   setIsBookmarked(!previous);
 
   try {
-    await axios({
-      method: previous ? 'delete' : 'post',
-      url: `${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${blogPost._id}`,
-      headers: { Authorization: `Bearer ${token}` }
+    const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${blogPost._id}`, {
+      method: previous ? 'DELETE' : 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
     });
+    if (!res.ok) throw new Error('Bookmark failed');
   } catch (err) {
     setIsBookmarked(previous);
   } finally {
