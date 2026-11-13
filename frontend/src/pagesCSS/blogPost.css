@@ -5520,3 +5520,18 @@ code:not(.minimal-code-text) {
 .read-along-minimal-btn.paused {
   display: inline-flex;
 }
+.button7.bookmark-active {
+  background: black;
+  color: white;
+  border: 1px solid black;
+}
+
+.button7.bookmark-active:hover {
+  color: white;
+  border: 1px solid rgb(40, 144, 241);
+}
+
+.button7:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

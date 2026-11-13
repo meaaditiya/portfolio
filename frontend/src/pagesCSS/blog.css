@@ -1664,3 +1664,34 @@ body {
     opacity: 0.05;
   }
 }
+.bookmark-btn-small {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 2px;
+  color: black;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.bookmark-btn-small:hover {
+  transform: translateY(-1px) scale(1.1);
+}
+
+.bookmark-btn-small.active {
+  color: black;
+}
+
+.vector-search-btn svg {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .header-buttons {
+    width: auto;
+    gap: 4px;
+  }
+}
