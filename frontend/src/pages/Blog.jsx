@@ -139,7 +139,7 @@ const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
   const init = async () => {
     try {
       const verifyRes = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/verify`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {'Content-Type': 'application/json', 'Authorization' : `Bearer ${token}` }
       });
       const verifyData = await verifyRes.json();
       if (!verifyData.isValid || !verifyData.user) return;
@@ -147,7 +147,7 @@ const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
       setIsLoggedIn(true);
 
       const idsRes = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/ids`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {'Content-Type': 'application/json', 'Authorization' : `Bearer ${token}` }
       });
       if (idsRes.ok) {
         const idsData = await idsRes.json();
@@ -289,7 +289,7 @@ const toggleBookmark = async (blog, event) => {
   try {
     const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks/${id}`, {
       method: wasBookmarked ? 'DELETE' : 'POST',
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {'Content-Type': 'application/json', 'Authorization' : `Bearer ${token}` }
     });
     if (!res.ok) throw new Error('Bookmark failed');
   } catch (err) {
@@ -321,7 +321,7 @@ const handleBookmarkView = async () => {
 
   try {
     const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/bookmarks`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { 'Content-Type': 'application/json', 'Authorization' : `Bearer ${token}` }
     });
     if (!res.ok) throw new Error('Failed to load bookmarks');
     const data = await res.json();
