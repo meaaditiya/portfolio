@@ -638,3 +638,138 @@
     width: 100%;
   }
 }
+.rjw9x-login-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.rjw9x-login-link:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.rjw9x-my-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 820px;
+  width: 100%;
+  margin: 1rem auto 0 auto;
+}
+
+.rjw9x-my-card {
+  background: #ffffff;
+  border: 1px solid #d4c7b8;
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-sizing: border-box;
+}
+
+.rjw9x-my-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rjw9x-my-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.rjw9x-my-sub {
+  font-size: 0.875rem;
+  color: #000000;
+  margin: 0.2rem 0 0 0;
+}
+
+.rjw9x-my-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.rjw9x-my-id {
+  font-family: monospace;
+  font-size: 0.8rem;
+  background: #f5f3f0;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  color: #000000;
+}
+
+.rjw9x-my-date {
+  font-size: 0.75rem;
+  color: #000000;
+}
+
+.rjw9x-my-toggle {
+  background: none;
+  border: none;
+  color: #000000;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  width: fit-content;
+}
+
+.rjw9x-my-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-top: 1px solid #f5f3f0;
+  padding-top: 0.75rem;
+}
+
+.rjw9x-my-history-item {
+  font-size: 0.75rem;
+  color: #000000;
+  margin: 0;
+}
+
+.rjw9x-followup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #f5f3f0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.rjw9x-followup-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+.rjw9x-followup-message {
+  font-size: 0.85rem;
+  color: #000000;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .rjw9x-my-card {
+    padding: 1rem;
+  }
+}
